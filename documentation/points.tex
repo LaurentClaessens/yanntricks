@@ -1,0 +1,98 @@
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+\section{Draw points}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+%---------------------------------------------------------------------------------------------------------------------------
+\subsection{Hello world!}
+%---------------------------------------------------------------------------------------------------------------------------
+
+
+The first step is to draw a point. More precisely, we are going to create figure which contains a pspicture of a point. For that purpose, the phystricks module provide the class \verb+phystricks.Point+ and the method \verb+DrawGraph+ on the class \verb+phystricks.pspicture+. 
+
+Here is the code to be written in you python's script :
+\VerbatimInput[tabsize=3]{first_example.py}
+And here are the lines to be included in your \LaTeX\ file :
+\begin{verbatim}
+The result is given on the figure \ref{LabelFigOnePoint}
+\newcommand{\CaptionFigOnePoint}{This is my first point}
+\input{Fig_OnePoint.pstricks}
+\end{verbatim}
+The result is given on the figure \ref{LabelFigOnePoint}
+\newcommand{\CaptionFigOnePoint}{This is my first point}
+\input{Fig_OnePoint.pstricks}
+
+If the point has a name, we can mark it with the method
+\begin{verbatim}
+P.mark(dist,angle,mark)
+\end{verbatim}
+where \verb+dist+ is the distance between the point and the mark, \verb+angle+ is the angle and \verb+mark+ is the text to be placed. This is typically a \LaTeX code like \verb+$P$+ if $P$ is the name of the point. The parameters are inspired from the command \verb+\pstGeonode+ from the package \verb+Euclide+:
+\begin{enumerate}
+
+	\item
+		Distance between the point and the mark,
+	\item
+		the angle
+	\item
+		the mark, to be interpreted by \LaTeX.
+
+\end{enumerate}
+
+We change the color and the symbol of the point using the attributes
+\begin{verbatim}
+P.parameters.color
+P.parameters.symbol
+\end{verbatim}
+The symbol is by default \verb+"*"+, so that a circular point appears, while the default color is \verb+"black"+. The available symbols are\footnote{This list is taken from the documentation of \texttt{pst-eucl} without the authorization of the author, and constitutes a possible violation of the \LaTeX{} Project Public Licence.}
+\label{PgTableauMarques}
+\begin{multicols}{3}
+  \begin{itemize}\psset{dotscale=2}
+  \item \texttt{*} : \psdots(.5ex,.5ex)
+  \item \texttt{o} : \psdots[dotstyle=o](.5ex,.5ex)
+  \item \texttt{+} : \psdots[dotstyle=+](.5ex,.5ex)
+  \item \texttt{x} : \psdots[dotstyle=x](.5ex,.5ex)
+  \item \texttt{asterisk} : \psdots[dotstyle=asterisk](.5ex,.5ex)
+  \item \texttt{oplus} : \psdots[dotstyle=oplus](.5ex,.5ex)
+  \item \texttt{otimes} : \psdots[dotstyle=otimes](.5ex,.5ex)
+  \item \texttt{triangle} : \psdots[dotstyle=triangle](.5ex,.5ex)
+  \item \texttt{triangle*} : \psdots[dotstyle=triangle*](.5ex,.5ex)
+  \item \texttt{square} : \psdots[dotstyle=square](.5ex,.5ex)
+  \item \texttt{square*} : \psdots[dotstyle=square*](.5ex,.5ex)
+  \item \texttt{diamond} : \psdots[dotstyle=diamond](.5ex,.5ex)
+  \item \texttt{diamond*} : \psdots[dotstyle=diamond*](.5ex,.5ex)
+  \item \texttt{pentagon} : \psdots[dotstyle=pentagon](.5ex,.5ex)
+  \item \texttt{pentagon}* : \psdots[dotstyle=pentagon*](.5ex,.5ex)
+  \item \texttt{|} : \psdots[dotstyle=|](.5ex,.5ex)
+  \end{itemize}
+\end{multicols}
+If you want to not print the point, you have to set the symbol to \texttt{none}. That can be useful in order to impose the size of the bounding box.
+
+These customisations are exemplified in the following code:
+\VerbatimInput[tabsize=3]{MarkOnPoint.py}
+The result is on figure \ref{LabelFigMarkOnPoint}.
+\newcommand{\CaptionFigMarkOnPoint}{A point with a mark. Notice that one can mark the point with any string, including \LaTeX\ code.}
+\input{Fig_MarkOnPoint.pstricks}
+%---------------------------------------------------------------------------------------------------------------------------
+\subsection{Draw several points at once}
+%---------------------------------------------------------------------------------------------------------------------------
+
+You know that python is a programming language\footnote{The author is used to troll against \LaTeX\ as programming language.}. The ultimate purpose of \verb+phystricks+ is to allow the use of that powerful programming language in order to create figures.
+
+The following code draw the first $10$ points of the sequence $x_n=\frac{ (-1)^n }{ n }$.
+\VerbatimInput[tabsize=2]{Sequence.py}
+The result is on the figure \ref{LabelFigsequence}.
+\newcommand{\CaptionFigsequence}{The first points of $x_n=(-1)^n/n$.}
+\input{Fig_sequence.pstricks}
+
+Notice that the marks $P_i$ are not taken into account in the bounding box, because it is quite impossible for python to know the size of a given \LaTeX expression. A solution would be to compile the expression in an intermediate \LaTeX file and extract the size of the box. I'm not going to implement that \ldots A consequence of it is that the export to \verb+pdf+ is bad in the case of this figure: the marks are cut.
+
+
+%---------------------------------------------------------------------------------------------------------------------------
+\subsection{Points in polar coordinates}
+%---------------------------------------------------------------------------------------------------------------------------
+
+A point in polar coordinates is created by \verb+PolarPoint(r,theta)+. It returns an instance of the class \verb+Point+, so that
+\begin{verbatim}
+print PolarPoint(1,45).coordinates()
+\end{verbatim}
+will still print the Cartesian coordinates of that point.
+

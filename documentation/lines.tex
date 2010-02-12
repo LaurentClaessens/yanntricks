@@ -1,0 +1,454 @@
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+\section{Draw lines}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The module \verb+phystricks+ makes usually the difference between two kind of objects:
+\begin{enumerate}
+
+	\item
+		the ``geometric'' object. Here, a line.
+	\item
+		The graph of the object. Here, a line endowed with a line style, a color, \ldots
+
+\end{enumerate}
+The class \verb+Segment+ implements what you need to deal with lines. A segment is defined by two points: the initial point and the final point.
+
+The following code shows the coordinates of the initial and final point of a segment.
+\begin{verbatim}
+A = Point(1,1)
+B = Point(5,2)
+segment = Segment(A,B)
+print segment.I.coordinates()
+print segment.F.coordinates()
+\end{verbatim}
+Here, \verb+segment.I+ is the initial point of \verb+segment+, an instance of the known class \verb+Point+. The method \verb+coordinates+ returns the coordinates of a point.
+
+In the following example, we define two segments and we draw them. The first is drawn with default options while the second is dotted in red. The intersection point is also computed by the function \verb+LineInterLine+.
+
+We also draw a wavy line using the method \verb+wave+. When \verb+S+ is an instance of \verb+GraphOfASegment+, we make it wavy by writing
+\begin{verbatim}
+S.wave(dx,dy)
+\end{verbatim}
+where \verb+dx+ is the wavelength and \verb+dy+ is the amplitude of the wave we want to draw. The wave will always begins on the initial point of the segment and end on the last point. Thus the last wavefront can be smaller than \verb+dx+.
+
+The result is on figure \ref{LabelFigLines}.
+\newcommand{\CaptionFigLines}{Example of lines and an intersection.}
+\input{Fig_Lines.pstricks}
+\VerbatimInput[tabsize=3]{Lines.py}
+
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+\section{Draw circles}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+A circle follows the same rules as the segments.
+
+\VerbatimInput[tabsize=3]{exCircle.py}
+The result is represented on \ref{LabelFigexCircle}.
+\newcommand{\CaptionFigexCircle}{An example of circle.}
+\input{Fig_exCircle.pstricks}
+Notice that the circle is centred at $(1,1)$, while it appears centred on the page. It is due to the fact that \verb+phystricks+ computes the bounding box with the elements that are actually drawn.
+
+An arc of circle is simply obtained by changing the values of \verb+circle.angleI+ and \verb+circle.angleF+ is \verb+circle+ is of the class \verb+circle+. We get a point on the circle by giving its angle: 
+\begin{verbatim}
+circle.get_point(theta) 
+\end{verbatim}
+returns the point on the circle at angle \verb+theta+. 
+
+These features are illustrated by the following example (we anticipate on the axes):
+\VerbatimInput[tabsize=3]{exCircleTwo.py}
+The result is presented on figure \ref{LabelFigexCircleTwo}.
+\newcommand{\CaptionFigexCircleTwo}{Some features of circles.}
+\input{Fig_exCircleTwo.pstricks}
+
+An arc of circle can also be wavy as shown in the following code:
+\VerbatimInput[tabsize=3]{exCircleThree.py}
+The result is on the figure \ref{LabelFigexCircleThree}.
+\newcommand{\CaptionFigexCircleThree}{A wavy arc of circle. Notice that the extremities do not glue perfectly. This is not a feature, but a bug.}
+\input{Fig_exCircleThree.pstricks}
+
+
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+\section{Vectors}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Vectors are much like segments. Formally speaking, an object of the class \verb+Vector+ represents an element of the \emph{affine} space of $\eR^2$. It has a fixed origin. A vector is created by
+\begin{verbatim}
+v = Vector(P1,P2)
+\end{verbatim}
+where \verb+P1+ and \verb+P2+ are of type \verb+Point+. If you want to draw it, you have to create the object to be drawn as follows:
+\begin{verbatim}
+V = Graph(v)
+\end{verbatim}
+Now, you can custom the graph. If you want to give a name or to put a mark on the vector, use the method \verb+mark+ as
+\begin{verbatim}
+V.mark(dist,angle,mark)
+\end{verbatim}
+Rotated, orthogonal, dilated and resized vectors are obtained by the following method)
+\begin{verbatim}
+v.rotation(theta)
+v.orthogonal()
+v.dilatation(factor)
+v.fix_size(size)
+\end{verbatim}
+where \verb+theta+ is an angle \emph{in degree}, \verb+factor+ is the dilatation factor (can be negative) and \verb+size+ is the size of the new vector. 
+Here is an example:
+\VerbatimInput[tabsize=3]{VectorOne.py}
+The result is on the figure \ref{LabelFigVectorOne}
+\newcommand{\CaptionFigVectorOne}{Some examples of vectors.}
+\input{Fig_VectorOne.pstricks}
+
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+\section{Bounding box, axes and grid}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+%---------------------------------------------------------------------------------------------------------------------------
+\subsection{Good news: no bounding boxes}
+%---------------------------------------------------------------------------------------------------------------------------
+
+If you don't know what a bounding box is, I have a good news: you don't have to know it. If you know what the bounding box is, I have the same good news: \verb+phystricks+ computes it for you. When you draw a function (see bellow) \verb+phystricks+ relies on Sage to numerically compute the position of the maximum and minimum of the function. If you print the name of some points, the size of the letter is not taken into account in the computation of the bounding box, as in the example of figure \ref{LabelFigAxes} where the $P$ is not taken into account in the bounding box. 
+
+%---------------------------------------------------------------------------------------------------------------------------
+\subsection{The automatic way for the axes}
+%---------------------------------------------------------------------------------------------------------------------------
+
+The axes follow the same good rule: \verb+phystricks+ knows your picture and then knows the size of the axis you need. You can of course modify them by hand\footnote{Write an email to the author or read the code if you want to know how.} but most of time, you just need the axis centered at zero and whose have the size of your picture.
+
+The axes are automatically drawn if you use the method \verb+DrawDefaultAxes()+ on the object \verb+pspict+.
+There are no mystery about how it works.
+
+\VerbatimInput[tabsize=3]{Axes.py}
+
+And the result is given on the figure \ref{LabelFigAxes}
+\newcommand{\CaptionFigAxes}{Example of axes that are adjusting themselves.}
+\input{Fig_Axes.pstricks}
+
+%---------------------------------------------------------------------------------------------------------------------------
+\subsection{Some personalisation of the axes}
+%---------------------------------------------------------------------------------------------------------------------------
+
+There is a class \verb+Axes+. The ``default'' axes we spoke about in the previous subsection is an object of that class and is a method of the class \verb+pspicture+
+\begin{verbatim}
+pspict.axes
+\end{verbatim}
+Thus the easiest way to have customised axes is to custom these ones. Here is an example where we remove the graduation of the axes and where we put labels. In order to remove the graduation, we use the method \verb+no_graduation()+ of the class \verb+Axes+
+\begin{verbatim}
+pspict.axes.no_graduation()
+\end{verbatim}
+and in order to add labels, we use the methods \verb+add_label_X+ and \verb+add_label_Y+ in the following way
+\begin{verbatim}
+pspict.axes.add_label_X(d,alpha,mark)
+\end{verbatim}
+where \verb+d+ is the distance between the arrow and the mark, \verb+alpha+ is the angle and \verb+mark+ is the name one wants to see. Typically, \verb+mark+ is a \LaTeX{} expression.
+\VerbatimInput[tabsize=3]{AxesSecond.py}
+The result is on the figure \ref{LabelFigAxesSecond}
+\newcommand{\CaptionFigAxesSecond}{Some fewly customised axes for the function $x\mapsto\sinh(x/2)$.}
+\input{Fig_AxesSecond.pstricks}
+
+%---------------------------------------------------------------------------------------------------------------------------
+\subsection{The grid}
+%---------------------------------------------------------------------------------------------------------------------------
+
+Even if, as the axes, the grid exists as an independent object (class \verb+Grid+), we are going to show only the automatic grid. It is drawn by the method 
+\begin{verbatim}
+pspict.DrawDefaultGrid()
+\end{verbatim}
+This method creates a grid which is adapted to the axes (not the pspicture itself !). Thus it has to be called \emph{after} \verb+pspict.DrawDefaultAxes+. Typically, we have
+\begin{verbatim}
+	pspict.DrawDefaultAxes()
+	pspict.DrawDefaultGrid()
+\end{verbatim}
+The examples anticipate on the drawing of functions (section \ref{SecDrawFunctions}). Here is the first:
+\VerbatimInput[tabsize=3]{GridOne.py}
+The result is on the figure \ref{LabelFigGridOne}
+\newcommand{\CaptionFigGridOne}{A function, a grid and the axes with the default settings.}
+\input{Fig_GridOne.pstricks}
+The default grid is the object \verb+pspict.grid+. One custom the grid by acting on that object.
+
+As you see, a grid is composed of a ``main'' grid (style solid) and a ``subgrid`` (style dotted). One can separately le parametrise them. For the distances, the parameters are
+\begin{enumerate}
+		\item \verb+grid.Dx+. 
+			The spacing between two vertical lines in the main grid. (similarly for \verb+grid.Dy+)
+		\item \verb+grid.num_subX+.
+			The number of subdivision that the subgrid makes between each vertical lines of the main grid. If you don't want vertical subgrid, put zero.
+\end{enumerate}
+Let us draw the same picture as figure \ref{LabelFigGridOne}, but with different parameters of the grid spacing.
+\VerbatimInput[tabsize=3]{GridTwo.py}
+The result is on the figure \ref{LabelFigGridTwo}
+\newcommand{\CaptionFigGridTwo}{Grid with customized spacing.}
+\input{Fig_GridTwo.pstricks}
+Notice that, for visual convenience, we dilated the whole figure with a factor $0.5$ using the method
+\begin{verbatim}
+pspict.dilatation_Y(0.5)
+\end{verbatim}
+
+The shape and the color of the grid can be customised. The vertical lines of the main grid are ``cloned'' from \verb+grid.main_vertical+. The latter is the graph of a segment, so that all the customisation of lines are available. For exampe
+\begin{verbatim}
+grid.main_vertical.parameters.color = "red"
+\end{verbatim}
+makes the vertical lines of the main grid red. Similarly the other lines are cloned from the following
+\begin{verbatim}
+grid.main_vertical
+grid.main_horizontal
+grid.sub_vertical
+grid.sub_horizontal
+\end{verbatim}
+The lines can even be made wavy, but I don't see in which context it can be useful, or even beautiful\ldots Here is an example.
+\VerbatimInput[tabsize=3]{GridThree.py}
+The result is on the figure \ref{LabelFigGridThree}
+\newcommand{\CaptionFigGridThree}{Customised lines in a grid. The result here is not quite beautifull, but it's just an example.}
+\input{Fig_GridThree.pstricks}
+
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+\section{Drawing functions}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+\label{SecDrawFunctions}
+
+This is the main part of \verb+phystricks+ that defines the class \verb+phyFunction+. An instance of that class is created from an instance of the class \verb+sage.symbolic.expression.Expression+. Pragmatically, we consider the function $x\mapsto x^2$ by the code
+\begin{verbatim}
+var('x')
+f = phyFunction(x**2)
+\end{verbatim}
+The double star is the exponentiation in the Sage's language\footnote{There exists an explanation for that, but I don't know it.}. Let us give a first typical example: the sine function. The code is
+
+\VerbatimInput[tabsize=3]{FunctionFirst.py}
+The result is given on figure \ref{LabelFigFunctionFirst}
+\newcommand{\CaptionFigFunctionFirst}{A first example of function.}
+\input{Fig_FunctionFirst.pstricks}
+
+As the syntax is concerned, 
+\begin{verbatim}
+var('x')
+\end{verbatim}
+is a Sage way of declaring that \verb+x+ will be a variable. Then, we define \verb+f+ by
+\begin{verbatim}
+f = phyFunction( sin(x) )
+\end{verbatim}
+The argument of \verb+phyFunction+ has to be an expression of \verb+x+ that is to be interpreted by Sage. At this moment, \verb+f+ is the abstract function. The effective object that will be drawn is the one of the class \verb+GraphOfAFunction+. It has to be defined with
+\begin{verbatim}
+F = Graph(f,mx,Mx)
+\end{verbatim}
+where \verb+f+ is the function, \verb+mx+ is the value of $x$ where the drawing has to begins and \verb+Mx+ is the end value of $x$.
+
+Of course, we have many methods on the class \verb+GraphOfAFunction+ that allows to change the way of drawing. Here are some.
+\begin{enumerate}
+
+	\item
+		\verb+F.style+ corresponds to the \verb+linestyle+ of pstricks. Default is ``solid''
+	\item 
+		\verb+F.color+ corresponds to the \verb+linecolor+ of pstricks. Default is blue.
+	\item
+		\verb+F.plotpoints+ gives the number of points to be plotted. It can be useful to increase the number of points if  the function presents a strong curvature somewhere, like an asymptote. Think about that if you want to draw a logarithm close to zero.
+	\item
+		\verb+F.wave(l,A)+ produces a wavy graph of wavelength \verb+l+ and amplitude \verb+A+
+
+\end{enumerate}
+
+Here is an example of some of these features.
+\VerbatimInput[tabsize=3]{FunctionSecond.py}
+The result is on the figure \ref{LabelFigFunctionSecond}
+\newcommand{\CaptionFigFunctionSecond}{A second example of function.}
+\input{Fig_FunctionSecond.pstricks}
+By the way, the \verb+log+ command in Sage uses the Euler basis, while the \verb+log+ command for pstricks uses the basis $10$. Here, we use the Euler's basis.
+
+
+
+%---------------------------------------------------------------------------------------------------------------------------
+\subsection{Operations on functions}
+%---------------------------------------------------------------------------------------------------------------------------
+
+%///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+\subsubsection{Derivative}
+%///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+One obtain the derivative of a function by
+\begin{verbatim}
+f.derive()
+\end{verbatim}
+
+As an example, the function $x\cos(x)$ and its derivative.
+
+\VerbatimInput[tabsize=3]{FunctionThird.py}
+
+The result is on the figure \ref{LabelFigFunctionThird}
+\newcommand{\CaptionFigFunctionThird}{A function and its derivative.}
+\input{Fig_FunctionThird.pstricks}
+
+%///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+\subsubsection{Put a point on the graph}
+%///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+If \verb+f+ is of the class \verb+phyFunction+, we evaluate \verb+f+ at the point \verb+x+ using
+\begin{verbatim}
+f.eval(x)
+\end{verbatim}
+For example,
+\begin{verbatim}
+var('x')
+f = phyFunction( x**2 )
+print f.eval(2)
+\end{verbatim}
+returns $4$.
+
+If \verb+f+ is an instance of \verb+phyFunction+, the line
+\begin{verbatim}
+f.get_point(x)
+\end{verbatim}
+returns the point at the coordinate $(x,f(x))$
+
+The following code draws the function $x\mapsto x\sin(x)$ and puts a point on the integer values of $x$.
+\VerbatimInput[tabsize=3]{FunctionFour.py}
+
+The result is on figure \ref{LabelFigFunctionFour}
+\newcommand{\CaptionFigFunctionFour}{Some points on the graph of a function. These points are regularly espaced with respect to the $x$ value.}
+\input{Fig_FunctionFour.pstricks}
+
+One can put points regularly spaced points with respect to the arc length. For this, we use the method
+\begin{verbatim}
+f.get_regular_points(mx,Mx,dl)
+\end{verbatim}
+That returns a list of \verb+Point+ that are on the graph of \verb+f+ with $x$ between \verb+mx+ and \verb+Mx+. The distance between two of these points is given by \verb+dl+. As an example: 
+\VerbatimInput[tabsize=3]{FunctionFive.py}
+
+The result is on the figure \ref{LabelFigFunctionFive}
+\newcommand{\CaptionFigFunctionFive}{Some points on the graph of a function. These points are regularly espaced with respect to the arc length.}
+\input{Fig_FunctionFive.pstricks}
+
+By the way, this method is a one which uses Sage in order to compute the arc length between two points of a curve.
+
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+\section{Parametric curves}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+%---------------------------------------------------------------------------------------------------------------------------
+\subsection{The basics}
+%---------------------------------------------------------------------------------------------------------------------------
+
+Parametric curves are implemented by the class \verb+ParametricCurve+ that takes two functions (class \verb+phyFunction+) in argument. The graph object associated with the parametric curve is created by
+\begin{verbatim}
+G = Graph(curve,t1,t2)
+\end{verbatim}
+where \verb+curve+ is of type \verb+ParametricCurve+ and \verb+t1+, \verb+t2+ are the initial and final values of the parameter.
+
+\VerbatimInput[tabsize=3]{ParametricOne.py}
+The result is on the figure \ref{LabelFigParametricOne}
+\newcommand{\CaptionFigParametricOne}{An example of parametric curve.}
+\input{Fig_ParametricOne.pstricks}
+
+%---------------------------------------------------------------------------------------------------------------------------
+\subsection{Tangent and normal vectors}
+%---------------------------------------------------------------------------------------------------------------------------
+
+One can get the tangent and normal vectors to the curve by the methods
+\begin{verbatim}
+curve.tangent_vector(llam)
+curve.normal_vector(llam)
+\end{verbatim}
+where \verb+llam+ is the value of the parameter. It returns an instance of the class \verb+Vector+ with normalized to $1$. It also supports the method \verb+wave+ which works as for functions.
+\VerbatimInput[tabsize=3]{ParametricTwo.py}
+The result is on the figure \ref{LabelFigParametricTwo}
+\newcommand{\CaptionFigParametricTwo}{An other example of parametric curve. Si je voulais troller, j'offrirais un casier de trapistes à qui ferait cette figure en \LaTeX-pstricks pur sans faire appel à des programmes externes.}
+\input{Fig_ParametricTwo.pstricks}
+
+The methods \verb+tangent_vector+ and \verb+normal_verctor+ are using Sage in order to compute the derivative of the function.
+
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+\section{Interaction with \LaTeX}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+\arabic{equation}
+\newcounter{phyess}
+\setcounter{phyess}{\value{equation}}
+\refstepcounter{phyess}
+\label{Labelphyess}
+\arabic{phyess}
+
+Ici : \ref{Labelphyess}
+
+
+
+
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+\section{Make your opinion}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The author likes to be a good troll\footnote{Not as good as Linus Torvalds, but I'm trying very hard.}. Thus he would like to give a direct comparison between \verb+phustricks+ and other way to work with \verb+pstricks+. The good way is to take \href{http://ww2.ac-poitiers.fr/math/spip.php?page=imprime&id_article=134}{this page} and to try to do the same.
+
+I would like to point out that this section is absolutely not a critic against \verb+pstricks-add+ or \verb+pst-eucl+ or any other part of the \verb+pstricks+ constellation. Indeed, if you take a look at the code produced by \verb+phystricks+, you remark that it uses the possibilities of these packages.
+
+%---------------------------------------------------------------------------------------------------------------------------
+\subsection{Gestion du repère}
+%---------------------------------------------------------------------------------------------------------------------------
+
+The given code which is
+\begin{verbatim}
+	\begin{pspicture}(-2,-2)(5,5)
+	\psgrid[subgriddiv=0,gridlabels=5pt,gridwidth=0.5pt,griddots=5](-2,-2)(5,5)
+	\psaxes[labels=none]{->}(0,0)(-2,-2)
+	\end{pspicture}
+\end{verbatim}
+The same with \verb+phystricks+ is
+\VerbatimInput[tabsize=3]{GestionRepere.py}
+The result is on the figure \ref{LabelFigGestionRepere}
+\newcommand{\CaptionFigGestionRepere}{Axes and grid}
+\input{Fig_GestionRepere.pstricks}
+
+Some remarks. 
+\begin{enumerate}
+
+	\item
+		The module \verb+phystricks+ is designed in order to allow one to make use of a powerful programming language; in simple drawing, \verb+phystricks+ cannot ``win'' against a pure \LaTeX/\verb+pstricks+ way.
+
+	\item
+		When it draws the axes, \verb+phystricks+ enlarge a little the axes in order to make appears the last integer unit. One can argue that it makes no sense when one uses the method \verb+no_graduation+. However, it explain why it can be difficult to draw an exactly integer grid using the ``default'' grid of the pspicture.
+		
+	\item
+		A \verb+phystricks+ code will usually be longer than the corresponding \verb+pstricks+ code. The reason is that, in \verb+phystricks+,  one has first to define the object, then to create graph and customize its attributes (one by one) and then draw the graph\footnote{There are some undocumented functions which directly draw the object with all its parameters as argument.}. 
+
+	\item
+		The only place where you see the interest of \verb+phystricks+ in this example is the fact that we naturally wrote only once the coordinates $(-2,-2)$ and $(5,5)$ while the proposed code writes them respectively three and two times.
+
+\end{enumerate}
+
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+\section{Some real live applications}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Up to here, we have seen the basis objects of pictures: points, lines, functions, \ldots Now, as mentioned in the title, python is an \emph{object oriented} programming language, thus we want to build complex objects in which we put many informations and a whole picture at once from various data.
+
+%---------------------------------------------------------------------------------------------------------------------------
+\subsection{Grading your students}
+%---------------------------------------------------------------------------------------------------------------------------
+
+Suppose that you just graded $300$ students and that you want to draw some statistics about the results. The first option is to use \href{http://projects.gnome.org/gnumeric/}{Gnumeric}. But let's say that your mice is broken and you don't want to know how to program something in a graphical interface.
+
+The \href{http://en.wikipedia.org/wiki/Submodule}{submodule} \verb+phystricks.StudentGrading+ has something\footnote{Still experimental.} for you.
+
+Here is the code that \verb+phystricks.StudentGrading+ proposes you:
+\VerbatimInput[tabsize=3]{grading.py}
+
+
+The result is on the figure \ref{LabelFigGradingStatistics}
+\newcommand{\CaptionFigGradingStatistics}{$y$ is the percentage of students that has more or equal to $x$. This graphics shows you that about half of your students have more than $4/10$ and that slightly more than $20$ per cent of your students have more than $6$.}
+\input{Fig_GradingStatistics.pstricks}
+
+\begin{enumerate}
+
+	\item
+		You define a list which contains all the grades (here the notation is on $10$).
+	\item
+		You create the object grading from the data of the grades.
+	\item
+		The method \verb+y_is_percent_bigger_than_x+ generates all the picture at once. The two arguments are the name of the graphic and the maximal note. When you launch that script in the terminal, you get the usual output
+		\begin{verbatim}
+The result is on the figure \ref{LabelFigGradingStatistics}
+\newcommand{\CaptionFigGradingStatistics}{<+mettre le texte+>}
+\input{Fig_GradingStatistics.pstricks}
+		\end{verbatim}
+		These are the lines to be copy-pasted into your \LaTeX\ file.
+
+\end{enumerate}
+<++>
+
+

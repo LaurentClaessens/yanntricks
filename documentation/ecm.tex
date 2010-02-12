@@ -1,0 +1,33 @@
+\documentclass{article}
+\usepackage{pstricks,pst-eucl,pstricks-add}
+\usepackage{pst-plot}
+\usepackage{pst-eps}
+
+
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{TeXtoEPS}
+\begin{pspicture}(0,0)(1.0,1.0)
+	\pstGeonode[PointSymbol=*,linestyle=solid,linecolor=black](1.0,1.0){B}
+	\rput(B){\rput(0.3;180){$q$}}
+\end{pspicture}
+\end{TeXtoEPS}
+
+\end{document}
+
+latex ecm.tex
+dvips ecm.dvi -E -o ecm.eps
+pstopdf ecm.eps
+
+Proposé sur le forum pour obtenir le eps:
+latex test.tex
+dvips test.dvi
+ps2eps test.ps 
+
+Autre truc sur le forum:
+latex ecm.tex
+dvips -E ecm.dvi -o ecm.eps
+epstopdf ecm.eps
+http://groups.google.fr/group/fr.comp.text.tex/browse_thread/thread/a5c4a67c457c46b8?hl=fr#
