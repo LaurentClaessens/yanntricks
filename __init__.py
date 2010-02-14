@@ -20,7 +20,7 @@
 
 
 """
-A rich set of reusable classes intended to generate a file containing the pstricks code of a figure.
+A collection of tools for building LaTeX-pstricks figures with python.
 """
 
 from __future__ import division
@@ -50,12 +50,16 @@ class Fichier(object):
 		self.file = open(self.chemin,opt)			
 	def close_file(self):
 		self.file.close()
-	def write(self,texte,opt):						# Écrit dans le fichier selon les options.
+	def write(self,texte,opt):				
+		""" Write in a file following the option """
 		self.open_file(opt)
 		self.file.write(texte)
 		self.close_file()
-	def contenu(self):							# Retourne une liste qui contient les lignes du fichier
-		self.open_file("r")						# Il y a encore les \n au bout de chacune des lignes
+	def contenu(self):
+		r"""
+		Return the list of the lines of the file, inlcuding the \n at the end of each line.
+		"""
+		self.open_file("r")
 		c = [l for l in self.file]
 		self.close_file()
 		return c
