@@ -18,7 +18,6 @@
 # copyright (c) Laurent Claessens, 2009-2010
 # email: moky.math@gmail.com
 
-
 """
 A collection of tools for building LaTeX-pstricks figures with python.
 """
@@ -543,24 +542,26 @@ class Segment(object):
 			P = Point(-self.coefficient,1)
 			return P.Vector().normalize().lie(self.milieu())
 	def norme(self):
+		print "The method norme of Segment is depreciated. Use length instead."
 		return Distance(self.I,self.F)
-
+	def length(self):
+		return Distance(self.I,self.F)
+	def dilate(self,coef):
+		""" return a Segment which is dilated by the coefficient coef """
+		return self.fix_size(self.length()*coef)
 	# La méthode suivante retourne un nouveau segment qui est allongé de lI du côté de self.I et de lF du côté de self.F
-	def AugmenteTaille(self,lI,lF):
-		Ps = CircleInterLigne( Circle(self.I,lI), self)
-		if Distance_sq(self.F,Ps[0]) > Distance_sq(self.F,Ps[1]) :
-			nI = Ps[0]
-		else :
-			nI = Ps[1]
-		Ps = CircleInterLigne( Circle(self.F,lF), self  )
-		if Distance_sq(self.I,Ps[0]) > Distance_sq(self.I,Ps[1]) :
-			nF = Ps[0]
-		else :
-			nF = Ps[1]
-		return Segment(nI,nF)
-	def FixeTaille(self,l):
-		Ps = CircleInterLigne( Circle(self.milieu(),l) , self )
-		return Segment( Ps[0],Ps[1] )
+	def add_size(self,lI,lF):
+		vI = Vector(self.milieu(),self.I)
+		vF = Vector(self.milieu(),self.F)
+		I = vI.add_size(lI).F
+		F = vI.add_size(lF).F
+		return Segment(I,F)
+	def fix_size(self,l):
+		vI = Vector(self.milieu(),self.I)
+		vF = Vector(self.milieu(),self.F)
+		I = vI.fix_size(l/2).F
+		F = vF.fix_size(l/2).F
+		return Segment(I,F)
 
 	def Affiche(self):
 		return str(self.equation[0])+" x + "+str(self.equation[1])+" y + "+str(self.equation[2])
@@ -613,13 +614,19 @@ class Vector(object):
 	def polaires(self):
 		return PointToPolaire(self.Point)
 	def norme(self):
+		print "The method norme on Vector is depreciated use length instead"
+		return self.polaires().r
+	def length(self):
 		return self.polaires().r
 	def angle(self):
 		return self.polaires().theta
 	def lie(self,p):
 		return Vector(p,Point(p.x+self.Dx,p.y+self.Dy))
 	def fix_size(self,l):
-		return self.dilatation(l/self.norme())
+		return self.dilatation(l/self.length())
+	def add_size(self,l):
+		""" return a Vector with added length on its extremity """
+		return self*((self.length()+l) / self.length())	
 	def normalize(self):
 		return self.fix_size(1)
 
@@ -876,7 +883,7 @@ class phyFunction(object):
 		self.TesteDX = 0
 		self.listeExtrema = []
 		self.listeExtrema_analytique = []
-		self._derive = None
+		self._derivative = None
 
 	def eval(self,xe):
 		return numerical_approx(self.sageFast(xe))
@@ -892,11 +899,12 @@ class phyFunction(object):
 		return listeInverse
 	def PointsNiveau(self,y):
 		return [ Point(x,y) for x in self.inverse(y) ]
-
-	def derive(self):
-		if self._derive == None :
-			self._derive = phyFunction(self.sage.derivative())
-		return self._derive
+	def roots(self):
+		return self.PointsNiveau(0)
+	def derivative(self):
+		if self._derivative == None :
+			self._derivative = phyFunction(self.sage.derivative())
+		return self._derivative
 
 	def get_point(self,x):
 		return Point(float(x),self.eval(x))
@@ -908,10 +916,10 @@ class phyFunction(object):
 	# L'effet "normal" est le fait de prendre (-ca,1) au lieu de (1,ca) qui aurait été tangent.
 	# Le vecteur retourné est normé à 1.
 	def normal_vector(self,x):
-		ca = self.derive().eval(x) 
+		ca = self.derivative().eval(x) 
 		return Point(-ca,1).normalize().lie(self.get_point(x))		
 	def VectorTangent(self,x):
-		ca = self.derive().eval(x)
+		ca = self.derivative().eval(x)
 		return Point(1,ca).normalize().lie(self.get_point(x))
 	# Je donne une abcisse et une petite distance, et il retourne le point qui est sur la fonction, mais un peu décalé de cette distance dans la direction normale à la courbe.
 	def get_normal_point(self,x,dy):
@@ -996,7 +1004,7 @@ class phyFunction(object):
 		return min
 
 	def tangente(self,x):
-		ca = self.derive().eval(x)
+		ca = self.derivative().eval(x)
 		A = self.get_point(x)
 		Ad = Point( A.x+1,A.y+ca )
 		Ag = Point( A.x-1,A.y-ca )
@@ -1025,8 +1033,8 @@ class ParametricCurve(object):
 		var('t')
 		return "%s | %s "%(SubstitutionMathPsTricks(repr(self.f1.sage(x=t))),  SubstitutionMathPsTricks(repr(self.f2.sage(x=t))) )
 
-	def derive(self):
-		return ParametricCurve(self.f1.derive(),self.f2.derive())
+	def derivative(self):
+		return ParametricCurve(self.f1.derivative(),self.f2.derivative())
 	def get_point(self,llam):
 		return Point( self.f1.eval(llam),self.f2.eval(llam) )
 	def tangent_vector(self,llam):
@@ -1035,7 +1043,7 @@ class ParametricCurve(object):
 		   The vector is normed to 1.
 		"""
 		initial = self.get_point(llam)
-		return Vector( initial,Point(initial.x+self.derive().f1.eval(llam),initial.y+self.derive().f2.eval(llam)) ).normalize()
+		return Vector( initial,Point(initial.x+self.derivative().f1.eval(llam),initial.y+self.derivative().f2.eval(llam)) ).normalize()
 	def normal_vector(self,llam):
 		return self.tangent_vector(llam).orthogonal()
 
@@ -1059,7 +1067,7 @@ class ParametricCurve(object):
 		returns a list of values of the parameter such that the corresponding points are equally espaced by dl.
 		This is a first try. The method is based on the speed of the curve computed from the derivative. The result could be not quite good.
 		"""
-		fp = self.derive()
+		fp = self.derivative()
 		ll = mll
 		minDll = abs(Mll-mll)/1000
 		PIs = []
@@ -1084,7 +1092,7 @@ class ParametricCurve(object):
 
 	def arc_length(self,mll,Mll):
 		""" numerically returns the arc length on the curve between the value mll and Mll of the parameter """
-		g = sqrt( self.f1.derive().sage**2+self.f2.derive().sage**2 )
+		g = sqrt( self.f1.derivative().sage**2+self.f2.derivative().sage**2 )
 		return numerical_integral(g,mll,Mll)[0]
 		#return g.integrate(x,mll,Mll)
 
@@ -1095,7 +1103,7 @@ class ParametricCurve(object):
 		"""
 		prop_precision = dl /100 		# precision of the interval
 		#prop_precision = 0.0001
-		fp = self.derive()
+		fp = self.derivative()
 		minDll = abs(Mll-mll)/1000
 		ll = mll
 		PIs = []
@@ -2135,7 +2143,7 @@ class pspicture(object):
 		self.AjouteLigne("\parametricplot[%s]{%s}{%s}{%s}" %(params,str(mx),str(Mx),f.pstricks()))
 
 	def DrawGraph(self,graphe,N=None):
-		# If n is not none, it is the number of the line where the code has to be put. This is used by DrawGrid
+		# If n is not None, it is the number of the line where the code has to be put. This is used by DrawGrid
 		if type(graphe) == GraphOfAFunction :
 			self.DrawGraphOfAFunction(graphe)
 		if type(graphe) == GraphOfAParametricCurve :
