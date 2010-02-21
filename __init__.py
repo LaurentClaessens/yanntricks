@@ -911,11 +911,8 @@ class phyFunction(object):
 	# Donne une liste de points sur la courbe à partir d'une liste d'abcisses.
 	def Listeget_point(self,l):
 		return [self.get_point(x) for x in l]
-
-	# Retourne un vecteur normal de norme 1 au graphe de la fonction au point donné.
-	# L'effet "normal" est le fait de prendre (-ca,1) au lieu de (1,ca) qui aurait été tangent.
-	# Le vecteur retourné est normé à 1.
 	def normal_vector(self,x):
+		""" return a normalized normal vector to the graph of the function at x """
 		ca = self.derivative().eval(x) 
 		return Point(-ca,1).normalize().lie(self.get_point(x))		
 	def VectorTangent(self,x):
