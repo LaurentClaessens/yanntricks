@@ -81,16 +81,30 @@ class CalculSage(object):
 	# If 1 and 2 are the solutions for one variable : [x == 1,x==2]
 	# If (1,2) and (3,4) are solutions of a two variable equation : [ [x==1,y==2],[x==3,y==4] ]
 	# The list nesting structure is really different. Do I have to read the doc ?
-	def solveOneVar(self,eqs,vars):
+	def solve_one_var(self,eqs,var):
 		"""
 		Solve the equations with respect to the given variable
 
 		Returns a list of numerical values.
 		"""
-		liste = solve(eqs,vars,explicit_solutions=True)
+		liste = solve(eqs,var,explicit_solutions=True)
 		a = []
 		for soluce in liste :	
 			a.append(numerical_approx(soluce.rhs()))
+		return a
+	def solve_more_vars(self,eqs,*vars):
+		"""
+		Solve the equations with respect to the given variables
+
+		Returns a list like [  [1,2],[3,4] ] if the solutions are (1,2) and (3n4)
+		"""
+		liste = solve(eqs,vars,explicit_solutions=True)
+		a = []
+		for soluce in liste :	
+			sol = []
+			for variable in soluce :
+				sol.append( numerical_approx(variable.rhs()))
+			a.append(sol)
 		return a
 
 # Cette classe est ce qui reste de l'ancienne classe maxima(). Elle est juste encore utile tant que je ne trouve pas comment faire des divisions euclidiennes avec Sage.
@@ -861,7 +875,6 @@ def SubstitutionMathPsTricks(fx):
 	return a
 
 
-# La SurfacephyFunction va être à phyFunction ce que Grid est à Axes.
 class phyFunction(object):
 	def __init__(self,fun):
 		var('x')
@@ -869,10 +882,8 @@ class phyFunction(object):
 		self.sageFast = self.sage._fast_float_(x)
 		self.string = repr(self.sage)
 		self.fx = self.string.replace("^","**")
-		#self.pstricks = self.fx.replace("**","^").replace("math.exp","2.718281828459045^").replace("math.log10","0.4342944819032*log").replace("math.log","log").replace("math.cosh","COSH").replace("math.sinh","SINH").replace("math.","")
 		self.pstricks = SubstitutionMathPsTricks(self.fx)
 		self.maxima = SubstitutionMathMaxima(self.fx).replace("**","^")
-		# le replace("math.","\\") transforme math.exp en \exp par exemple. Mais pour beaucoup de fonctions, il vaut mieux faire la substitution à la main : leur nom python ne correspond pas à leur commande LaTeX (genre le logarithme)
 		self.latex = SubstitutionMathLaTeX(self.fx.replace("**","^").replace("(","{(").replace(")",")}").replace("(x)","x").replace("(-x)","-x")).replace("\\abs","\ValeurAbsolue")
 		if "{(" in self.latex and ")}" in self.latex :
 			self.latex = self.latex.replace("{(","{").replace(")}","}")
@@ -886,26 +897,25 @@ class phyFunction(object):
 	def eval(self,xe):
 		return numerical_approx(self.sageFast(xe))
 
-	# Retourne la liste des x tels que f(x)=y.
-	# Note  : ici le calcul est à une seule variable, le format de sortie de CalculSage().solve est donc juste une liste de réels.
 	def inverse(self,y):
+		""" returns a list of values x such that f(x)=y """
 		listeInverse = []
 		var('x')
 		eq = self.sage(x) == y
-		return CalculSage().solveOneVar([eq],x)
+		return CalculSage().solve_one_var([eq],x)
 	def PointsNiveau(self,y):
 		return [ Point(x,y) for x in self.inverse(y) ]
 	def roots(self):
-		""" return roots of the function as a list of Points. Some con miss ! """
+		""" return roots of the function as a list of Points. Some can miss ! """
 		return self.PointsNiveau(0)
 	def derivative(self):
+		""" return the derivative of the function. The result is of type phyFunction """
 		if self._derivative == None :
 			self._derivative = phyFunction(self.sage.derivative())
 		return self._derivative
 
 	def get_point(self,x):
 		return Point(float(x),self.eval(x))
-	# Donne une liste de points sur la courbe à partir d'une liste d'abcisses.
 	def Listeget_point(self,l):
 		return [self.get_point(x) for x in l]
 	def normal_vector(self,x):
@@ -917,18 +927,23 @@ class phyFunction(object):
 		return Point(1,ca).normalize().lie(self.get_point(x))
 	# Je donne une abcisse et une petite distance, et il retourne le point qui est sur la fonction, mais un peu décalé de cette distance dans la direction normale à la courbe.
 	def get_normal_point(self,x,dy):
+		""" return a point at distance dy in the normal direction of the point (x,f(x)) """
 		vecteurNormal =  self.normal_vector(x)
 		return self.get_point(x).translate(vecteurNormal.fix_size(dy))
 	
-	# The following builds the parametric curve x->(x,f(x)) and the uses the get_regular_points method of ParametricCurve
 	def get_regular_points(self,mx,Mx,dx):
+		"""
+		return a list of points regularly spaced (with respect to the arc length) on the curve x |-->(x,f(x))
+
+		The points are given between the abcisses mx and Mx
+		dx : the space between two points
+		"""
 		var('x')
 		f1 = phyFunction(x)
 		f2 = self
 		curve = ParametricCurve(f1,f2)
 		return curve.get_regular_points(mx,Mx,dx)
 
-	# Retourne une liste de points qui ondule autour de la courbe
 	def get_wavy_points(self,mx,Mx,dx,dy):
 		PIs = self.get_regular_points(mx,Mx,dx)
 		Ps = [self.get_point(mx)]
@@ -1056,43 +1071,13 @@ class ParametricCurve(object):
 		vecteurNormal =  self.normal_vector(x)
 		return self.get_point(x).translate(self.normal_vector.fix_size(dy))
 
-	def get_regular_parameter_old(self,mll,Mll,dl):
-		"""
-		returns a list of values of the parameter such that the corresponding points are equally espaced by dl.
-		This is a first try. The method is based on the speed of the curve computed from the derivative. The result could be not quite good.
-		"""
-		fp = self.derivative()
-		ll = mll
-		minDll = abs(Mll-mll)/1000
-		PIs = []
-		while ll < Mll :
-			p = self.get_point(ll)
-			v = math.sqrt( (fp.f1.eval(ll))**2+(fp.f2.eval(ll))**2 )
-			if v > 0 : 
-				Zoom = 1
-				Dll = dl/v
-				while Distance( self.get_point(ll+Dll),p ) > dl:
-					Zoom = Zoom*2
-					Dll = dl/(v*Zoom)
-					print "J'ai augmenté le zoom : Dll="+str(Dll)
-			else :
-				print "v=0"
-				Dll = minDll
-			print "Dll="+str(Dll)+"	v="+str(v)+"	ll="+str(ll)
-			ll = ll+Dll
-			if ll < Mll :
-				PIs.append( ll )
-		return PIs
-
 	def arc_length(self,mll,Mll):
 		""" numerically returns the arc length on the curve between the value mll and Mll of the parameter """
 		g = sqrt( self.f1.derivative().sage**2+self.f2.derivative().sage**2 )
 		return numerical_integral(g,mll,Mll)[0]
-		#return g.integrate(x,mll,Mll)
-
 	def get_regular_parameter(self,mll,Mll,dl):
 		""" 
-		returns a list of values of the parameter such that the corresponding points are equally espaced by dl.
+		returns a list of values of the parameter such that the corresponding points are equally spaced by dl.
 		Here, we compute the distance using the method arc_length.
 		"""
 		prop_precision = dl /100 		# precision of the interval
@@ -1753,8 +1738,7 @@ def phyFunctionInterphyFunction(f,g):
 def LineInterLine(l1,l2):
 	eq1 = l1.sage_equation()
 	eq2 = l2.sage_equation()
-	soluce = CalculSage().solve( [eq1,eq2],[x,y] )
-	#print "Nombre de solutions : "+str(len(soluce))
+	soluce = CalculSage().solve_more_vars( [eq1,eq2],x,y )
 	s = soluce[0]
 	return Point( s[0],s[1] )
 	
@@ -1802,7 +1786,7 @@ class figure(object):
 
 	def AjouteSSfigure(self,ssFig):
 		self.SSfigures.append(ssFig)
-	def add_pspicture(self,pspict):		# Ici, c'était fig au lieu de pspict
+	def add_pspicture(self,pspict):
 		self.AjouteLigne(pspict.contenu())			# Here, what is added depends on --eps
 	# La différence entre AjouteLigne et IncrusteLigne, c'est que la deuxième permet de la mettre où on veut.
 	def AjouteLigne(self,ligne):
