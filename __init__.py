@@ -77,23 +77,21 @@ class ListeNomsPoints(object):
 NomPointLibre = ListeNomsPoints()
 
 class CalculSage(object):
-	# Prend une liste d'équations et de variables, et retourne une liste de solutions numériques.
-	# Si le système est à deux variables et que les solutions sont (1,2) et (3,4), alors la méthode retourne la liste
-	# [   [1,1] , [3,4]  ]
-	# Si c'est un système à une seule variable par contre, on retourne juste la liste des solutions. Par exemple si les solutions sont 3 et 7, la méthode retourne
-	# [3,7]
-	# Les équations doivent être des équations au sens de Sage, càd de la classe sage.calculus.equations.SymbolicEquation
-	def solve(self,eqs,vars):
+	# I cannot merge the function for solving with respect to one or more variables because Sage returns like that:
+	# If 1 and 2 are the solutions for one variable : [x == 1,x==2]
+	# If (1,2) and (3,4) are solutions of a two variable equation : [ [x==1,y==2],[x==3,y==4] ]
+	# The list nesting structure is really different. Do I have to read the doc ?
+	def solveOneVar(self,eqs,vars):
+		"""
+		Solve the equations with respect to the given variable
+
+		Returns a list of numerical values.
+		"""
 		liste = solve(eqs,vars,explicit_solutions=True)
-		if len(vars) == 1:
-			return [ numerical_approx(soluce[2]) for soluce in liste ]
-		if len(vars) > 1:
-			a = []
-			for soluce in liste  :
-				#a.append( [ numerical_approx(var[2]) for var in soluce] )
-				print soluce
-				a.append([ numerical_approx(composante.rhs()) for composante in soluce])
-			return a
+		a = []
+		for soluce in liste :	
+			a.append(numerical_approx(soluce.rhs()))
+		return a
 
 # Cette classe est ce qui reste de l'ancienne classe maxima(). Elle est juste encore utile tant que je ne trouve pas comment faire des divisions euclidiennes avec Sage.
 class CalculPolynome(object):
@@ -893,13 +891,12 @@ class phyFunction(object):
 	def inverse(self,y):
 		listeInverse = []
 		var('x')
-		eq = self.sage == y
-		for inv in CalculSage().solve([eq],[x] )  : 
-			listeInverse.append(inv)
-		return listeInverse
+		eq = self.sage(x) == y
+		return CalculSage().solveOneVar([eq],x)
 	def PointsNiveau(self,y):
 		return [ Point(x,y) for x in self.inverse(y) ]
 	def roots(self):
+		""" return roots of the function as a list of Points. Some con miss ! """
 		return self.PointsNiveau(0)
 	def derivative(self):
 		if self._derivative == None :
