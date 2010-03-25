@@ -1974,25 +1974,32 @@ class pspicture(object):
 		add_latex_line_entete(self)
 
 		self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}\n")
-		self.add_latex_line("%GRID")	# A \n is automatically added.
-		self.add_latex_line("%AXES")
+		self.add_latex_line("%GRID")	# A \n is automatically added.		self.add_latex_line("%AXES")
 		self.add_latex_line("%OTHER STUFF")
 
-	def get_counter_value(self,name,default=0):
+	def get_counter_value(self,counter_name,filename,default=0):
 		"""
 		return the value of the (LaTeX) counter <name> at this point of the LaTeX file 
+
+		It makes LaTeX write the value of the counter <name> to be written in the .aux file. 
+		<filename> is the name of the LaTeX file which will include the picture. We are going to read into <filename>.aux
+
 		(needs several compilations to work)
+
+		I think that it is quite bad to be obliged to hard code the name of the principal LaTeX file. Maybe I should make LaTeX write the value of the counter into a specific .aux file like foo.pstricks.aux I'm thinking about the best way to design it. Please feel free to let me know yours ideas :)
 		"""
-		try
+		try:
 			import LaTeXparser
-		except ImportError:
-			print "You need the module LaTeXparser for this function\n http://gitorious.org/latexparser"
-		self
+		except ImportError, data:
+			print "Error : You need the module LaTeXparser for this function\n http://gitorious.org/latexparser"
+			print data
+		interCounterName = "counter"+NomPointLibre.suivant()
+		interLabelName = "label"+interCounterName
+		self.add_latex_line(r"\newcounter{%s}"%interCounterName)
+		self.add_latex_line(r"\setcounter{%s}{\value{%s}}"%(interCounterName,counter_name))
+		self.add_latex_line(r"\refstepcounter{%s}"%interCounterName)
+		self.add_latex_line(r"\label{%s}"%(interLabelName)
 		
-			
-
-
-
 	def DrawVector(self,vect,params):
 		return self._DrawVector(self,vect,params)
 
