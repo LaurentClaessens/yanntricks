@@ -1887,8 +1887,12 @@ def add_latex_line_entete(truc):
 	truc.add_latex_line("%  See the projects phystricks and phystricks-doc at ")
 	truc.add_latex_line("%  http://gitorious.org/~moky\n")
 
+class LabelNotFound:
+	def __init__(self,message):
+		self.message=message
+
 class pspicture(object):
-	"""
+	r"""
 	self.pstricks_code contains the pstricks code of what has to be between \begin{pspicture} and \end{pspicture}. This is not the environment itself, neither the definition of xunit, yunit.
 	self.contenu_pstricks() is the whole code including the x/yunit
 	self.contenu_eps() contains the line to be added in order to include the eps file
@@ -1958,6 +1962,10 @@ class pspicture(object):
 			self.picture.MarkThePoint(milieu,polaires.r,polaires.theta,"none",marque)
 
 	def __init__(self,name="CAN_BE_A_PROBLEM_IF_TRY_TO_PRODUCE_EPS"):
+		r"""
+		A name is required for producing intermediate files. This is the case when one wants to produce eps/pdf files of one wants to 
+		   make interactions with LaTeX (see pspict.get_counter_value).
+		"""
 		self.name = name		# self.name is used in order to name the intermediate files when one produces the eps file.
 		self.pstricks_code = []
 		self.specific_needs = ""	# See the class PspictureToOtherOutputs
@@ -1974,32 +1982,46 @@ class pspicture(object):
 		add_latex_line_entete(self)
 
 		self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}\n")
-		self.add_latex_line("%GRID")	# A \n is automatically added.		self.add_latex_line("%AXES")
+		self.add_latex_line("%GRID")	# A \n is automatically added.		
+		self.add_latex_line("%AXES")
 		self.add_latex_line("%OTHER STUFF")
 
-	def get_counter_value(self,counter_name,filename,default=0):
+	def get_counter_value(self,counter_name,default_value=0):
 		"""
 		return the value of the (LaTeX) counter <name> at this point of the LaTeX file 
 
-		It makes LaTeX write the value of the counter <name> to be written in the .aux file. 
-		<filename> is the name of the LaTeX file which will include the picture. We are going to read into <filename>.aux
-
+		Makes LaTeX write the value of the counter in the auxiliary <file self.name>.aux, then reads the value in that file.
 		(needs several compilations to work)
-
-		I think that it is quite bad to be obliged to hard code the name of the principal LaTeX file. Maybe I should make LaTeX write the value of the counter into a specific .aux file like foo.pstricks.aux I'm thinking about the best way to design it. Please feel free to let me know yours ideas :)
 		"""
-		try:
-			import LaTeXparser
-		except ImportError, data:
-			print "Error : You need the module LaTeXparser for this function\n http://gitorious.org/latexparser"
-			print data
+
+		# Make LaTeX write the value of the counter in a specific file
 		interCounterName = "counter"+NomPointLibre.suivant()
-		interLabelName = "label"+interCounterName
+		interWriteName = "write"+interCounterName
+		interWriteFile = interWriteName+".pstricks.aux"
 		self.add_latex_line(r"\newcounter{%s}"%interCounterName)
 		self.add_latex_line(r"\setcounter{%s}{\value{%s}}"%(interCounterName,counter_name))
-		self.add_latex_line(r"\refstepcounter{%s}"%interCounterName)
-		self.add_latex_line(r"\label{%s}"%(interLabelName)
-		
+		self.add_latex_line(r"\newwrite\%s"%interWriteName)
+		self.add_latex_line(r"\immediate\openout\%s=%s"%(interWriteName,interWriteFile))
+		self.add_latex_line(r"\immediate\write\%s{%s:\arabic{%s}:}"%(interWriteName,interCounterName,interCounterName))
+		self.add_latex_line(r"\immediate\closeout\%s"%interWriteName)
+
+		# Read the file and return the value
+		try :
+			try :
+				f=open(interWriteFile)
+				text = f.read().split(":")
+				return text[text.index(interCounterName)+1]			
+			except IOError :
+				raise LabelNotFound("Warning : the auxiliary file seems not to exist. Compile your LaTeX file.")
+			except ValueError :
+				raise LabelNotFound("Warning : the auxiliary file does not contain the searched label. Compile your LaTeX file.")
+		except LabelNotFound,data:
+			print data.message
+			print "I' going to return the default value for counter %s, namely %s"%(counter_name,str(default_value))
+			return default_value
+
+
+
 	def DrawVector(self,vect,params):
 		return self._DrawVector(self,vect,params)
 
@@ -2264,7 +2286,12 @@ class pspicture(object):
 
 	def DrawAxes(self,axes):
 		# C'est important d'ajuster la bounding box de la pspicture et les grilles après ajouter le code parce que axes.BB n'est définit qu'au moment de produire le code, voir l'appel à grille.BB.hd.EntierPlus() dans self.TraceGrid par exemple.
-		self.IncrusteLigne(axes.code(),self.pstricks_code.index("%AXES\n")+1)
+		try :
+			self.IncrusteLigne(axes.code(),self.pstricks_code.index("%AXES\n")+1)
+		except ValueError :
+			print "Mon self.pstricks_code vaut :"
+			print self.pstricks_code
+			raise
 		if axes.IsLabelX == 1:
 			self.DrawPoint( Point(axes.BB.hd.x,0) ,"none","").MarkThePoint(axes.DistLabelX,axes.AngleLabelX,axes.LabelX)
 		if axes.IsLabelY == 1:
