@@ -1133,8 +1133,8 @@ class ParametricCurve(object):
 		PAs = self.get_regular_parameter(mll,Mll,dl)
 		#PAs.append(mll)
 		PTs = []
-		print "les paramètres sont "
-		print PAs
+		#print "les paramètres sont "
+		#print PAs
 		for i in range(0,len(PAs)) :
 			llam = float(PAs[i])
 			PTs.append( self.get_point(llam)+self.normal_vector(llam).fix_size(dy)*(-1)**i )
