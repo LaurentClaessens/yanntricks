@@ -1128,8 +1128,10 @@ class ParametricCurve(object):
 	def get_regular_points(self,mll,Mll,dl):
 		return [self.get_point(ll) for ll in self.get_regular_parameter(mll,Mll,dl)]
 
-	# Retourne une liste de points qui ondule autour de la courbe paramétrique
 	def get_wavy_points(self,mll,Mll,dl,dy):
+		"""
+		Return a list of points which do a wave around the parametric curve.
+		"""
 		PAs = self.get_regular_parameter(mll,Mll,dl)
 		#PAs.append(mll)
 		PTs = []
