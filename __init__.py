@@ -107,8 +107,10 @@ class CalculSage(object):
 			a.append(sol)
 		return a
 
-# Cette classe est ce qui reste de l'ancienne classe maxima(). Elle est juste encore utile tant que je ne trouve pas comment faire des divisions euclidiennes avec Sage.
 class CalculPolynome(object):
+	"""
+	This class should disappear when I learn how to perform euclidian divisions with Sage.
+	"""
 	# La méthode calcul donne la sortie de maxima en brut. Pour traiter l'information, il faudra encore des tonnes de manipulations, et on peut déjà en mettre dans filtre
 	def calcul(self,ligne,filtre):
 		commande =  "maxima --batch-string=\"display2d:false; "+ligne+";\""+filtre 
