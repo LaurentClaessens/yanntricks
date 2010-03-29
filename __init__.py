@@ -803,6 +803,7 @@ def phyFunctionInterphyFunction(f,g):
 	return a
 
 def LineInterLine(l1,l2):
+	var('x,y')
 	eq1 = l1.sage_equation()
 	eq2 = l2.sage_equation()
 	soluce = CalculSage().solve_more_vars( [eq1,eq2],x,y )
