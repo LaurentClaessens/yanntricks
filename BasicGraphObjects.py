@@ -289,11 +289,11 @@ class ParametricCurve(object):
 				petit = ll+Dll
 				while abs(self.arc_length(ll,grand)) < dl :
 					grand = 2*grand - ll
-					print "grand",grand
+					#print "grand",grand
 			ell = (petit+grand)/2
 			while abs(self.arc_length( ll, ell )-dl) > prop_precision:
 				if prop_precision == 0:
-					print "prop_precision is zero. Something is wrong."
+					print "prop_precision is zero. Something sucks. You probably want to launch me in an infinite loop. I'm going to crash now; please contact my labor union;"
 					print "dl=",dl
 					raise ValueError
 				#print "grand ",grand," petit :",petit
