@@ -334,6 +334,9 @@ class Mark(object):
 		self.dist = dist
 		self.angle = angle
 		self.mark = mark
+	def central_point(self):
+		"""return the central point of the mark, that is the point where the mark arrives"""
+		return self.graphe.translate(PolarVector(self.graphe,self.dist,self.angle))
 
 class Parameters(object):
 	def __init__(self):
@@ -392,6 +395,17 @@ class GraphOfAPoint(GraphOfAnObject,Point):
 		Point.__init__(self,point.x,point.y)
 		self.point = self.obj
 		self.add_option("PointSymbol=*")
+	def bounding_box(self,pspict):
+		"""
+		return the bounding box of the point including its mark
+
+		A small box of radius 0.1 is given in any case, and the mark is added if there is a one.
+		You need to provide a pspict in order to compute the size since it can vary from the place in your document you place the figure.
+		"""
+		bb = BoundingBox(Point(self.x-0.1,self.y-01),Point(self.x+0.1,self.y+01))
+		if self.marque:
+			dimx,dimy=pspict.get_box_size(self.mark.mark)
+			
 
 class GraphOfASegment(GraphOfAnObject):
 	def __init__(self,seg):
@@ -1088,20 +1102,28 @@ class pspicture(object):
 			print data.message
 			print "I' going to return the default value for counter «%s», namely %s"%(counter_name,str(default_value))
 			return default_value
+	def get_box_dimension(self,tex_expression,dimension_name):
+		"""
+		Return the dimension of the LaTeX box corresponding to the LaTeX expression tex_expression.
+
+		dimension_name is a valid LaTeX macro that can be applied to a LaTeX expression and that return a number. Like
+		widthof, depthof, heightof, totalheightof
+		"""
+		interName = dimension_name+pspicture.NomPointLibre.suivant()
+		interDimension = "dimension"+interName
+		self.add_latex_line(r"\newlength{\%s}\setlength{\%s}{\%s{%s}}\newcounter{%s}\setcounter{%s}{\%s}"%(interDimension,interDimension,dimension_name,tex_expression,interName,interName,interDimension))
+		return float(self.get_counter_value(interName))*(0.000015256/30)
+				# 0.000015256/30 is a conversion factor
 	def get_box_size(self,tex_expression):
 		"""
-		tex_expression is a valid LaTeX expression. Return the size of the corresponding box
+		tex_expression is a valid LaTeX expression. Return the size of the corresponding box in cm
 
 		As far as the problem is concerned from a LaTeX point of view, it was discussed here:
 		http://groups.google.fr/group/fr.comp.text.tex/browse_thread/thread/8431f21588b81530?hl=fr
 		"""
-		interHeightName = "height"+pspicture.NomPointLibre.suivant()
-		interDimension = "dimension"+interHeightName
-		print tex_expression
-		print interHeightName
-		print interDimension
-		self.add_latex_line(r"\newlength{\%s}\setlength{\%s}{\totalheightof{%s}}\newcounter{%s}\setcounter{%s}{\%s}"%(interDimension,interDimension,tex_expression,interHeightName,interHeightName,interDimension))
-		return self.get_counter_value(interHeightName)
+		height = self.get_box_dimension(tex_expression,"totalheightof")
+		width = self.get_box_dimension(tex_expression,"widthof")
+		return width,height
 
 	def DrawVector(self,vect,params):
 		return self._DrawVector(self,vect,params)
