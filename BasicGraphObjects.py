@@ -21,19 +21,42 @@
 # email: moky.math@gmai.com
 
 """
-This module contains the basic graphics elements like points, segments, vectors.
+This module contains the basic graphics elements like points, segments and vectors.
 
 These elements are not supposed to depend on others. They include new LaTeX commands. Objects that are not here do not 
 imply new LaTeX concepts and only make an automated use of the objects that are here.
 """
 
+from SmallComputations import *
+
+class ListeNomsPoints(object):
+	"""
+	This class serves to give a psname to my points. 
+
+	TODO : use a real iterator.
+	"""
+	def __init__(self):
+		self.donne = 1000
+	def suivant(self):
+		self.donne = self.donne + 1
+		a = ["AutoPt"]
+		s = str(self.donne)
+		for c in s:
+			a.append(chr(int(c)+97))
+		return "".join(a)
+
 class Point(object):
+	"""
+	This is a point. Each point comes with a name given by a class attribute.
+	"""
+	NomPointLibre = ListeNomsPoints()
+
 	def __init__(self,x,y):
 		if type(x) == str : print "Attention : x est du type str"
 		if type(y) == str : print "Attention : y est du type str"
 		self.x = float(x)
 		self.y = float(y)
-		self.psNom = NomPointLibre.suivant()
+		self.psNom = Point.NomPointLibre.suivant()
 
 	# La méthode EntierPlus place le point sur les coordonnées entières plus grandes (ou égales) à les siennes.
 	def EntierPlus(self):
@@ -60,8 +83,8 @@ class Point(object):
 			Ry = (self.y*seg.coefficient**2 + self.x*seg.coefficient + seg.independant)/(seg.coefficient**2 + 1)
 			return Point(Rx,Ry)
 
-	# translate un point selon le vecteur v.
 	def translate(self,v):
+		"""Do a translation of the point with the vector v"""
 		return self+v
 	def lie(self,p):
 		return Vector(p,Point(p.x+self.x,p.y+self.y))
@@ -99,12 +122,16 @@ class Point(object):
 		Addition of a point with a vector is the parallel translation, while addition of a point with an other point is simply
 		the addition of coordinates.
 		"""
-		if type(v) == Vector :
+		try :
 			dx = v.Dx
 			dy = v.Dy
-		if type(v) == Point :
-			dx = v.x
-			dy = v.y
+		except AttributeError :
+			try :
+				dx = v.x
+				dy = v.y
+			except AttributeError :
+				print "You seem to add myself with something which is not a Point neither a Vector. Sorry, but I'm going to crash."
+				raise
 		return Point(self.x+dx,self.y+dy)
 	def __mul__(self,r):
 		return Point(r*self.x,r*self.y)
@@ -147,6 +174,7 @@ class Circle(object):
 		return self.get_minmax_data(angleI,angleF)['ymax']
 	def ymin(self,angleI,angleF):
 		return self.get_minmax_data(angleI,angleF)['ymin']
+
 
 class Segment(object):
 	def __init__(self,A,B):
@@ -280,5 +308,47 @@ class Segment(object):
 		a.append("\pstLineAB["+params+"]{"+self.I.psNom+"}{"+self.F.psNom+"}")
 		return "\n".join(a)
 
+class Vector(object):
+	def __init__(self,a,b):
+		self.Segment = Segment(a,b)
+		self.I = self.Segment.I
+		self.F = self.Segment.F
+		self.Point = Point(self.F.x-self.I.x,self.F.y-self.I.y)		# Le point qui serait le vecteur lié à (0,0).
+		self.Dx = self.F.x-self.I.x
+		self.Dy = self.F.y-self.I.y
+
+	def inverse(self):
+		return Vector(self.I,Point(self.I.x-self.Dx,self.I.y-self.Dy))
+	def rotation(self,angle):
+		return PolarVector(self.I,self.polaires().r,degree(self.polaires().theta)+angle)
+	def orthogonal(self):
+		return self.rotation(90)
+	def dilatation(self,coef):
+		return self*coef
+
+	
+	def polaires(self):
+		return PointToPolaire(self.Point)
+	def norme(self):
+		print "The method norme on Vector is depreciated use length instead"
+		return self.polaires().r
+	def length(self):
+		return self.polaires().r
+	def angle(self):
+		return self.polaires().theta
+	def lie(self,p):
+		return Vector(p,Point(p.x+self.Dx,p.y+self.Dy))
+	def fix_size(self,l):
+		return self.dilatation(l/self.length())
+	def add_size(self,l):
+		""" return a Vector with added length on its extremity """
+		return self*((self.length()+l) / self.length())	
+	def normalize(self):
+		return self.fix_size(1)
+
+	def __mul__(self,coef):
+		return Vector(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
+	def __div__(self,coef):
+		return self * (1/coef)
 
 

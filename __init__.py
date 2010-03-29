@@ -28,6 +28,7 @@ from sage.all import *
 import math, sys
 from BasicGraphObjects import *
 from MathComputations import *
+from SmallComputations import *
 import MathConstructions
 
 class global_variables(object):
@@ -65,18 +66,8 @@ class Fichier(object):
 		self.close_file()
 		return c
 
-class ListeNomsPoints(object):
-	def __init__(self):
-		self.donne = 1000
-	def suivant(self):
-		self.donne = self.donne + 1
-		a = ["AutoPt"]
-		s = str(self.donne)
-		for c in s:
-			a.append(chr(int(c)+97))
-		return "".join(a)
-
-NomPointLibre = ListeNomsPoints()
+#NomPointLibre = ListeNomsPoints()
+#BasicGraphObjects.NomPointLibre = NomPointLibre
 
 class CalculSage(object):
 	# I cannot merge the function for solving with respect to one or more variables because Sage returns like that:
@@ -329,19 +320,6 @@ def PointToPolaire(P):
 	return coordinatesPolaires(r,alpha)
 
 
-def radian(theta):
-	return theta*math.pi/180
-def degree(alpha):
-	return 180*alpha/math.pi
-
-def Distance_sq(P,Q):
-	""" return the squared distance between P and Q """
-	return (P.x-Q.x)**2+(P.y-Q.y)**2
-
-def Distance(P,Q):
-	""" return the distance between P and Q """
-	return math.sqrt(Distance_sq(P,Q))
-
 def PolarVector(P,r,theta):
 	"""
 	returns a vector on the base point P (class Point)of length r angle theta (degree)
@@ -349,50 +327,6 @@ def PolarVector(P,r,theta):
 	alpha = radian(theta)
 	return Vector(P, Point(P.x+r*cos(alpha),P.y+r*sin(alpha)) )
 		
-
-
-class Vector(object):
-	def __init__(self,a,b):
-		self.Segment = Segment(a,b)
-		self.I = self.Segment.I
-		self.F = self.Segment.F
-		self.Point = Point(self.F.x-self.I.x,self.F.y-self.I.y)		# Le point qui serait le vecteur lié à (0,0).
-		self.Dx = self.F.x-self.I.x
-		self.Dy = self.F.y-self.I.y
-
-	def inverse(self):
-		return Vector(self.I,Point(self.I.x-self.Dx,self.I.y-self.Dy))
-	def rotation(self,angle):
-		return PolarVector(self.I,self.polaires().r,degree(self.polaires().theta)+angle)
-	def orthogonal(self):
-		return self.rotation(90)
-	def dilatation(self,coef):
-		return self*coef
-
-	
-	def polaires(self):
-		return PointToPolaire(self.Point)
-	def norme(self):
-		print "The method norme on Vector is depreciated use length instead"
-		return self.polaires().r
-	def length(self):
-		return self.polaires().r
-	def angle(self):
-		return self.polaires().theta
-	def lie(self,p):
-		return Vector(p,Point(p.x+self.Dx,p.y+self.Dy))
-	def fix_size(self,l):
-		return self.dilatation(l/self.length())
-	def add_size(self,l):
-		""" return a Vector with added length on its extremity """
-		return self*((self.length()+l) / self.length())	
-	def normalize(self):
-		return self.fix_size(1)
-
-	def __mul__(self,coef):
-		return Vector(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
-	def __div__(self,coef):
-		return self * (1/coef)
 
 
 class MesureLongueur(Segment):			# Sert à faire des doubles flèches pour indiquer des distances
