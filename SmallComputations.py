@@ -21,10 +21,44 @@
 # email: moky.math@gmai.com
 
 """
-This submodule contains functions that perform small computations for phystricks.
+This submodule contains functions that perform small computations for phystricks. 
+The return values of the functions here are instances of classical classes, not from phystricks classes.
 """
 
 import math
+
+def PolarPoint(r,theta):
+	return Point(r*math.cos(radian(theta)),r*math.sin(radian(theta)))
+
+class coordinatesPolaires(object):
+	def __init__(self,r,theta):
+		self.r = r
+		self.theta = theta
+
+def PointToPolaire(P):
+	"""
+	Return the polar coordinates of a point.
+
+	The polar coordinates are given in radian
+	"""
+	r = P.norme()
+	if P.x == 0:
+		if P.y > 0:
+			alpha = math.pi/2
+		if P.y < 0:
+			alpha = -math.pi/2
+		if P.y == 0 : 			# Convention : l'angle pour le point (0,0) est 0.
+			alpha = 0
+	else :
+		alpha = math.atan(P.y/P.x)
+	if (P.x < 0) and (P.y == 0) :
+		alpha = math.pi
+	if (P.x < 0) and (P.y > 0) :
+		alpha = alpha + math.pi
+	if (P.x < 0) and (P.y < 0 ) :
+		alpha = alpha +math.pi
+	#theta = degree(alpha)
+	return coordinatesPolaires(r,alpha)
 
 def radian(theta):
 	return theta*math.pi/180

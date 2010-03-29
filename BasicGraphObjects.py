@@ -25,9 +25,310 @@ This module contains the basic graphics elements like points, segments and vecto
 
 These elements are not supposed to depend on others. They include new LaTeX commands. Objects that are not here do not 
 imply new LaTeX concepts and only make an automated use of the objects that are here.
+
+This module also contains some specific "constructors" for some classes, like PolarVector for example.
 """
 
+import math
+from sage.all import *
 from SmallComputations import *
+
+
+def SubstitutionMathPsTricks(fx):
+	listeSubst = []
+	listeSubst.append(["**","^"])
+	listeSubst.append(["math.exp","2.718281828459045^"])
+	listeSubst.append(["e^","2.718281828459045^"])
+	for i in range(1,10):	
+		listeSubst.append(["math.log"+str(i),str(0.43429448190325*math.log(i))+"*log"])
+	listeSubst.append(["math.log","2.302585092994046*log"])		# Parce que \psplot[]{1}{5}{log(x)} trace le logarithme en base 10
+									# Pour rappel, la formule est log_b(x)=log_a(x)/log_a(b)
+	listeSubst.append(["math.pi","3.141592653589793"])
+	listeSubst.append(["math.cosh","COSH"])
+	listeSubst.append(["math.tan","TAN"])
+	listeSubst.append(["math.sinh","SINH"])
+	listeSubst.append(["math.sinc","SINC"])
+	listeSubst.append(["math.",""])
+	listeSubst.append(["log","2.302585092994046*log"])		# Parce que \psplot[]{1}{5}{log(x)} trace le logarithme en base 10
+	a = fx
+	for s in listeSubst :
+		a = a.replace(s[0],s[1])
+	return a
+
+
+class phyFunction(object):
+	def __init__(self,fun):
+		var('x')
+		self.sage = fun
+		self.sageFast = self.sage._fast_float_(x)
+		self.string = repr(self.sage)
+		self.fx = self.string.replace("^","**")
+		self.pstricks = SubstitutionMathPsTricks(self.fx)
+
+		# I think that self.maxima and self.latex are no more used.
+		#self.maxima = SubstitutionMathMaxima(self.fx).replace("**","^")
+		#self.latex = SubstitutionMathLaTeX(self.fx.replace("**","^").replace("(","{(").replace(")",")}").replace("(x)","x").replace("(-x)","-x")).replace("\\abs","\ValeurAbsolue")
+		#if "{(" in self.latex and ")}" in self.latex :
+		#	self.latex = self.latex.replace("{(","{").replace(")}","}")
+		self.ListeSurface = []
+		self.listeTests = []
+		self.TesteDX = 0
+		self.listeExtrema = []
+		self.listeExtrema_analytique = []
+		self._derivative = None
+
+	def eval(self,xe):
+		return numerical_approx(self.sageFast(xe))
+
+	def inverse(self,y):
+		""" returns a list of values x such that f(x)=y """
+		listeInverse = []
+		var('x')
+		eq = self.sage(x) == y
+		return CalculSage().solve_one_var([eq],x)
+	def PointsNiveau(self,y):
+		return [ Point(x,y) for x in self.inverse(y) ]
+	def roots(self):
+		""" return roots of the function as a list of Points. Some can miss ! """
+		return self.PointsNiveau(0)
+	def derivative(self):
+		""" return the derivative of the function. The result is of type phyFunction """
+		if self._derivative == None :
+			self._derivative = phyFunction(self.sage.derivative())
+		return self._derivative
+
+	def get_point(self,x):
+		return Point(float(x),self.eval(x))
+	def Listeget_point(self,l):
+		return [self.get_point(x) for x in l]
+	def normal_vector(self,x):
+		""" return a normalized normal vector to the graph of the function at x """
+		ca = self.derivative().eval(x) 
+		return Point(-ca,1).normalize().lie(self.get_point(x))		
+	def VectorTangent(self,x):
+		ca = self.derivative().eval(x)
+		return Point(1,ca).normalize().lie(self.get_point(x))
+	# Je donne une abcisse et une petite distance, et il retourne le point qui est sur la fonction, mais un peu décalé de cette distance dans la direction normale à la courbe.
+	def get_normal_point(self,x,dy):
+		""" return a point at distance dy in the normal direction of the point (x,f(x)) """
+		vecteurNormal =  self.normal_vector(x)
+		return self.get_point(x).translate(vecteurNormal.fix_size(dy))
+	
+	def get_regular_points(self,mx,Mx,dx):
+		"""
+		return a list of points regularly spaced (with respect to the arc length) on the curve x |-->(x,f(x))
+
+		The points are given between the abcisses mx and Mx
+		dx : the space between two points
+		"""
+		var('x')
+		f1 = phyFunction(x)
+		f2 = self
+		curve = ParametricCurve(f1,f2)
+		return curve.get_regular_points(mx,Mx,dx)
+
+	def get_wavy_points(self,mx,Mx,dx,dy):
+		PIs = self.get_regular_points(mx,Mx,dx)
+		Ps = [self.get_point(mx)]
+		for i in range(0,len(PIs)) :
+			Ps.append( self.get_normal_point(PIs[i].x, ((-1)**i)*dy ) )
+		Ps.append(self.get_point(Mx))	
+		return Ps
+
+
+	def liste_extrema(self):
+		if self.listeExtrema == []:
+			self.extrema_analytique()
+		return self.listeExtrema
+	def ToutExtrema(self,mx,Mx,dx):
+		min = self.get_point(mx)
+		max = self.get_point(mx)
+		for ex in list(xsrange(mx,Mx,dx,include_endpoint=true)):
+			ey = self.eval(ex)
+			if ey > max.y : max = Point(ex,ey)
+			if ey < min.y : min = Point(ex,ey)
+		self.listeExtrema.extend([min,max])
+
+	# La méthode phyFunction.extrema_analytique() ajoute les solutions de f'(x)=0 à self.listeExtrema
+	def extrema_analytique(self):
+		print "Analytique"
+		var('x')
+		a = []
+		listeSymbolicEquation = solve( [self.sage.diff(x)==0],[x] )
+		for sol in listeSymbolicEquation :
+			#s = sol[2]
+			s = sol.right_hand_side()
+			if "x" not in repr(s) :				# En attendant de trouver comment demander des solutions non implicites
+				a.append(self.get_point(numerical_approx(s)))
+		self.listeExtrema.extend(a)
+
+	# Donne les extrema connus entre mx et Mx
+	def extrema(self,mx,Mx):
+		a = []
+		for p in self.liste_extrema() :
+			if p.x >= mx and p.x <= Mx :
+				a.append(p)
+		return a
+	# Donne le maximum de la fonction entre mx et Mx. 
+	def get_minmax_data(self,mx,Mx):
+		return plot(self.sage,(mx,Mx)).get_minmax_data()
+	def xmax(self,deb,fin):
+		return self.get_minmax_data(deb,fin)['xmax']
+	def xmin(self,deb,fin):
+		return self.get_minmax_data(deb,fin)['xmin']
+	def ymax(self,deb,fin):
+		return self.get_minmax_data(deb,fin)['ymax']
+	def ymin(self,deb,fin):
+		return self.get_minmax_data(deb,fin)['ymin']
+
+	def maximum_global(self,mx,Mx):
+		max = self.liste_extrema()[0]
+		for p in self.liste_extrema() :
+			if p.y > max.y : max = p
+		return max
+	# Donne le minimum de la fonction entre mx et Mx. 
+	def minimum_global(self,mx,Mx):
+		min = self.get_point(mx)
+		for p in self.liste_extrema() :
+			print "candidat : %s" %p.Affiche()
+			if p.y < min.y : min = p
+		print min.Affiche()
+		return min
+
+	def tangente(self,x):
+		ca = self.derivative().eval(x)
+		A = self.get_point(x)
+		Ad = Point( A.x+1,A.y+ca )
+		Ag = Point( A.x-1,A.y-ca )
+		return ( Segment(Ag,Ad) )
+
+	# Note que une surface créée par self.AjouteSurface sera automatiquement tracée par la méthode TracephyFunction de psfigure.
+	def AjouteSurface(self,mx,Mx):
+		self.ListeSurface.append( SurfacephyFunction(self,mx,Mx) )
+		# Ceci sont quelque réglages par défaut
+		self.ListeSurface[-1].ChangeCouleur("blue")
+		self.ListeSurface[-1].add_option("fillstyle=vlines,linestyle=dashed,linecolor=black")
+	
+	def __pow__(self,n):
+		return phyFunction(self.sage**n)
+
+class ParametricCurve(object):
+	def __init__(self,f1,f2):
+		if type(f1) is phyFunction : self.f1 = f1
+		else : self.f1 = phyFunction(f1)
+		if type(f2) is phyFunction : self.f2 = f2
+		else : self.f2 = phyFunction(f2)
+
+	# Le truc difficile avec le pstricks est que la syntaxe est  "f1(t) | f2(t)" avec t comme variable.
+	#  C'est cela qui demande d'utiliser repr et la syntaxe f(x=t).
+	def pstricks(self):
+		var('t')
+		return "%s | %s "%(SubstitutionMathPsTricks(repr(self.f1.sage(x=t))),  SubstitutionMathPsTricks(repr(self.f2.sage(x=t))) )
+
+	def derivative(self):
+		return ParametricCurve(self.f1.derivative(),self.f2.derivative())
+	def get_point(self,llam):
+		return Point( self.f1.eval(llam),self.f2.eval(llam) )
+	def tangent_vector(self,llam):
+		"""
+		returns the tangent vector to the curve for the value of the parameter given by llam.
+		   The vector is normed to 1.
+		"""
+		initial = self.get_point(llam)
+		return Vector( initial,Point(initial.x+self.derivative().f1.eval(llam),initial.y+self.derivative().f2.eval(llam)) ).normalize()
+	def normal_vector(self,llam):
+		return self.tangent_vector(llam).orthogonal()
+
+	def get_minmax_data(self,deb,fin):
+		return parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) ).get_minmax_data()
+	def xmax(self,deb,fin):
+		return self.get_minmax_data(deb,fin)['xmax']
+	def xmin(self,deb,fin):
+		return self.get_minmax_data(deb,fin)['xmin']
+	def ymax(self,deb,fin):
+		return self.get_minmax_data(deb,fin)['ymax']
+	def ymin(self,deb,fin):
+		return self.get_minmax_data(deb,fin)['ymin']
+
+	def get_normal_point(self,x,dy):
+		vecteurNormal =  self.normal_vector(x)
+		return self.get_point(x).translate(self.normal_vector.fix_size(dy))
+
+	def arc_length(self,mll,Mll):
+		""" numerically returns the arc length on the curve between the value mll and Mll of the parameter """
+		g = sqrt( self.f1.derivative().sage**2+self.f2.derivative().sage**2 )
+		return numerical_integral(g,mll,Mll)[0]
+	def get_regular_parameter(self,mll,Mll,dl):
+		""" 
+		returns a list of values of the parameter such that the corresponding points are equally spaced by dl.
+		Here, we compute the distance using the method arc_length.
+		"""
+		prop_precision = float(dl)/100 		# precision of the interval
+		fp = self.derivative()
+		minDll = abs(Mll-mll)/1000
+		ll = mll
+		PIs = []
+		while ll < Mll :
+			v = math.sqrt( (fp.f1.eval(ll))**2+(fp.f2.eval(ll))**2 )
+			if v == 0 :
+				print "v=0"
+				Dll = minDll
+			Zoom = 1
+			Dll = dl/v
+			grand = Mll
+			petit = ll
+			#print "RECHERCHE d'un DÉBUT"
+			#print "grand", grand
+			#print "petit", petit
+			if abs(self.arc_length(ll,ll+Dll)) > dl :
+				grand = ll+Dll
+				while abs(self.arc_length(ll,petit)) > dl :
+					petit = (grand+petit)/2
+					#print "petit",petit
+			else :
+				petit = ll+Dll
+				while abs(self.arc_length(ll,grand)) < dl :
+					grand = 2*grand - ll
+					print "grand",grand
+			ell = (petit+grand)/2
+			while abs(self.arc_length( ll, ell )-dl) > prop_precision:
+				if prop_precision == 0:
+					print "prop_precision is zero. Something is wrong."
+					print "dl=",dl
+					raise ValueError
+				#print "grand ",grand," petit :",petit
+				#print self.arc_length(ll,ell), prop_precision, dl
+				ell = (grand+petit)/2
+				if self.arc_length(ll,ell) > dl :
+					grand = ell
+				else :
+					petit = ell
+			ll = (petit+grand)/2
+			if ll < Mll :
+				PIs.append( ll )
+				#print "J'ai trouvé ",ll
+		return PIs
+
+	def get_regular_points_old(self,mll,Mll,dl):
+		return [self.get_point(ll) for ll in self.get_regular_parameter_old(mll,Mll,dl)]
+	def get_regular_points(self,mll,Mll,dl):
+		return [self.get_point(ll) for ll in self.get_regular_parameter(mll,Mll,dl)]
+
+	def get_wavy_points(self,mll,Mll,dl,dy):
+		"""
+		Return a list of points which do a wave around the parametric curve.
+		"""
+		PAs = self.get_regular_parameter(mll,Mll,dl)
+		#PAs.append(mll)
+		PTs = []
+		#print "les paramètres sont "
+		#print PAs
+		for i in range(0,len(PAs)) :
+			llam = float(PAs[i])
+			PTs.append( self.get_point(llam)+self.normal_vector(llam).fix_size(dy)*(-1)**i )
+		PTs.append(self.get_point(Mll))
+		return PTs
+
 
 class ListeNomsPoints(object):
 	"""
@@ -146,13 +447,14 @@ class Circle(object):
 	def __init__(self,C,r):
 		self.centre = C
 		self.rayon = r
-		self.maxima = "("+str(self.centre.x)+"-x)^2+("+str(self.centre.y)+"-y)^2-"+str(self.rayon)+"^2"+"=0"
+		# I bet I do not need anymore self.maxima.
+		#self.maxima = "("+str(self.centre.x)+"-x)^2+("+str(self.centre.y)+"-y)^2-"+str(self.rayon)+"^2"+"=0"
+
 	def parametric_curve(self):
 		var('x')
 		f1 = phyFunction(self.centre.x+self.rayon*cos(x))
 		f2 = phyFunction(self.centre.y+self.rayon*sin(x))
 		return ParametricCurve(f1,f2)
-
 	def get_point(self,theta):
 		return Point(self.centre.x+self.rayon*math.cos(radian(theta)), self.centre.y+self.rayon*math.sin(radian(theta)) )
 	# Donne le vecteur normal de norme 1 au cercle au point d'angle theta
@@ -308,7 +610,17 @@ class Segment(object):
 		a.append("\pstLineAB["+params+"]{"+self.I.psNom+"}{"+self.F.psNom+"}")
 		return "\n".join(a)
 
+def PolarVector(P,r,theta):
+	"""
+	returns a vector on the base point P (class Point) of length r angle theta (degree)
+	"""
+	alpha = radian(theta)
+	return Vector(P, Point(P.x+r*math.cos(alpha),P.y+r*math.sin(alpha)) )
+
 class Vector(object):
+	"""
+	If two points are given to the constructor, return the vector 
+	"""
 	def __init__(self,a,b):
 		self.Segment = Segment(a,b)
 		self.I = self.Segment.I
