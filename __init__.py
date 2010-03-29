@@ -1099,7 +1099,8 @@ class pspicture(object):
 		interDimension = "dimension"+interHeightName
 		print tex_expression
 		print interHeightName
-		self.add_latex_line(r"\newlength{\%}\setlength{\%s}{\totalheightof{%s}}\setcounter{%s}{\%s}"%(interDimension,interDimension,tex_expression,interHeightName,interDimension))
+		print interDimension
+		self.add_latex_line(r"\newlength{\%s}\setlength{\%s}{\totalheightof{%s}}\newcounter{%s}\setcounter{%s}{\%s}"%(interDimension,interDimension,tex_expression,interHeightName,interHeightName,interDimension))
 		return self.get_counter_value(interHeightName)
 
 	def DrawVector(self,vect,params):
