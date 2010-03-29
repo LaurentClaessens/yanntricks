@@ -1088,8 +1088,19 @@ class pspicture(object):
 			print data.message
 			print "I' going to return the default value for counter «%s», namely %s"%(counter_name,str(default_value))
 			return default_value
+	def get_box_size(self,tex_expression):
+		"""
+		tex_expression is a valid LaTeX expression. Return the size of the corresponding box
 
-
+		As far as the problem is concerned from a LaTeX point of view, it was discussed here:
+		http://groups.google.fr/group/fr.comp.text.tex/browse_thread/thread/8431f21588b81530?hl=fr
+		"""
+		interHeightName = "height"+pspicture.NomPointLibre.suivant()
+		interDimension = "dimension"+interHeightName
+		print tex_expression
+		print interHeightName
+		self.add_latex_line(r"\newlength{\%}\setlength{\%s}{\totalheightof{%s}}\setcounter{%s}{\%s}"%(interDimension,interDimension,tex_expression,interHeightName,interDimension))
+		return self.get_counter_value(interHeightName)
 
 	def DrawVector(self,vect,params):
 		return self._DrawVector(self,vect,params)
