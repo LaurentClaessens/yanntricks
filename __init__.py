@@ -965,6 +965,7 @@ class pspicture(object):
 	self.contenu_pstricks() is the whole code including the x/yunit
 	self.contenu_eps() contains the line to be added in order to include the eps file
 	"""
+	NomPointLibre = ListeNomsPoints()
  
 	class _DrawVector(object):
 		def __init__(self,picture,vect,params):
@@ -1063,7 +1064,7 @@ class pspicture(object):
 		"""
 
 		# Make LaTeX write the value of the counter in a specific file
-		interCounterName = "counter"+NomPointLibre.suivant()
+		interCounterName = "counter"+pspicture.NomPointLibre.suivant()
 		interWriteName = "write"+interCounterName
 		interWriteFile = interWriteName+".pstricks.aux"
 		self.add_latex_line(r"\newcounter{%s}"%interCounterName)
@@ -1085,7 +1086,7 @@ class pspicture(object):
 				raise LabelNotFound("Warning : the auxiliary file does not contain the searched label. Compile your LaTeX file.")
 		except LabelNotFound,data:
 			print data.message
-			print "I' going to return the default value for counter %s, namely %s"%(counter_name,str(default_value))
+			print "I' going to return the default value for counter «%s», namely %s"%(counter_name,str(default_value))
 			return default_value
 
 

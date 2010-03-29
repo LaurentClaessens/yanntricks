@@ -342,9 +342,7 @@ class ListeNomsPoints(object):
 		self.donne = self.donne + 1
 		a = ["AutoPt"]
 		s = str(self.donne)
-		for c in s:
-			a.append(chr(int(c)+97))
-		return "".join(a)
+		return "".join( [chr(int(c)+97) for c in s] )
 
 class Point(object):
 	"""
