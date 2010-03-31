@@ -22,6 +22,7 @@
 A collection of tools for building LaTeX-pstricks figures with python.
 """
 
+
 from __future__ import division
 from sage.all import *
 #import numpy				# I do not remember why I used that.
@@ -30,6 +31,33 @@ from BasicGraphObjects import *
 from MathComputations import *
 from SmallComputations import *
 import MathConstructions
+
+
+def _latinize(word):
+	latin = ""
+	for s in word:
+		if s.lower() in "abcdefghijklmnopqrstuvwxyz" :
+			latin = latin+s
+	return latin
+
+
+sysargvzero = sys.argv[0][:]
+def newwriteName():
+	r"""
+	This function provides the name of the \newwrite that will be used all long the script. We cannot use one different \newwrite for each counter because
+	LaTeX is limited in the number of available \newwrite.
+
+	See the attribute pspict.newwriteDone and the method pspict.get_counter_value
+	"""
+	return "writeOf"+_latinize(sysargvzero)
+
+
+def counterName():
+	r"""
+	This function provides the name of the counter. This has the same use of newwriteName, for the same reason of limitation.
+	"""
+	return "counterOf"+_latinize(sysargvzero)
+
 
 class global_variables(object):
 	def __init__(self):
@@ -329,11 +357,11 @@ class Waviness(object):
 			return self.obj.get_wavy_points(self.dx,self.dy)
 
 class Mark(object):
-	def __init__(self,graphe,dist,angle,mark):
+	def __init__(self,graphe,dist,angle,text):
 		self.graphe = graphe
 		self.dist = dist
 		self.angle = angle
-		self.mark = mark
+		self.text = text
 	def central_point(self):
 		"""return the central point of the mark, that is the point where the mark arrives"""
 		return self.graphe.translate(PolarVector(self.graphe,self.dist,self.angle))
@@ -365,9 +393,9 @@ class GraphOfAnObject(object):
 	def wave(self,dx,dy):					# dx is the wave length and dy is the amplitude
 		self.wavy = True
 		self.waviness = Waviness(self,dx,dy)
-	def mark(self,dist,angle,mark):
+	def put_mark(self,dist,angle,text):
 		self.marque = True
-		self.mark = Mark(self,dist,angle,mark)
+		self.mark = Mark(self,dist,angle,text)
 	def add_option(self,opt):
 		self.options.add_option(opt)
 	def get_option(opt):
@@ -402,10 +430,13 @@ class GraphOfAPoint(GraphOfAnObject,Point):
 		A small box of radius 0.1 is given in any case, and the mark is added if there is a one.
 		You need to provide a pspict in order to compute the size since it can vary from the place in your document you place the figure.
 		"""
-		bb = BoundingBox(Point(self.x-0.1,self.y-01),Point(self.x+0.1,self.y+01))
+		bb = BoundingBox(Point(self.x-0.1,self.y-0.1),Point(self.x+0.1,self.y+0.1))
 		if self.marque:
-			dimx,dimy=pspict.get_box_size(self.mark.mark)
-			
+			central_point = self.mark.central_point()
+			dimx,dimy=pspict.get_box_size(self.mark.text)
+			bb.AddPoint( Point(central_point.x-dimx/2,central_point.y-dimy/2) )
+			bb.AddPoint( Point(central_point.x+dimx/2,central_point.y+dimy/2) )
+		return bb
 
 class GraphOfASegment(GraphOfAnObject):
 	def __init__(self,seg):
@@ -581,7 +612,6 @@ class Grid(object):
 	def optionsParams(self):
 		return self.options.sousOptions(["Dx","Dy"])
 	def drawing(self):
-		#print "Je passe"
 		a = []
 		# ++++++++++++ Le bord ++++++++ 
 		if self.draw_border :
@@ -933,14 +963,13 @@ class PspictureToOtherOutputs(object):
 		self.input_code_eps = "\includegraphics{%s}"%(self.file_eps.nom)
 		self.input_code_pdf = "\includegraphics{%s}"%(self.file_pdf.nom)
 	def latex_code_for_eps(self):
-		code = ["\documentclass{article}\n","\usepackage{pstricks,pst-eucl,pstricks-add}\n","\usepackage{pst-plot}\n","\usepackage{pst-eps}\n","\pagestyle{empty}\n"]
+		code = ["\documentclass{article}\n","\usepackage{pstricks,pst-eucl,pstricks-add}\n","\usepackage{pst-plot}\n","\usepackage{pst-eps}\n","\pagestyle{empty}\n\usepackage{calc}\n"]
 		# Allows to add some lines, like packages or macro definitions required. This is useful when one add formulas in the picture
 		# that need packages of personal commands.
 		code.append(self.pspict.specific_needs)		
 		code.extend(["\\begin{document}\n","\\begin{TeXtoEPS}"])
 		code.append(self.pspict.contenu_pstricks())
 		code.extend(["\end{TeXtoEPS}\n","\end{document}\n"])
-		print code
 		return "".join(code)
 	def create_eps_file(self):
 		""" Creates an eps file by the chain latex/dvips """
@@ -1044,7 +1073,7 @@ class pspicture(object):
 			polaires = vecteur_distance.polaires()
 			self.picture.MarkThePoint(milieu,polaires.r,polaires.theta,"none",marque)
 
-	def __init__(self,name="CAN_BE_A_PROBLEM_IF_TRY_TO_PRODUCE_EPS"):
+	def __init__(self,name="CAN_BE_A_PROBLEM_IF_TRY_TO_PRODUCE_EPS_OR_PDF"):
 		r"""
 		A name is required for producing intermediate files. This is the case when one wants to produce eps/pdf files of one wants to 
 		   make interactions with LaTeX (see pspict.get_counter_value).
@@ -1052,6 +1081,8 @@ class pspicture(object):
 		self.name = name		# self.name is used in order to name the intermediate files when one produces the eps file.
 		self.pstricks_code = []
 		self.specific_needs = ""	# See the class PspictureToOtherOutputs
+		self.newwriteDone = False
+		self.counterDone = False
 		self.listePoint = []
 		self.xunit = 1
 		self.yunit = 1
@@ -1069,6 +1100,16 @@ class pspicture(object):
 		self.add_latex_line("%AXES")
 		self.add_latex_line("%OTHER STUFF")
 
+	def initialize_newwrite(self):
+		if not self.newwriteDone :
+			self.add_latex_line(r"\newwrite\%s"%newwriteName())
+			self.add_latex_line(r"\immediate\openout\%s=%s"%(newwriteName(),interWriteFile))
+			self.newwriteDone = True
+	def initialize_counter(self):
+		if not self.counterDone:
+			self.add_latex_line(r"\newcounter{%s}"%interCounterName)
+			self.counterDone = True
+
 	def get_counter_value(self,counter_name,default_value=0):
 		"""
 		return the value of the (LaTeX) counter <name> at this point of the LaTeX file 
@@ -1078,30 +1119,34 @@ class pspicture(object):
 		"""
 
 		# Make LaTeX write the value of the counter in a specific file
-		interCounterName = "counter"+pspicture.NomPointLibre.suivant()
-		interWriteName = "write"+interCounterName
+		# interCounterName is always the same because LaTeX cannot handle too many. interCounterId is the identification
+		#   of the lable. We write that id in front of the value of the requested counter (separated by a column) in the intermediate file.
+		#   then we search for that id in the intermediate file.
+		# We create the counter and/or the newwrite if it is not already done.
+		interWriteName = newwriteName()
+		interCounterName = counterName()
+		interCounterId = "counter"+self.name+pspicture.NomPointLibre.suivant()
 		interWriteFile = interWriteName+".pstricks.aux"
-		self.add_latex_line(r"\newcounter{%s}"%interCounterName)
+		self.initialize_newwrite()
+		self.initialize_counter()
 		self.add_latex_line(r"\setcounter{%s}{\value{%s}}"%(interCounterName,counter_name))
-		self.add_latex_line(r"\newwrite\%s"%interWriteName)
-		self.add_latex_line(r"\immediate\openout\%s=%s"%(interWriteName,interWriteFile))
-		self.add_latex_line(r"\immediate\write\%s{%s:\arabic{%s}:}"%(interWriteName,interCounterName,interCounterName))
-		self.add_latex_line(r"\immediate\closeout\%s"%interWriteName)
+		self.add_latex_line(r"\immediate\write\%s{%s:\arabic{%s}:}"%(interWriteName,interCounterId,interCounterName))
 
 		# Read the file and return the value
 		try :
 			try :
 				f=open(interWriteFile)
-				text = f.read().split(":")
+				text = f.read().replace('\n','').split(":")
 				return text[text.index(interCounterName)+1]			
 			except IOError :
 				raise LabelNotFound("Warning : the auxiliary file seems not to exist. Compile your LaTeX file.")
 			except ValueError :
-				raise LabelNotFound("Warning : the auxiliary file does not contain the searched label. Compile your LaTeX file.")
+				raise LabelNotFound("Warning : the auxiliary file does not contain the label «%s». Compile your LaTeX file."%interCounterName)
 		except LabelNotFound,data:
 			print data.message
 			print "I' going to return the default value for counter «%s», namely %s"%(counter_name,str(default_value))
 			return default_value
+
 	def get_box_dimension(self,tex_expression,dimension_name):
 		"""
 		Return the dimension of the LaTeX box corresponding to the LaTeX expression tex_expression.
@@ -1109,7 +1154,8 @@ class pspicture(object):
 		dimension_name is a valid LaTeX macro that can be applied to a LaTeX expression and that return a number. Like
 		widthof, depthof, heightof, totalheightof
 		"""
-		interName = dimension_name+pspicture.NomPointLibre.suivant()
+		suffixe = pspicture.NomPointLibre.suivant()
+		interName = dimension_name+self.name+suffixe
 		interDimension = "dimension"+interName
 		self.add_latex_line(r"\newlength{\%s}\setlength{\%s}{\%s{%s}}\newcounter{%s}\setcounter{%s}{\%s}"%(interDimension,interDimension,dimension_name,tex_expression,interName,interName,interDimension))
 		return float(self.get_counter_value(interName))*(0.000015256/30)
@@ -1156,7 +1202,14 @@ class pspicture(object):
 		self.add_latex_line(self.CodeAddPoint(P))
 
 	def TraceBB(self):
-		self.TraceRectangle( Rectangle(self.BB.bg,self.BB.hd), "linecolor=cyan")
+		self.DrawBoundingBox(self.BB)
+	def DrawBoundingBox(self,obj):
+		"""Draw the bounding box of an object when it has a method bounding_box. If not, assume that the object is the bounding box to be drawn."""
+		try :
+			bb = obj.bounding_box(self)
+		except AttributeError :
+			bb = obj
+		self.TraceRectangle( Rectangle(bb.bg,bb.hd), "linecolor=cyan")
 
 	# Ici, typiquement, symbol sera "*" et params sera vide.
 	def DrawPoint(self,P,symbol,params):
@@ -1212,13 +1265,14 @@ class pspicture(object):
 	def DrawGraphOfAPoint(self,graphe):
 		p = graphe.point
 		self.BB.AddPoint(p)
+		self.BB.AddBB(graphe.bounding_box(self))
 		self.add_latex_line( p.code(graphe.params()) )
 		if graphe.marque :
 			mark = graphe.mark
 			if p.psNom not in self.listePoint :
 				self.AddPoint(p)
 			#self.add_latex_line("\\rput("+p.psNom+"){\\rput("+str(dist)+";"+str(angle)+"){"+marque+"}}")
-			self.add_latex_line("\\rput(%s){\\rput(%s;%s){%s}}"%(p.psNom,str(mark.dist),str(mark.angle),str(mark.mark)))
+			self.add_latex_line("\\rput(%s){\\rput(%s;%s){%s}}"%(p.psNom,str(mark.dist),str(mark.angle),str(mark.text)))
 
 	def DrawGraphOfASegment(self,graphe,N=None):
 		if graphe.wavy == False :
@@ -1231,7 +1285,7 @@ class pspicture(object):
 			self.DrawVector(graphe.vector,graphe.params())
 		if graphe.marque == True :
 			mark = graphe.mark
-			self.DrawVector(graphe.vector,graphe.params()).MarkTheVector(mark.dist,mark.angle,mark.mark)
+			self.DrawVector(graphe.vector,graphe.params()).MarkTheVector(mark.dist,mark.angle,mark.text)
 
 		def MarkTheVector(self,dist,angle,marque):
 				self.picture.DrawPoint(self.vector.F,"none",self.params).MarkThePoint(dist,angle,marque)
@@ -1457,7 +1511,9 @@ class pspicture(object):
 		a.append("\end{pspicture}\n")
 		return "".join(a)
 	def contenu(self):
-		""" Notice that if the option --eps is given, this method launches some compilations when creating contenu_eps """
+		"""
+		Notice that if the option --eps/pdf is given, this method launches some compilations when creating contenu_eps/pdf 
+		"""
 		for sortie in globals.list_exits:
 			if globals.__getattribute__(sortie+"_exit"):
 				print "je vois %s"%sortie
