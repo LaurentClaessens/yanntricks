@@ -932,15 +932,10 @@ class figure(object):
 			self.add_latex_line(f.code,"SUBFIGURES")
 			self.add_latex_line("}					% Fermeture de la sous-figure "+str(self.SSfigures.index(f)+1),"SUBFIGURE")
 			self.add_latex_line("%","SUBFIGURES")
-			
-
-		after_all=r"""\caption{"+self.caption+"}\label{"+self.label+"}"
-			\end{figure}")
-			"""
+		after_all=r"""\caption{%s}\label{%s}
+			\end{figure}
+			"""%(self.caption,self.label)
 		self.add_latex_line(after_all,"AFTER ALL")
-
-
-
 		self.contenu = DicoSeparatorToCode(self.separator_dico)
 
 	def write_the_file(self):					# Nous sommes dans la classe figure.
@@ -1154,6 +1149,7 @@ class pspicture(object):
 		self.separator_number = 0
 		self.new_separator("ENTETE")
 		self.new_separator("BEFORE PSPICTURE")
+		self.new_separator("WRITE AND LABEL")
 		self.new_separator("BEGIN PSPICTURE")
 		self.new_separator("GRID")	# A \n is automatically added.		
 		self.new_separator("AXES")
@@ -1173,7 +1169,7 @@ class pspicture(object):
 				\immediate\openout\%s=%s
 				}
 				\makeatother"""%(newwriteName(),newwriteName(),newwriteName(),self.interWriteFile)
-			self.add_latex_line(code,"BEFORE PSPICTURE")
+			self.add_latex_line(code,"WRITE AND LABEL")
 			self.newwriteDone = True
 	def initialize_counter(self):
 		if not self.counterDone:
@@ -1182,7 +1178,7 @@ class pspicture(object):
 				{\newcounter{%s}}
 				\makeatother
 				"""%(counterName(),counterName())			# make LaTeX test if the counter exist before to create it.
-			self.add_latex_line(code,"BEFORE PSPICTURE")
+			self.add_latex_line(code,"WRITE AND LABEL")
 			self.counterDone = True
 	def initialize_newlength(self):
 		if not self.newlengthDone :
@@ -1191,13 +1187,13 @@ class pspicture(object):
 			\@ifundefined{%s}{\newlength{\%s}}
 			\makeatother
 			"""%(newlengthName(),newlengthName())
-			self.add_latex_line(code,"BEFORE PSPICTURE")
+			self.add_latex_line(code,"WRITE AND LABEL")
 			self.newlengthDone = True
 	def add_write_line(self,Id,value):
 		r"""Writes in the standard auxiliary file \newwrite an identifier and a value separated by a «:»"""
 		interWriteName = newwriteName()
 		self.initialize_newwrite()
-		self.add_latex_line(r"\immediate\write\%s{%s:%s:}"%(interWriteName,Id,value),"BEFORE PSPICTURE")
+		self.add_latex_line(r"\immediate\write\%s{%s:%s:}"%(interWriteName,Id,value),"WRITE AND LABEL")
 	def get_Id_value(self,Id,counter_name="NO NAME ?",default_value=0):
 		try :
 			try :
@@ -1238,7 +1234,7 @@ class pspicture(object):
 		"""
 		interId = dimension_name+self.name+self.NomPointLibre.suivant()
 		self.initialize_newlength()
-		self.add_latex_line(r"\setlength{\%s}{\%s{%s}}"%(newlengthName(),dimension_name,tex_expression),"BEFORE PSPICTURE")
+		self.add_latex_line(r"\setlength{\%s}{\%s{%s}}"%(newlengthName(),dimension_name,tex_expression),"WRITE AND LABEL")
 		self.add_write_line(interId,r"\the\%s"%newlengthName())
 		read_value =  self.get_Id_value(interId,"dimension %s"%dimension_name,default_value="0pt") 
 		dimenPT = float(read_value.replace("pt",""))
@@ -1577,6 +1573,7 @@ class pspicture(object):
 		to_eps.create_eps_file()
 		return to_eps.input_code_eps
 	def contenu_pdf(self):
+		print "contenu_pdf"
 		to_pdf = PspictureToOtherOutputs(self)
 		to_pdf.create_pdf_file()
 		return to_pdf.input_code_pdf
@@ -1584,7 +1581,6 @@ class pspicture(object):
 		"""
 		One has to declare the xunit,yunit before to give the bounding box. The value of LabelSep is the distance between an angle and the lable of the angle. It is by default 1, but if there is a dilatation, the visual effect is bad.
 		"""
-		add_latex_line_entete(self)
 		if self.LabelSep == 1 : 
 			self.LabelSep = 2/(self.xunit+self.yunit)
 		add_latex_line_entete(self)
@@ -1593,8 +1589,6 @@ class pspicture(object):
 		self.add_latex_line("\\begin{pspicture}%s%s\n"%(self.BB.bg.coordinates(),self.BB.hd.coordinates()),"BEGIN PSPICTURE")
 		self.add_latex_line("\end{pspicture}\n","AFTER PSPICTURE")
 		self.add_latex_line(self.pstricks_code,"OTHER STUFF")
-
-
 		return DicoSeparatorToCode(self.separator_dico)
 	def contenu(self):
 		"""
