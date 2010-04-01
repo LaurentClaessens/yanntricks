@@ -879,13 +879,29 @@ class figure(object):
 		self.SSfigures = []
 		self.fichier = Fichier (fich)
 
+		# The order of declaration is important, because it is recorded in the Separator.number attribute.
+		self.separator_dico = {}			
+		self.separator_number = 0
+		self.new_separator("ENTETE")
+		self.new_separator("BEFORE SUBFIGURES")
+		self.new_separator("SUBFIGURES")
+		self.new_separator("AFTER SUBFIGURES")
+		self.new_separator("DEFAULT")
+		self.new_separator("BEFORE PSPICTURE")
+		self.new_separator("PSPICTURE")
+		self.new_separator("AFTER PSPICTURE")
+		self.new_separator("AFTER ALL")
 		add_latex_line_entete(self)
 
-		self.add_latex_line("\\begin{figure}[ht]")
-		#self.add_latex_line("\\newcommand{\ValeurAbsolue}[1]{\left| #1 \\right| }")
-		self.add_latex_line("\centering")
+		self.add_latex_line("\\begin{figure}[ht]","BEFORE SUBFIGURES")
+		self.add_latex_line("\centering","BEFORE SUBFIGURES")
 	# Note qu'il est préférable d'utiliser les commandes de dilatation avant de commencer à composer la pspicture,
 	# parce que la BoundingBox doit aussi tenir compte de choses écrites en taille réelle.
+
+	def new_separator(self,title):
+		self.separator_number = self.separator_number + 1
+		self.separator_dico[title]=Separator(title,self.separator_number)
+
 	def dilatation_X(self,fact):
 		""" Makes a dilatation of the whole picture in the X direction. A contraction if the coefficient is lower than 1 """
 		self.xunit = self.xunit * fact
@@ -900,26 +916,32 @@ class figure(object):
 		self.SSfigures.append(ssFig)
 	def add_pspicture(self,pspict):
 		self.add_latex_line(pspict.contenu())			# Here, what is added depends on --eps
-	# La différence entre add_latex_line et IncrusteLigne, c'est que la deuxième permet de la mettre où on veut.
-	def add_latex_line(self,ligne,position=None):
-		self.code.append(ligne+"\n")
+	def add_latex_line(self,ligne,separator_name="DEFAULT"):
+		self.separator_dico[separator_name].add_latex_line(ligne)
 	def IncrusteLigne(self,ligne,n):
+		print "The method picture.IncrusteLigne() is depreciated."
 		self.code[n:n]=ligne+"\n"
 	def AjouteCode(self,liste_code):
 		self.code.extend(liste_code)
 
 	def conclude(self):
-		if not globals.special_exit() :
-			self.IncrusteLigne("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+"}\n",2)
+		if not globals_vars.special_exit() :
+			self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+"}","BEFORE SUBFIGURES")
 		for f in self.SSfigures :
-			self.add_latex_line("\subfigure["+f.caption+"]{%")
-			self.AjouteCode(f.code)
-			self.add_latex_line("}					% Fermeture de la sous-figure "+str(self.SSfigures.index(f)+1))
-			self.add_latex_line("%")
+			self.add_latex_line("\subfigure["+f.caption+"]{%","SUBFIGURES")
+			self.add_latex_line(f.code,"SUBFIGURES")
+			self.add_latex_line("}					% Fermeture de la sous-figure "+str(self.SSfigures.index(f)+1),"SUBFIGURE")
+			self.add_latex_line("%","SUBFIGURES")
 			
-		self.add_latex_line("\caption{"+self.caption+"}\label{"+self.label+"}")
-		self.add_latex_line("\end{figure}")
-		self.contenu = "".join(self.code)
+
+		after_all=r"""\caption{"+self.caption+"}\label{"+self.label+"}"
+			\end{figure}")
+			"""
+		self.add_latex_line(after_all,"AFTER ALL")
+
+
+
+		self.contenu = DicoSeparatorToCode(self.separator_dico)
 
 	def write_the_file(self):					# Nous sommes dans la classe figure.
 		self.fichier.open_file("w")
@@ -999,14 +1021,25 @@ def add_latex_line_entete(truc):
 	truc.add_latex_line("% and the projects phystricks and phystricks-doc at ",position)
 	truc.add_latex_line("% http://gitorious.org/~moky\n",position)
 
+
+def DicoSeparatorToCode(separator_dico):
+	""""takes a dictionary of Separator as argument and return the glued code"""
+	list_separator = separator_dico.values()
+	list_separator.sort()
+	a = []
+	for sep in list_separator :
+		a.append(sep.code())
+	return "".join(a)
+
 class Separator(object):
-	def __init__(title,number):
+	def __init__(self,title,number):
 		self.title = title
 		self.number = number
 		self.latex_code=[]
 		self.add_latex_line("%"+title)
 	def add_latex_line(self,line):
-		self.latex_code.append(line+"\n")
+		text = "".join(line)		# In some case, the line can in fact be a list of lines.
+		self.latex_code.append(text+"\n")
 	def code(self):
 		return "".join(self.latex_code)
 	def __cmp__(self,other):
@@ -1118,7 +1151,6 @@ class pspicture(object):
 
 		# The order of declaration is important, because it is recorded in the Separator.number attribute.
 		self.separator_dico = {}			
-		print self.dir()
 		self.separator_number = 0
 		self.new_separator("ENTETE")
 		self.new_separator("BEFORE PSPICTURE")
@@ -1131,7 +1163,7 @@ class pspicture(object):
 
 	def new_separator(self,title):
 		self.separator_number = self.separator_number + 1
-		self.separator_dico[title]=Separator(title,separator_number)
+		self.separator_dico[title]=Separator(title,self.separator_number)
 
 	def initialize_newwrite(self):
 		if not self.newwriteDone :
@@ -1394,13 +1426,10 @@ class pspicture(object):
 		if type(graphe) == Grid :
 			self.DrawGrid(graphe)
 
-	def DrawSegment(self,seg,params,N=None):
-		self.BB.AddSegment(seg)			# Il me semble que j'avais viré cette ligne.
+	def DrawSegment(self,seg,params,separator="DEFAULT"):
+		self.BB.AddSegment(seg)
 		code = seg.code(params)
-		if N == None :
-			self.add_latex_line(code)
-		else :
-			self.IncrusteLigne(code,N)
+		self.add_latex_line(code,separator)
 
 	def DrawGrid(self,grid):
 		# The difficulty is that the grid has to be draw first, while most of time it is given last because of the bounding box.
@@ -1409,9 +1438,9 @@ class pspicture(object):
 			self.DrawGraph(element,"GRID")
 
 
-	def TracePsCurve(self,listePoints,params,on_BB=False,N=None):
+	def TracePsCurve(self,listePoints,params,on_BB=False,separator="DEFAULT"):
 		"""
-		By default, we don't take these poits into account in the bounding box because this method is almost only 
+		By default, we don't take these points into account in the bounding box because this method is almost only 
 		   used to draw wavy lines. It is sufficient to put the line in the BB.
 		"""
 		l = []
@@ -1421,16 +1450,13 @@ class pspicture(object):
 			if on_BB :
 				self.BB.AddPoint(p)
 		ligne = "".join(l)
-		if N == None :
-			self.add_latex_line(ligne)
-		else :
-			self.IncrusteLigne(ligne,N)
-	def DrawWavySegment(self,seg,dx,dy,params,N):
+		self.add_latex_line(ligne,separator)
+	def DrawWavySegment(self,seg,dx,dy,params,separator):
 		A = seg.I
 		B = seg.F
 		self.BB.AddPoint(seg.I)
 		self.BB.AddPoint(seg.F)
-		self.TracePsCurve(seg.get_wavy_points(dx,dy),params,N=N)
+		self.TracePsCurve(seg.get_wavy_points(dx,dy),params,separator=separator)
 	def TracephyFunctionOndule(self,f,mx,Mx,dx,dy,params):
 		self.BB.AddphyFunction(f,mx,Mx)
 		self.TracePsCurve( f.get_wavy_points(mx,Mx,dx,dy) ,params)
@@ -1490,7 +1516,7 @@ class pspicture(object):
 	def DrawAxes(self,axes):
 		# C'est important d'ajuster la bounding box de la pspicture et les grilles après ajouter le code parce que axes.BB n'est définit qu'au moment de produire le code, voir l'appel à grille.BB.hd.EntierPlus() dans self.TraceGrid par exemple.
 		try :
-			self.IncrusteLigne(axes.code(),self.pstricks_code.index("%AXES\n")+1)
+			self.add_latex_line(axes.code(),"AXES")
 		except ValueError :
 			print "Mon self.pstricks_code vaut :"
 			print self.pstricks_code
@@ -1544,6 +1570,7 @@ class pspicture(object):
 		"""
 		self.separator_dico[separator_name].add_latex_line(ligne)
 	def IncrusteLigne(self,ligne,n):
+		print "The method pspicture.IncrusteLigne() is depreciated."
 		self.pstricks_code[n:n]=ligne+"\n"
 	def contenu_eps(self):
 		to_eps = PspictureToOtherOutputs(self)
@@ -1563,23 +1590,18 @@ class pspicture(object):
 		add_latex_line_entete(self)
 		self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+",LabelSep="+str(self.LabelSep)+"}","BEFORE PSPICTURE")
 		self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}\n","BEFORE PSPICTURE")
-		self.IncrusteLigne("\\begin{pspicture}%s%s\n"%(self.BB.bg.coordinates(),self.BB.hd.coordinates()),"BEGIN PSPICTURE")
+		self.add_latex_line("\\begin{pspicture}%s%s\n"%(self.BB.bg.coordinates(),self.BB.hd.coordinates()),"BEGIN PSPICTURE")
 		self.add_latex_line("\end{pspicture}\n","AFTER PSPICTURE")
 		self.add_latex_line(self.pstricks_code,"OTHER STUFF")
 
-		list_separator = self.separator_dico.values()
-		list_separator.sort()
 
-		a = []
-		for sep in list_sep :
-			a.append(sep.code())
-		return "".join(a)
+		return DicoSeparatorToCode(self.separator_dico)
 	def contenu(self):
 		"""
 		Notice that if the option --eps/pdf is given, this method launches some compilations when creating contenu_eps/pdf 
 		"""
-		for sortie in globals.list_exits:
-			if globals.__getattribute__(sortie+"_exit"):
+		for sortie in globals_vars.list_exits:
+			if globals_vars.__getattribute__(sortie+"_exit"):
 				print "je vois %s"%sortie
 				return self.__getattribute__("contenu_"+sortie)()
 		return self.contenu_pstricks()
@@ -1592,8 +1614,8 @@ class pspicture(object):
 		self.fichier.file.write(self.contenu())
 		self.fichier.file.close()
 
-globals = global_variables()
+globals_vars = global_variables()
 if "--eps" in sys.argv :
-	globals.eps_exit = True
+	globals_vars.eps_exit = True
 if "--pdf" in sys.argv :
-	globals.pdf_exit = True
+	globals_vars.pdf_exit = True
