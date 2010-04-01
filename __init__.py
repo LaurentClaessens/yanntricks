@@ -22,7 +22,6 @@
 A collection of tools for building LaTeX-pstricks figures with python.
 """
 
-
 from __future__ import division
 from sage.all import *
 #import numpy				# I do not remember why I used that.
@@ -40,7 +39,6 @@ def _latinize(word):
 			latin = latin+s
 	return latin
 
-
 sysargvzero = sys.argv[0][:]
 def newwriteName():
 	r"""
@@ -50,14 +48,16 @@ def newwriteName():
 	See the attribute pspict.newwriteDone and the method pspict.get_counter_value
 	"""
 	return "writeOf"+_latinize(sysargvzero)
-
-
 def counterName():
 	r"""
 	This function provides the name of the counter. This has the same use of newwriteName, for the same reason of limitation.
 	"""
 	return "counterOf"+_latinize(sysargvzero)
-
+def newlengthName():
+	r"""
+	This function provides the name of the length. This has the same use of newwriteName, for the same reason of limitation.
+	"""
+	return "lengthOf"+_latinize(sysargvzero)
 
 class global_variables(object):
 	def __init__(self):
@@ -901,7 +901,7 @@ class figure(object):
 	def add_pspicture(self,pspict):
 		self.add_latex_line(pspict.contenu())			# Here, what is added depends on --eps
 	# La différence entre add_latex_line et IncrusteLigne, c'est que la deuxième permet de la mettre où on veut.
-	def add_latex_line(self,ligne):
+	def add_latex_line(self,ligne,position=None):
 		self.code.append(ligne+"\n")
 	def IncrusteLigne(self,ligne,n):
 		self.code[n:n]=ligne+"\n"
@@ -1082,7 +1082,10 @@ class pspicture(object):
 		self.pstricks_code = []
 		self.specific_needs = ""	# See the class PspictureToOtherOutputs
 		self.newwriteDone = False
+		self.interWriteFile = newwriteName()+".pstricks.aux"
+		self.NomPointLibre = ListeNomsPoints()
 		self.counterDone = False
+		self.newlengthDone = False
 		self.listePoint = []
 		self.xunit = 1
 		self.yunit = 1
@@ -1095,6 +1098,8 @@ class pspicture(object):
 
 		add_latex_line_entete(self)
 
+		self.add_latex_line("%BEFORE_PSPICTURE")
+		self.add_latex_line("%BEGIN_PSPICTURE")
 		self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}\n")
 		self.add_latex_line("%GRID")	# A \n is automatically added.		
 		self.add_latex_line("%AXES")
@@ -1102,50 +1107,67 @@ class pspicture(object):
 
 	def initialize_newwrite(self):
 		if not self.newwriteDone :
-			self.add_latex_line(r"\newwrite\%s"%newwriteName())
-			self.add_latex_line(r"\immediate\openout\%s=%s"%(newwriteName(),interWriteFile))
+			code = r""" \makeatletter 
+				\@ifundefined{%s}			
+				{\newwrite{\%s}
+				\immediate\openout\%s=%s
+				}
+				\makeatother"""%(newwriteName(),newwriteName(),newwriteName(),self.interWriteFile)
+			self.add_latex_line(code,"BEFORE_PSPICTURE")
 			self.newwriteDone = True
 	def initialize_counter(self):
 		if not self.counterDone:
-			self.add_latex_line(r"\newcounter{%s}"%interCounterName)
+			code = r""" \makeatletter 
+				\@ifundefined{c@%s}			
+				{\newcounter{%s}}
+				\makeatother
+				"""%(counterName(),counterName())			# make LaTeX test if the counter exist before to create it.
+			self.add_latex_line(code,"BEFORE_PSPICTURE")
 			self.counterDone = True
-
+	def initialize_newlength(self):
+		if not self.newlengthDone :
+			code =r"""
+			\makeatletter
+			\@ifundefined{%s}{\newlength{\%s}}
+			\makeatother
+			"""%(newlengthName(),newlengthName())
+			self.add_latex_line(code,"BEFORE_PSPICTURE")
+			self.newlengthDone = True
+	def add_write_line(self,Id,value):
+		r"""Writes in the standard auxiliary file \newwrite an identifier and a value separated by a «:»"""
+		interWriteName = newwriteName()
+		self.initialize_newwrite()
+		self.add_latex_line(r"\immediate\write\%s{%s:%s:}"%(interWriteName,Id,value),"BEFORE_PSPICTURE")
+	def get_Id_value(self,Id,counter_name="NO NAME ?",default_value=0):
+		try :
+			try :
+				f=open(self.interWriteFile)
+				text = f.read().replace('\n','').split(":")
+				return text[text.index(Id)+1]			
+			except IOError :
+				raise LabelNotFound("Warning : the auxiliary file seems not to exist. Compile your LaTeX file.")
+			except ValueError :
+				raise LabelNotFound("Warning : the auxiliary file does not contain the id «%s». Compile your LaTeX file."%Id)
+		except LabelNotFound,data:
+			print data.message
+			print "I' going to return the default value for %s, namely %s"%(Id,str(default_value))
+			return default_value
 	def get_counter_value(self,counter_name,default_value=0):
 		"""
 		return the value of the (LaTeX) counter <name> at this point of the LaTeX file 
 
-		Makes LaTeX write the value of the counter in the auxiliary <file self.name>.aux, then reads the value in that file.
+		Makes LaTeX write the value of the counter in an auxiliary file, then reads the value in that file.
 		(needs several compilations to work)
 		"""
 
 		# Make LaTeX write the value of the counter in a specific file
-		# interCounterName is always the same because LaTeX cannot handle too many. interCounterId is the identification
-		#   of the lable. We write that id in front of the value of the requested counter (separated by a column) in the intermediate file.
-		#   then we search for that id in the intermediate file.
-		# We create the counter and/or the newwrite if it is not already done.
-		interWriteName = newwriteName()
-		interCounterName = counterName()
-		interCounterId = "counter"+self.name+pspicture.NomPointLibre.suivant()
-		interWriteFile = interWriteName+".pstricks.aux"
-		self.initialize_newwrite()
+		interCounterId = "counter"+self.name+self.NomPointLibre.suivant()
+		print "J'ai le ID",interCounterId
 		self.initialize_counter()
-		self.add_latex_line(r"\setcounter{%s}{\value{%s}}"%(interCounterName,counter_name))
-		self.add_latex_line(r"\immediate\write\%s{%s:\arabic{%s}:}"%(interWriteName,interCounterId,interCounterName))
+		self.add_write_line(interCounterId,r"\arabic{%s}"%counter_name)
 
 		# Read the file and return the value
-		try :
-			try :
-				f=open(interWriteFile)
-				text = f.read().replace('\n','').split(":")
-				return text[text.index(interCounterName)+1]			
-			except IOError :
-				raise LabelNotFound("Warning : the auxiliary file seems not to exist. Compile your LaTeX file.")
-			except ValueError :
-				raise LabelNotFound("Warning : the auxiliary file does not contain the label «%s». Compile your LaTeX file."%interCounterName)
-		except LabelNotFound,data:
-			print data.message
-			print "I' going to return the default value for counter «%s», namely %s"%(counter_name,str(default_value))
-			return default_value
+		return self.get_Id_value(interCounterId,"counter «%s»"%counter_name,default_value)
 
 	def get_box_dimension(self,tex_expression,dimension_name):
 		"""
@@ -1154,12 +1176,14 @@ class pspicture(object):
 		dimension_name is a valid LaTeX macro that can be applied to a LaTeX expression and that return a number. Like
 		widthof, depthof, heightof, totalheightof
 		"""
-		suffixe = pspicture.NomPointLibre.suivant()
-		interName = dimension_name+self.name+suffixe
-		interDimension = "dimension"+interName
-		self.add_latex_line(r"\newlength{\%s}\setlength{\%s}{\%s{%s}}\newcounter{%s}\setcounter{%s}{\%s}"%(interDimension,interDimension,dimension_name,tex_expression,interName,interName,interDimension))
-		return float(self.get_counter_value(interName))*(0.000015256/30)
-				# 0.000015256/30 is a conversion factor
+		interId = dimension_name+self.name+self.NomPointLibre.suivant()
+		self.initialize_newlength()
+		self.add_latex_line(r"\setlength{\%s}{\%s{%s}}"%(newlengthName(),dimension_name,tex_expression),"BEFORE_PSPICTURE")
+		self.add_write_line(interId,r"\the\%s"%newlengthName())
+		read_value =  self.get_Id_value(interId,"dimension %s"%dimension_name,default_value="0pt") 
+		dimenPT = float(read_value.replace("pt",""))
+		#print "J'ai une dimension de ",dimenPT
+		return dimenPT/30			# 30 is the conversion factor : 1pt=(1/3)mm
 	def get_box_size(self,tex_expression):
 		"""
 		tex_expression is a valid LaTeX expression. Return the size of the corresponding box in cm
@@ -1189,8 +1213,21 @@ class pspicture(object):
 	def fixe_tailleY(self,l):
 		self.dilatation_Y(l/self.BB.tailleY())
 		
-	def add_latex_line(self,ligne):
-		self.pstricks_code.append(ligne+"\n")
+	def add_latex_line(self,ligne,position="DEFAULT"):
+		"""
+		Add a line in the pstricks code. The optional argument <position> is the name of a marker like %GRID, %AXES, ...
+		"""
+		try :
+			N = self.pstricks_code.index(position)+1
+			self.IncrusteLigne(ligne,N)
+		except ValueError :
+			try :
+				position = "%"+position+"\n"
+				N = self.pstricks_code.index(position)+1
+				self.IncrusteLigne(ligne,N)
+			except ValueError :
+				self.pstricks_code.append(ligne+"\n")
+
 	def IncrusteLigne(self,ligne,n):
 		self.pstricks_code[n:n]=ligne+"\n"
 
@@ -1506,7 +1543,9 @@ class pspicture(object):
 		if self.LabelSep == 1 : 
 			self.LabelSep = 2/(self.xunit+self.yunit)
 		a = ["\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+",LabelSep="+str(self.LabelSep)+"}\n"]
-		a.extend("\\begin{pspicture}%s%s\n"%(self.BB.bg.coordinates(),self.BB.hd.coordinates()))
+
+		self.IncrusteLigne("\\begin{pspicture}%s%s\n"%(self.BB.bg.coordinates(),self.BB.hd.coordinates()),self.pstricks_code.index("%BEGIN_PSPICTURE\n")+1)
+
 		a.extend(self.pstricks_code)
 		a.append("\end{pspicture}\n")
 		return "".join(a)
