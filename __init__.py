@@ -2108,6 +2108,24 @@ class pspicture(object):
 			self.TraceSurfacephyFunction(surf)
 		self.add_latex_line("\psplot["+params+"]{"+str(deb)+"}{"+str(fin)+"}{"+fun.pstricks+"}")
 
+	def DrawGraph(self,graphe,N=None):
+		# If n is not None, it is the number of the line where the code has to be put. This is used by DrawGrid
+		if type(graphe) == GraphOfAFunction :
+			self.DrawGraphOfAFunction(graphe)
+		if type(graphe) == GraphOfAParametricCurve :
+			self.DrawGraphOfAParametricCurve(graphe)
+		if type(graphe) == GraphOfASegment :
+			self.DrawGraphOfASegment(graphe,N=N)
+		if type(graphe) == GraphOfAVector :
+			self.DrawGraphOfAVector(graphe)
+		if type(graphe) == GraphOfACircle :
+			self.DrawGraphOfACircle(graphe)
+		if type(graphe) == GraphOfAPoint :
+			self.BB.add_graph(graphe)
+			self.add_latex_line(graphe.code())
+		if type(graphe) == Grid :
+			self.DrawGrid(graphe)
+
 	def DrawGraphOfAPoint(self,graphe):
 		p = graphe.point
 		self.BB.AddPoint(p)
@@ -2116,8 +2134,8 @@ class pspicture(object):
 			mark = graphe.mark
 			if p.psNom not in self.listePoint :
 				self.AddPoint(p)
-			#self.add_latex_line("\\rput("+p.psNom+"){\\rput("+str(dist)+";"+str(angle)+"){"+marque+"}}")
 			self.add_latex_line("\\rput(%s){\\rput(%s;%s){%s}}"%(p.psNom,str(mark.dist),str(mark.angle),str(mark.mark)))
+
 
 	def DrawGraphOfASegment(self,graphe,N=None):
 		if graphe.wavy == False :
@@ -2174,25 +2192,6 @@ class pspicture(object):
 	def TraceCourbeParametrique(self,f,mx,Mx,params):
 		self.BB.AddParametricCurve(f,mx,Mx)
 		self.add_latex_line("\parametricplot[%s]{%s}{%s}{%s}" %(params,str(mx),str(Mx),f.pstricks()))
-
-	def DrawGraph(self,graphe,N=None):
-		# If n is not None, it is the number of the line where the code has to be put. This is used by DrawGrid
-		if type(graphe) == GraphOfAFunction :
-			self.DrawGraphOfAFunction(graphe)
-		if type(graphe) == GraphOfAParametricCurve :
-			self.DrawGraphOfAParametricCurve(graphe)
-		if type(graphe) == GraphOfASegment :
-			self.DrawGraphOfASegment(graphe,N=N)
-		if type(graphe) == GraphOfAVector :
-			self.DrawGraphOfAVector(graphe)
-		if type(graphe) == GraphOfACircle :
-			self.DrawGraphOfACircle(graphe)
-		if type(graphe) == GraphOfAPoint :
-			self.DrawGraphOfAPoint(graphe)
-
-		if type(graphe) == Grid :
-			self.DrawGrid(graphe)
-
 	def DrawSegment(self,seg,params,N=None):
 		self.BB.AddSegment(seg)			# Il me semble que j'avais viré cette ligne.
 		code = seg.code(params)
