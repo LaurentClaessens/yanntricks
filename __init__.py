@@ -22,7 +22,7 @@
 A collection of tools for building LaTeX-pstricks figures with python.
 """
 
-from __future__ import division
+#from __future__ import division
 from sage.all import *
 #import numpy				# I do not remember why I used that.
 import math, sys
@@ -170,109 +170,6 @@ class CalculPolynome(object):
 				l.append(int(rep))
 		return Polynome(l)
 
-class BoundingBox(object):
-	def __init__(self,dbg,dhd):
-		self.bg = dbg
-		self.hd = dhd
-	def NO(self):
-		return Point(self.bg.x,self.hd.y)
-	def NE(self):
-		return self.hd
-	def SO(self):
-		return self.bg
-	def SE(self):
-		return Point(self.hd.x,self.bg.y)
-	def coordinates(self):
-		return self.bg.coordinates()+self.hd.coordinates()
-	def Affiche(self):
-		return self.coordinates()
-	def tailleX(self):
-		return self.hd.x-self.bg.x
-	def tailleY(self):
-		return self.hd.y-self.bg.y
-	def add_graph(self,graphe,pspict):
-		self.AddBB(graphe.bounding_box(pspict))
-	def AddX(self,x):
-		self.bg = Point( min(self.bg.x,x), self.bg.y )
-		self.hd = Point( max(self.hd.x,x), self.hd.y )
-	def AddY(self,y):
-		self.bg = Point( self.bg.x, min(self.bg.y,y) )
-		self.hd = Point( self.hd.x, max(self.hd.y,y) )
-	def AddPoint(self,P):
-		self.AddX(P.x)
-		self.AddY(P.y)
-	def AddSegment(self,seg):
-		self.AddPoint(seg.I)
-		self.AddPoint(seg.F)
-	def AddCircle(self,Cer):
-		self.AddX(Cer.centre.x+Cer.rayon)
-		self.AddX(Cer.centre.x-Cer.rayon)
-		self.AddY(Cer.centre.y+Cer.rayon)
-		self.AddY(Cer.centre.y-Cer.rayon)
-	def AddArcCircle(self,Cer,deb,fin):
-		self.AddX(Cer.xmin(deb,fin))
-		self.AddY(Cer.ymin(deb,fin))
-		self.AddX(Cer.xmax(deb,fin))
-		self.AddY(Cer.ymax(deb,fin))
-	def AddBB(self,bb):
-		self.AddPoint(bb.bg)
-		self.AddPoint(bb.hd)
-
-	# Ajoute un cercle déformé par les xunit et yunit; c'est pratique pour agrandir la BB en taille réelle, pour
-	# faire rentrer des lettres dans la bounding box, par exemple.
-	def AddCircleBB(self,Cer,xunit,yunit):
-		self.AddPoint( Point( Cer.centre.x-Cer.rayon/xunit,Cer.centre.y-Cer.rayon/yunit ) )
-		self.AddPoint( Point( Cer.centre.x+Cer.rayon/xunit,Cer.centre.y+Cer.rayon/yunit ) )
-	def AddAxes(self,axes,xunit,yunit):
-		self.AddPoint( axes.BB.bg )
-		self.AddPoint( axes.BB.hd )
-		self.AddCircleBB( Circle(axes.C,0.7),xunit,yunit )
-	def AddphyFunction(self,fun,deb,fin):
-		#self.AddCircle( Circle(Point(deb,fun.eval(deb)),0.3))
-		#self.AddCircle( Circle(Point(fin,fun.eval(fin)),0.3))
-		self.AddY(fun.ymin(deb,fin))
-		self.AddY(fun.ymax(deb,fin))
-		self.AddX(deb)
-		self.AddX(fin)
-	def AddParametricCurve(self,F,deb,fin):
-		self.AddX(F.xmin(deb,fin))
-		self.AddX(F.xmax(deb,fin))
-		self.AddY(F.ymin(deb,fin))
-		self.AddY(F.ymax(deb,fin))
-
-	def enlarge_a_little(self):
-		"""
-		Essentially intended to the bounding box of a axis coordinate. 
-		The aim is to make the axis slightly larger than the picture in such a way that all the numbers are written
-		1. If a coordinate is integer (say n), we enlarge to n+0.5, so that the number n appears on the axis
-		2. If a coordinate is non integer, we enlarge to the next integer (plus an epsilon) so that the axis still has a number written
-			further than the limit of the picture.
-		"""
-		epsilon = 0.2
-		self.bg.x = enlarge_a_little_low(self.bg.x,epsilon)
-		self.bg.y = enlarge_a_little_low(self.bg.y,epsilon)
-		self.hd.x = enlarge_a_little_up(self.hd.x,epsilon)
-		self.hd.y = enlarge_a_little_up(self.hd.y,epsilon)
-		
-def enlarge_a_little_up(x,epsilon):
-	"""
-	see the description of the function enlarge_a_little of the class BoundingBox.
-	This function makes the job for one number.
-	"""
-	if int(x) == x:
-		return x+0.5
-	else : 
-		return CalculEntierPlus(x)+epsilon
-		
-def enlarge_a_little_low(x,epsilon):
-	"""
-	see the description of the function enlarge_a_little of the class BoundingBox.
-	This function makes the job for one number.
-	"""
-	if int(x) == x:
-		return x-0.5
-	else : 
-		return CalculEntierMoins(x)-epsilon
 
 def SubGridArray(mx,Mx,Dx,num_subX):
 	""" Provides the values between mx and Mx such that there are num_subX-1 numbers between two integer separated by Dx """
@@ -284,41 +181,6 @@ def SubGridArray(mx,Mx,Dx,num_subX):
 		if (tentative < Mx) and (tentative > mx) and ( i % num_subX <> 0 ) :
 			valeurs.append(tentative)
 	return valeurs
-
-# Cette définition retourne l'entier plus grand ou égal à un nombre donné
-def CalculEntierPlus(x):
-	t = x
-	if t <> int(t):
-		if t < 0 : t = t-1
-		t = int(t) + 1
-		return float(t)
-	else : return x
-
-# Cette définition retourne l'entier plus grand ou égal à un nombre donné
-def CalculEntierMoins(x):
-	t = x
-	if t <> int(t):
-		if t < 0 : t = t-1
-		t = int(t)
-		return float(t)
-	else : return x
-
-
-def MultipleLower(x,m):
-	""" Provides the bigger multiple of m which is lower or equal to x"""
-	base = floor(x)
-	for i in range(0,m+1):
-		tentative = float(base - i)
-		if tentative/m - round(tentative/m)==0:
-			return int(tentative)
-
-def MultipleBigger(x,m):
-	""" Provides the lower multiple of m which is bigger or equal to x"""
-	base = ceil(x)
-	for i in range(0,m+1):
-		tentative = float(base + i)
-		if tentative/m - round(tentative/m)==0:
-			return int(tentative)
 
 class MesureLongueur(Segment):			# Sert à faire des doubles flèches pour indiquer des distances
 	def __init__(self,a,b):
@@ -1196,8 +1058,9 @@ class pspicture(object):
 		try :
 			self.BB.add_graph(graphe,self)
 			self.add_latex_line(graphe.code_pstricks(),separator)
-		except AttributeError:
-			print "Le type <%s> n'est pas encore prêt pour le polymorphisme. Soit il n'a pas de méthode code_pstricks(), soit il lui manque bounding_box()"%type(graphe)
+		except AttributeError,data:
+			print data
+			#raise
 			if type(graphe) == GraphOfAFunction :
 				self.DrawGraphOfAFunction(graphe)
 			if type(graphe) == GraphOfAParametricCurve :

@@ -26,6 +26,64 @@ The return values of the functions here are instances of classical classes, not 
 """
 
 import math
+from sage.all import *
+
+
+
+# Cette définition retourne l'entier plus grand ou égal à un nombre donné
+def CalculEntierPlus(x):
+	t = x
+	if t <> int(t):
+		if t < 0 : t = t-1
+		t = int(t) + 1
+		return float(t)
+	else : return x
+
+# Cette définition retourne l'entier plus grand ou égal à un nombre donné
+def CalculEntierMoins(x):
+	t = x
+	if t <> int(t):
+		if t < 0 : t = t-1
+		t = int(t)
+		return float(t)
+	else : return x
+
+
+def MultipleLower(x,m):
+	""" Provides the bigger multiple of m which is lower or equal to x"""
+	base = floor(x)
+	for i in range(0,m+1):
+		tentative = float(base - i)
+		if tentative/m - round(tentative/m)==0:
+			return int(tentative)
+
+def MultipleBigger(x,m):
+	""" Provides the lower multiple of m which is bigger or equal to x"""
+	base = ceil(x)
+	for i in range(0,m+1):
+		tentative = float(base + i)
+		if tentative/m - round(tentative/m)==0:
+			return int(tentative)
+def enlarge_a_little_up(x,epsilon):
+	"""
+	see the description of the function enlarge_a_little of the class BoundingBox.
+	This function makes the job for one number.
+	"""
+	if int(x) == x:
+		return x+0.5
+	else : 
+		return CalculEntierPlus(x)+epsilon
+		
+def enlarge_a_little_low(x,epsilon):
+	"""
+	see the description of the function enlarge_a_little of the class BoundingBox.
+	This function makes the job for one number.
+	"""
+	if int(x) == x:
+		return x-0.5
+	else : 
+		return CalculEntierMoins(x)-epsilon
+
 
 def PolarPoint(r,theta):
 	return Point(r*math.cos(radian(theta)),r*math.sin(radian(theta)))

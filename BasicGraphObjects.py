@@ -30,6 +30,91 @@ from SmallComputations import *
 from BasicGeometricObjects import *
 
 
+
+class BoundingBox(object):
+	def __init__(self,dbg,dhd):
+		self.bg = dbg
+		self.hd = dhd
+	def NO(self):
+		return Point(self.bg.x,self.hd.y)
+	def NE(self):
+		return self.hd
+	def SO(self):
+		return self.bg
+	def SE(self):
+		return Point(self.hd.x,self.bg.y)
+	def coordinates(self):
+		return self.bg.coordinates()+self.hd.coordinates()
+	def Affiche(self):
+		return self.coordinates()
+	def tailleX(self):
+		return self.hd.x-self.bg.x
+	def tailleY(self):
+		return self.hd.y-self.bg.y
+	def add_graph(self,graphe,pspict):
+		self.AddBB(graphe.bounding_box(pspict))
+	def AddX(self,x):
+		self.bg = Point( min(self.bg.x,x), self.bg.y )
+		self.hd = Point( max(self.hd.x,x), self.hd.y )
+	def AddY(self,y):
+		self.bg = Point( self.bg.x, min(self.bg.y,y) )
+		self.hd = Point( self.hd.x, max(self.hd.y,y) )
+	def AddPoint(self,P):
+		self.AddX(P.x)
+		self.AddY(P.y)
+	def AddSegment(self,seg):
+		self.AddPoint(seg.I)
+		self.AddPoint(seg.F)
+	def AddCircle(self,Cer):
+		self.AddX(Cer.centre.x+Cer.rayon)
+		self.AddX(Cer.centre.x-Cer.rayon)
+		self.AddY(Cer.centre.y+Cer.rayon)
+		self.AddY(Cer.centre.y-Cer.rayon)
+	def AddArcCircle(self,Cer,deb,fin):
+		self.AddX(Cer.xmin(deb,fin))
+		self.AddY(Cer.ymin(deb,fin))
+		self.AddX(Cer.xmax(deb,fin))
+		self.AddY(Cer.ymax(deb,fin))
+	def AddBB(self,bb):
+		self.AddPoint(bb.bg)
+		self.AddPoint(bb.hd)
+
+	# Ajoute un cercle déformé par les xunit et yunit; c'est pratique pour agrandir la BB en taille réelle, pour
+	# faire rentrer des lettres dans la bounding box, par exemple.
+	def AddCircleBB(self,Cer,xunit,yunit):
+		self.AddPoint( Point( Cer.centre.x-Cer.rayon/xunit,Cer.centre.y-Cer.rayon/yunit ) )
+		self.AddPoint( Point( Cer.centre.x+Cer.rayon/xunit,Cer.centre.y+Cer.rayon/yunit ) )
+	def AddAxes(self,axes,xunit,yunit):
+		self.AddPoint( axes.BB.bg )
+		self.AddPoint( axes.BB.hd )
+		self.AddCircleBB( Circle(axes.C,0.7),xunit,yunit )
+	def AddphyFunction(self,fun,deb,fin):
+		#self.AddCircle( Circle(Point(deb,fun.eval(deb)),0.3))
+		#self.AddCircle( Circle(Point(fin,fun.eval(fin)),0.3))
+		self.AddY(fun.ymin(deb,fin))
+		self.AddY(fun.ymax(deb,fin))
+		self.AddX(deb)
+		self.AddX(fin)
+	def AddParametricCurve(self,F,deb,fin):
+		self.AddX(F.xmin(deb,fin))
+		self.AddX(F.xmax(deb,fin))
+		self.AddY(F.ymin(deb,fin))
+		self.AddY(F.ymax(deb,fin))
+
+	def enlarge_a_little(self):
+		"""
+		Essentially intended to the bounding box of a axis coordinate. 
+		The aim is to make the axis slightly larger than the picture in such a way that all the numbers are written
+		1. If a coordinate is integer (say n), we enlarge to n+0.5, so that the number n appears on the axis
+		2. If a coordinate is non integer, we enlarge to the next integer (plus an epsilon) so that the axis still has a number written
+			further than the limit of the picture.
+		"""
+		epsilon = 0.2
+		self.bg.x = enlarge_a_little_low(self.bg.x,epsilon)
+		self.bg.y = enlarge_a_little_low(self.bg.y,epsilon)
+		self.hd.x = enlarge_a_little_up(self.hd.x,epsilon)
+		self.hd.y = enlarge_a_little_up(self.hd.y,epsilon)
+
 def OptionsStyleLigne():
 	return ["linecolor","linestyle"]
 
@@ -65,7 +150,6 @@ class Options(object):
 	def merge_options(self,opt):
 		for op in opt.DicoOptions.keys():
 			self.add_option({op:opt[op]})
-				
 	def extend_options(self,Opt):
 		for opt in Opt.DicoOptions.keys():
 			self.add_option(opt+"="+Opt.DicoOptions[opt])
@@ -192,12 +276,10 @@ class GraphOfAPoint(GraphOfAnObject,Point):
 		return bb
 	def code_pstricks(self):
 		a = []
-		a.append("\pstGeonode["+graphe.params()+"]"+self.coordinates()+"{"+self.psNom+"}")
-		if graphe.marque :
-			mark = graphe.mark
-			if p.psNom not in self.listePoint :
-				self.AddPoint(p)
-			a.append("\\rput(%s){\\rput(%s;%s){%s}}"%(p.psNom,str(mark.dist),str(mark.angle),str(mark.mark)))
+		a.append("\pstGeonode["+self.params()+"]"+self.coordinates()+"{"+self.psNom+"}")
+		if self.marque :
+			mark = self.mark
+			a.append("\\rput(%s){\\rput(%s;%s){%s}}"%(self.psNom,str(mark.dist),str(mark.angle),str(mark.text)))
 		return "\n".join(a)
 
 class GraphOfASegment(GraphOfAnObject):

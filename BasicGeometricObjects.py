@@ -401,7 +401,7 @@ class Point(object):
 		It is typically used with PointSymbol=none,PointName=none in order to create the code of
 		more complex objects.
 		"""
-		print "This method is depreciated. Use Graph instead. Please, RTFM before to ask me silly thinks !"
+		raise "This method is depreciated. Use Graph instead. Please, RTFM before to ask me silly thinks !"		
 		return "\pstGeonode["+params+"]"+self.coordinates()+"{"+self.psNom+"}"
 
 	def coordinates(self):
