@@ -939,16 +939,18 @@ class pspicture(object):
 		return self.BB
 	def TraceBB(self):
 		self.DrawBoundingBox(self.BB)
-	def DrawBoundingBox(self,obj):
+	def DrawBoundingBox(self,obj,color="cyan"):
 		"""Draw the bounding box of an object when it has a method bounding_box. If not, assume that the object is the bounding box to be drawn."""
 		try :
 			bb = obj.bounding_box(self)
 		except AttributeError :
 			bb = obj
-		self.TraceRectangle( Rectangle(bb.bg,bb.hd), "linecolor=cyan")
+		self.TraceRectangle( Rectangle(bb.bg,bb.hd), "linecolor=%s"%color)
 
 	# Ici, typiquement, symbol sera "*" et params sera vide.
 	def DrawPoint(self,P,symbol,params):
+		print "This method is depreciated"
+		raise AttributeError
 		return self._DrawPoint(self,P,symbol,params)
 
 	def TraceNuage_de_Points(self,nuage,symbol,params):
@@ -999,8 +1001,9 @@ class pspicture(object):
 		self.add_latex_line("\psplot["+params+"]{"+str(deb)+"}{"+str(fin)+"}{"+fun.pstricks+"}")
 
 	def DrawGraphOfASegment(self,graphe,separator="DEFAULT"):
+		self.BB.add_graph(graphe,self)
 		if graphe.wavy == False :
-			self.DrawSegment(graphe.seg,graphe.params(),separator=separator)
+			self.add_latex_line("\pstLineAB["+graphe.params()+"]{"+graphe.I.psNom+"}{"+graphe.F.psNom+"}",separator)
 		if graphe.wavy == True :
 			waviness = graphe.waviness
 			self.DrawWavySegment(graphe.seg,waviness.dx,waviness.dy,graphe.params(),separator=separator)
@@ -1060,7 +1063,7 @@ class pspicture(object):
 			self.add_latex_line(graphe.code_pstricks(),separator)
 		except AttributeError,data:
 			print data
-			#raise
+			raise
 			if type(graphe) == GraphOfAFunction :
 				self.DrawGraphOfAFunction(graphe)
 			if type(graphe) == GraphOfAParametricCurve :
@@ -1075,12 +1078,6 @@ class pspicture(object):
 				self.DrawGraphOfAPoint(graphe)
 			if type(graphe) == Grid :
 				self.DrawGrid(graphe)
-
-	def DrawSegment(self,seg,params,separator="DEFAULT"):
-		self.BB.AddSegment(seg)
-		code = seg.code(params)
-		self.add_latex_line(code,separator)
-
 	def DrawGrid(self,grid):
 		# The difficulty is that the grid has to be draw first, while most of time it is given last because of the bounding box.
 		self.BB.AddBB(grid.BB)

@@ -549,9 +549,6 @@ class Segment(object):
 		(p-1)*I+p*F
 		if I and F denote the initial and final point of the segment.
 		"""
-		#a = self.I*(1-p)
-		#b = self.F*p
-		#return a+b
 		return self.I*(1-p) + self.F*p
 	def milieu(self):
 		#return Point( (self.I.x+self.F.x)/2, (self.I.y+self.F.y)/2 )
@@ -600,15 +597,7 @@ class Segment(object):
 		return Segment(self.I.translate(vecteur),self.F.translate(vecteur))
 
 	def code(self,params):
-		#pspict.BB.AddSegment(self)
-		#a.append(pspict.CodeAddPoint(self.I))	# Ces lignes étaient du temps où la méthode code prenait une pspict en argument.
-		#a.append(pspict.CodeAddPoint(self.F))
-		a = []
-		a.append(self.I.code())
-		a.append(self.F.code())
-		a.append("\pstLineAB["+params+"]{"+self.I.psNom+"}{"+self.F.psNom+"}")
-		return "\n".join(a)
-
+		raise AttributeError,"Pas de code à un segment seul"
 def PolarVector(P,r,theta):
 	"""
 	returns a vector on the base point P (class Point) of length r angle theta (degree)

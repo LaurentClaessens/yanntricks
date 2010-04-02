@@ -51,8 +51,6 @@ class BoundingBox(object):
 		return self.hd.x-self.bg.x
 	def tailleY(self):
 		return self.hd.y-self.bg.y
-	def add_graph(self,graphe,pspict):
-		self.AddBB(graphe.bounding_box(pspict))
 	def AddX(self,x):
 		self.bg = Point( min(self.bg.x,x), self.bg.y )
 		self.hd = Point( max(self.hd.x,x), self.hd.y )
@@ -79,6 +77,8 @@ class BoundingBox(object):
 		self.AddPoint(bb.bg)
 		self.AddPoint(bb.hd)
 
+	def add_graph(self,graphe,pspict):
+		self.AddBB(graphe.bounding_box(pspict))
 	# Ajoute un cercle déformé par les xunit et yunit; c'est pratique pour agrandir la BB en taille réelle, pour
 	# faire rentrer des lettres dans la bounding box, par exemple.
 	def AddCircleBB(self,Cer,xunit,yunit):
@@ -288,6 +288,9 @@ class GraphOfASegment(GraphOfAnObject):
 		self.seg = self.obj
 		self.I = self.seg.I
 		self.F = self.seg.F
+	def bounding_box(self,pspicture=1):
+		return BoundingBox(self.I,self.F)
+
 
 class GraphOfAVector(GraphOfAnObject):
 	def __init__(self,vect):
