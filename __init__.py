@@ -27,6 +27,7 @@ from sage.all import *
 #import numpy				# I do not remember why I used that.
 import math, sys
 from BasicGraphObjects import *
+from BasicGeometricObjects import *
 from MathComputations import *
 from SmallComputations import *
 import MathConstructions
@@ -335,127 +336,6 @@ class Rectangle(object):
 		self.bd = Point( self.hd.x,self.bg.y )
 		self.hg = Point( self.bg.x,self.hd.y )
 		self.centre = Segment(self.bg,self.hd).milieu()
-
-class Waviness(object):
-	"""
-	This class contains the informations about the waviness of a curve. It takes as argument a GraphOfAFunction and the parameters dx, dy of the wave.
-	Waviness.get_wavy_points		returns a list of points which are disposed around the graph of the curve. These are the points to be linked
-					   by a bezier or something in order to get the wavy graph of the function.
-	"""
-	def __init__(self,graphe,dx,dy):
-		self.graphe = graphe
-		self.dx = dx
-		self.dy = dy
-		self.obj = self.graphe.obj
-		if type(self.obj) == phyFunction :
-			self.Mx = self.graphe.Mx
-			self.mx = self.graphe.mx
-	def get_wavy_points(self):
-		if type(self.obj) == phyFunction :
-			return self.obj.get_wavy_points(self.mx,self.Mx,self.dx,self.dy)
-		if type(self.obj) == Segment :
-			return self.obj.get_wavy_points(self.dx,self.dy)
-
-class Mark(object):
-	def __init__(self,graphe,dist,angle,text):
-		self.graphe = graphe
-		self.dist = dist
-		self.angle = angle
-		self.text = text
-	def central_point(self):
-		"""return the central point of the mark, that is the point where the mark arrives"""
-		return self.graphe.translate(PolarVector(self.graphe,self.dist,self.angle))
-
-class Parameters(object):
-	def __init__(self):
-		self.color = ""
-		self.symbol = ""
-		self.style = ""
-	def add_to_options(self,opt):
-		if self.color <> "":
-			opt.add_option("linecolor=%s"%str(self.color))
-		if self.style <> "":
-			opt.add_option("linestyle=%s"%str(self.style))
-		if self.symbol <> "":
-			opt.add_option("PointSymbol=%s"%str(self.symbol))
-
-class GraphOfAnObject(object):
-	""" This class is supposed to be used to create other "GraphOfA..." by inheritance. It is a superclass. """
-	def __init__(self,obj):
-		self.obj = obj
-		self.parameters = Parameters()
-		self.wavy = False
-		self.waviness = None
-		self.options = Options()
-		self.marque = False
-		self.add_option("linecolor=black")
-		self.add_option("linestyle=solid")
-	def wave(self,dx,dy):					# dx is the wave length and dy is the amplitude
-		self.wavy = True
-		self.waviness = Waviness(self,dx,dy)
-	def put_mark(self,dist,angle,text):
-		self.marque = True
-		self.mark = Mark(self,dist,angle,text)
-	def add_option(self,opt):
-		self.options.add_option(opt)
-	def get_option(opt):
-		return self.options.DicoOptions[opt]
-	def remove_option(opt):
-		self.options.remove_option(opt)
-	def merge_options(self,graphe):
-		"""
-		takes an other object GraphOfA... and merges the options as explained in the documentation
-		of the class Options. That merge takes into account the attributes "color", "style", wavy
-		"""
-		self.parameters = graphe.parameters
-		self.options.merge_options(graphe.options)
-		self.wavy = graphe.wavy
-		self.waviness = graphe.waviness
-	def conclude_params(self):
-		self.parameters.add_to_options(self.options)
-	def params(self):
-		self.conclude_params()
-		return self.options.code()
-
-class GraphOfAPoint(GraphOfAnObject,Point):
-	def __init__(self,point):
-		GraphOfAnObject.__init__(self,point)
-		Point.__init__(self,point.x,point.y)
-		self.point = self.obj
-		self.add_option("PointSymbol=*")
-	def bounding_box(self,pspict):
-		"""
-		return the bounding box of the point including its mark
-
-		A small box of radius 0.1 is given in any case, and the mark is added if there is a one.
-		You need to provide a pspict in order to compute the size since it can vary from the place in your document you place the figure.
-		"""
-		bb = BoundingBox(Point(self.x-0.1,self.y-0.1),Point(self.x+0.1,self.y+0.1))
-		if self.marque:
-			central_point = self.mark.central_point()
-			dimx,dimy=pspict.get_box_size(self.mark.text)
-			bb.AddPoint( Point(central_point.x-dimx/2,central_point.y-dimy/2) )
-			bb.AddPoint( Point(central_point.x+dimx/2,central_point.y+dimy/2) )
-		return bb
-
-class GraphOfASegment(GraphOfAnObject):
-	def __init__(self,seg):
-		GraphOfAnObject.__init__(self,seg)
-		self.seg = self.obj
-		self.I = self.seg.I
-		self.F = self.seg.F
-
-class GraphOfAVector(GraphOfAnObject):
-	def __init__(self,vect):
-		GraphOfAnObject.__init__(self,vect)
-		self.vector = self.obj
-
-class GraphOfACircle(GraphOfAnObject):
-	def __init__(self,circle):
-		GraphOfAnObject.__init__(self,circle)
-		self.circle = self.obj
-		self.angleI = 0
-		self.angleF = 2*pi		# By default, the circle is drawn between the angles 0 and 2pi.
 
 
 class GraphOfAFunction(GraphOfAnObject):
@@ -1072,33 +952,6 @@ class pspicture(object):
 			picture.add_latex_line("\\ncline["+params+"]{->}{"+vect.Segment.I.psNom+"}{"+vect.Segment.F.psNom+"}")
 		def MarkTheVector(self,dist,angle,marque):
 				self.picture.DrawPoint(self.vect.F,"none",self.params).MarkThePoint(dist,angle,marque)
-	class _DrawPoint(object):
-		def __init__(self,picture,P,symbol,params):
-			self.picture = picture
-			self.P = P
-			self.picture.BB.AddPoint(self.P)
-			params_mettre = "PointSymbol="+symbol
-			if params != "":
-				params_mettre = params_mettre + ","+params
-			self.picture.add_latex_line( P.code(params_mettre) )
-		def MarkThePoint(self,dist,angle,marque):
-			if self.P.psNom not in self.picture.listePoint :
-				self.picture.AddPoint(self.P)
-			self.picture.add_latex_line("\\rput("+self.P.psNom+"){\\rput("+str(dist)+";"+str(angle)+"){"+marque+"}}")
-			# The next line was intended to take the size of the point into account in the bounding box.
-			#    This was removed because it does not bring so much improvement, but it dramatically change the axis,
-			#    since the axis are adjusted on the bounding box. In particular, the function enlarge_a_little makes no
-			#    sense in the case where we have a totally artificial 0.1.
-			#self.picture.BB.AddCircle( Circle(self.P,0.1) )
-
-			#if marque <> "":
-				# Le point M est à la place où le nom du point va arriver. Ensuite, j'élargis la BB pour contenir ce point et un petit voisinage.
-			#	M = Point( self.P.x+dist*math.cos(angle)+0.1,self.P.y+dist*math.sin(angle) )
-				#   Note que le cercle qui entoure la marque est tout à fait à la main et entoure à peu près une lettre
-				# the following two lines were intended to take the mark into account in the BB. 
-				# It was removed because of the same reason as the one explained above.
-				#CM =  Circle(M,0.2) 
-				#self.picture.BB.AddCircle( CM )
 
 	class _TraceMesureLongueur(object):
 		def __init__(self,picture,mesure,decale,params):
@@ -1356,7 +1209,7 @@ class pspicture(object):
 			self.DrawGraphOfACircle(graphe)
 		if type(graphe) == GraphOfAPoint :
 			self.BB.add_graph(graphe)
-			self.add_latex_line(graphe.code())
+			self.add_latex_line(graphe.code_pstricks())
 		if type(graphe) == Grid :
 			self.DrawGrid(graphe)
 
