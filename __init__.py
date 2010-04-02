@@ -190,7 +190,8 @@ class BoundingBox(object):
 		return self.hd.x-self.bg.x
 	def tailleY(self):
 		return self.hd.y-self.bg.y
-
+	def add_graph(self,graphe,pspict):
+		self.AddBB(graphe.bounding_box(pspict))
 	def AddX(self,x):
 		self.bg = Point( min(self.bg.x,x), self.bg.y )
 		self.hd = Point( max(self.hd.x,x), self.hd.y )
@@ -633,66 +634,6 @@ class Axes(object):
 
 		#return "\psaxes["+self.options.code()+"]{"+self.arrows"}"+self.C.coordinates()+self.BB.coordinates()
 		return "\psaxes[%s]{%s}%s%s"%(self.options.code(),self.arrows,self.C.coordinates(),self.BB.coordinates())
-			
-def OptionsStyleLigne():
-	return ["linecolor","linestyle"]
-
-class Options(object):
-	"""
-	Describe the drawing options of pstricks objects.
-
-	ATTRIBUTES :
-		self.DicoOptions : dictionnary which contains the options
-	METHODS :
-		self.merge_options(opt) : opt is an other object of the class Options. The method merges the two in the sense that opt is not
-						changed, but 
-						1. if opt contains a key more, it is added to self
-						2. if a key of opt is different of the one of self, self is changed
-	"""
-	def __init__(self):
-		self.DicoOptions = {}
-
-	# On ajoute une des options en donnant genre
-	# LineColor=blue,LineStyle=dashed
-	# Ou alors en donnant un dictionnaire genre
-	# {"Dx":1,"Dy":3}
-	def add_option(self,opt):
-		if type(opt) == str:
-			for op in opt.split(","):
-				s = op.split("=")
-				self.DicoOptions[s[0]] = s[1]
-		else:
-			for op in opt.keys():
-				self.DicoOptions[op] = opt[op]
-	def remove_option(self,opt):
-		del(self.DicoOptions[opt])
-	def merge_options(self,opt):
-		for op in opt.DicoOptions.keys():
-			self.add_option({op:opt[op]})
-				
-	def extend_options(self,Opt):
-		for opt in Opt.DicoOptions.keys():
-			self.add_option(opt+"="+Opt.DicoOptions[opt])
-	# Afiter est une liste de noms d'options, et cette méthode retourne une instance de Options qui a juste ces options-là, 
-	# avec les valeurs de self.
-	def sousOptions(self,AFiter):
-		O = Options()
-		for op in self.DicoOptions.keys() :
-			if op in AFiter : O.add_option(op+"="+self.DicoOptions[op])
-		return O
-	def style_ligne(self):
-		return self.sousOptions(OptionsStyleLigne())
-
-	def __getitem__(self,opt):
-		return self.DicoOptions[opt]
-
-	def code(self):
-		a = []
-		for op in self.DicoOptions.keys():
-			a.append(op+"="+self.DicoOptions[op])
-			a.append(",")
-		del a[-1:]
-		return "".join(a)
 
 # Pour demander l'intersection avec une fonction, utiliser la fonction CircleInterphyFunction.
 def CircleInterLigne(Cer,Ligne):
@@ -1195,36 +1136,6 @@ class pspicture(object):
 			self.TraceSurfacephyFunction(surf)
 		self.add_latex_line("\psplot["+params+"]{"+str(deb)+"}{"+str(fin)+"}{"+fun.pstricks+"}")
 
-	def DrawGraph(self,graphe,N=None):
-		# If n is not None, it is the number of the line where the code has to be put. This is used by DrawGrid
-		if type(graphe) == GraphOfAFunction :
-			self.DrawGraphOfAFunction(graphe)
-		if type(graphe) == GraphOfAParametricCurve :
-			self.DrawGraphOfAParametricCurve(graphe)
-		if type(graphe) == GraphOfASegment :
-			self.DrawGraphOfASegment(graphe,N=N)
-		if type(graphe) == GraphOfAVector :
-			self.DrawGraphOfAVector(graphe)
-		if type(graphe) == GraphOfACircle :
-			self.DrawGraphOfACircle(graphe)
-		if type(graphe) == GraphOfAPoint :
-			self.BB.add_graph(graphe)
-			self.add_latex_line(graphe.code_pstricks())
-		if type(graphe) == Grid :
-			self.DrawGrid(graphe)
-
-	def DrawGraphOfAPoint(self,graphe):
-		p = graphe.point
-		self.BB.AddPoint(p)
-		self.BB.AddBB(graphe.bounding_box(self))
-		self.add_latex_line( p.code(graphe.params()) )
-		if graphe.marque :
-			mark = graphe.mark
-			if p.psNom not in self.listePoint :
-				self.AddPoint(p)
-			self.add_latex_line("\\rput(%s){\\rput(%s;%s){%s}}"%(p.psNom,str(mark.dist),str(mark.angle),str(mark.mark)))
-
-
 	def DrawGraphOfASegment(self,graphe,separator="DEFAULT"):
 		if graphe.wavy == False :
 			self.DrawSegment(graphe.seg,graphe.params(),separator=separator)
@@ -1260,7 +1171,6 @@ class pspicture(object):
 			G.wave(waviness.dx,waviness.dy)
 			self.DrawGraph(G)
 
-
 	def DrawGraphOfAFunction(self,graphe):
 		if graphe.wavy :			
 			waviness = graphe.waviness
@@ -1280,23 +1190,28 @@ class pspicture(object):
 	def TraceCourbeParametrique(self,f,mx,Mx,params):
 		self.BB.AddParametricCurve(f,mx,Mx)
 		self.add_latex_line("\parametricplot[%s]{%s}{%s}{%s}" %(params,str(mx),str(Mx),f.pstricks()))
-	def DrawGraph(self,graphe,separator="DEFAULT"):
-		# If n is not None, it is the number of the line where the code has to be put. This is used by DrawGrid
-		if type(graphe) == GraphOfAFunction :
-			self.DrawGraphOfAFunction(graphe)
-		if type(graphe) == GraphOfAParametricCurve :
-			self.DrawGraphOfAParametricCurve(graphe)
-		if type(graphe) == GraphOfASegment :
-			self.DrawGraphOfASegment(graphe,separator=separator)
-		if type(graphe) == GraphOfAVector :
-			self.DrawGraphOfAVector(graphe)
-		if type(graphe) == GraphOfACircle :
-			self.DrawGraphOfACircle(graphe)
-		if type(graphe) == GraphOfAPoint :
-			self.DrawGraphOfAPoint(graphe)
 
-		if type(graphe) == Grid :
-			self.DrawGrid(graphe)
+
+	def DrawGraph(self,graphe,separator="DEFAULT"):
+		try :
+			self.BB.add_graph(graphe,self)
+			self.add_latex_line(graphe.code_pstricks(),separator)
+		except AttributeError:
+			print "Le type <%s> n'est pas encore prêt pour le polymorphisme. Soit il n'a pas de méthode code_pstricks(), soit il lui manque bounding_box()"%type(graphe)
+			if type(graphe) == GraphOfAFunction :
+				self.DrawGraphOfAFunction(graphe)
+			if type(graphe) == GraphOfAParametricCurve :
+				self.DrawGraphOfAParametricCurve(graphe)
+			if type(graphe) == GraphOfASegment :
+				self.DrawGraphOfASegment(graphe,separator=separator)
+			if type(graphe) == GraphOfAVector :
+				self.DrawGraphOfAVector(graphe)
+			if type(graphe) == GraphOfACircle :
+				self.DrawGraphOfACircle(graphe)
+			if type(graphe) == GraphOfAPoint :
+				self.DrawGraphOfAPoint(graphe)
+			if type(graphe) == Grid :
+				self.DrawGrid(graphe)
 
 	def DrawSegment(self,seg,params,separator="DEFAULT"):
 		self.BB.AddSegment(seg)

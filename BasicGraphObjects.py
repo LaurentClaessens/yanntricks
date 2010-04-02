@@ -30,6 +30,65 @@ from SmallComputations import *
 from BasicGeometricObjects import *
 
 
+def OptionsStyleLigne():
+	return ["linecolor","linestyle"]
+
+class Options(object):
+	"""
+	Describe the drawing options of pstricks objects.
+
+	ATTRIBUTES :
+		self.DicoOptions : dictionnary which contains the options
+	METHODS :
+		self.merge_options(opt) : opt is an other object of the class Options. The method merges the two in the sense that opt is not
+						changed, but 
+						1. if opt contains a key more, it is added to self
+						2. if a key of opt is different of the one of self, self is changed
+	"""
+	def __init__(self):
+		self.DicoOptions = {}
+
+	# On ajoute une des options en donnant genre
+	# LineColor=blue,LineStyle=dashed
+	# Ou alors en donnant un dictionnaire genre
+	# {"Dx":1,"Dy":3}
+	def add_option(self,opt):
+		if type(opt) == str:
+			for op in opt.split(","):
+				s = op.split("=")
+				self.DicoOptions[s[0]] = s[1]
+		else:
+			for op in opt.keys():
+				self.DicoOptions[op] = opt[op]
+	def remove_option(self,opt):
+		del(self.DicoOptions[opt])
+	def merge_options(self,opt):
+		for op in opt.DicoOptions.keys():
+			self.add_option({op:opt[op]})
+				
+	def extend_options(self,Opt):
+		for opt in Opt.DicoOptions.keys():
+			self.add_option(opt+"="+Opt.DicoOptions[opt])
+	# Afiter est une liste de noms d'options, et cette méthode retourne une instance de Options qui a juste ces options-là, 
+	# avec les valeurs de self.
+	def sousOptions(self,AFiter):
+		O = Options()
+		for op in self.DicoOptions.keys() :
+			if op in AFiter : O.add_option(op+"="+self.DicoOptions[op])
+		return O
+	def style_ligne(self):
+		return self.sousOptions(OptionsStyleLigne())
+
+	def __getitem__(self,opt):
+		return self.DicoOptions[opt]
+
+	def code(self):
+		a = []
+		for op in self.DicoOptions.keys():
+			a.append(op+"="+self.DicoOptions[op])
+			a.append(",")
+		del a[-1:]
+		return "".join(a)
 class Waviness(object):
 	"""
 	This class contains the informations about the waviness of a curve. It takes as argument a GraphOfAFunction and the parameters dx, dy of the wave.
