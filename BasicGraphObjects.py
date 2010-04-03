@@ -138,13 +138,14 @@ class Options(object):
 	# Ou alors en donnant un dictionnaire genre
 	# {"Dx":1,"Dy":3}
 	def add_option(self,opt):
-		if type(opt) == str:
+		try:
 			for op in opt.split(","):
 				s = op.split("=")
 				self.DicoOptions[s[0]] = s[1]
-		else:
+		except AttributeError :
 			for op in opt.keys():
 				self.DicoOptions[op] = opt[op]
+
 	def remove_option(self,opt):
 		del(self.DicoOptions[opt])
 	def merge_options(self,opt):

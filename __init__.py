@@ -1056,14 +1056,34 @@ class pspicture(object):
 		self.BB.AddParametricCurve(f,mx,Mx)
 		self.add_latex_line("\parametricplot[%s]{%s}{%s}{%s}" %(params,str(mx),str(Mx),f.pstricks()))
 
+	def DrawObject(self,obj,*args):
+		"""
+		Create a default Graph object for <obj> and draw it. 
+		
+		Arguments in *args are passed as options to pstricks or to the default Graph builder (we try for obj.default_graph(args)).
 
-	def DrawGraph(self,graphe,separator="DEFAULT"):
+		We recommend to use DrawGraph insead.
+		"""
+		try :
+			graphe = obj.default_graph(args)
+		except AttributeError :
+			graphe = Graph(obj)
+			graphe.add_option(args)
+		self.DrawGraph(graphe)
+
+
+	def DrawGraph(self,graphe,separator="DEFAULT",*args):
+		"""
+		Draw an object of type GraphOfA*.
+
+		More generally, it can draw anything that has a method bounding_box and code_pstricks.
+		"""
 		try :
 			self.BB.add_graph(graphe,self)
 			self.add_latex_line(graphe.code_pstricks(),separator)
 		except AttributeError,data:
-			print data
-			raise
+			#print data
+			#raise
 			if type(graphe) == GraphOfAFunction :
 				self.DrawGraphOfAFunction(graphe)
 			if type(graphe) == GraphOfAParametricCurve :

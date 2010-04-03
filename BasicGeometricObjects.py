@@ -32,6 +32,7 @@ This module also contains some specific "constructors" for some classes, like Po
 import math
 from sage.all import *
 from SmallComputations import *
+from BasicGraphObjects import *
 
 
 def SubstitutionMathPsTricks(fx):
@@ -395,13 +396,25 @@ class Point(object):
 	# La méthode normalize voit le point comme un vecteur partant de zéro, et en donne le vecteur de taille 1
 	def normalize(self):
 		return self*(1/self.norme())
+	def default_graph(self,symbol="*",opt):
+		"""
+		Return a default Graph
+		
+		If p is a Point, you can use pspict.DrawObject(p,symbol,arguments) in order to draw it in a default way.
+		"""
+		P=Graph(self)
+		P.parameter.symbol=symbol
+		P.add_option(opt)
+		return P
+
 	def code(self,params="PointSymbol=none,PointName=none"):
 		"""
 		Return the code if one wants to put the point with the options params (string).
 		It is typically used with PointSymbol=none,PointName=none in order to create the code of
 		more complex objects.
 		"""
-		raise "This method is depreciated. Use Graph instead. Please, RTFM before to ask me silly thinks !"		
+		print "This method is depreciated. Use Graph instead. Please, RTFM before to ask me silly thinks !"		
+		print "If you really want to draw the point without creating a Graph, you should use DrawObject"
 		return "\pstGeonode["+params+"]"+self.coordinates()+"{"+self.psNom+"}"
 
 	def coordinates(self):
