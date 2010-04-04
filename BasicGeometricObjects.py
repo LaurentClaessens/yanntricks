@@ -396,14 +396,15 @@ class Point(object):
 	# La méthode normalize voit le point comme un vecteur partant de zéro, et en donne le vecteur de taille 1
 	def normalize(self):
 		return self*(1/self.norme())
-	def default_graph(self,symbol="*",opt):
+	def default_graph(self,opt):
 		"""
 		Return a default Graph
 		
 		If p is a Point, you can use pspict.DrawObject(p,symbol,arguments) in order to draw it in a default way.
+		The first argument is the symbol and the other are passed to pstricks.
 		"""
 		P=Graph(self)
-		P.parameter.symbol=symbol
+		P.parameter.symbol=opt[0]
 		P.add_option(opt)
 		return P
 

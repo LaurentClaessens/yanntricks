@@ -754,7 +754,9 @@ class pspicture(object):
 			picture.AddPoint(vect.F)
 			picture.add_latex_line("\\ncline["+params+"]{->}{"+vect.Segment.I.psNom+"}{"+vect.Segment.F.psNom+"}")
 		def MarkTheVector(self,dist,angle,marque):
-				self.picture.DrawPoint(self.vect.F,"none",self.params).MarkThePoint(dist,angle,marque)
+			P = Graph(self.vect.F)
+			P.put_mark(dist,angle,marque)
+			self.picture.DrawGraph(P)
 
 	class _TraceMesureLongueur(object):
 		def __init__(self,picture,mesure,decale,params):
@@ -1189,9 +1191,13 @@ class pspicture(object):
 			print self.pstricks_code
 			raise
 		if axes.IsLabelX == 1:
-			self.DrawPoint( Point(axes.BB.hd.x,0) ,"none","").MarkThePoint(axes.DistLabelX,axes.AngleLabelX,axes.LabelX)
+			P = Graph( Point(axes.BB.hd.x,0) )
+			P.put_mark(axes.DistLabelX,axes.AngleLabelX,axes.LabelX)
+			self.DrawGraph(P)
 		if axes.IsLabelY == 1:
-			self.DrawPoint( Point(0,axes.BB.hd.y) ,"none","").MarkThePoint(axes.DistLabelY,axes.AngleLabelY,axes.LabelY)
+			P = Graph( Point(0,axes.BB.hd.y))
+			P.put_mark(axes.DistLabelY,axes.AngleLabelY,axes.LabelY)
+			self.DrawGraph(P)
 		self.BB.AddAxes(axes,self.xunit,self.yunit)
 
 	def DrawDefaultAxes(self):
