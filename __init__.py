@@ -1068,7 +1068,10 @@ class pspicture(object):
 		"""
 		try :
 			graphe = obj.default_graph(args)
-		except AttributeError :
+			print graphe.bounding_box(self)
+		except AttributeError,data :
+			print data
+			raise
 			graphe = Graph(obj)
 			graphe.add_option(args)
 		self.DrawGraph(graphe)

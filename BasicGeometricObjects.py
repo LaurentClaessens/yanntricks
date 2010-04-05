@@ -33,6 +33,7 @@ import math
 from sage.all import *
 from SmallComputations import *
 from BasicGraphObjects import *
+import phystricks
 
 
 def SubstitutionMathPsTricks(fx):
@@ -389,10 +390,10 @@ class Point(object):
 	def lie(self,p):
 		return Vector(p,Point(p.x+self.x,p.y+self.y))
 	def Vector(self):
-		return Vector(Point(0,0), self)
+		return Vector(Point(0,0),self)
 
 	def norme(self):
-		return Segment( Point(0,0),self ).longueur
+		return Segment(Point(0,0),self).longueur
 	# La méthode normalize voit le point comme un vecteur partant de zéro, et en donne le vecteur de taille 1
 	def normalize(self):
 		return self*(1/self.norme())
@@ -401,11 +402,12 @@ class Point(object):
 		Return a default Graph
 		
 		If p is a Point, you can use pspict.DrawObject(p,symbol,arguments) in order to draw it in a default way.
-		The first argument is the symbol and the other are passed to pstricks.
+		<opt> is a tuple. The first is the symbol to the point (like "*" or "none").
+		The second is a string to be passed to pstricks, like "linecolor=blue,linestyle=dashed".
 		"""
-		P=Graph(self)
-		P.parameter.symbol=opt[0]
-		P.add_option(opt)
+		P=phystricks.GraphOfAPoint(self)		# Graph is also a method of Sage
+		P.parameters.symbol=opt[0]
+		P.add_option(opt[1])
 		return P
 
 	def code(self,params="PointSymbol=none,PointName=none"):

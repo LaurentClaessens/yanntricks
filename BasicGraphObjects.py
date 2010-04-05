@@ -21,7 +21,7 @@
 # email: moky.math@gmai.com
 
 """
-This module contains the basic Graph objects (the correspond to the basics geometrical objectc)
+This module contains the basic Graph objects (the correspond to the basics geometrical object)
 """
 
 import math
@@ -76,7 +76,6 @@ class BoundingBox(object):
 	def AddBB(self,bb):
 		self.AddPoint(bb.bg)
 		self.AddPoint(bb.hd)
-
 	def add_graph(self,graphe,pspict):
 		self.AddBB(graphe.bounding_box(pspict))
 	# Ajoute un cercle déformé par les xunit et yunit; c'est pratique pour agrandir la BB en taille réelle, pour
@@ -100,7 +99,6 @@ class BoundingBox(object):
 		self.AddX(F.xmax(deb,fin))
 		self.AddY(F.ymin(deb,fin))
 		self.AddY(F.ymax(deb,fin))
-
 	def enlarge_a_little(self):
 		"""
 		Essentially intended to the bounding box of a axis coordinate. 
@@ -114,6 +112,8 @@ class BoundingBox(object):
 		self.bg.y = enlarge_a_little_low(self.bg.y,epsilon)
 		self.hd.x = enlarge_a_little_up(self.hd.x,epsilon)
 		self.hd.y = enlarge_a_little_up(self.hd.y,epsilon)
+	def __str__(self):
+		return "(%s,%s),(%s,%s)"%tuple(str(x) for x in(self.bg.x,self.bg.y,self.hd.x,self.hd.y))
 
 def OptionsStyleLigne():
 	return ["linecolor","linestyle"]
@@ -138,13 +138,14 @@ class Options(object):
 	# Ou alors en donnant un dictionnaire genre
 	# {"Dx":1,"Dy":3}
 	def add_option(self,opt):
-		try:
-			for op in opt.split(","):
-				s = op.split("=")
-				self.DicoOptions[s[0]] = s[1]
-		except AttributeError :
-			for op in opt.keys():
-				self.DicoOptions[op] = opt[op]
+		if opt :			# If the argument is empty.
+			try:
+				for op in opt.split(","):
+					s = op.split("=")
+					self.DicoOptions[s[0]] = s[1]
+			except AttributeError :
+				for op in opt.keys():
+					self.DicoOptions[op] = opt[op]
 
 	def remove_option(self,opt):
 		del(self.DicoOptions[opt])
