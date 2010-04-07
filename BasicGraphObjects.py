@@ -260,6 +260,7 @@ class GraphOfAPoint(GraphOfAnObject,Point):
 	def __init__(self,point):
 		GraphOfAnObject.__init__(self,point)
 		Point.__init__(self,point.x,point.y)
+		self.psNom = point.psNom		# The psNom of the point is erased when running Point.__init__()
 		self.point = self.obj
 		self.add_option("PointSymbol=*")
 	def bounding_box(self,pspict):

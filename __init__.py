@@ -1005,6 +1005,10 @@ class pspicture(object):
 	def DrawGraphOfASegment(self,graphe,separator="DEFAULT"):
 		self.BB.add_graph(graphe,self)
 		if graphe.wavy == False :
+			I = Graph(graphe.I)
+			self.DrawGraph(I,separator)
+			F = Graph(graphe.F)
+			self.DrawGraph(F,separator)
 			self.add_latex_line("\pstLineAB["+graphe.params()+"]{"+graphe.I.psNom+"}{"+graphe.F.psNom+"}",separator)
 		if graphe.wavy == True :
 			waviness = graphe.waviness
