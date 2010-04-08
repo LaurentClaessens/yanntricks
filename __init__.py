@@ -234,20 +234,26 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 		self.add_option("plotstyle=%s"%str(self.plotstyle))
 		return self.options.code()
 
-def Graph(X,arg1=None,arg2=None):
+def Graph(X,*arg):
 	"""This function is supposed to be only used by the end user."""
-	if type(X) == phyFunction :
-		return GraphOfAphyFunction(X,arg1,arg2)
-	if type(X) == ParametricCurve :
-		return GraphOfAParametricCurve(X,arg1,arg2)
-	if type(X) == Segment :
-		return GraphOfASegment(X)
-	if type(X) == Vector :
-		return GraphOfAVector(X)
-	if type(X) == Circle :
-		return GraphOfACircle(X)
-	if type(X) == Point :
-		return GraphOfAPoint(X)
+	try :
+		return X.default_associated_graph_class()(X,arg)
+	except TypeError,datay :
+		return X.default_associated_graph_class()(X)
+	except AttributeError,data :
+		if type(X) == phyFunction :
+			return GraphOfAphyFunction(X,arg[0],arg[1])
+		if type(X) == ParametricCurve :
+			return GraphOfAParametricCurve(X,arg[0],arg[1])
+		if type(X) == Segment :
+			return GraphOfASegment(X)
+		if type(X) == Vector :
+			return GraphOfAVector(X)
+		if type(X) == Circle :
+			return GraphOfACircle(X)
+		if type(X) == Point :
+			print "253 je ne devrais pas être ici"
+			return GraphOfAPoint(X)
 	
 class GrapheDesphyFunctions(object):
 	def __init__(self,L):
@@ -1085,7 +1091,6 @@ class pspicture(object):
 		"""
 		try :
 			graphe = obj.default_graph(args)
-			print graphe.bounding_box(self)
 		except AttributeError,data :
 			print data
 			raise

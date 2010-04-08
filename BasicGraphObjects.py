@@ -214,7 +214,6 @@ class Parameters(object):
 		if not self.color is None:
 			opt.add_option("linecolor=%s"%str(self.color))
 		if not self.style is None:
-			print "217",self.style
 			opt.add_option("linestyle=%s"%str(self.style))
 		if not self.symbol is None:
 			opt.add_option("PointSymbol=%s"%str(self.symbol))

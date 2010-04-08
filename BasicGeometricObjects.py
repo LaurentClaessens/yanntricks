@@ -405,10 +405,13 @@ class Point(object):
 		<opt> is a tuple. The first is the symbol to the point (like "*" or "none").
 		The second is a string to be passed to pstricks, like "linecolor=blue,linestyle=dashed".
 		"""
-		P=phystricks.GraphOfAPoint(self)		# Graph is also a method of Sage
+		P=self.default_associated_graph_class()(self)
 		P.parameters.symbol=opt[0]
 		P.add_option(opt[1])
 		return P
+	def default_associated_graph_class(self):
+		"""Return the class which is the Graph associated type"""
+		return phystricks.GraphOfAPoint				# Graph is also a method of Sage
 
 	def code(self,params="PointSymbol=none,PointName=none"):
 		"""
