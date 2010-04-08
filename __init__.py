@@ -201,10 +201,10 @@ class Rectangle(object):
 		self.centre = Segment(self.bg,self.hd).milieu()
 
 
-class GraphOfAFunction(GraphOfAnObject):
+class GraphOfAphyFunction(GraphOfAnObject):
 	"""
 	Cette classe est une abstraction pour la méthode TracephyFunction. Lorqu'on utilise TracephyFunction, on passe f,mx,Mx,params.
-	La class GraphOfAFunction permet d'abstaire la donné de f,mx,Mx et des paramètres. Elle contient en outre des méhtodes pour
+	La class GraphOfAphyFunction permet d'abstaire la donné de f,mx,Mx et des paramètres. Elle contient en outre des méhtodes pour
 		personnaliser les graphes plus facilement, et surtout sans savoir la syntaxe de pstricks.
 	"""
 	def __init__(self,f,mx,Mx):
@@ -237,7 +237,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 def Graph(X,arg1=None,arg2=None):
 	"""This function is supposed to be only used by the end user."""
 	if type(X) == phyFunction :
-		return GraphOfAFunction(X,arg1,arg2)
+		return GraphOfAphyFunction(X,arg1,arg2)
 	if type(X) == ParametricCurve :
 		return GraphOfAParametricCurve(X,arg1,arg2)
 	if type(X) == Segment :
@@ -251,7 +251,7 @@ def Graph(X,arg1=None,arg2=None):
 	
 class GrapheDesphyFunctions(object):
 	def __init__(self,L):
-		self.liste_GraphOfAFunction = L
+		self.liste_GraphOfAphyFunction = L
 	def add_option(opt):
 		for gf in self.liste_fonctions :
 			gf.add_option(opt)
@@ -1002,14 +1002,27 @@ class pspicture(object):
 			self.TraceSurfacephyFunction(surf)
 		self.add_latex_line("\psplot["+params+"]{"+str(deb)+"}{"+str(fin)+"}{"+fun.pstricks+"}")
 
+	def create_PSpoint(self,p):
+		"""Return the code of creating a pstgeonode. The argument is a Point of GraphOfAPoint"""
+		try : 
+			P = Graph(p)
+		except AttributeError :
+			P=p
+		try:
+			P.parameters.symbol="none"
+		except AttributeError :
+			print type(p)
+			print type(P)
+			raise
+		return P.pstricks_code()
+		
 	def DrawGraphOfASegment(self,graphe,separator="DEFAULT"):
 		self.BB.add_graph(graphe,self)
 		if graphe.wavy == False :
-			I = Graph(graphe.I)
-			self.DrawGraph(I,separator)
-			F = Graph(graphe.F)
-			self.DrawGraph(F,separator)
-			self.add_latex_line("\pstLineAB["+graphe.params()+"]{"+graphe.I.psNom+"}{"+graphe.F.psNom+"}",separator)
+			a =  self.create_PSpoint(graphe.I) + self.create_PSpoint(graphe.F)
+			#a=a+"\n\pstLineAB["+graphe.params()+"]{"+graphe.I.psNom+"}{"+graphe.F.psNom+"}"
+			a=a+"\n\pstLineAB+[%s]{%s}{%s}"%(graphe.params(),graphe.I.psNom,graphe.F.psNom)
+			self.add_latex_line(a,separator)
 		if graphe.wavy == True :
 			waviness = graphe.waviness
 			self.DrawWavySegment(graphe.seg,waviness.dx,waviness.dy,graphe.params(),separator=separator)
@@ -1042,7 +1055,7 @@ class pspicture(object):
 			G.wave(waviness.dx,waviness.dy)
 			self.DrawGraph(G)
 
-	def DrawGraphOfAFunction(self,graphe):
+	def DrawGraphOfAphyFunction(self,graphe):
 		if graphe.wavy :			
 			waviness = graphe.waviness
 			self.TracephyFunctionOndule(graphe.f,waviness.mx,waviness.Mx,waviness.dx,waviness.dy,graphe.params())
@@ -1056,8 +1069,8 @@ class pspicture(object):
 			self.TraceCourbeParametriqueOndule(graphe.curve,graphe.llamI,graphe.llamF,waviness.dx,waviness.dy,graphe.params())
 
 	def TraceGrapheDesphyFunctions(self,liste_gf):
-		for gf in liste_gf.liste_GraphOfAFunction:
-			self.DrawGraphOfAFunction(gf)
+		for gf in liste_gf.liste_GraphOfAphyFunction:
+			self.DrawGraphOfAphyFunction(gf)
 	def TraceCourbeParametrique(self,f,mx,Mx,params):
 		self.BB.AddParametricCurve(f,mx,Mx)
 		self.add_latex_line("\parametricplot[%s]{%s}{%s}{%s}" %(params,str(mx),str(Mx),f.pstricks()))
@@ -1085,16 +1098,16 @@ class pspicture(object):
 		"""
 		Draw an object of type GraphOfA*.
 
-		More generally, it can draw anything that has a method bounding_box and code_pstricks.
+		More generally, it can draw anything that has a method bounding_box and pstricks_code.
 		"""
 		try :
 			self.BB.add_graph(graphe,self)
-			self.add_latex_line(graphe.code_pstricks(),separator)
+			self.add_latex_line(graphe.pstricks_code(),separator)
 		except AttributeError,data:
 			#print data
 			#raise
-			if type(graphe) == GraphOfAFunction :
-				self.DrawGraphOfAFunction(graphe)
+			if type(graphe) == GraphOfAphyFunction :
+				self.DrawGraphOfAphyFunction(graphe)
 			if type(graphe) == GraphOfAParametricCurve :
 				self.DrawGraphOfAParametricCurve(graphe)
 			if type(graphe) == GraphOfASegment :

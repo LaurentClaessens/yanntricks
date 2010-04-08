@@ -177,7 +177,7 @@ class Options(object):
 		return "".join(a)
 class Waviness(object):
 	"""
-	This class contains the informations about the waviness of a curve. It takes as argument a GraphOfAFunction and the parameters dx, dy of the wave.
+	This class contains the informations about the waviness of a curve. It takes as argument a GraphOfAphyFunction and the parameters dx, dy of the wave.
 	Waviness.get_wavy_points		returns a list of points which are disposed around the graph of the curve. These are the points to be linked
 					   by a bezier or something in order to get the wavy graph of the function.
 	"""
@@ -207,15 +207,16 @@ class Mark(object):
 
 class Parameters(object):
 	def __init__(self):
-		self.color = ""
-		self.symbol = ""
-		self.style = ""
+		self.color = None
+		self.symbol = None
+		self.style = None
 	def add_to_options(self,opt):
-		if self.color <> "":
+		if not self.color is None:
 			opt.add_option("linecolor=%s"%str(self.color))
-		if self.style <> "":
+		if not self.style is None:
+			print "217",self.style
 			opt.add_option("linestyle=%s"%str(self.style))
-		if self.symbol <> "":
+		if not self.symbol is None:
 			opt.add_option("PointSymbol=%s"%str(self.symbol))
 
 class GraphOfAnObject(object):
@@ -277,12 +278,12 @@ class GraphOfAPoint(GraphOfAnObject,Point):
 			bb.AddPoint( Point(central_point.x-dimx/2,central_point.y-dimy/2) )
 			bb.AddPoint( Point(central_point.x+dimx/2,central_point.y+dimy/2) )
 		return bb
-	def code_pstricks(self):
+	def pstricks_code(self):
 		a = []
 		a.append("\pstGeonode["+self.params()+"]"+self.coordinates()+"{"+self.psNom+"}")
 		if self.marque :
 			mark = self.mark
-			a.append("\\rput(%s){\\rput(%s;%s){%s}}"%(self.psNom,str(mark.dist),str(mark.angle),str(mark.text)))
+			a.append(r"\rput(%s){\rput(%s;%s){%s}}"%(self.psNom,str(mark.dist),str(mark.angle),str(mark.text)))
 		return "\n".join(a)
 
 class GraphOfASegment(GraphOfAnObject):
