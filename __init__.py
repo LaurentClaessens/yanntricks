@@ -761,6 +761,7 @@ class pspicture(object):
 			picture.add_latex_line("\\ncline["+params+"]{->}{"+vect.Segment.I.psNom+"}{"+vect.Segment.F.psNom+"}")
 		def MarkTheVector(self,dist,angle,marque):
 			P = Graph(self.vect.F)
+			P.parameters.symbol = "none"
 			P.put_mark(dist,angle,marque)
 			self.picture.DrawGraph(P)
 
@@ -1026,8 +1027,7 @@ class pspicture(object):
 		self.BB.add_graph(graphe,self)
 		if graphe.wavy == False :
 			a =  self.create_PSpoint(graphe.I) + self.create_PSpoint(graphe.F)
-			#a=a+"\n\pstLineAB["+graphe.params()+"]{"+graphe.I.psNom+"}{"+graphe.F.psNom+"}"
-			a=a+"\n\pstLineAB+[%s]{%s}{%s}"%(graphe.params(),graphe.I.psNom,graphe.F.psNom)
+			a=a+"\n\pstLineAB[%s]{%s}{%s}"%(graphe.params(),graphe.I.psNom,graphe.F.psNom)
 			self.add_latex_line(a,separator)
 		if graphe.wavy == True :
 			waviness = graphe.waviness
@@ -1217,10 +1217,12 @@ class pspicture(object):
 			raise
 		if axes.IsLabelX == 1:
 			P = Graph( Point(axes.BB.hd.x,0) )
+			P.parameters.symbol="none"
 			P.put_mark(axes.DistLabelX,axes.AngleLabelX,axes.LabelX)
 			self.DrawGraph(P)
 		if axes.IsLabelY == 1:
 			P = Graph( Point(0,axes.BB.hd.y))
+			P.parameters.symbol="none"
 			P.put_mark(axes.DistLabelY,axes.AngleLabelY,axes.LabelY)
 			self.DrawGraph(P)
 		self.BB.AddAxes(axes,self.xunit,self.yunit)
