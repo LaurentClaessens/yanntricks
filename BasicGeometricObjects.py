@@ -125,10 +125,12 @@ class phyFunction(object):
 		"""
 		var('x')
 		f1 = phyFunction(x)
-		f2 = self
+		try :
+			f2 = self.f		# Here, self can be of type «GraphOfAphyFunction»
+		except AttributeError :
+			f2 = self
 		curve = ParametricCurve(f1,f2)
 		return curve.get_regular_points(mx,Mx,dx)
-
 	def get_wavy_points(self,mx,Mx,dx,dy):
 		PIs = self.get_regular_points(mx,Mx,dx)
 		Ps = [self.get_point(mx)]
@@ -136,8 +138,6 @@ class phyFunction(object):
 			Ps.append( self.get_normal_point(PIs[i].x, ((-1)**i)*dy ) )
 		Ps.append(self.get_point(Mx))	
 		return Ps
-
-
 	def liste_extrema(self):
 		if self.listeExtrema == []:
 			self.extrema_analytique()

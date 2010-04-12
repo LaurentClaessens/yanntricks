@@ -64,6 +64,7 @@ class BoundingBox(object):
 		self.AddPoint(seg.I)
 		self.AddPoint(seg.F)
 	def AddCircle(self,Cer):
+		raise AttributeError,"method AddCircle is depreciated"
 		self.AddX(Cer.centre.x+Cer.rayon)
 		self.AddX(Cer.centre.x-Cer.rayon)
 		self.AddY(Cer.centre.y+Cer.rayon)
@@ -303,22 +304,23 @@ def Code_Pscurve(listePoints,params):
 	ligne = "".join(l)
 	return ligne
 
-class GraphOfASegment(GraphOfAnObject):
+class GraphOfASegment(GraphOfAnObject,Segment):
 	def __init__(self,seg):
 		GraphOfAnObject.__init__(self,seg)
+		Segment.__init__(self,seg.I,seg.F)
 		self.seg = self.obj
 		self.I = self.seg.I
 		self.F = self.seg.F
 	def bounding_box(self,pspicture=1):
 		return BoundingBox(self.I,self.F)
 	def pstricks_code(self):
-		if self.wavy == False :
+		if self.wavy:
+			waviness = self.waviness
+			return Code_Pscurve(self.get_wavy_points(waviness.dx,waviness.dy),self.params())
+		else:
 			a =  self.I.create_PSpoint() + self.F.create_PSpoint()
 			a=a+"\n\pstLineAB[%s]{%s}{%s}"%(self.params(),self.I.psNom,self.F.psNom)
 			return a
-		if self.wavy == True :
-			waviness = self.waviness
-			self.DrawWavySegment(self.seg,waviness.dx,waviness.dy,self.params(),separator=separator)
 
 class GraphOfAVector(GraphOfAnObject,Vector):
 	def __init__(self,vect):
@@ -330,15 +332,53 @@ class GraphOfAVector(GraphOfAnObject,Vector):
 	def pstricks_code(self):
 		a = "\\ncline["+self.params()+"]{->}{"+self.segment.I.psNom+"}{"+self.segment.F.psNom+"}"
 		if self.marque :
-			P = Graph(self.vect.F)
+			P = phystricks.Graph(self.F)
 			P.parameters.symbol = "none"
 			P.put_mark(self.mark.dist,self.mark.angle,self.mark.text)
 			a = a + P.pstricks_code()
 		return a
 
-class GraphOfACircle(GraphOfAnObject):
+class GraphOfACircle(GraphOfAnObject,Circle):
 	def __init__(self,circle):
 		GraphOfAnObject.__init__(self,circle)
+		Circle.__init__(self,circle.centre,circle.rayon)
 		self.circle = self.obj
 		self.angleI = 0
 		self.angleF = 2*pi		# By default, the circle is drawn between the angles 0 and 2pi.
+	def bounding_box(self):
+		bb = BoundingBox()
+		bb.AddX(self.centre.x+self.rayon)
+		bb.AddX(self.centre.x-self.rayon)
+		bb.AddY(self.centre.y+self.rayon)
+		bb.AddY(self.centre.y-self.rayon)
+		return bb
+	def pstricks_code(self):
+		if self.wavy:
+			waviness = self.waviness
+			alphaI = radian(self.angleI)
+			alphaF = radian(self.angleF)
+			curve = self.parametric_curve()
+			G = phystricks.GraphOfAParametricCurve(curve,alphaI,alphaF)
+			G.add_option(self.params())
+			# The two following lines are a pity. If I add some properties, I have to change by hand...
+			G.parameters.style = self.parameters.style
+			G.parameters.color = self.color
+			G.wave(waviness.dx,waviness.dy)
+			return G.pstricks_code()
+		else:
+			if self.angleI == 0 and self.angleF == 2*pi :
+				PsA = Point(self.centre.x-self.rayon,self.centre.y)		
+				a = PsA.create_PSpoint()
+				a = a + self.centre.create_PSpoint()
+				a = a + "\pstCircleOA["+self.params()+"]{"+self.centre.psNom+"}{"+PsA.psNom+"}"
+				return a
+				# Some remarks :
+				# Besoin d'un point sur le cercle pour le tracer avec \pstCircleOA,"")
+				# La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
+				#self.add_latex_line("\pscircle["+params+"]("+Cer.centre.psNom+"){"+str(Cer.rayon)+"}")
+			else :
+				PsA = self.get_point(self.angleI)
+				PsB = self.get_point(self.angleF)
+				a = PsA.create_PSpoint() + PsB.create_PSpoint()
+				a = a+"\pstArcOAB[%s]{%s}{%s}{%s}"%(self.params(),self.centre.psNom,PsA.psNom,PsB.psNom)
+				return a

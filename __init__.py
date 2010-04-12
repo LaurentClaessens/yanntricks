@@ -224,8 +224,8 @@ class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
 	def pstricks_code(self):
 		if self.wavy :			
 			waviness = self.waviness
-			self.TracephyFunctionOndule(self.f,waviness.mx,waviness.Mx,waviness.dx,waviness.dy,self.params())
-			self.TracePsCurve( self.get_wavy_points(mx,Mx,dx,dy) ,params)
+			#self.TracephyFunctionOndule(self.f,waviness.mx,waviness.Mx,waviness.dx,waviness.dy,self.params())
+			return Code_Pscurve( self.get_wavy_points(waviness.mx,waviness.Mx,waviness.dx,waviness.dy),self.params())
 		else :
 			# The use of numerical_approx is intended to avoid strings like "2*pi" in the final pstricks code.
 			deb = numerical_approx(self.mx)	
@@ -1061,6 +1061,7 @@ class pspicture(object):
 				self.picture.DrawPoint(self.vector.F,"none",self.params).MarkThePoint(dist,angle,marque)
 
 	def DrawGraphOfACircle(self,graphe):
+		raise AttributeError,"The method DrawGraphOfACircle is depreciated"
 		if graphe.wavy == False :
 			if graphe.angleI == 0 and graphe.angleF == 2*pi :
 				self.TraceCircle(graphe.circle,graphe.params())
@@ -1169,6 +1170,7 @@ class pspicture(object):
 		self.add_latex_line(ligne,separator)
 
 	def DrawWavySegment(self,seg,dx,dy,params,separator):
+		raise AttributeError,"method DrawWavySegment is depreciated"
 		A = seg.I
 		B = seg.F
 		self.BB.AddPoint(seg.I)
@@ -1194,6 +1196,7 @@ class pspicture(object):
 		self.BB.AddPoint(rect.hd)
 		self.add_latex_line("\psframe["+params+"]"+rect.hd.coordinates()+rect.bg.coordinates())
 	def TraceCircle(self,Cer,params):
+		raise AttributeError,"method TraceCircle is depreciated"
 		self.BB.AddCircle(Cer)
 		self.AddPoint(Cer.centre)
 		# Besoin d'un point sur le cercle pour le tracer avec \pstCircleOA,"")
@@ -1203,6 +1206,7 @@ class pspicture(object):
 		# La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
 		#self.add_latex_line("\pscircle["+params+"]("+Cer.centre.psNom+"){"+str(Cer.rayon)+"}")
 	def TraceArcCircle(self,Cer,angleI,angleF,params):
+		raise AttributeError,"method TraceArcCircle is depreciated"
 		self.BB.AddArcCircle(Cer,angleI,angleF)
 		self.AddPoint(Cer.centre)
 		PsA = Cer.get_point(angleI)
