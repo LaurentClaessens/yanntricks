@@ -383,7 +383,6 @@ class Point(object):
 			Rx = (self.y*seg.coefficient - seg.coefficient*seg.independant + self.x)/(seg.coefficient**2 + 1)
 			Ry = (self.y*seg.coefficient**2 + self.x*seg.coefficient + seg.independant)/(seg.coefficient**2 + 1)
 			return Point(Rx,Ry)
-
 	def translate(self,v):
 		"""Do a translation of the point with the vector v"""
 		return self+v
@@ -422,12 +421,12 @@ class Point(object):
 		print "This method is depreciated. Use Graph instead. Please, RTFM before to ask me silly thinks !"		
 		print "If you really want to draw the point without creating a Graph, you should use DrawObject"
 		return "\pstGeonode["+params+"]"+self.coordinates()+"{"+self.psNom+"}"
-
 	def create_PSpoint(self):
 		"""Return the code of creating a pstgeonode. The argument is a Point of GraphOfAPoint"""
 		P = phystricks.Graph(Point(self.x,self.y))
+		P.psNom = self.psNom
 		P.parameters.symbol="none"
-		return P.pstricks_code()
+		return P.pstricks_code()+"\n"
 	def coordinates(self):
 		x = self.x
 		y = self.y

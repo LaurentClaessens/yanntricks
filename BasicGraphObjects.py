@@ -327,10 +327,13 @@ class GraphOfAVector(GraphOfAnObject,Vector):
 		GraphOfAnObject.__init__(self,vect)
 		Vector.__init__(self,vect.I,vect.F)
 		self.vector = self.obj
+		self.I.psNom = self.vector.I.psNom
+		self.F.psNom = self.vector.F.psNom
 	def bounding_box(self):
 		return GraphOfASegment(self.segment).bounding_box()
 	def pstricks_code(self):
-		a = "\\ncline["+self.params()+"]{->}{"+self.segment.I.psNom+"}{"+self.segment.F.psNom+"}"
+		a = self.segment.I.create_PSpoint() + self.segment.F.create_PSpoint()
+		a = a + "\\ncline["+self.params()+"]{->}{"+self.segment.I.psNom+"}{"+self.segment.F.psNom+"}"
 		if self.marque :
 			P = phystricks.Graph(self.F)
 			P.parameters.symbol = "none"
