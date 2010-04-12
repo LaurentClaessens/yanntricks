@@ -423,6 +423,11 @@ class Point(object):
 		print "If you really want to draw the point without creating a Graph, you should use DrawObject"
 		return "\pstGeonode["+params+"]"+self.coordinates()+"{"+self.psNom+"}"
 
+	def create_PSpoint(self):
+		"""Return the code of creating a pstgeonode. The argument is a Point of GraphOfAPoint"""
+		P = phystricks.Graph(Point(self.x,self.y))
+		P.parameters.symbol="none"
+		return P.pstricks_code()
 	def coordinates(self):
 		x = self.x
 		y = self.y
@@ -495,7 +500,6 @@ class Circle(object):
 	def ymin(self,angleI,angleF):
 		return self.get_minmax_data(angleI,angleF)['ymin']
 
-
 class Segment(object):
 	def __init__(self,A,B):
 		self.I = A
@@ -561,7 +565,6 @@ class Segment(object):
 		PIs.extend( [  PI[i]+normal*(-1)**i for i in range(1,len(PI))  ] )
 		PIs.append(self.F)
 		return PIs
-		
 	def proportion(self,p):
 		"""
 		returns a point on the segment which is at the position
@@ -614,9 +617,12 @@ class Segment(object):
 		return Segment(self.I,Point(x,y))
 	def translate(self,vecteur):
 		return Segment(self.I.translate(vecteur),self.F.translate(vecteur))
-
 	def code(self,params):
 		raise AttributeError,"Pas de code à un segment seul"
+	def default_associated_graph_class(self):
+		"""Return the class which is the Graph associated type"""
+		return phystricks.GraphOfASegment
+
 def PolarVector(P,r,theta):
 	"""
 	returns a vector on the base point P (class Point) of length r angle theta (degree)
@@ -629,9 +635,9 @@ class Vector(object):
 	If two points are given to the constructor, return the vector 
 	"""
 	def __init__(self,a,b):
-		self.Segment = Segment(a,b)
-		self.I = self.Segment.I
-		self.F = self.Segment.F
+		self.segment = Segment(a,b)
+		self.I = self.segment.I
+		self.F = self.segment.F
 		self.Point = Point(self.F.x-self.I.x,self.F.y-self.I.y)		# Le point qui serait le vecteur lié à (0,0).
 		self.Dx = self.F.x-self.I.x
 		self.Dy = self.F.y-self.I.y

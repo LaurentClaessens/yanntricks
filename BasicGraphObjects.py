@@ -32,7 +32,7 @@ from BasicGeometricObjects import *
 
 
 class BoundingBox(object):
-	def __init__(self,dbg,dhd):
+	def __init__(self,dbg=Point(0,0),dhd=Point(0,0)):
 		self.bg = dbg
 		self.hd = dhd
 	def NO(self):
@@ -77,10 +77,15 @@ class BoundingBox(object):
 		self.AddPoint(bb.bg)
 		self.AddPoint(bb.hd)
 	def add_graph(self,graphe,pspict):
-		self.AddBB(graphe.bounding_box(pspict))
-	# Ajoute un cercle déformé par les xunit et yunit; c'est pratique pour agrandir la BB en taille réelle, pour
-	# faire rentrer des lettres dans la bounding box, par exemple.
+		try :
+			self.AddBB(graphe.bounding_box(pspict))
+		except TypeError :
+			self.AddBB(graphe.bounding_box())
 	def AddCircleBB(self,Cer,xunit,yunit):
+		"""
+		Ajoute un cercle déformé par les xunit et yunit; c'est pratique pour agrandir la BB en taille réelle, pour
+		faire rentrer des lettres dans la bounding box, par exemple.
+		"""
 		self.AddPoint( Point( Cer.centre.x-Cer.rayon/xunit,Cer.centre.y-Cer.rayon/yunit ) )
 		self.AddPoint( Point( Cer.centre.x+Cer.rayon/xunit,Cer.centre.y+Cer.rayon/yunit ) )
 	def AddAxes(self,axes,xunit,yunit):
@@ -88,13 +93,13 @@ class BoundingBox(object):
 		self.AddPoint( axes.BB.hd )
 		self.AddCircleBB( Circle(axes.C,0.7),xunit,yunit )
 	def AddphyFunction(self,fun,deb,fin):
-		#self.AddCircle( Circle(Point(deb,fun.eval(deb)),0.3))
-		#self.AddCircle( Circle(Point(fin,fun.eval(fin)),0.3))
+		raise AttributeError,"method AddphyFunction is depreciated"
 		self.AddY(fun.ymin(deb,fin))
 		self.AddY(fun.ymax(deb,fin))
 		self.AddX(deb)
 		self.AddX(fin)
 	def AddParametricCurve(self,F,deb,fin):
+		raise AttributeError,"method AddParametricCurve is depreciated"
 		self.AddX(F.xmin(deb,fin))
 		self.AddX(F.xmax(deb,fin))
 		self.AddY(F.ymin(deb,fin))
@@ -285,6 +290,19 @@ class GraphOfAPoint(GraphOfAnObject,Point):
 			a.append(r"\rput(%s){\rput(%s;%s){%s}}"%(self.psNom,str(mark.dist),str(mark.angle),str(mark.text)))
 		return "\n".join(a)
 
+def Code_Pscurve(listePoints,params):
+	"""
+	From a list of points and parameters, gives the code of the corresponding pscurve.
+
+	TODO : create something like a class InterpolationCurve.
+	"""
+	l = []
+	l.append("\pscurve["+params+"]")
+	for p in listePoints :
+		l.append(p.coordinates())
+	ligne = "".join(l)
+	return ligne
+
 class GraphOfASegment(GraphOfAnObject):
 	def __init__(self,seg):
 		GraphOfAnObject.__init__(self,seg)
@@ -293,12 +311,30 @@ class GraphOfASegment(GraphOfAnObject):
 		self.F = self.seg.F
 	def bounding_box(self,pspicture=1):
 		return BoundingBox(self.I,self.F)
+	def pstricks_code(self):
+		if self.wavy == False :
+			a =  self.I.create_PSpoint() + self.F.create_PSpoint()
+			a=a+"\n\pstLineAB[%s]{%s}{%s}"%(self.params(),self.I.psNom,self.F.psNom)
+			return a
+		if self.wavy == True :
+			waviness = self.waviness
+			self.DrawWavySegment(self.seg,waviness.dx,waviness.dy,self.params(),separator=separator)
 
-
-class GraphOfAVector(GraphOfAnObject):
+class GraphOfAVector(GraphOfAnObject,Vector):
 	def __init__(self,vect):
 		GraphOfAnObject.__init__(self,vect)
+		Vector.__init__(self,vect.I,vect.F)
 		self.vector = self.obj
+	def bounding_box(self):
+		return GraphOfASegment(self.segment).bounding_box()
+	def pstricks_code(self):
+		a = "\\ncline["+self.params()+"]{->}{"+self.segment.I.psNom+"}{"+self.segment.F.psNom+"}"
+		if self.marque :
+			P = Graph(self.vect.F)
+			P.parameters.symbol = "none"
+			P.put_mark(self.mark.dist,self.mark.angle,self.mark.text)
+			a = a + P.pstricks_code()
+		return a
 
 class GraphOfACircle(GraphOfAnObject):
 	def __init__(self,circle):

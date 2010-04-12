@@ -201,28 +201,44 @@ class Rectangle(object):
 		self.centre = Segment(self.bg,self.hd).milieu()
 
 
-class GraphOfAphyFunction(GraphOfAnObject):
-	"""
-	Cette classe est une abstraction pour la méthode TracephyFunction. Lorqu'on utilise TracephyFunction, on passe f,mx,Mx,params.
-	La class GraphOfAphyFunction permet d'abstaire la donné de f,mx,Mx et des paramètres. Elle contient en outre des méhtodes pour
-		personnaliser les graphes plus facilement, et surtout sans savoir la syntaxe de pstricks.
-	"""
+class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
 	def __init__(self,f,mx,Mx):
 		GraphOfAnObject.__init__(self,f)
+		phyFunction.__init__(self,f.sage)
 		self.f = self.obj
 		self.mx = mx
 		self.Mx = Mx
-		self.plotpoints	= 100				# Par défaut, on fait 100 points
+		self.plotpoints	= 100					# We draw 100 points as default.
 		self.parameters.color = "blue"				# Modification with respect to the attribute in GraphOfAnObject
 	def params(self):
 		self.conclude_params()
 		self.add_option("plotpoints=%s"%str(self.plotpoints))
 		return self.options.code()
+	def bounding_box(self):
+		bb = BoundingBox()
+		bb.AddY(self.f.ymin(self.mx,self.Mx))
+		bb.AddY(self.f.ymax(self.mx,self.Mx))
+		bb.AddX(self.mx)
+		bb.AddX(self.Mx)
+		return bb
+	def pstricks_code(self):
+		if self.wavy :			
+			waviness = self.waviness
+			self.TracephyFunctionOndule(self.f,waviness.mx,waviness.Mx,waviness.dx,waviness.dy,self.params())
+			self.TracePsCurve( self.get_wavy_points(mx,Mx,dx,dy) ,params)
+		else :
+			# The use of numerical_approx is intended to avoid strings like "2*pi" in the final pstricks code.
+			deb = numerical_approx(self.mx)	
+			fin = numerical_approx(self.Mx)
+			#for surf in self.f.ListeSurface:		# this will be a mess when I'll have to enable it back.
+			#	self.TraceSurfacephyFunction(surf)
+			return "\psplot["+self.params()+"]{"+str(deb)+"}{"+str(fin)+"}{"+self.f.pstricks+"}"
 
-class GraphOfAParametricCurve(GraphOfAnObject):
+class GraphOfAParametricCurve(GraphOfAnObject,ParametricCurve):
 	def __init__(self,curve,llamI,llamF):
 		GraphOfAnObject.__init__(self,curve)
-		self.curve = self.obj
+		ParametricCurve.__init__(self,curve.f1,curve.f2)
+		self.curve = self.obj			# It is strange that this line does not raise a crash.
 		self.llamI = llamI
 		self.llamF = llamF
 		self.parameters.color = "blue"
@@ -233,6 +249,19 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 		self.add_option("plotpoints=%s"%str(self.plotpoints))
 		self.add_option("plotstyle=%s"%str(self.plotstyle))
 		return self.options.code()
+	def bounding_box(self):
+		bb = BoundingBox()
+		bb.AddX(self.xmin(self.llamI,self.llamF))
+		bb.AddX(self.xmax(self.llamI,self.llamF))
+		bb.AddY(self.ymin(self.llamI,self.llamF))
+		bb.AddY(self.ymax(self.llamI,self.llamF))
+		return bb
+	def pstricks_code(self):
+		if self.wavy :
+			waviness = self.waviness
+			return Code_Pscurve( self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy) ,self.params())
+		else:
+			return "\parametricplot[%s]{%s}{%s}{%s}" %(self.params(),str(self.llamI),str(self.llamF),self.curve.pstricks())
 
 def Graph(X,*arg):
 	"""This function is supposed to be only used by the end user."""
@@ -752,13 +781,14 @@ class pspicture(object):
  
 	class _DrawVector(object):
 		def __init__(self,picture,vect,params):
+			raise AttributeError,"class _DrawVector is depreciated"
 			self.picture = picture
 			self.vect = vect
 			self.params = params
-			picture.BB.AddSegment(vect.Segment)
+			picture.BB.AddSegment(vect.segment)
 			picture.AddPoint(vect.I)
 			picture.AddPoint(vect.F)
-			picture.add_latex_line("\\ncline["+params+"]{->}{"+vect.Segment.I.psNom+"}{"+vect.Segment.F.psNom+"}")
+			picture.add_latex_line("\\ncline["+params+"]{->}{"+vect.segment.I.psNom+"}{"+vect.segment.F.psNom+"}")
 		def MarkTheVector(self,dist,angle,marque):
 			P = Graph(self.vect.F)
 			P.parameters.symbol = "none"
@@ -1001,6 +1031,7 @@ class pspicture(object):
 		self.add_latex_line("}")
 
 	def TracephyFunction(self,fun,min,max,params):
+		raise AttributeError,"TracephyFunction is depreciated"
 		# The use of numerical_approx is intended to avoid strings like "2*pi" in the final pstricks code.
 		deb = numerical_approx(min)	
 		fin = numerical_approx(max)
@@ -1008,22 +1039,8 @@ class pspicture(object):
 		for surf in fun.ListeSurface:
 			self.TraceSurfacephyFunction(surf)
 		self.add_latex_line("\psplot["+params+"]{"+str(deb)+"}{"+str(fin)+"}{"+fun.pstricks+"}")
-
-	def create_PSpoint(self,p):
-		"""Return the code of creating a pstgeonode. The argument is a Point of GraphOfAPoint"""
-		try : 
-			P = Graph(p)
-		except AttributeError :
-			P=p
-		try:
-			P.parameters.symbol="none"
-		except AttributeError :
-			print type(p)
-			print type(P)
-			raise
-		return P.pstricks_code()
-		
 	def DrawGraphOfASegment(self,graphe,separator="DEFAULT"):
+		raise AttributeError,"The method DrawGraphOfASegment is depreciated"
 		self.BB.add_graph(graphe,self)
 		if graphe.wavy == False :
 			a =  self.create_PSpoint(graphe.I) + self.create_PSpoint(graphe.F)
@@ -1032,6 +1049,7 @@ class pspicture(object):
 		if graphe.wavy == True :
 			waviness = graphe.waviness
 			self.DrawWavySegment(graphe.seg,waviness.dx,waviness.dy,graphe.params(),separator=separator)
+
 	def DrawGraphOfAVector(self,graphe):
 		if graphe.marque == False :
 			self.DrawVector(graphe.vector,graphe.params())
@@ -1062,22 +1080,26 @@ class pspicture(object):
 			self.DrawGraph(G)
 
 	def DrawGraphOfAphyFunction(self,graphe):
+		raise AttributeError,"The method DrawGraphOfAphyFunction is depreciated"
 		if graphe.wavy :			
 			waviness = graphe.waviness
 			self.TracephyFunctionOndule(graphe.f,waviness.mx,waviness.Mx,waviness.dx,waviness.dy,graphe.params())
 		else :
 			self.TracephyFunction(graphe.f,graphe.mx,graphe.Mx,graphe.params())
+
 	def DrawGraphOfAParametricCurve(self,graphe):
-		if graphe.wavy == False :
-			self.TraceCourbeParametrique(graphe.curve,graphe.llamI,graphe.llamF,graphe.params())
-		else:
+		raise AttributeError,"The method DrawGraphOfAParametricCurve is depreciated"
+		if graphe.wavy :
 			waviness = graphe.waviness
 			self.TraceCourbeParametriqueOndule(graphe.curve,graphe.llamI,graphe.llamF,waviness.dx,waviness.dy,graphe.params())
+		else:
+			self.TraceCourbeParametrique(graphe.curve,graphe.llamI,graphe.llamF,graphe.params())
 
 	def TraceGrapheDesphyFunctions(self,liste_gf):
 		for gf in liste_gf.liste_GraphOfAphyFunction:
 			self.DrawGraphOfAphyFunction(gf)
 	def TraceCourbeParametrique(self,f,mx,Mx,params):
+		raise AttributeError,"The method TraceCourbeParametrique is depreciated"
 		self.BB.AddParametricCurve(f,mx,Mx)
 		self.add_latex_line("\parametricplot[%s]{%s}{%s}{%s}" %(params,str(mx),str(Mx),f.pstricks()))
 
@@ -1109,8 +1131,8 @@ class pspicture(object):
 			self.BB.add_graph(graphe,self)
 			self.add_latex_line(graphe.pstricks_code(),separator)
 		except AttributeError,data:
-			#print data
-			#raise
+			print data
+			raise
 			if type(graphe) == GraphOfAphyFunction :
 				self.DrawGraphOfAphyFunction(graphe)
 			if type(graphe) == GraphOfAParametricCurve :
@@ -1131,12 +1153,12 @@ class pspicture(object):
 		for element in grid.drawing():
 			self.DrawGraph(element,"GRID")
 
-
 	def TracePsCurve(self,listePoints,params,on_BB=False,separator="DEFAULT"):
 		"""
 		By default, we don't take these points into account in the bounding box because this method is almost only 
 		   used to draw wavy lines. It is sufficient to put the line in the BB.
 		"""
+		raise AttributeError,"method TracePsCurve is depreciated"
 		l = []
 		l.append("\pscurve["+params+"]")
 		for p in listePoints :
@@ -1145,6 +1167,7 @@ class pspicture(object):
 				self.BB.AddPoint(p)
 		ligne = "".join(l)
 		self.add_latex_line(ligne,separator)
+
 	def DrawWavySegment(self,seg,dx,dy,params,separator):
 		A = seg.I
 		B = seg.F
@@ -1152,9 +1175,11 @@ class pspicture(object):
 		self.BB.AddPoint(seg.F)
 		self.TracePsCurve(seg.get_wavy_points(dx,dy),params,separator=separator)
 	def TracephyFunctionOndule(self,f,mx,Mx,dx,dy,params):
+		raise AttributeError,"method TracephyFunctionOndule is depreciated"
 		self.BB.AddphyFunction(f,mx,Mx)
 		self.TracePsCurve( f.get_wavy_points(mx,Mx,dx,dy) ,params)
 	def TraceCourbeParametriqueOndule(self,curve,llamI,llamF,dx,dy,params):
+		raise AttributeError,"method TraceCourbeParametriqueOndule is depreciated"
 		self.BB.AddParametricCurve(curve,llamI,llamF)
 		self.TracePsCurve( curve.get_wavy_points(llamI,llamF,dx,dy) ,params)
 		
