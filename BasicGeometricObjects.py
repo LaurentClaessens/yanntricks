@@ -472,6 +472,8 @@ class Point(object):
 		return Point(self.x+dx,self.y+dy)
 	def __mul__(self,r):
 		return Point(r*self.x,r*self.y)
+	def __str__(self):
+		return "Point (%s,%s)"%(str(self.x),str(self.y))
 
 class Nuage_de_Points(object):
 	def __init__(self):
@@ -480,9 +482,9 @@ class Nuage_de_Points(object):
 		self.listePoints.append(p)
 
 class Circle(object):
-	def __init__(self,C,r):
-		self.center = C
-		self.radius = r
+	def __init__(self,center,radius):
+		self.center = center
+		self.radius = radius
 		# I bet I do not need anymore self.maxima.
 		#self.maxima = "("+str(self.center.x)+"-x)^2+("+str(self.center.y)+"-y)^2-"+str(self.radius)+"^2"+"=0"
 
@@ -512,6 +514,8 @@ class Circle(object):
 		return self.get_minmax_data(angleI,angleF)['ymax']
 	def ymin(self,angleI,angleF):
 		return self.get_minmax_data(angleI,angleF)['ymin']
+	def __str__(self):
+		return "Circle, center=%s, radius=%s"%(self.center.__str__(),str(self.radius))
 
 class Segment(object):
 	def __init__(self,A,B):
