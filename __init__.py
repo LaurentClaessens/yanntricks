@@ -198,7 +198,7 @@ class Rectangle(object):
 		self.hd = B
 		self.bd = Point( self.hd.x,self.bg.y )
 		self.hg = Point( self.bg.x,self.hd.y )
-		self.centre = Segment(self.bg,self.hd).milieu()
+		self.center = Segment(self.bg,self.hd).milieu()
 
 
 class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
@@ -1198,22 +1198,22 @@ class pspicture(object):
 	def TraceCircle(self,Cer,params):
 		raise AttributeError,"method TraceCircle is depreciated"
 		self.BB.AddCircle(Cer)
-		self.AddPoint(Cer.centre)
+		self.AddPoint(Cer.center)
 		# Besoin d'un point sur le cercle pour le tracer avec \pstCircleOA,"")
-		PsA = Point (Cer.centre.x-Cer.rayon,Cer.centre.y)		
+		PsA = Point (Cer.center.x-Cer.rayon,Cer.center.y)		
 		self.AddPoint(PsA)
-		self.add_latex_line("\pstCircleOA["+params+"]{"+Cer.centre.psNom+"}{"+PsA.psNom+"}")
+		self.add_latex_line("\pstCircleOA["+params+"]{"+Cer.center.psNom+"}{"+PsA.psNom+"}")
 		# La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
-		#self.add_latex_line("\pscircle["+params+"]("+Cer.centre.psNom+"){"+str(Cer.rayon)+"}")
+		#self.add_latex_line("\pscircle["+params+"]("+Cer.center.psNom+"){"+str(Cer.rayon)+"}")
 	def TraceArcCircle(self,Cer,angleI,angleF,params):
 		raise AttributeError,"method TraceArcCircle is depreciated"
 		self.BB.AddArcCircle(Cer,angleI,angleF)
-		self.AddPoint(Cer.centre)
+		self.AddPoint(Cer.center)
 		PsA = Cer.get_point(angleI)
 		PsB = Cer.get_point(angleF)
 		self.AddPoint(PsA)
 		self.AddPoint(PsB)
-		self.add_latex_line("\pstArcOAB[%s]{%s}{%s}{%s}"%(params,Cer.centre.psNom,PsA.psNom,PsB.psNom))
+		self.add_latex_line("\pstArcOAB[%s]{%s}{%s}{%s}"%(params,Cer.center.psNom,PsA.psNom,PsB.psNom))
 	# Les grilles se présentent sous la même forme que les axes : on en a par défaut pspicture.grille qu'on a intérêt à tracer
 	#	avec pspicture.TraceGridDefaut()
 	def TraceGrid(self,grille):

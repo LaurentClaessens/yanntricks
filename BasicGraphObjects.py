@@ -65,10 +65,10 @@ class BoundingBox(object):
 		self.AddPoint(seg.F)
 	def AddCircle(self,Cer):
 		raise AttributeError,"method AddCircle is depreciated"
-		self.AddX(Cer.centre.x+Cer.rayon)
-		self.AddX(Cer.centre.x-Cer.rayon)
-		self.AddY(Cer.centre.y+Cer.rayon)
-		self.AddY(Cer.centre.y-Cer.rayon)
+		self.AddX(Cer.radius.x+Cer.radius)
+		self.AddX(Cer.radius.x-Cer.radius)
+		self.AddY(Cer.radius.y+Cer.radius)
+		self.AddY(Cer.radius.y-Cer.radius)
 	def AddArcCircle(self,Cer,deb,fin):
 		self.AddX(Cer.xmin(deb,fin))
 		self.AddY(Cer.ymin(deb,fin))
@@ -87,8 +87,8 @@ class BoundingBox(object):
 		Ajoute un cercle déformé par les xunit et yunit; c'est pratique pour agrandir la BB en taille réelle, pour
 		faire rentrer des lettres dans la bounding box, par exemple.
 		"""
-		self.AddPoint( Point( Cer.centre.x-Cer.rayon/xunit,Cer.centre.y-Cer.rayon/yunit ) )
-		self.AddPoint( Point( Cer.centre.x+Cer.rayon/xunit,Cer.centre.y+Cer.rayon/yunit ) )
+		self.AddPoint( Point( Cer.center.x-Cer.radius/xunit,Cer.center.y-Cer.radius/yunit ) )
+		self.AddPoint( Point( Cer.center.x+Cer.radius/xunit,Cer.center.y+Cer.radius/yunit ) )
 	def AddAxes(self,axes,xunit,yunit):
 		self.AddPoint( axes.BB.bg )
 		self.AddPoint( axes.BB.hd )
@@ -344,16 +344,16 @@ class GraphOfAVector(GraphOfAnObject,Vector):
 class GraphOfACircle(GraphOfAnObject,Circle):
 	def __init__(self,circle):
 		GraphOfAnObject.__init__(self,circle)
-		Circle.__init__(self,circle.centre,circle.rayon)
+		Circle.__init__(self,circle.center,circle.radius)
 		self.circle = self.obj
 		self.angleI = 0
 		self.angleF = 2*pi		# By default, the circle is drawn between the angles 0 and 2pi.
 	def bounding_box(self):
 		bb = BoundingBox()
-		bb.AddX(self.centre.x+self.rayon)
-		bb.AddX(self.centre.x-self.rayon)
-		bb.AddY(self.centre.y+self.rayon)
-		bb.AddY(self.centre.y-self.rayon)
+		bb.AddX(self.center.x+self.radius)
+		bb.AddX(self.center.x-self.radius)
+		bb.AddY(self.center.y+self.radius)
+		bb.AddY(self.center.y-self.radius)
 		return bb
 	def pstricks_code(self):
 		if self.wavy:
@@ -370,18 +370,18 @@ class GraphOfACircle(GraphOfAnObject,Circle):
 			return G.pstricks_code()
 		else:
 			if self.angleI == 0 and self.angleF == 2*pi :
-				PsA = Point(self.centre.x-self.rayon,self.centre.y)		
+				PsA = Point(self.center.x-self.radius,self.center.y)		
 				a = PsA.create_PSpoint()
-				a = a + self.centre.create_PSpoint()
-				a = a + "\pstCircleOA["+self.params()+"]{"+self.centre.psNom+"}{"+PsA.psNom+"}"
+				a = a + self.center.create_PSpoint()
+				a = a + "\pstCircleOA["+self.params()+"]{"+self.center.psNom+"}{"+PsA.psNom+"}"
 				return a
 				# Some remarks :
 				# Besoin d'un point sur le cercle pour le tracer avec \pstCircleOA,"")
 				# La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
-				#self.add_latex_line("\pscircle["+params+"]("+Cer.centre.psNom+"){"+str(Cer.rayon)+"}")
+				#self.add_latex_line("\pscircle["+params+"]("+Cer.center.psNom+"){"+str(Cer.radius)+"}")
 			else :
 				PsA = self.get_point(self.angleI)
 				PsB = self.get_point(self.angleF)
 				a = PsA.create_PSpoint() + PsB.create_PSpoint()
-				a = a+"\pstArcOAB[%s]{%s}{%s}{%s}"%(self.params(),self.centre.psNom,PsA.psNom,PsB.psNom)
+				a = a+"\pstArcOAB[%s]{%s}{%s}{%s}"%(self.params(),self.center.psNom,PsA.psNom,PsB.psNom)
 				return a

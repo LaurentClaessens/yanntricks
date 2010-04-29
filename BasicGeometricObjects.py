@@ -215,6 +215,13 @@ class phyFunction(object):
 		return phyFunction(self.sage**n)
 
 class ParametricCurve(object):
+	"""
+	This class describes a parametric curve.
+
+	You create a parametric curve by
+		curve = ParamatricCurve(f1,f2)
+	where f1 and f2 are phyFunction.
+	"""
 	def __init__(self,f1,f2):
 		if type(f1) is phyFunction : self.f1 = f1
 		else : self.f1 = phyFunction(f1)
@@ -230,6 +237,9 @@ class ParametricCurve(object):
 	def derivative(self):
 		return ParametricCurve(self.f1.derivative(),self.f2.derivative())
 	def get_point(self,llam):
+		"""
+		Return the point on the curve for the value llam of the parameter.
+		"""
 		return Point( self.f1.eval(llam),self.f2.eval(llam) )
 	def tangent_vector(self,llam):
 		"""
@@ -239,6 +249,10 @@ class ParametricCurve(object):
 		initial = self.get_point(llam)
 		return Vector( initial,Point(initial.x+self.derivative().f1.eval(llam),initial.y+self.derivative().f2.eval(llam)) ).normalize()
 	def normal_vector(self,llam):
+		"""
+		Return the normal vector to the curve for the value llam of the parameter.
+		   The vector is normed to 1.
+		"""
 		return self.tangent_vector(llam).orthogonal()
 
 	def get_minmax_data(self,deb,fin):
@@ -467,18 +481,18 @@ class Nuage_de_Points(object):
 
 class Circle(object):
 	def __init__(self,C,r):
-		self.centre = C
-		self.rayon = r
+		self.center = C
+		self.radius = r
 		# I bet I do not need anymore self.maxima.
-		#self.maxima = "("+str(self.centre.x)+"-x)^2+("+str(self.centre.y)+"-y)^2-"+str(self.rayon)+"^2"+"=0"
+		#self.maxima = "("+str(self.center.x)+"-x)^2+("+str(self.center.y)+"-y)^2-"+str(self.radius)+"^2"+"=0"
 
 	def parametric_curve(self):
 		var('x')
-		f1 = phyFunction(self.centre.x+self.rayon*cos(x))
-		f2 = phyFunction(self.centre.y+self.rayon*sin(x))
+		f1 = phyFunction(self.center.x+self.radius*cos(x))
+		f2 = phyFunction(self.center.y+self.radius*sin(x))
 		return ParametricCurve(f1,f2)
 	def get_point(self,theta):
-		return Point(self.centre.x+self.rayon*math.cos(radian(theta)), self.centre.y+self.rayon*math.sin(radian(theta)) )
+		return Point(self.center.x+self.radius*math.cos(radian(theta)), self.center.y+self.radius*math.sin(radian(theta)) )
 	# Donne le vecteur normal de norme 1 au cercle au point d'angle theta
 	def VectorTangent(self,theta):
 		return PolarPoint(1,theta+90).lie(self.get_point(theta))
