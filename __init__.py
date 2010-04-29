@@ -222,17 +222,25 @@ class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
 		bb.AddX(self.Mx)
 		return bb
 	def pstricks_code(self):
+		a = []
+		if self.marque :
+			P = Graph(self.get_point(self.Mx))
+			P.parameters.symbol="none"
+			P.marque = True
+			P.mark = self.mark
+			a.append(P.pstricks_code())
 		if self.wavy :			
 			waviness = self.waviness
 			#self.TracephyFunctionOndule(self.f,waviness.mx,waviness.Mx,waviness.dx,waviness.dy,self.params())
-			return Code_Pscurve( self.get_wavy_points(waviness.mx,waviness.Mx,waviness.dx,waviness.dy),self.params())
+			a.append(Code_Pscurve( self.get_wavy_points(waviness.mx,waviness.Mx,waviness.dx,waviness.dy),self.params()))
 		else :
 			# The use of numerical_approx is intended to avoid strings like "2*pi" in the final pstricks code.
 			deb = numerical_approx(self.mx)	
 			fin = numerical_approx(self.Mx)
 			#for surf in self.f.ListeSurface:		# this will be a mess when I'll have to enable it back.
 			#	self.TraceSurfacephyFunction(surf)
-			return "\psplot["+self.params()+"]{"+str(deb)+"}{"+str(fin)+"}{"+self.f.pstricks+"}"
+			a.append("\psplot["+self.params()+"]{"+str(deb)+"}{"+str(fin)+"}{"+self.f.pstricks+"}")
+		return a
 
 class GraphOfAParametricCurve(GraphOfAnObject,ParametricCurve):
 	def __init__(self,curve,llamI,llamF):
