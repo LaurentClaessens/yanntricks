@@ -65,6 +65,16 @@ def AverageBigger(cotes,n):
 	"""return the average of grades that are bigger than n"""
 	return Average(ListHaveMore(cotes,n))
 
+def ListBetween(cotes,n,delta):
+	"""return the list of grades in [n-delta,n+delta]"""
+	return [p for p in cotes if p>=n-delta and p<=n+delta]
+
+def ProportionBetween(cotes,n,delta):
+	"""return the proportion of grades in [n-delta,n+delta]"""
+	a=ListBetween(cotes,n,delta)
+	return float(len(a))/len(cotes)
+
+
 class Grades(object):
 	"""
 	grades_list : the list of grades that are given.
@@ -94,7 +104,7 @@ class Grades(object):
 		segment = Segment( Point(0,0.5),Point(self.full_grade,0.5) )
 		S = Graph(segment)
 		S.parameters.color = "red"
-		pspict.DrawGraph( S )
+		pspict.DrawGraph(S)
 
 		pspict.grid.Dy = 0.1
 		pspict.grid.num_subX = 0
@@ -103,6 +113,7 @@ class Grades(object):
 		pspict.DrawDefaultAxes()
 		pspict.DrawDefaultGrid()
 		return pspict
+
 	def average_bigger(self,pspictName):
 		"""
 		return the pspict that represents the graph of the function
@@ -110,3 +121,49 @@ class Grades(object):
 
 		The intervals are X=[0,self.full_grade] and Y=[0,self.full_grade]
 		"""
+		pspict=pspicture(pspictName)
+		for x in range(0,self.full_grade+1):
+			y = AverageBigger(self.grades_list,x)
+			p = Point( x, y )
+			P = Graph(p)
+			P.parameters.color = "blue"
+			pspict.DrawGraph(P)
+
+		media = float(self.full_grade)/2
+		segment = Segment( Point(0,media),Point(self.full_grade,media) )
+		S = Graph(segment)
+		S.parameters.color = "red"
+		pspict.DrawGraph(S)
+		pspict.math_BB.AddPoint(Point(0,0))
+
+		pspict.grid.Dy = 1
+		pspict.grid.num_subX = 0
+		pspict.grid.num_subY = 5
+		pspict.axes.Dy = 1
+		pspict.DrawDefaultAxes()
+		pspict.DrawDefaultGrid()
+		return pspict
+	def proportion_between(self,pspictName,delta):
+		"""
+		return the pspict that represents the graph of the function
+		y(x)=proportion of students in [x-delta,x+delta].
+
+		The intervals are X=[0,self.full_grade] and Y=[0,1]
+		"""
+		pspict=pspicture(pspictName)
+		for x in range(0,self.full_grade+1):
+			y = ProportionBetween(self.grades_list,x,delta)
+			p = Point( x, y )
+			P = Graph(p)
+			P.parameters.color = "blue"
+			pspict.DrawGraph(P)
+
+		#pspict.math_BB.AddPoint(Point(0,0))
+
+		pspict.grid.Dy = 0.1
+		pspict.grid.num_subX = 0
+		pspict.grid.num_subY = 5
+		pspict.axes.Dy = 0.1
+		pspict.DrawDefaultAxes()
+		pspict.DrawDefaultGrid()
+		return pspict

@@ -442,7 +442,7 @@ class Grid(object):
 					a.append(S)
 		# ++++++++++++ Les lignes horizontales principales ++++++++ 
 		y=MultipleBigger(self.BB.SO().y,self.Dy) 
-		while y < MultipleLower(self.BB.NO().y,self.Dy)  :
+		while y <= MultipleLower(self.BB.NO().y,self.Dy)  :
 			seg = Segment( Point(self.BB.bg.x,y),Point(self.BB.hd.x,y) )
 			S = GraphOfASegment(seg)
 			S.merge_options(self.main_horizontal)
