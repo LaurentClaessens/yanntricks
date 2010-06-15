@@ -50,7 +50,7 @@ def CalculEntierMoins(x):
 
 
 def MultipleLower(x,m):
-	""" Provides the bigger multiple of m which is lower or equal to x"""
+	""" Provides the biggest multiple of m which is lower or equal to x"""
 	base = floor(x)
 	for i in range(0,m+1):
 		tentative = float(base - i)
