@@ -32,7 +32,6 @@ from MathComputations import *
 from SmallComputations import *
 import MathConstructions
 
-
 def _latinize(word):
 	latin = ""
 	for s in word:
@@ -440,6 +439,7 @@ class Grid(object):
 					S.merge_options(self.sub_horizontal)
 					a.append(S)
 		# ++++++++++++ Les lignes horizontales principales ++++++++ 
+		print self.Dy
 		for y in range(MultipleBigger(self.BB.SO().y,self.Dy),MultipleLower(self.BB.NO().y,self.Dy)+1,self.Dy):
 			seg = Segment( Point(self.BB.bg.x,y),Point(self.BB.hd.x,y) )
 			S = GraphOfASegment(seg)

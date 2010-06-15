@@ -67,15 +67,15 @@ class Grades(object):
 	def convert_to_full_grade(self,n):
 		""" return the list of grades if the maximum is n instead of self.full_grade """
 		return Grades([c*n/self.full_grade for c in self.grades_list],n)
-	def y_is_percent_bigger_than_x(self):
+	def y_is_percent_bigger_than_x(self,pspictName):
 		"""
 		Return the pspict that represents the graph of the function
 		y(x) = proportion of the students that have x or more.
 
 		The intervals are x=[0,n] and y=[0,1]
 		"""
-		pspict=pspicture(name)
-		for x in range(0,full_grade+1):
+		pspict=pspicture(pspictName)
+		for x in range(0,self.full_grade+1):
 			y = ProportionHaveMore(self.grades_list,x)
 			p = Point( x, y )
 			P = Graph(p)
@@ -87,7 +87,7 @@ class Grades(object):
 		S.parameters.color = "red"
 		pspict.DrawGraph( S )
 
-		pspict.grid.Dy = 10
+		pspict.grid.Dy = 0.1
 		pspict.grid.num_subX = 0
 		pspict.grid.num_subY = 5
 		pspict.axes.Dy = 0.1
