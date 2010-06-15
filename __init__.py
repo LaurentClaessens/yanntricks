@@ -776,7 +776,7 @@ class Separator(object):
 		if self.number > other.number :
 			return 1
 
-class LabelNotFound:
+class LabelNotFound(object):
 	def __init__(self,message):
 		self.message=message
 
@@ -787,50 +787,17 @@ class pspicture(object):
 	self.contenu_eps() contains the line to be added in order to include the eps file
 	"""
 	NomPointLibre = ListeNomsPoints()
- 	
-	# This is commented on 15 june 2010. If the documentation still works, please remove.
-	#class _DrawVector(object):
-	#	def __init__(self,picture,vect,params):
-	#		raise AttributeError,"class _DrawVector is depreciated"
-	#		self.picture = picture
-	#		self.vect = vect
-	#		self.params = params
-	#		picture.BB.AddSegment(vect.segment)
-	#		picture.AddPoint(vect.I)
-	#		picture.AddPoint(vect.F)
-	#		picture.add_latex_line("\\ncline["+params+"]{->}{"+vect.segment.I.psNom+"}{"+vect.segment.F.psNom+"}")
-	#	def MarkTheVector(self,dist,angle,marque):
-	#		P = Graph(self.vect.F)
-	#		P.parameters.symbol = "none"
-	#		P.put_mark(dist,angle,marque)
-	#		self.picture.DrawGraph(P)
-	#class _TraceMesureLongueur(object):
-	#	def __init__(self,picture,mesure,decale,params):
-	#		self.picture = picture
-	#		self.mesure = mesure
-	#		if decale == 0 :
-	#			self.signe = 0
-	#		else :
-	#			self.signe = decale/abs(decale)
-	#		self.vect_normal = self.mesure.normal_vector()
-	#		self.vect_decale = self.vect_normal.fix_size(decale)
-	#		self.Seg = mesure.translate(self.vect_decale)		# self.Seg est le segment à tracer; il est décalé par rapport au "vrai"
-	#		self.picture.AddPoint(self.Seg.I)
-	#		self.picture.AddPoint(self.Seg.F)
-	#		self.picture.BB.AddSegment(self.Seg)
-	#		self.picture.add_latex_line("\\ncline["+params+"]{<->}{"+self.Seg.I.psNom+"}{"+self.Seg.F.psNom+"}")
-	#	def MarqueMesureLongueur(self,dist,marque):
-	#		milieu = self.Seg.milieu()
-	#		if self.signe == -1 :
-	#			dist = -dist
-	#		vecteur_distance = self.vect_normal.fix_size(dist)
-	#		polaires = vecteur_distance.polaires()
-	#		self.picture.MarkThePoint(milieu,polaires.r,polaires.theta,"none",marque)
 
 	def __init__(self,name="CAN_BE_A_PROBLEM_IF_TRY_TO_PRODUCE_EPS_OR_PDF"):				# class pspicture
 		r"""
 		A name is required for producing intermediate files. This is the case when one wants to produce eps/pdf files of one wants to 
 		   make interactions with LaTeX (see pspict.get_counter_value).
+
+		   self.BB is the bounding box for LaTeX purpose.
+		   	Graph object need to have a method bounding_box
+		   self.math_BB is the bounding box of objects that are "mathematically relevant". This bounding box does not take into account
+		   	marks of points and thinks like that. This is the bounding box that is going to be used for the axes and the grid.
+			When a graph object has a method math_bounding_box, this is the one taken into account in the math_BB here.
 		"""
 		self.name = name		# self.name is used in order to name the intermediate files when one produces the eps file.
 		self.pstricks_code = []
@@ -845,11 +812,11 @@ class pspicture(object):
 		self.yunit = 1
 		self.LabelSep = 1
 		self.BB = BoundingBox(Point(1000,1000),Point(-1000,-1000))
-		self.axes = Axes( Point(0,0), BoundingBox(Point(1000,1000), Point(-1000,-1000)) )
-		self.grid = Grid(BoundingBox(Point(1000,1000), Point(-1000,-1000)) )
+		self.math_BB = BoundingBox(Point(1000,1000),Point(-1000,-1000))
+		self.axes = Axes( Point(0,0), self.math_BB )
+		self.grid = Grid(self.math_BB)
 		# We add the "anchors" %GRID and %AXES in order to force the axes and the grid to be written at these places.
 		#    see the functions DrawAxes and DrawGrid and the fact that they use IncrusteLigne
-
 
 		# The order of declaration is important, because it is recorded in the Separator.number attribute.
 		self.separator_dico = {}			
@@ -867,7 +834,6 @@ class pspicture(object):
 	def new_separator(self,title):
 		self.separator_number = self.separator_number + 1
 		self.separator_dico[title]=Separator(title,self.separator_number)
-
 	def initialize_newwrite(self):
 		if not self.newwriteDone :
 			code = r""" \makeatletter 
@@ -1141,20 +1107,11 @@ class pspicture(object):
 		except AttributeError,data:
 			print data
 			raise
-			#if type(graphe) == GraphOfAphyFunction :
-			#	self.DrawGraphOfAphyFunction(graphe)
-			#if type(graphe) == GraphOfAParametricCurve :
-			#	self.DrawGraphOfAParametricCurve(graphe)
-			#if type(graphe) == GraphOfASegment :
-			#	self.DrawGraphOfASegment(graphe,separator=separator)
-			#if type(graphe) == GraphOfAVector :
-			#	self.DrawGraphOfAVector(graphe)
-			#if type(graphe) == GraphOfACircle :
-			#	self.DrawGraphOfACircle(graphe)
-			#if type(graphe) == GraphOfAPoint :
-			#	self.DrawGraphOfAPoint(graphe)
-			#if type(graphe) == Grid :
-			#	self.DrawGrid(graphe)
+		try :
+			self.math_BB.addBB(graphe.math_bounding_box)
+		except AttributeError,data:
+			print data
+			print "Warning: it seems to me that object %s has no method math_boundig_box"%graphe 
 	def DrawGrid(self,grid):
 		# The difficulty is that the grid has to be draw first, while most of time it is given last because of the bounding box.
 		self.BB.AddBB(grid.BB)
@@ -1265,7 +1222,7 @@ class pspicture(object):
 
 	def DrawDefaultAxes(self):
 		# If the lowest point has y=0.3, the method enlarge_a_little makes the axis begin at y=1.
-		self.axes.BB = self.BB.copy()
+		self.axes.BB = self.math_BB.copy()
 		print "1271",self.axes.BB
 		self.axes.BB.enlarge_a_little()
 		print "1273",self.axes.BB
@@ -1273,7 +1230,7 @@ class pspicture(object):
 
 	def DrawDefaultGrid(self):
 		# This is supposed to be called after DrawDefaultAxes
-		self.grid.BB = self.axes.BB
+		self.grid.BB = self.math_BB
 		self.DrawGrid(self.grid)
 
 	def TraceDynkin(self,Dynkin):

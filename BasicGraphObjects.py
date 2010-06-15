@@ -282,6 +282,9 @@ class GraphOfAPoint(GraphOfAnObject,Point):
 			bb.AddPoint( Point(central_point.x-dimx/2,central_point.y-dimy/2) )
 			bb.AddPoint( Point(central_point.x+dimx/2,central_point.y+dimy/2) )
 		return bb
+	def math_bounding_box(self,pspict):
+		"""Return a bounding box which include itself and that's it."""
+		return BoundingBox(self.point,self.point)
 	def pstricks_code(self):
 		a = []
 		a.append("\pstGeonode["+self.params()+"]"+self.coordinates()+"{"+self.psNom+"}")
