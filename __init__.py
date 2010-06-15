@@ -1108,10 +1108,11 @@ class pspicture(object):
 			print data
 			raise
 		try :
-			self.math_BB.addBB(graphe.math_bounding_box)
+			self.math_BB.AddBB(graphe.math_bounding_box(self))
 		except AttributeError,data:
 			print data
 			print "Warning: it seems to me that object %s has no method math_boundig_box"%graphe 
+			raise
 	def DrawGrid(self,grid):
 		# The difficulty is that the grid has to be draw first, while most of time it is given last because of the bounding box.
 		self.BB.AddBB(grid.BB)

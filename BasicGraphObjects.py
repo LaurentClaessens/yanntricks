@@ -314,7 +314,9 @@ class GraphOfASegment(GraphOfAnObject,Segment):
 		self.I = self.seg.I
 		self.F = self.seg.F
 	def bounding_box(self,pspicture=1):
-		return BoundingBox(self.I,self.F)
+		return BoundingBox(self.I,self.F)		# If you change this, maybe you have to adapt math_bounding_box
+	def math_bounding_box(self,pspicture=1):
+		return self.bounding_box(pspicture)
 	def pstricks_code(self):
 		if self.wavy:
 			waviness = self.waviness

@@ -57,7 +57,6 @@ def SubstitutionMathPsTricks(fx):
 		a = a.replace(s[0],s[1])
 	return a
 
-
 class phyFunction(object):
 	def __init__(self,fun):
 		var('x')
