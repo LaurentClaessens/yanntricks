@@ -75,15 +75,12 @@ class Grades(object):
 		The intervals are x=[0,n] and y=[0,1]
 		"""
 		pspict=pspicture(pspictName)
-		print "78",pspict.BB
 		for x in range(0,self.full_grade+1):
 			y = ProportionHaveMore(self.grades_list,x)
 			p = Point( x, y )
 			P = Graph(p)
 			P.parameters.color = "blue"
 			pspict.DrawGraph(P)
-			print "84 J'ajoute le point",P
-			print pspict.BB
 
 		segment = Segment( Point(0,0.5),Point(self.full_grade,0.5) )
 		S = Graph(segment)

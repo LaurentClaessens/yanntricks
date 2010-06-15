@@ -57,25 +57,25 @@ def MultipleBigger(x,m):
 	""" return the lower multiple of m which is bigger or equal to x"""
 	return ceil(x/m)*m
 
-def enlarge_a_little_up(x,epsilon):
+def enlarge_a_little_up(x,m,epsilon):
 	"""
 	see the description of the function enlarge_a_little of the class BoundingBox.
 	This function makes the job for one number.
 	"""
-	if int(x) == x:
-		return x+0.5
+	if int(x/m) == x/m:
+		return x+epsilon
 	else : 
-		return CalculEntierPlus(x)+epsilon
+		return MultipleBigger(x,m)+epsilon
 		
-def enlarge_a_little_low(x,epsilon):
+def enlarge_a_little_low(x,m,epsilon):
 	"""
 	see the description of the function enlarge_a_little of the class BoundingBox.
 	This function makes the job for one number.
 	"""
-	if int(x) == x:
-		return x-0.5
+	if int(x/m) == x/m:
+		return x-epsilon
 	else : 
-		return CalculEntierMoins(x)-epsilon
+		return MultipleLower(x,m)-epsilon
 
 
 def PolarPoint(r,theta):

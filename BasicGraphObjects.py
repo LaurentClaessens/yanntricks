@@ -103,18 +103,19 @@ class BoundingBox(object):
 		self.AddX(F.xmax(deb,fin))
 		self.AddY(F.ymin(deb,fin))
 		self.AddY(F.ymax(deb,fin))
-	def enlarge_a_little(self,epsilon=0.2):
+	def enlarge_a_little(self,Dx,Dy,epsilonX,epsilonY):
 		"""
 		Essentially intended to the bounding box of a axis coordinate. 
 		The aim is to make the axis slightly larger than the picture in such a way that all the numbers are written
-		1. If a coordinate is integer (say n), we enlarge to n+0.5, so that the number n appears on the axis
-		2. If a coordinate is non integer, we enlarge to the next integer (plus an epsilon) so that the axis still has a number written
+		1. If a coordinate is integer multiple of epsilon, (say n), we enlarge to n+epsilon, so that the number n appears on the axis
+		2. If a coordinate is non integer multiple, we enlarge to the next integer multiple (plus epsilon) so that the axis still has a number written
 			further than the limit of the picture.
+		The aim is to make the axes slightly bigger than their (Dx,Dy) in order the last graduation to be visible.
 		"""
-		self.bg.x = enlarge_a_little_low(self.bg.x,epsilon)
-		self.bg.y = enlarge_a_little_low(self.bg.y,epsilon)
-		self.hd.x = enlarge_a_little_up(self.hd.x,epsilon)
-		self.hd.y = enlarge_a_little_up(self.hd.y,epsilon)
+		self.bg.x = enlarge_a_little_low(self.bg.x,Dx,epsilonX)
+		self.bg.y = enlarge_a_little_low(self.bg.y,Dy,epsilonY)
+		self.hd.x = enlarge_a_little_up(self.hd.x,Dx,epsilonX)
+		self.hd.y = enlarge_a_little_up(self.hd.y,Dy,epsilonY)
 	def copy(self):
 		return BoundingBox(self.bg,self.hd)
 	def __str__(self):

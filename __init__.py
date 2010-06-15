@@ -475,7 +475,7 @@ class Axes(object):
 	"""
 	def __init__(self,C,bb):
 		self.C = C						# Attention : celui-ci a changé, avant c'était O, mais maintenant c'est C.
-		self.BB = bb
+		self.BB = bb.copy()
 		self.BB.AddPoint( Point(C.x-0.5,C.y-0.7) )		# Celle-ci est pour tenir compte des chiffres écrits sur les axes X et Y
 		self.options = Options()
 		self.grille = Grid(self.BB)
@@ -788,7 +788,7 @@ class pspicture(object):
 	"""
 	NomPointLibre = ListeNomsPoints()
 
-	def __init__(self,name="CAN_BE_A_PROBLEM_IF_TRY_TO_PRODUCE_EPS_OR_PDF"):				# class pspicture
+	def __init__(self,name="CAN_BE_A_PROBLEM_IF_TRY_TO_PRODUCE_EPS_OR_PDF"):
 		r"""
 		A name is required for producing intermediate files. This is the case when one wants to produce eps/pdf files of one wants to 
 		   make interactions with LaTeX (see pspict.get_counter_value).
@@ -1224,11 +1224,8 @@ class pspicture(object):
 	def DrawDefaultAxes(self):
 		# If the lowest point has y=0.3, the method enlarge_a_little makes the axis begin at y=1.
 		self.axes.BB = self.math_BB.copy()
-		print "1271",self.axes.BB
-		self.axes.BB.enlarge_a_little()
-		print "1273",self.axes.BB
+		self.axes.BB.enlarge_a_little(self.axes.Dx,self.axes.Dy,self.axes.Dx/2,self.axes.Dy/2)
 		self.DrawAxes(self.axes)
-
 	def DrawDefaultGrid(self):
 		# This is supposed to be called after DrawDefaultAxes
 		self.grid.BB = self.math_BB
