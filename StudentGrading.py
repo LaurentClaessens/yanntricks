@@ -76,6 +76,7 @@ class Grades(object):
 		"""
 		pspict=pspicture(pspictName)
 		for x in range(0,self.full_grade+1):
+			print "78, Student.Grading",pspict.BB
 			y = ProportionHaveMore(self.grades_list,x)
 			p = Point( x, y )
 			P = Graph(p)
@@ -91,8 +92,11 @@ class Grades(object):
 		pspict.grid.num_subX = 0
 		pspict.grid.num_subY = 5
 		pspict.axes.Dy = 0.1
+		print "95, Student.Grading",pspict.BB
 		pspict.DrawDefaultAxes()
+		print "97, Student.Grading",pspict.BB
 		pspict.DrawDefaultGrid()
+		print "99, Student.Grading",pspict.BB
 
 		return pspict
 

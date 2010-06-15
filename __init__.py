@@ -440,7 +440,7 @@ class Grid(object):
 					a.append(S)
 		# ++++++++++++ Les lignes horizontales principales ++++++++ 
 		y=MultipleBigger(self.BB.SO().y,self.Dy) 
-		while y < MultipleLower(self.BB.NO().y,self.Dy)+1  :
+		while y < MultipleLower(self.BB.NO().y,self.Dy)  :
 			seg = Segment( Point(self.BB.bg.x,y),Point(self.BB.hd.x,y) )
 			S = GraphOfASegment(seg)
 			S.merge_options(self.main_horizontal)
@@ -456,11 +456,6 @@ class Grid(object):
 	def code(self):
 		print "This is a depreciated feature ... I think the program is going to crash now :("
 
-
-# Des axes sont donnés par le point central et sa BB (Bounding Box).
-# Les axes peuvent s'ajuster pour contenir toute une série d'objets. Le début et la fin des axes sont donc une BoundingBox
-# Note qu'en pratique, c'est mieux d'utiliser la grille par défaut de la pspicture, et de la tracer avec pspicture.DrawDefaultAxes. 
-#	Il devrait être assez exceptionnel d'avoir une instance explicite de la classe Axes dans le programme principal.
 class Axes(object):
 	"""
 	ATTRIBUTS
@@ -813,8 +808,8 @@ class pspicture(object):
 		self.LabelSep = 1
 		self.BB = BoundingBox(Point(1000,1000),Point(-1000,-1000))
 		self.math_BB = BoundingBox(Point(1000,1000),Point(-1000,-1000))
-		self.axes = Axes( Point(0,0), self.math_BB )
-		self.grid = Grid(self.math_BB)
+		self.axes = Axes( Point(0,0), self.math_BB.copy() )
+		self.grid = Grid(self.math_BB.copy())
 		# We add the "anchors" %GRID and %AXES in order to force the axes and the grid to be written at these places.
 		#    see the functions DrawAxes and DrawGrid and the fact that they use IncrusteLigne
 
@@ -950,7 +945,7 @@ class pspicture(object):
 
 	def bounding_box(self,other):
 		return self.BB
-	def TraceBB(self):
+	def DrawBB(self):
 		self.DrawBoundingBox(self.BB)
 	def DrawBoundingBox(self,obj,color="cyan"):
 		"""Draw the bounding box of an object when it has a method bounding_box. If not, assume that the object is the bounding box to be drawn."""
@@ -1023,16 +1018,6 @@ class pspicture(object):
 		if graphe.wavy == True :
 			waviness = graphe.waviness
 			self.DrawWavySegment(graphe.seg,waviness.dx,waviness.dy,graphe.params(),separator=separator)
-
-	#def DrawGraphOfAVector(self,graphe):
-	#	if graphe.marque == False :
-	#		self.DrawVector(graphe.vector,graphe.params())
-	#	if graphe.marque == True :
-	#		mark = graphe.mark
-	#	self.DrawVector(graphe.vector,graphe.params()).MarkTheVector(mark.dist,mark.angle,mark.text)
-	#
-	#	def MarkTheVector(self,dist,angle,marque):
-	#			self.picture.DrawPoint(self.vector.F,"none",self.params).MarkThePoint(dist,angle,marque)
 
 	def DrawGraphOfACircle(self,graphe):
 		raise AttributeError,"The method DrawGraphOfACircle is depreciated"
@@ -1203,18 +1188,23 @@ class pspicture(object):
 			P.parameters.symbol="none"
 			P.put_mark(axes.DistLabelY,axes.AngleLabelY,axes.LabelY)
 			self.DrawGraph(P)
+		print "1191",self.BB
 		self.BB.AddAxes(axes,self.xunit,self.yunit)
+		print "1193",self.BB
 
 	def DrawDefaultAxes(self):
-		print "1209",self.math_BB
 		self.axes.BB = self.math_BB.copy()
 		epsilonX=float(self.axes.Dx)/2
 		epsilonY=float(self.axes.Dy)/2
 		self.axes.BB.enlarge_a_little(self.axes.Dx,self.axes.Dy,epsilonX,epsilonY)
 		self.DrawAxes(self.axes)
-		print "1215",self.math_BB
 	def DrawDefaultGrid(self):
 		self.grid.BB = self.math_BB.copy()
+		Dx=self.grid.Dx
+		Dy=self.grid.Dy
+		epsilonX=0
+		epsilonY=0
+		self.grid.BB.enlarge_a_little(Dx,Dy,epsilonX,epsilonY)	# Make the grid end on its "big" subdivision.
 		self.DrawGrid(self.grid)
 	def TraceDynkin(self,Dynkin):
 		Adjacence	= Dynkin.description.Adjacence

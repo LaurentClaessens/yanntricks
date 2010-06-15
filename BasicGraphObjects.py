@@ -90,7 +90,7 @@ class BoundingBox(object):
 	def AddAxes(self,axes,xunit,yunit):
 		self.AddPoint( axes.BB.bg )
 		self.AddPoint( axes.BB.hd )
-		self.AddCircleBB( Circle(axes.C,0.7),xunit,yunit )
+		#self.AddCircleBB( Circle(axes.C,0.7),xunit,yunit )			# This is to make enter the graduation of the axes.
 	def AddphyFunction(self,fun,deb,fin):
 		raise AttributeError,"method AddphyFunction is depreciated"
 		self.AddY(fun.ymin(deb,fin))
