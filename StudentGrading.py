@@ -51,10 +51,19 @@ def HaveMore(cotes,n):
 	"""
 	returns the number of elements of the list cotes that are bigger than n
 	"""
-	a = 0
-	for p in cotes:
-		if p >= n : a=a+1
-	return a	
+	return len(ListHaveMore(cotes,n))
+
+def ListHaveMore(grades,n):
+	""" return the list of points that are bigger than n"""
+	return [p for p in grades if p>=n]
+
+def Average(cotes):
+	"""return the average of the list"""
+	return float(sum(cotes))/len(cotes)
+
+def AverageBigger(cotes,n):
+	"""return the average of grades that are bigger than n"""
+	return Average(ListHaveMore(cotes,n))
 
 class Grades(object):
 	"""
@@ -72,7 +81,7 @@ class Grades(object):
 		Return the pspict that represents the graph of the function
 		y(x) = proportion of the students that have x or more.
 
-		The intervals are x=[0,n] and y=[0,1]
+		The intervals are X=[0,self.full_grade] and Y=[0,1]
 		"""
 		pspict=pspicture(pspictName)
 		for x in range(0,self.full_grade+1):
@@ -93,76 +102,11 @@ class Grades(object):
 		pspict.axes.Dy = 0.1
 		pspict.DrawDefaultAxes()
 		pspict.DrawDefaultGrid()
-
 		return pspict
+	def average_bigger(self,pspictName):
+		"""
+		return the pspict that represents the graph of the function
+		y(x)=average of grades that are bigger than x
 
-def CombienAutour(cotes,n,delta):
-	a = 0
-	for p in cotes:
-		if abs(p-n)<=delta : a=a+1
-	return a	
-
-def CombienMoyAuDessus(cotes,n):
-	a = 0
-	s = 0
-	for p in cotes:
-		if p > n : 
-			a=a+1
-			s=s+p
-	if a == 0 : return 0
-	if a <> 0 : return s/a
-
-def GrapheNuage(nuage,prefixe,suffixe):
-	pspict=pspicture()
-	fig = GenereFigure(REP,prefixe+suffixe)
-
-	pspict.BB.AddPoint(Point(0,0))				
-	pspict.TraceNuage_de_Points(nuage,"*","")
-
-	pspict.grille.AjouteOption("linecolor=lightgray")
-	if pspict.BB.tailleY() > 10 :
-		pspict.axes.AjouteOption("Dy=2")
-	pspict.TraceGrilleDefaut()
-	pspict.TraceAxesDefaut()
-
-	pspict.fixe_tailleX(15)
-	pspict.fixe_tailleY(5)
-
-	fig.AjoutePspicture(pspict)
-	fig.Conclure()
-	fig.EcrireFichier()
-
-def CreeGraphiques(audit,exam):
-	cotes_pures = audit.liste_cotes(exam)
-	cotes = cotes_pures
-	suffixe = audit.section+exam.nom+"A"
-
-	nuage = Nuage_de_Points()
-	for n in range(1,20):
-		nuage.ajoute_point(Point(n,CombienPlus(cotes,n)))
-	GrapheNuage(nuage,"CombienPlus",suffixe)
-
-
-	nuage = Nuage_de_Points()
-	for n in range(1,20):
-		nuage.ajoute_point(Point(n, CombienMoyAuDessus(cotes,n)))
-	GrapheNuage(nuage,"MoyenneAuDessus",suffixe)
-
-	nuage = Nuage_de_Points()
-	for n in range(2,20):
-		nuage.ajoute_point(Point(n, CombienAutour(cotes,n,1)))
-	GrapheNuage(nuage,"CombienAutour",suffixe)
-
-
-def ListeToGraphiques(liste,nomAudit,nomMatiere,nomExam) :
-	n = len(liste)
-	auditoire = Auditoire(nomAudit,nomMatiere)
-	listeEtudiants = []
-	for i in range(0,len(liste)) :
-		listeEtudiants.append(Etudiant("P"+str(i),"N"+str(i)))
-	for i in range(0,len(liste)) :
-		auditoire.ajoute_etudiant(listeEtudiants[i])
-		listeEtudiants[i].ajoute_cote(nomExam,liste[i])
-	for et in auditoire.liste_etudiants :
-		print et.nom+" "+et.prenom+" "+str(et.dico_cotes[nomExam])
-	CreeGraphiques(auditoire,nomExam)	
+		The intervals are X=[0,self.full_grade] and Y=[0,self.full_grade]
+		"""
