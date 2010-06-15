@@ -114,14 +114,10 @@ class BoundingBox(object):
 		"""
 		self.bg.x = enlarge_a_little_low(self.bg.x,Dx,epsilonX)
 		self.bg.y = enlarge_a_little_low(self.bg.y,Dy,epsilonY)
-		print "117",Dx
-		print "118",epsilonX
-		if epsilonX == 0:
-			raise
 		self.hd.x = enlarge_a_little_up(self.hd.x,Dx,epsilonX)
 		self.hd.y = enlarge_a_little_up(self.hd.y,Dy,epsilonY)
 	def copy(self):
-		return BoundingBox(self.bg,self.hd)
+		return BoundingBox(self.bg.copy(),self.hd.copy())
 	def __str__(self):
 		return "(%s,%s),(%s,%s)"%tuple(str(x) for x in(self.bg.x,self.bg.y,self.hd.x,self.hd.y))
 

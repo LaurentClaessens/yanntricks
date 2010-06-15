@@ -75,8 +75,6 @@ def enlarge_a_little_low(x,m,epsilon):
 	if int(x/m) == x/m:
 		return x-epsilon
 	else : 
-		print "76",x,m,epsilon
-		print "77",MultipleLower(x,m)
 		return MultipleLower(x,m)-epsilon
 
 

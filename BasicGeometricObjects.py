@@ -451,6 +451,8 @@ class Point(object):
 		return self.coordinates.replace("(","{").replace(")","}")
 	def Affiche(self):
 		return self.coordinates()
+	def copy(self):
+		return Point(self.x,self.y)
 
 	# Surcharger quelque opérateurs
 	def __add__(self,v):
@@ -484,9 +486,6 @@ class Circle(object):
 	def __init__(self,center,radius):
 		self.center = center
 		self.radius = radius
-		# I bet I do not need anymore self.maxima.
-		#self.maxima = "("+str(self.center.x)+"-x)^2+("+str(self.center.y)+"-y)^2-"+str(self.radius)+"^2"+"=0"
-
 	def parametric_curve(self):
 		var('x')
 		f1 = phyFunction(self.center.x+self.radius*cos(x))
@@ -536,7 +535,7 @@ class Segment(object):
 			self.equation = [0,1,-A.y]
 		if not (self.vertical or self.horizontal) :
 			"""
-			self.equation is a list [a,b,c] which corresponds to the cartesian equation
+			self.equation is a list [a,b,c] which corresponds to the Cartesian equation
 			ax+by+c=0
 			"""
 			self.equation = [1,-(A.x-B.x)/(A.y-B.y),-(A.y*B.x-A.x*B.y)/(A.y-B.y)]
@@ -555,7 +554,7 @@ class Segment(object):
 			return phyFunction( self.coefficient*x+self.independant )
 	def sage_equation(self):
 		"""
-		returns the cartesian equation of the line as a instance of the sage's class
+		returns the Cartesian equation of the line as a instance of the sage's class
 		sage.symbolic.expression.Expression
 		"""
 		var('x,y')

@@ -1206,14 +1206,14 @@ class pspicture(object):
 		self.BB.AddAxes(axes,self.xunit,self.yunit)
 
 	def DrawDefaultAxes(self):
-		# If the lowest point has y=0.3, the method enlarge_a_little makes the axis begin at y=1.
+		print "1209",self.math_BB
 		self.axes.BB = self.math_BB.copy()
 		epsilonX=float(self.axes.Dx)/2
 		epsilonY=float(self.axes.Dy)/2
 		self.axes.BB.enlarge_a_little(self.axes.Dx,self.axes.Dy,epsilonX,epsilonY)
 		self.DrawAxes(self.axes)
+		print "1215",self.math_BB
 	def DrawDefaultGrid(self):
-		# This is supposed to be called after DrawDefaultAxes
 		self.grid.BB = self.math_BB.copy()
 		self.DrawGrid(self.grid)
 	def TraceDynkin(self,Dynkin):
