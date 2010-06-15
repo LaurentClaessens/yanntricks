@@ -1188,9 +1188,7 @@ class pspicture(object):
 			P.parameters.symbol="none"
 			P.put_mark(axes.DistLabelY,axes.AngleLabelY,axes.LabelY)
 			self.DrawGraph(P)
-		print "1191",self.BB
 		self.BB.AddAxes(axes,self.xunit,self.yunit)
-		print "1193",self.BB
 
 	def DrawDefaultAxes(self):
 		self.axes.BB = self.math_BB.copy()
