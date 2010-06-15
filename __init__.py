@@ -1183,24 +1183,8 @@ class pspicture(object):
 	#	avec pspicture.TraceGridDefaut()
 	def TraceGrid(self,grille):
 		self.IncrusteLigne(grille.code(self),2)
-
 	def AjusteGrid(self,grille):
 		grille.BB = self.BB
-
-	def TraceGridDefaut(self):
-		self.AjusteGrid(self.grille)
-		self.TraceGrid(self.grille)
-
-	# Il y a deux moyens de tracer des axes. 
-	# 1. Construire un système d'axe à la main, puis le tracer avec pspicture.DrawAxes. 
-	# 2. la classe pspicture a un système d'axe pspicture.axes. Donc on peut l'utiliser. Alors, le mieux est de tracer ces axes avec pspicture.DrawDefaultAxes qui utilisera ces axes
-	#	et en ajustera automatiquement la BB sur la BB de la pspicture
-	#
-	# Les axes et les grilles sont ajoutées *au début* du code de la pspicture, ainsi elles ne se mettent pas sur les objets, mais en-dessous.
-	# 	Cette subtilité est nécessaire parce que l'appel à pspict.DrawDefaultAxes doit se faire *après* avoir tracé les objets
-	# 	pour que la BB en tienne compte. C'est pour ça que DrawAxes fait appel à IncrusteLigne et non add_latex_line.
-	#
-
 	def DrawAxes(self,axes):
 		# C'est important d'ajuster la bounding box de la pspicture et les grilles après ajouter le code parce que axes.BB n'est définit qu'au moment de produire le code, voir l'appel à grille.BB.hd.EntierPlus() dans self.TraceGrid par exemple.
 		try :
@@ -1224,13 +1208,14 @@ class pspicture(object):
 	def DrawDefaultAxes(self):
 		# If the lowest point has y=0.3, the method enlarge_a_little makes the axis begin at y=1.
 		self.axes.BB = self.math_BB.copy()
-		self.axes.BB.enlarge_a_little(self.axes.Dx,self.axes.Dy,self.axes.Dx/2,self.axes.Dy/2)
+		epsilonX=float(self.axes.Dx)/2
+		epsilonY=float(self.axes.Dy)/2
+		self.axes.BB.enlarge_a_little(self.axes.Dx,self.axes.Dy,epsilonX,epsilonY)
 		self.DrawAxes(self.axes)
 	def DrawDefaultGrid(self):
 		# This is supposed to be called after DrawDefaultAxes
-		self.grid.BB = self.math_BB
+		self.grid.BB = self.math_BB.copy()
 		self.DrawGrid(self.grid)
-
 	def TraceDynkin(self,Dynkin):
 		Adjacence	= Dynkin.description.Adjacence
 		ronds		= Dynkin.description.ronds
