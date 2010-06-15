@@ -336,6 +336,8 @@ class GraphOfAVector(GraphOfAnObject,Vector):
 		self.F.psNom = self.vector.F.psNom
 	def bounding_box(self):
 		return GraphOfASegment(self.segment).bounding_box()
+	def math_bounding_box(self,pspict):
+		return GraphOfASegment(self.segment).math_bounding_box(pspict)
 	def pstricks_code(self):
 		a = self.segment.I.create_PSpoint() + self.segment.F.create_PSpoint()
 		a = a + "\\ncline["+self.params()+"]{->}{"+self.segment.I.psNom+"}{"+self.segment.F.psNom+"}"

@@ -220,6 +220,8 @@ class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
 		bb.AddX(self.mx)
 		bb.AddX(self.Mx)
 		return bb
+	def math_bounding_box(self,pspict):
+		return self.bounding_box()
 	def pstricks_code(self):
 		a = []
 		if self.marque :
@@ -1086,18 +1088,21 @@ class pspicture(object):
 
 		More generally, it can draw anything that has a method bounding_box and pstricks_code.
 		"""
+		if not "pstricks_code" in dir(graphe):
+			print "You are trying to make me draw an object for which I do not have pstricks_code ! Are you crazy ?? Jesus ! It's really a pain to work with people like you !"
+			print "Well, I'm crashing now. Take that in your face."
+			raise AttributeError
 		try :
 			self.BB.add_graph(graphe,self)
 			self.add_latex_line(graphe.pstricks_code(),separator)
 		except AttributeError,data:
 			print data
 			raise
-		try :
+		if "math_bounding_box" in dir(graphe) :
 			self.math_BB.AddBB(graphe.math_bounding_box(self))
-		except AttributeError,data:
-			print data
+		else :
 			print "Warning: it seems to me that object %s has no method math_boundig_box"%graphe 
-			raise
+			self.math_BB.add_graph(graphe,self)
 	def DrawGrid(self,grid):
 		# The difficulty is that the grid has to be draw first, while most of time it is given last because of the bounding box.
 		self.BB.AddBB(grid.BB)
