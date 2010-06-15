@@ -50,20 +50,13 @@ def CalculEntierMoins(x):
 
 
 def MultipleLower(x,m):
-	""" Provides the biggest multiple of m which is lower or equal to x"""
-	base = floor(x)
-	for i in range(0,m+1):
-		tentative = float(base - i)
-		if tentative/m - round(tentative/m)==0:
-			return int(tentative)
+	""" return the biggest multiple of m which is lower or equal to x"""
+	return floor(x/m)*m
 
 def MultipleBigger(x,m):
-	""" Provides the lower multiple of m which is bigger or equal to x"""
-	base = ceil(x)
-	for i in range(0,m+1):
-		tentative = float(base + i)
-		if tentative/m - round(tentative/m)==0:
-			return int(tentative)
+	""" return the lower multiple of m which is bigger or equal to x"""
+	return ceil(x/m)*m
+
 def enlarge_a_little_up(x,epsilon):
 	"""
 	see the description of the function enlarge_a_little of the class BoundingBox.
