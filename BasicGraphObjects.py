@@ -29,8 +29,6 @@ from sage.all import *
 from SmallComputations import *
 from BasicGeometricObjects import *
 
-
-
 class BoundingBox(object):
 	def __init__(self,dbg=Point(0,0),dhd=Point(0,0)):
 		self.bg = dbg
@@ -105,7 +103,7 @@ class BoundingBox(object):
 		self.AddX(F.xmax(deb,fin))
 		self.AddY(F.ymin(deb,fin))
 		self.AddY(F.ymax(deb,fin))
-	def enlarge_a_little(self):
+	def enlarge_a_little(self,epsilon=0.2):
 		"""
 		Essentially intended to the bounding box of a axis coordinate. 
 		The aim is to make the axis slightly larger than the picture in such a way that all the numbers are written
@@ -113,11 +111,12 @@ class BoundingBox(object):
 		2. If a coordinate is non integer, we enlarge to the next integer (plus an epsilon) so that the axis still has a number written
 			further than the limit of the picture.
 		"""
-		epsilon = 0.2
 		self.bg.x = enlarge_a_little_low(self.bg.x,epsilon)
 		self.bg.y = enlarge_a_little_low(self.bg.y,epsilon)
 		self.hd.x = enlarge_a_little_up(self.hd.x,epsilon)
 		self.hd.y = enlarge_a_little_up(self.hd.y,epsilon)
+	def copy(self):
+		return BoundingBox(self.bg,self.hd)
 	def __str__(self):
 		return "(%s,%s),(%s,%s)"%tuple(str(x) for x in(self.bg.x,self.bg.y,self.hd.x,self.hd.y))
 
@@ -266,7 +265,7 @@ class GraphOfAPoint(GraphOfAnObject,Point):
 	def __init__(self,point):
 		GraphOfAnObject.__init__(self,point)
 		Point.__init__(self,point.x,point.y)
-		self.psNom = point.psNom		# The psNom of the point is erased when running Point.__init__()
+		self.psNom = point.psNom		# The psNom of the point is erased when running Point.__init__
 		self.point = self.obj
 		self.add_option("PointSymbol=*")
 	def bounding_box(self,pspict):

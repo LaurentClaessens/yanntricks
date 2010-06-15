@@ -439,7 +439,6 @@ class Grid(object):
 					S.merge_options(self.sub_horizontal)
 					a.append(S)
 		# ++++++++++++ Les lignes horizontales principales ++++++++ 
-		print self.Dy
 		y=MultipleBigger(self.BB.SO().y,self.Dy) 
 		while y < MultipleLower(self.BB.NO().y,self.Dy)+1  :
 			seg = Segment( Point(self.BB.bg.x,y),Point(self.BB.hd.x,y) )
@@ -788,46 +787,45 @@ class pspicture(object):
 	self.contenu_eps() contains the line to be added in order to include the eps file
 	"""
 	NomPointLibre = ListeNomsPoints()
- 
-	class _DrawVector(object):
-		def __init__(self,picture,vect,params):
-			raise AttributeError,"class _DrawVector is depreciated"
-			self.picture = picture
-			self.vect = vect
-			self.params = params
-			picture.BB.AddSegment(vect.segment)
-			picture.AddPoint(vect.I)
-			picture.AddPoint(vect.F)
-			picture.add_latex_line("\\ncline["+params+"]{->}{"+vect.segment.I.psNom+"}{"+vect.segment.F.psNom+"}")
-		def MarkTheVector(self,dist,angle,marque):
-			P = Graph(self.vect.F)
-			P.parameters.symbol = "none"
-			P.put_mark(dist,angle,marque)
-			self.picture.DrawGraph(P)
-
-	class _TraceMesureLongueur(object):
-		def __init__(self,picture,mesure,decale,params):
-			self.picture = picture
-			self.mesure = mesure
-			if decale == 0 :
-				self.signe = 0
-			else :
-				self.signe = decale/abs(decale)
-
-			self.vect_normal = self.mesure.normal_vector()
-			self.vect_decale = self.vect_normal.fix_size(decale)
-			self.Seg = mesure.translate(self.vect_decale)		# self.Seg est le segment à tracer; il est décalé par rapport au "vrai"
-			self.picture.AddPoint(self.Seg.I)
-			self.picture.AddPoint(self.Seg.F)
-			self.picture.BB.AddSegment(self.Seg)
-			self.picture.add_latex_line("\\ncline["+params+"]{<->}{"+self.Seg.I.psNom+"}{"+self.Seg.F.psNom+"}")
-		def MarqueMesureLongueur(self,dist,marque):
-			milieu = self.Seg.milieu()
-			if self.signe == -1 :
-				dist = -dist
-			vecteur_distance = self.vect_normal.fix_size(dist)
-			polaires = vecteur_distance.polaires()
-			self.picture.MarkThePoint(milieu,polaires.r,polaires.theta,"none",marque)
+ 	
+	# This is commented on 15 june 2010. If the documentation still works, please remove.
+	#class _DrawVector(object):
+	#	def __init__(self,picture,vect,params):
+	#		raise AttributeError,"class _DrawVector is depreciated"
+	#		self.picture = picture
+	#		self.vect = vect
+	#		self.params = params
+	#		picture.BB.AddSegment(vect.segment)
+	#		picture.AddPoint(vect.I)
+	#		picture.AddPoint(vect.F)
+	#		picture.add_latex_line("\\ncline["+params+"]{->}{"+vect.segment.I.psNom+"}{"+vect.segment.F.psNom+"}")
+	#	def MarkTheVector(self,dist,angle,marque):
+	#		P = Graph(self.vect.F)
+	#		P.parameters.symbol = "none"
+	#		P.put_mark(dist,angle,marque)
+	#		self.picture.DrawGraph(P)
+	#class _TraceMesureLongueur(object):
+	#	def __init__(self,picture,mesure,decale,params):
+	#		self.picture = picture
+	#		self.mesure = mesure
+	#		if decale == 0 :
+	#			self.signe = 0
+	#		else :
+	#			self.signe = decale/abs(decale)
+	#		self.vect_normal = self.mesure.normal_vector()
+	#		self.vect_decale = self.vect_normal.fix_size(decale)
+	#		self.Seg = mesure.translate(self.vect_decale)		# self.Seg est le segment à tracer; il est décalé par rapport au "vrai"
+	#		self.picture.AddPoint(self.Seg.I)
+	#		self.picture.AddPoint(self.Seg.F)
+	#		self.picture.BB.AddSegment(self.Seg)
+	#		self.picture.add_latex_line("\\ncline["+params+"]{<->}{"+self.Seg.I.psNom+"}{"+self.Seg.F.psNom+"}")
+	#	def MarqueMesureLongueur(self,dist,marque):
+	#		milieu = self.Seg.milieu()
+	#		if self.signe == -1 :
+	#			dist = -dist
+	#		vecteur_distance = self.vect_normal.fix_size(dist)
+	#		polaires = vecteur_distance.polaires()
+	#		self.picture.MarkThePoint(milieu,polaires.r,polaires.theta,"none",marque)
 
 	def __init__(self,name="CAN_BE_A_PROBLEM_IF_TRY_TO_PRODUCE_EPS_OR_PDF"):				# class pspicture
 		r"""
@@ -960,11 +958,11 @@ class pspicture(object):
 		width = self.get_box_dimension(tex_expression,"widthof")
 		return width,height
 
-	def DrawVector(self,vect,params):
-		return self._DrawVector(self,vect,params)
+	#def DrawVector(self,vect,params):
+	#	return self._DrawVector(self,vect,params)
 
-	def TraceMesureLongueur(self,mesure,dist,params):
-		return self._TraceMesureLongueur(self,mesure,dist,params)
+	#def TraceMesureLongueur(self,mesure,dist,params):
+	#	return self._TraceMesureLongueur(self,mesure,dist,params)
 
 	def dilatation(self,fact):
 		self.dilatation_X(fact)
@@ -1060,15 +1058,15 @@ class pspicture(object):
 			waviness = graphe.waviness
 			self.DrawWavySegment(graphe.seg,waviness.dx,waviness.dy,graphe.params(),separator=separator)
 
-	def DrawGraphOfAVector(self,graphe):
-		if graphe.marque == False :
-			self.DrawVector(graphe.vector,graphe.params())
-		if graphe.marque == True :
-			mark = graphe.mark
-			self.DrawVector(graphe.vector,graphe.params()).MarkTheVector(mark.dist,mark.angle,mark.text)
-
-		def MarkTheVector(self,dist,angle,marque):
-				self.picture.DrawPoint(self.vector.F,"none",self.params).MarkThePoint(dist,angle,marque)
+	#def DrawGraphOfAVector(self,graphe):
+	#	if graphe.marque == False :
+	#		self.DrawVector(graphe.vector,graphe.params())
+	#	if graphe.marque == True :
+	#		mark = graphe.mark
+	#	self.DrawVector(graphe.vector,graphe.params()).MarkTheVector(mark.dist,mark.angle,mark.text)
+	#
+	#	def MarkTheVector(self,dist,angle,marque):
+	#			self.picture.DrawPoint(self.vector.F,"none",self.params).MarkThePoint(dist,angle,marque)
 
 	def DrawGraphOfACircle(self,graphe):
 		raise AttributeError,"The method DrawGraphOfACircle is depreciated"
@@ -1131,7 +1129,6 @@ class pspicture(object):
 			graphe.add_option(args)
 		self.DrawGraph(graphe)
 
-
 	def DrawGraph(self,graphe,separator="DEFAULT",*args):
 		"""
 		Draw an object of type GraphOfA*.
@@ -1144,20 +1141,20 @@ class pspicture(object):
 		except AttributeError,data:
 			print data
 			raise
-			if type(graphe) == GraphOfAphyFunction :
-				self.DrawGraphOfAphyFunction(graphe)
-			if type(graphe) == GraphOfAParametricCurve :
-				self.DrawGraphOfAParametricCurve(graphe)
-			if type(graphe) == GraphOfASegment :
-				self.DrawGraphOfASegment(graphe,separator=separator)
-			if type(graphe) == GraphOfAVector :
-				self.DrawGraphOfAVector(graphe)
-			if type(graphe) == GraphOfACircle :
-				self.DrawGraphOfACircle(graphe)
-			if type(graphe) == GraphOfAPoint :
-				self.DrawGraphOfAPoint(graphe)
-			if type(graphe) == Grid :
-				self.DrawGrid(graphe)
+			#if type(graphe) == GraphOfAphyFunction :
+			#	self.DrawGraphOfAphyFunction(graphe)
+			#if type(graphe) == GraphOfAParametricCurve :
+			#	self.DrawGraphOfAParametricCurve(graphe)
+			#if type(graphe) == GraphOfASegment :
+			#	self.DrawGraphOfASegment(graphe,separator=separator)
+			#if type(graphe) == GraphOfAVector :
+			#	self.DrawGraphOfAVector(graphe)
+			#if type(graphe) == GraphOfACircle :
+			#	self.DrawGraphOfACircle(graphe)
+			#if type(graphe) == GraphOfAPoint :
+			#	self.DrawGraphOfAPoint(graphe)
+			#if type(graphe) == Grid :
+			#	self.DrawGrid(graphe)
 	def DrawGrid(self,grid):
 		# The difficulty is that the grid has to be draw first, while most of time it is given last because of the bounding box.
 		self.BB.AddBB(grid.BB)
@@ -1268,8 +1265,10 @@ class pspicture(object):
 
 	def DrawDefaultAxes(self):
 		# If the lowest point has y=0.3, the method enlarge_a_little makes the axis begin at y=1.
-		self.axes.BB = self.BB
+		self.axes.BB = self.BB.copy()
+		print "1271",self.axes.BB
 		self.axes.BB.enlarge_a_little()
+		print "1273",self.axes.BB
 		self.DrawAxes(self.axes)
 
 	def DrawDefaultGrid(self):
