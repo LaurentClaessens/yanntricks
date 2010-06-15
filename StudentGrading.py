@@ -32,60 +32,11 @@ From a list of number, we can generate 3 graphics
 """
 
 from __future__ import division
-import commands, os, copy, math						# La classe copy est pour faire des copies d'objets
+import commands, os, copy, math	
 from sage.all import *
 from phystricks import *
 
 REP = commands.getoutput("pwd")
-
-class Grades(object):
-	"""
-	list : 	The list of grades that are given.
-	max : the maximal note
-	"""
-	def __init__(self,list,max):
-		self.list = list
-		self.max = max
-	def list_with_max(self,n):
-		""" return the list of grades if the maximum is n instead of self.max """
-		return [ c*n/self.max for c in self.list ]
-	def y_is_percent_bigger_than_x(self,name,max):
-		"""
-		Generates the figure that represent the graph of the function
-		x -> y = percent of the students that have x or more.
-		The intervals are x=[0,n] and y=[0,1]
-
-		n is the maximum grade
-		name is the name of the files to be created
-		"""
-		pspict=pspicture(name)
-		fig = GenericFigure(name)
-
-		cloud = []
-		for x in range(0,max+1):
-			y = PercentHaveMore(self.list_with_max(max),x)
-			p = Point( x, y )
-			P = Graph(p)
-			P.parameters.color = "blue"
-			pspict.DrawGraph(P)
-
-		segment = Segment( Point(0,50),Point(max,50) )
-		S = Graph(segment)
-		S.parameters.color = "red"
-		pspict.DrawGraph( S )
-
-		pspict.grid.Dy = 10
-		pspict.grid.num_subX = 0
-		pspict.grid.num_subY = 5
-		pspict.axes.Dy = 10
-		pspict.DrawDefaultAxes()
-		pspict.DrawDefaultGrid()
-
-		pspict.dilatation_Y(0.1)
-
-		fig.add_pspicture(pspict)
-		fig.conclude()
-		fig.write_the_file()
 
 def PercentHaveMore(cotes,n):
 	return ProportionHaveMore(cotes,n)*100
@@ -104,6 +55,46 @@ def HaveMore(cotes,n):
 	for p in cotes:
 		if p >= n : a=a+1
 	return a	
+
+class Grades(object):
+	"""
+	grades_list : the list of grades that are given.
+	full_grade : the maximal note
+	"""
+	def __init__(self,grades_list,full_grade):
+		self.grades_list = grades_list
+		self.full_grade = full_grade
+	def convert_to_full_grade(self,n):
+		""" return the list of grades if the maximum is n instead of self.full_grade """
+		return Grades([c*n/self.full_grade for c in self.grades_list],n)
+	def y_is_percent_bigger_than_x(self):
+		"""
+		Return the pspict that represents the graph of the function
+		y(x) = proportion of the students that have x or more.
+
+		The intervals are x=[0,n] and y=[0,1]
+		"""
+		pspict=pspicture(name)
+		for x in range(0,full_grade+1):
+			y = ProportionHaveMore(self.grades_list,x)
+			p = Point( x, y )
+			P = Graph(p)
+			P.parameters.color = "blue"
+			pspict.DrawGraph(P)
+
+		segment = Segment( Point(0,0.5),Point(self.full_grade,0.5) )
+		S = Graph(segment)
+		S.parameters.color = "red"
+		pspict.DrawGraph( S )
+
+		pspict.grid.Dy = 10
+		pspict.grid.num_subX = 0
+		pspict.grid.num_subY = 5
+		pspict.axes.Dy = 0.1
+		pspict.DrawDefaultAxes()
+		pspict.DrawDefaultGrid()
+
+		return pspict
 
 def CombienAutour(cotes,n,delta):
 	a = 0
@@ -174,7 +165,4 @@ def ListeToGraphiques(liste,nomAudit,nomMatiere,nomExam) :
 		listeEtudiants[i].ajoute_cote(nomExam,liste[i])
 	for et in auditoire.liste_etudiants :
 		print et.nom+" "+et.prenom+" "+str(et.dico_cotes[nomExam])
-	
 	CreeGraphiques(auditoire,nomExam)	
-
-
