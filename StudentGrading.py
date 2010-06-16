@@ -82,7 +82,7 @@ class Grades(object):
 	"""
 	def __init__(self,grades_list,full_grade):
 		self.grades_list = grades_list
-		self.full_grade = full_grade
+		self.full_grade = float(full_grade)
 	def convert_to_full_grade(self,n):
 		""" return the list of grades if the maximum is n instead of self.full_grade """
 		return Grades([c*n/self.full_grade for c in self.grades_list],n)
@@ -94,7 +94,9 @@ class Grades(object):
 		The intervals are X=[0,self.full_grade] and Y=[0,1]
 		"""
 		pspict=pspicture(pspictName)
-		for x in range(0,self.full_grade+1):
+		abcisses=self.grades_list
+		abcisses.extend([0,self.full_grade,self.full_grade/2])
+		for x in abcisses:
 			y = ProportionHaveMore(self.grades_list,x)
 			p = Point( x, y )
 			P = Graph(p)
@@ -122,7 +124,9 @@ class Grades(object):
 		The intervals are X=[0,self.full_grade] and Y=[0,self.full_grade]
 		"""
 		pspict=pspicture(pspictName)
-		for x in range(0,self.full_grade+1):
+		abcisses=self.grades_list
+		abcisses.extend([0,self.full_grade,self.full_grade/2])
+		for x in abcisses:
 			y = AverageBigger(self.grades_list,x)
 			p = Point( x, y )
 			P = Graph(p)
@@ -151,7 +155,9 @@ class Grades(object):
 		The intervals are X=[0,self.full_grade] and Y=[0,1]
 		"""
 		pspict=pspicture(pspictName)
-		for x in range(0,self.full_grade+1):
+		abcisses=self.grades_list
+		abcisses.extend([0,self.full_grade,self.full_grade/2])
+		for x in abcisses:
 			y = ProportionBetween(self.grades_list,x,delta)
 			p = Point( x, y )
 			P = Graph(p)
