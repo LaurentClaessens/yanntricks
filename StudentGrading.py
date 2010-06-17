@@ -83,6 +83,7 @@ class Grades(object):
 	def __init__(self,grades_list,full_grade):
 		self.grades_list = grades_list
 		self.full_grade = float(full_grade)
+		self.media = self.full_grade/2
 	def convert_to_full_grade(self,n):
 		""" return the list of grades if the maximum is n instead of self.full_grade """
 		return Grades([c*n/self.full_grade for c in self.grades_list],n)
@@ -103,7 +104,7 @@ class Grades(object):
 			P.parameters.color = "blue"
 			pspict.DrawGraph(P)
 
-		segment = Segment( Point(0,0.5),Point(self.full_grade,0.5) )
+		segment = Segment( Point(self.media,0),Point(self.media,1) )
 		S = Graph(segment)
 		S.parameters.color = "red"
 		pspict.DrawGraph(S)
@@ -133,11 +134,14 @@ class Grades(object):
 			P.parameters.color = "blue"
 			pspict.DrawGraph(P)
 
-		media = float(self.full_grade)/2
-		segment = Segment( Point(0,media),Point(self.full_grade,media) )
-		S = Graph(segment)
-		S.parameters.color = "red"
-		pspict.DrawGraph(S)
+		segmentH = Segment( Point(0,self.media),Point(self.full_grade,self.media) )
+		SH = Graph(segmentH)
+		SH.parameters.color = "red"
+		pspict.DrawGraph(SH)
+		segmentV = Segment( Point(self.media,0),Point(self.media,self.full_grade) )
+		SV = Graph(segmentV)
+		SV.parameters.color = "red"
+		pspict.DrawGraph(SV)
 		pspict.math_BB.AddPoint(Point(0,0))
 
 		pspict.grid.Dy = 1
@@ -173,3 +177,5 @@ class Grades(object):
 		pspict.DrawDefaultAxes()
 		pspict.DrawDefaultGrid()
 		return pspict
+	def __str__(self):
+		return str(self.grades_list)
