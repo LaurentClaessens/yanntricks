@@ -191,15 +191,6 @@ class Triangle(object):
 		self.B = B
 		self.C = C
 
-class Rectangle(object):
-	def __init__(self,A,B):
-		self.bg = A
-		self.hd = B
-		self.bd = Point( self.hd.x,self.bg.y )
-		self.hg = Point( self.bg.x,self.hd.y )
-		self.center = Segment(self.bg,self.hd).milieu()
-
-
 class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
 	def __init__(self,f,mx,Mx):
 		GraphOfAnObject.__init__(self,f)
@@ -955,7 +946,8 @@ class pspicture(object):
 			bb = obj.bounding_box(self)
 		except AttributeError :
 			bb = obj
-		self.TraceRectangle( Rectangle(bb.bg,bb.hd), "linecolor=%s"%color)
+		rect = Graph(Rectangle(bb.bg,bb.hd))
+		rect.parameters.color=color
 
 	# Ici, typiquement, symbol sera "*" et params sera vide.
 	def DrawPoint(self,P,symbol,params):
@@ -1146,10 +1138,6 @@ class pspicture(object):
 		self.BB.AddPoint(tri.C)
 		self.add_latex_line("\pstTriangle["+params+",PointSymbol=none]"+tri.A.coordinates()+"{A}"+tri.B.coordinates()+"{B}"+tri.C.coordinates()+"{C}")
 		
-	def TraceRectangle(self,rect,params):
-		self.BB.AddPoint(rect.bg)
-		self.BB.AddPoint(rect.hd)
-		self.add_latex_line("\psframe["+params+"]"+rect.hd.coordinates()+rect.bg.coordinates())
 	def TraceCircle(self,Cer,params):
 		raise AttributeError,"method TraceCircle is depreciated"
 		self.BB.AddCircle(Cer)

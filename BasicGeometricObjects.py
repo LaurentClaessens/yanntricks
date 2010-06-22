@@ -638,6 +638,33 @@ class Segment(object):
 		"""Return the class which is the Graph associated type"""
 		return phystricks.GraphOfASegment
 
+class Rectangle(object):
+	"""
+	The four points of the square are designated by NW,NE,SW and SE.
+	"""
+	def __init__(self,NW,SE):
+		self.NW = NW
+		self.SE = SE
+		self.SW = Point(self.NW.x,self.SE.y)
+		self.NE = Point(self.SE.x,self.NW.y)
+	def first_diagonal(self):
+		return Segment(self.NW,self.SE)
+	def second_diagonal(self):
+		return Segment(self.SW,self.NE)
+	def side_N(self):
+		return Segment(self.NW,self.NW)
+	def side_S(self):
+		return Segment(self.SW,self.SW)
+	def side_E(self):
+		return Segment(self.NE,self.SE)
+	def side_W(self):
+		return Segment(self.NW,self.SW)
+	def center(self):
+		return self.first_diagonal().center()
+	def default_associated_graph_class(self):
+		"""Return the class which is the Graph associated type"""
+		return phystricks.GraphOfASquare
+
 def PolarVector(P,r,theta):
 	"""
 	returns a vector on the base point P (class Point) of length r angle theta (degree)
