@@ -588,9 +588,10 @@ class Segment(object):
 		"""
 		return self.I*(1-p) + self.F*p
 	def milieu(self):
-		#return Point( (self.I.x+self.F.x)/2, (self.I.y+self.F.y)/2 )
+		print "This method is depreciated. Use Segment.center() instead"
+		return self.center()
+	def center(self):
 		return self.proportion(0.5)
-
 	def Vector(self):
 		return Vector(self.I,self.F)
 	def normal_vector(self):
@@ -651,19 +652,19 @@ class Rectangle(object):
 		return Segment(self.NW,self.SE)
 	def second_diagonal(self):
 		return Segment(self.SW,self.NE)
-	def side_N(self):
+	def segment_N(self):
 		return Segment(self.NW,self.NW)
-	def side_S(self):
+	def segment_S(self):
 		return Segment(self.SW,self.SW)
-	def side_E(self):
+	def segment_E(self):
 		return Segment(self.NE,self.SE)
-	def side_W(self):
+	def segment_W(self):
 		return Segment(self.NW,self.SW)
 	def center(self):
 		return self.first_diagonal().center()
 	def default_associated_graph_class(self):
 		"""Return the class which is the Graph associated type"""
-		return phystricks.GraphOfASquare
+		return phystricks.GraphOfARectangle
 
 def PolarVector(P,r,theta):
 	"""

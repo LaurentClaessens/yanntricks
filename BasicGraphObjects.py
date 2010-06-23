@@ -348,6 +348,32 @@ class GraphOfAVector(GraphOfAnObject,Vector):
 			a = a + P.pstricks_code()
 		return a
 
+class GraphOfARectangle(GraphOfAnObject,Rectangle):
+	"""
+	The parameters of the four lines are by default the same, but they can be adapted separately.
+
+	graph_N() return 
+	"""
+	def __init__(self,rect):
+		GraphOfAnObject.__init__(self,rect)
+		Rectangle.__init__(self,rect.NW,rect.SE)
+		self.rectangle = self.obj
+	def _segment(self,side):
+		bare_name = "graph_"+side
+		if not bare_name in self.__dict__.keys():
+			line = phystricks.Graph(self.__getattribute__("segment_"+side)())
+			line.parameters=self.parameters
+			self.__dict__[bare_name]=line
+		return 	self.__dict__[bare_name]
+	def __getattr__(self,attrname):
+		if "graph_" in attrname:
+			return self._segment(attrname[6])
+	def bounding_box(self,pspicture=1):
+		return BoundingBox(self.NW,self.SE)
+	def math_boundig_box(self,pspicture=1):
+		return self.bounding_box(pspicture)
+
+
 class GraphOfACircle(GraphOfAnObject,Circle):
 	def __init__(self,circle):
 		GraphOfAnObject.__init__(self,circle)

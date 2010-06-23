@@ -270,6 +270,7 @@ def Graph(X,*arg):
 	except TypeError,datay :
 		return X.default_associated_graph_class()(X)
 	except AttributeError,data :
+		raise
 		if type(X) == phyFunction :
 			return GraphOfAphyFunction(X,arg[0],arg[1])
 		if type(X) == ParametricCurve :
@@ -281,7 +282,6 @@ def Graph(X,*arg):
 		if type(X) == Circle :
 			return GraphOfACircle(X)
 		if type(X) == Point :
-			print "253 je ne devrais pas être ici"
 			return GraphOfAPoint(X)
 	
 class GrapheDesphyFunctions(object):
