@@ -181,7 +181,7 @@ def SubGridArray(mx,Mx,Dx,num_subX):
 			valeurs.append(tentative)
 	return valeurs
 
-class MesureLongueur(Segment):			# Sert à faire des doubles flèches pour indiquer des distances
+class MeasureLength(Segment):			# Sert à faire des doubles flèches pour indiquer des distances
 	def __init__(self,a,b):
 		Segment.__init__(self,a,b)
 
@@ -911,12 +911,6 @@ class pspicture(object):
 		height = self.get_box_dimension(tex_expression,"totalheightof")
 		width = self.get_box_dimension(tex_expression,"widthof")
 		return width,height
-
-	#def DrawVector(self,vect,params):
-	#	return self._DrawVector(self,vect,params)
-
-	#def TraceMesureLongueur(self,mesure,dist,params):
-	#	return self._TraceMesureLongueur(self,mesure,dist,params)
 
 	def dilatation(self,fact):
 		self.dilatation_X(fact)

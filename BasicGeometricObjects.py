@@ -559,7 +559,6 @@ class Segment(object):
 		"""
 		var('x,y')
 		return self.equation[0]*x+self.equation[1]*y+self.equation[2] == 0
-	
 	def get_regular_points(self,dx):
 		"""
 		Notice that it does not return the last point of the segment, unless the length is a multiple of dx.
@@ -567,7 +566,6 @@ class Segment(object):
 		"""
 		n = floor(self.longueur/dx)
 		return [self.proportion(float(i)/n) for i in range(0,n)]
-
 	def get_wavy_points(self,dx,dy):
 		"""
 		Return a list of points that make a wave around the segment.
@@ -597,7 +595,7 @@ class Segment(object):
 		return Vector(self.I,self.F)
 	def normal_vector(self):
 		"""
-		returns a normal vector at the center of the segment
+		returns a normalized normal vector at the center of the segment
 		"""
 		if self.vertical :
 			return Point(-1,0).Vector().lie(self.milieu())
