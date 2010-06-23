@@ -352,7 +352,8 @@ class GraphOfARectangle(GraphOfAnObject,Rectangle):
 	"""
 	The parameters of the four lines are by default the same, but they can be adapted separately.
 
-	graph_N() return 
+	graph_N returns the north side as a phystricks.Segment object
+	The parameters of the four sides have to be set independently.
 	"""
 	def __init__(self,rect):
 		GraphOfAnObject.__init__(self,rect)
@@ -362,7 +363,7 @@ class GraphOfARectangle(GraphOfAnObject,Rectangle):
 		bare_name = "graph_"+side
 		if not bare_name in self.__dict__.keys():
 			line = phystricks.Graph(self.__getattribute__("segment_"+side)())
-			line.parameters=self.parameters
+			#line.parameters=self.parameters
 			self.__dict__[bare_name]=line
 		return 	self.__dict__[bare_name]
 	def __getattr__(self,attrname):
@@ -370,9 +371,15 @@ class GraphOfARectangle(GraphOfAnObject,Rectangle):
 			return self._segment(attrname[6])
 	def bounding_box(self,pspicture=1):
 		return BoundingBox(self.NW,self.SE)
-	def math_boundig_box(self,pspicture=1):
+	def math_bounding_box(self,pspicture=1):
 		return self.bounding_box(pspicture)
-
+	def pstricks_code(self):
+		a=[]
+		a.append(self.graph_N.pstricks_code())
+		a.append(self.graph_S.pstricks_code())
+		a.append(self.graph_E.pstricks_code())
+		a.append(self.graph_W.pstricks_code())
+		return "\n".join(a)
 
 class GraphOfACircle(GraphOfAnObject,Circle):
 	def __init__(self,circle):

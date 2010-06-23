@@ -1081,8 +1081,7 @@ class pspicture(object):
 		More generally, it can draw anything that has a method bounding_box and pstricks_code.
 		"""
 		if not "pstricks_code" in dir(graphe):
-			print "You are trying to make me draw an object for which I do not have pstricks_code ! Are you crazy ?? Jesus ! It's really a pain to work with people like you !"
-			print "Well, I'm crashing now. Take that in your face."
+			print "phystricks error : object %s has no pstricks_code method"%(str(graphe))
 			raise AttributeError
 		try :
 			self.BB.add_graph(graphe,self)

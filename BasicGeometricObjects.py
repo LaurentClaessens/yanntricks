@@ -589,6 +589,7 @@ class Segment(object):
 		return self.I*(1-p) + self.F*p
 	def milieu(self):
 		print "This method is depreciated. Use Segment.center() instead"
+		raise
 		return self.center()
 	def center(self):
 		return self.proportion(0.5)
@@ -619,8 +620,8 @@ class Segment(object):
 		F = vI.add_size(lF).F
 		return Segment(I,F)
 	def fix_size(self,l):
-		vI = Vector(self.milieu(),self.I)
-		vF = Vector(self.milieu(),self.F)
+		vI = Vector(self.center(),self.I)
+		vF = Vector(self.center(),self.F)
 		I = vI.fix_size(l/2).F
 		F = vF.fix_size(l/2).F
 		return Segment(I,F)
@@ -653,9 +654,9 @@ class Rectangle(object):
 	def second_diagonal(self):
 		return Segment(self.SW,self.NE)
 	def segment_N(self):
-		return Segment(self.NW,self.NW)
+		return Segment(self.NW,self.NE)
 	def segment_S(self):
-		return Segment(self.SW,self.SW)
+		return Segment(self.SW,self.SE)
 	def segment_E(self):
 		return Segment(self.NE,self.SE)
 	def segment_W(self):
