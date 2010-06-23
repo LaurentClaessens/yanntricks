@@ -181,10 +181,6 @@ def SubGridArray(mx,Mx,Dx,num_subX):
 			valeurs.append(tentative)
 	return valeurs
 
-class MeasureLength(Segment):			# Sert à faire des doubles flèches pour indiquer des distances
-	def __init__(self,a,b):
-		Segment.__init__(self,a,b)
-
 class Triangle(object):
 	def __init__(self,A,B,C):
 		self.A = A
@@ -857,17 +853,15 @@ class pspicture(object):
 		self.add_latex_line(r"\immediate\write\%s{%s:%s:}"%(interWriteName,Id,value),"WRITE_AND_LABEL")
 	def get_Id_value(self,Id,counter_name="NO NAME ?",default_value=0):
 		try :
-			try :
-				f=open(self.interWriteFile)
-				text = f.read().replace('\n','').split(":")
-				return text[text.index(Id)+1]			
-			except IOError :
-				raise LabelNotFound("Warning : the auxiliary file seems not to exist. Compile your LaTeX file.")
-			except ValueError :
-				raise LabelNotFound("Warning : the auxiliary file does not contain the id «%s». Compile your LaTeX file."%Id)
-		except LabelNotFound,data:
-			print data.message
-			print "I' going to return the default value for %s, namely %s"%(Id,str(default_value))
+			f=open(self.interWriteFile)
+		except IOError :
+			print "Warning : the auxiliary file seems not to exist. Compile your LaTeX file."
+			return defaut_value
+		text = f.read().replace('\n','').split(":")
+		try:
+			return text[text.index(Id)+1]			
+		except ValueError :
+			print "Warning : the auxiliary file does not contain the id «%s». Compile your LaTeX file."%Id
 			return default_value
 	def get_counter_value(self,counter_name,default_value=0):
 		"""

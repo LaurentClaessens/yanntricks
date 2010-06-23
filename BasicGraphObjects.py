@@ -79,7 +79,7 @@ class BoundingBox(object):
 		try :
 			self.AddBB(graphe.bounding_box(pspict))
 		except TypeError :
-			self.AddBB(graphe.bounding_box())
+			self.AddBB(graphe.bounding_box(pspict))
 	def AddCircleBB(self,Cer,xunit,yunit):
 		"""
 		Ajoute un cercle déformé par les xunit et yunit; c'est pratique pour agrandir la BB en taille réelle, pour
@@ -350,26 +350,46 @@ class GraphOfAVector(GraphOfAnObject,Vector):
 
 class MeasureLength(GraphOfASegment):
 	def __init__(self,seg):
-		self.segment=segment
-		GraphOfASegment.__init__(seg)
-		self.dist=0.3
-		self.delta=self.normal_vector().fix_size(dist)
-		self.mseg=self.seg.translate(delta)
+		self.segment=seg
+		GraphOfASegment.__init__(self,seg)
+		self.dist=0.1
+		self.delta=self.normal_vector().fix_size(self.dist)
+		self.mseg=self.seg.translate(self.delta)
 		self.mI=self.mseg.I
 		self.mF=self.mseg.F
-	def math_bounding_box(self):
+	def recompute(self):
+		"""
+		Because self.dist can change, we have to be able to adapt the other features
+		"""
+		self.delta=self.normal_vector().fix_size(self.dist)
+		self.mseg=self.seg.translate(self.delta)
+		self.mI=self.mseg.I
+		self.mF=self.mseg.F
+	def math_bounding_box(self,pspict):
 		return GraphOfASegment(self.mseg).math_bounding_box()
+	def bounding_box(self,pspict):
+		bb=phystricks.Graph(self.mseg).bounding_box(pspict)
+		if self.marque:
+			C=phystricks.Graph(self.mseg.center())
+			C.marque=self.marque
+			C.mark=self.mark
+			C.mark.graphe=C
+			bb.AddBB(C.bounding_box(pspict))
+		return bb
 	def pstricks_code(self):
+		self.recompute()
 		a=[]
-		C=Graph(self.mseg.center())
-		vI=Graph(Vector(C,self.I))
-		vF=Graph(Vector(C,self.F))
+		C=phystricks.Graph(self.mseg.center())
+		C.marque=self.marque
+		vI=phystricks.Graph(Vector(C,self.mI))
+		vF=phystricks.Graph(Vector(C,self.mF))
 		vI.parameters=self.parameters
 		vF.parameters=self.parameters
 		a.append(vI.pstricks_code())
 		a.append(vF.pstricks_code())
 		if self.marque :
 			C.mark=self.mark
+			C.add_option('PointSymbol=none')
 			a.append(C.pstricks_code())
 		return "\n".join(a)
 

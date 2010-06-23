@@ -598,10 +598,10 @@ class Segment(object):
 		returns a normalized normal vector at the center of the segment
 		"""
 		if self.vertical :
-			return Point(-1,0).Vector().lie(self.milieu())
+			return Point(-1,0).Vector().lie(self.center())
 		else :
 			P = Point(-self.coefficient,1)
-			return P.Vector().normalize().lie(self.milieu())
+			return P.Vector().normalize().lie(self.center())
 	def norme(self):
 		print "The method norme of Segment is depreciated. Use length instead."
 		return Distance(self.I,self.F)
@@ -612,8 +612,8 @@ class Segment(object):
 		return self.fix_size(self.length()*coef)
 	# La méthode suivante retourne un nouveau segment qui est allongé de lI du côté de self.I et de lF du côté de self.F
 	def add_size(self,lI,lF):
-		vI = Vector(self.milieu(),self.I)
-		vF = Vector(self.milieu(),self.F)
+		vI = Vector(self.center(),self.I)
+		vF = Vector(self.center(),self.F)
 		I = vI.add_size(lI).F
 		F = vI.add_size(lF).F
 		return Segment(I,F)
@@ -712,6 +712,8 @@ class Vector(object):
 		return self*((self.length()+l) / self.length())	
 	def normalize(self):
 		return self.fix_size(1)
+	def default_associated_graph_class(self):
+		return phystricks.GraphOfAVector
 
 	def __mul__(self,coef):
 		return Vector(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
