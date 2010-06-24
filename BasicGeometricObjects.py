@@ -35,7 +35,6 @@ from SmallComputations import *
 from BasicGraphObjects import *
 import phystricks
 
-
 def SubstitutionMathPsTricks(fx):
 	listeSubst = []
 	listeSubst.append(["**","^"])
