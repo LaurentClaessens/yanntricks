@@ -295,8 +295,10 @@ class GeometricSegment(object):
 		return Segment(self.I,Point(x,y))
 	def translate(self,vecteur):
 		return Segment(self.I.translate(vecteur),self.F.translate(vecteur))
-	def code(self,params):
-		raise AttributeError,"Pas de code à un segment seul"
+	#def code(self,params):
+	#	raise AttributeError,"Pas de code à un segment seul"
+	def graph(self):
+		return phystricks.GraphOfASegment(self)
 	def default_associated_graph_class(self):
 		"""Return the class which is the Graph associated type"""
 		return phystricks.GraphOfASegment
@@ -653,9 +655,9 @@ class MeasureLength(GraphOfASegment):
 	def math_bounding_box(self,pspict):
 		return GraphOfASegment(self.mseg).math_bounding_box()
 	def bounding_box(self,pspict):
-		bb=phystricks.Graph(self.mseg).bounding_box(pspict)
+		bb=self.mseg.bounding_box(pspict)
 		if self.marque:
-			C=phystricks.Graph(self.mseg.center())
+			C=self.mseg.center()
 			C.marque=self.marque
 			C.mark=self.mark
 			C.mark.graphe=C
@@ -664,10 +666,10 @@ class MeasureLength(GraphOfASegment):
 	def pstricks_code(self):
 		self.recompute()
 		a=[]
-		C=phystricks.Graph(self.mseg.center())
+		C=self.mseg.center()
 		C.marque=self.marque
-		vI=phystricks.Graph(Vector(C,self.mI))
-		vF=phystricks.Graph(Vector(C,self.mF))
+		vI=Vector(C,self.mI)
+		vF=Vector(C,self.mF)
 		vI.parameters=self.parameters
 		vF.parameters=self.parameters
 		a.append(vI.pstricks_code())
@@ -693,7 +695,7 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
 	def _segment(self,side):
 		bare_name = "graph_"+side
 		if not bare_name in self.__dict__.keys():
-			line = phystricks.Graph(self.__getattribute__("segment_"+side)())
+			line = self.__getattribute__("segment_"+side)()
 			#line.parameters=self.parameters
 			self.__dict__[bare_name]=line
 		return 	self.__dict__[bare_name]

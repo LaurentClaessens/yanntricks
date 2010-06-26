@@ -258,7 +258,7 @@ class GraphOfAParametricCurve(GraphOfAnObject,ParametricCurve):
 
 def Graph(X,*arg):
 	"""This function is supposed to be only used by the end user."""
-	print "This should not be used"
+	print "The function Graph should not be used"
 	raise TypeError
 	try :
 		return X.default_associated_graph_class()(X,arg)
