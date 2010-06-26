@@ -137,7 +137,7 @@ class GeometricPoint(object):
 		return "\pstGeonode["+params+"]"+self.coordinates()+"{"+self.psNom+"}"
 	def create_PSpoint(self):
 		"""Return the code of creating a pstgeonode. The argument is a Point of GraphOfAPoint"""
-		P = phystricks.Graph(Point(self.x,self.y))
+		P = Point(self.x,self.y)
 		P.psNom = self.psNom
 		P.parameters.symbol="none"
 		return P.pstricks_code()+"\n"
@@ -617,7 +617,7 @@ class GraphOfAVector(GraphOfAnObject,GeometricVector):
 		self.vector = self.obj
 		self.I.psNom = self.vector.I.psNom
 		self.F.psNom = self.vector.F.psNom
-	def bounding_box(self):
+	def bounding_box(self,pspict):
 		return GraphOfASegment(self.segment).bounding_box()
 	def math_bounding_box(self,pspict):
 		return GraphOfASegment(self.segment).math_bounding_box(pspict)
@@ -625,7 +625,7 @@ class GraphOfAVector(GraphOfAnObject,GeometricVector):
 		a = self.segment.I.create_PSpoint() + self.segment.F.create_PSpoint()
 		a = a + "\\ncline["+self.params()+"]{->}{"+self.segment.I.psNom+"}{"+self.segment.F.psNom+"}"
 		if self.marque :
-			P = phystricks.Graph(self.F)
+			P = self.F
 			P.parameters.symbol = "none"
 			P.put_mark(self.mark.dist,self.mark.angle,self.mark.text)
 			a = a + P.pstricks_code()
@@ -718,7 +718,7 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 		self.circle = self.obj
 		self.angleI = 0
 		self.angleF = 2*pi		# By default, the circle is drawn between the angles 0 and 2pi.
-	def bounding_box(self):
+	def bounding_box(self,pspict):
 		bb = BoundingBox()
 		bb.AddX(self.center.x+self.radius)
 		bb.AddX(self.center.x-self.radius)
@@ -860,7 +860,6 @@ class phyFunction(object):
 			if ey > max.y : max = Point(ex,ey)
 			if ey < min.y : min = Point(ex,ey)
 		self.listeExtrema.extend([min,max])
-
 	# La méthode phyFunction.extrema_analytique() ajoute les solutions de f'(x)=0 à self.listeExtrema
 	def extrema_analytique(self):
 		print "Analytique"
@@ -873,7 +872,6 @@ class phyFunction(object):
 			if "x" not in repr(s) :				# En attendant de trouver comment demander des solutions non implicites
 				a.append(self.get_point(numerical_approx(s)))
 		self.listeExtrema.extend(a)
-
 	# Donne les extrema connus entre mx et Mx
 	def extrema(self,mx,Mx):
 		a = []
@@ -892,7 +890,6 @@ class phyFunction(object):
 		return self.get_minmax_data(deb,fin)['ymax']
 	def ymin(self,deb,fin):
 		return self.get_minmax_data(deb,fin)['ymin']
-
 	def maximum_global(self,mx,Mx):
 		max = self.liste_extrema()[0]
 		for p in self.liste_extrema() :
@@ -906,14 +903,12 @@ class phyFunction(object):
 			if p.y < min.y : min = p
 		print min.Affiche()
 		return min
-
 	def tangente(self,x):
 		ca = self.derivative().eval(x)
 		A = self.get_point(x)
 		Ad = Point( A.x+1,A.y+ca )
 		Ag = Point( A.x-1,A.y-ca )
 		return ( Segment(Ag,Ad) )
-
 	# Note que une surface créée par self.AjouteSurface sera automatiquement tracée par la méthode TracephyFunction de psfigure.
 	def AjouteSurface(self,mx,Mx):
 		self.ListeSurface.append( SurfacephyFunction(self,mx,Mx) )
@@ -944,7 +939,6 @@ class ParametricCurve(object):
 	def pstricks(self):
 		var('t')
 		return "%s | %s "%(SubstitutionMathPsTricks(repr(self.f1.sage(x=t))),  SubstitutionMathPsTricks(repr(self.f2.sage(x=t))) )
-
 	def derivative(self):
 		return ParametricCurve(self.f1.derivative(),self.f2.derivative())
 	def get_point(self,llam):
@@ -976,11 +970,9 @@ class ParametricCurve(object):
 		return self.get_minmax_data(deb,fin)['ymax']
 	def ymin(self,deb,fin):
 		return self.get_minmax_data(deb,fin)['ymin']
-
 	def get_normal_point(self,x,dy):
 		vecteurNormal =  self.normal_vector(x)
 		return self.get_point(x).translate(self.normal_vector.fix_size(dy))
-
 	def arc_length(self,mll,Mll):
 		""" numerically returns the arc length on the curve between the value mll and Mll of the parameter """
 		g = sqrt( self.f1.derivative().sage**2+self.f2.derivative().sage**2 )
@@ -1011,20 +1003,16 @@ class ParametricCurve(object):
 				grand = ll+Dll
 				while abs(self.arc_length(ll,petit)) > dl :
 					petit = (grand+petit)/2
-					#print "petit",petit
 			else :
 				petit = ll+Dll
 				while abs(self.arc_length(ll,grand)) < dl :
 					grand = 2*grand - ll
-					#print "grand",grand
 			ell = (petit+grand)/2
 			while abs(self.arc_length( ll, ell )-dl) > prop_precision:
 				if prop_precision == 0:
 					print "prop_precision is zero. Something sucks. You probably want to launch me in an infinite loop. I'm going to crash now; please contact my labour union."
 					print "dl=",dl
 					raise ValueError
-				#print "grand ",grand," petit :",petit
-				#print self.arc_length(ll,ell), prop_precision, dl
 				ell = (grand+petit)/2
 				if self.arc_length(ll,ell) > dl :
 					grand = ell
@@ -1033,29 +1021,24 @@ class ParametricCurve(object):
 			ll = (petit+grand)/2
 			if ll < Mll :
 				PIs.append( ll )
-				#print "J'ai trouvé ",ll
 		return PIs
-
 	def get_regular_points_old(self,mll,Mll,dl):
 		return [self.get_point(ll) for ll in self.get_regular_parameter_old(mll,Mll,dl)]
 	def get_regular_points(self,mll,Mll,dl):
 		return [self.get_point(ll) for ll in self.get_regular_parameter(mll,Mll,dl)]
-
 	def get_wavy_points(self,mll,Mll,dl,dy):
 		"""
 		Return a list of points which do a wave around the parametric curve.
 		"""
 		PAs = self.get_regular_parameter(mll,Mll,dl)
-		#PAs.append(mll)
 		PTs = []
-		#print "les paramètres sont "
-		#print PAs
 		for i in range(0,len(PAs)) :
 			llam = float(PAs[i])
 			PTs.append( self.get_point(llam)+self.normal_vector(llam).fix_size(dy)*(-1)**i )
 		PTs.append(self.get_point(Mll))
 		return PTs
-
+	def graph(self,mx,Mx):
+		return phystricks.GraphOfAParametricCurve(self,mx,Mx)
 
 class Nuage_de_Points(object):
 	def __init__(self):
@@ -1063,17 +1046,12 @@ class Nuage_de_Points(object):
 	def ajoute_point(self,p):
 		self.listePoints.append(p)
 
-
-
-
 def PolarVector(P,r,theta):
 	"""
 	returns a vector on the base point P (class Point) of length r angle theta (degree)
 	"""
 	alpha = radian(theta)
 	return Vector(P, Point(P.x+r*math.cos(alpha),P.y+r*math.sin(alpha)) )
-
-
 
 class BoundingBox(object):
 	def __init__(self,dbg=GeometricPoint(0,0),dhd=GeometricPoint(0,0)):

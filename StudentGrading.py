@@ -99,13 +99,11 @@ class Grades(object):
 		abcisses.extend([0,self.full_grade,self.full_grade/2])
 		for x in abcisses:
 			y = ProportionHaveMore(self.grades_list,x)
-			p = Point( x, y )
-			P = Graph(p)
+			P = Point( x, y )
 			P.parameters.color = "blue"
 			pspict.DrawGraph(P)
 
-		segment = Segment( Point(self.media,0),Point(self.media,1) )
-		S = Graph(segment)
+		S = Segment( Point(self.media,0),Point(self.media,1) )
 		S.parameters.color = "red"
 		pspict.DrawGraph(S)
 
@@ -129,19 +127,16 @@ class Grades(object):
 		abcisses.extend([0,self.full_grade,self.full_grade/2])
 		for x in abcisses:
 			y = AverageBigger(self.grades_list,x)
-			p = Point( x, y )
-			P = Graph(p)
+			P = Point( x, y )
 			P.parameters.color = "blue"
 			pspict.DrawGraph(P)
 
 		segmentH = Segment( Point(0,self.media),Point(self.full_grade,self.media) )
-		SH = Graph(segmentH)
-		SH.parameters.color = "red"
-		pspict.DrawGraph(SH)
+		segmentH.parameters.color = "red"
+		pspict.DrawGraph(segmentH)
 		segmentV = Segment( Point(self.media,0),Point(self.media,self.full_grade) )
-		SV = Graph(segmentV)
-		SV.parameters.color = "red"
-		pspict.DrawGraph(SV)
+		segmentV.parameters.color = "red"
+		pspict.DrawGraph(segmentV)
 		pspict.math_BB.AddPoint(Point(0,0))
 
 		pspict.grid.Dy = 1
@@ -163,8 +158,7 @@ class Grades(object):
 		abcisses.extend([0,self.full_grade,self.full_grade/2])
 		for x in abcisses:
 			y = ProportionBetween(self.grades_list,x,delta)
-			p = Point( x, y )
-			P = Graph(p)
+			P = Point( x, y )
 			P.parameters.color = "blue"
 			pspict.DrawGraph(P)
 

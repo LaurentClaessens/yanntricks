@@ -197,7 +197,7 @@ class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
 		self.conclude_params()
 		self.add_option("plotpoints=%s"%str(self.plotpoints))
 		return self.options.code()
-	def bounding_box(self):
+	def bounding_box(self,pspict):
 		bb = BoundingBox()
 		bb.AddY(self.f.ymin(self.mx,self.Mx))
 		bb.AddY(self.f.ymax(self.mx,self.Mx))
@@ -205,11 +205,11 @@ class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
 		bb.AddX(self.Mx)
 		return bb
 	def math_bounding_box(self,pspict):
-		return self.bounding_box()
+		return self.bounding_box(pspict)
 	def pstricks_code(self):
 		a = []
 		if self.marque :
-			P = Graph(self.get_point(self.Mx))
+			P = self.get_point(self.Mx)
 			P.parameters.symbol="none"
 			P.marque = True
 			P.mark = self.mark
@@ -242,7 +242,7 @@ class GraphOfAParametricCurve(GraphOfAnObject,ParametricCurve):
 		self.add_option("plotpoints=%s"%str(self.plotpoints))
 		self.add_option("plotstyle=%s"%str(self.plotstyle))
 		return self.options.code()
-	def bounding_box(self):
+	def bounding_box(self,pspict):
 		bb = BoundingBox()
 		bb.AddX(self.xmin(self.llamI,self.llamF))
 		bb.AddX(self.xmax(self.llamI,self.llamF))
@@ -258,6 +258,8 @@ class GraphOfAParametricCurve(GraphOfAnObject,ParametricCurve):
 
 def Graph(X,*arg):
 	"""This function is supposed to be only used by the end user."""
+	print "This should not be used"
+	raise TypeError
 	try :
 		return X.default_associated_graph_class()(X,arg)
 	except TypeError,datay :
@@ -931,7 +933,7 @@ class pspicture(object):
 			bb = obj.bounding_box(self)
 		except AttributeError :
 			bb = obj
-		rect = Graph(Rectangle(bb.bg,bb.hd))
+		rect = Rectangle(bb.bg,bb.hd)
 		rect.parameters.color=color
 
 	# Ici, typiquement, symbol sera "*" et params sera vide.
@@ -1050,6 +1052,8 @@ class pspicture(object):
 
 		We recommend to use DrawGraph insead.
 		"""
+		print "DrawObject should not be used"
+		raise
 		try :
 			graphe = obj.default_graph(args)
 		except AttributeError,data :
@@ -1156,12 +1160,12 @@ class pspicture(object):
 			print self.pstricks_code
 			raise
 		if axes.IsLabelX == 1:
-			P = Graph( Point(axes.BB.hd.x,0) )
+			P = Point(axes.BB.hd.x,0)
 			P.parameters.symbol="none"
 			P.put_mark(axes.DistLabelX,axes.AngleLabelX,axes.LabelX)
 			self.DrawGraph(P)
 		if axes.IsLabelY == 1:
-			P = Graph( Point(0,axes.BB.hd.y))
+			P = Point(0,axes.BB.hd.y)
 			P.parameters.symbol="none"
 			P.put_mark(axes.DistLabelY,axes.AngleLabelY,axes.LabelY)
 			self.DrawGraph(P)
