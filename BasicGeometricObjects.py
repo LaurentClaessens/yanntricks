@@ -64,12 +64,6 @@ class phyFunction(object):
 		self.string = repr(self.sage)
 		self.fx = self.string.replace("^","**")
 		self.pstricks = SubstitutionMathPsTricks(self.fx)
-
-		# I think that self.maxima and self.latex are no more used.
-		#self.maxima = SubstitutionMathMaxima(self.fx).replace("**","^")
-		#self.latex = SubstitutionMathLaTeX(self.fx.replace("**","^").replace("(","{(").replace(")",")}").replace("(x)","x").replace("(-x)","-x")).replace("\\abs","\ValeurAbsolue")
-		#if "{(" in self.latex and ")}" in self.latex :
-		#	self.latex = self.latex.replace("{(","{").replace(")}","}")
 		self.ListeSurface = []
 		self.listeTests = []
 		self.TesteDX = 0
@@ -208,7 +202,8 @@ class phyFunction(object):
 		# Ceci sont quelque réglages par défaut
 		self.ListeSurface[-1].ChangeCouleur("blue")
 		self.ListeSurface[-1].add_option("fillstyle=vlines,linestyle=dashed,linecolor=black")
-	
+	def graph(self,mx,Mx):
+		return phystricks.GraphOfAphyFunction(self,mx,Mx)
 	def __pow__(self,n):
 		return phyFunction(self.sage**n)
 
@@ -357,8 +352,10 @@ class ListeNomsPoints(object):
 		#a = ["AutoPt"]
 		s = str(self.donne)
 		return "".join( [chr(int(c)+97) for c in s] )
+def Point(x,y):
+	return GeometricPoint(x,y).
 
-class Point(object):
+class GeometricPoint(object):
 	"""
 	This is a point. Each point comes with a name given by a class attribute.
 	"""
@@ -372,18 +369,18 @@ class Point(object):
 		self.psNom = Point.NomPointLibre.suivant()
 
 	# La méthode EntierPlus place le point sur les coordonnées entières plus grandes (ou égales) à les siennes.
-	def EntierPlus(self):
-		Px = self.x
-		Py = self.y
-		self.x = CalculEntierPlus(Px)
-		self.y = CalculEntierPlus(Py)
+	#def EntierPlus(self):
+	#	Px = self.x
+	#	Py = self.y
+	#	self.x = CalculEntierPlus(Px)
+	#	self.y = CalculEntierPlus(Py)
 
 	# La méthode EntierMoins place le point sur les coordonnées entières plus petites (ou égales) à les siennes.
-	def EntierMoins(self):
-		Px = self.x
-		Py = self.y
-		self.x = CalculEntierMoins(Px)
-		self.y = CalculEntierMoins(Py)
+	#def EntierMoins(self):
+	#	Px = self.x
+	#	Py = self.y
+	#	self.x = CalculEntierMoins(Px)
+	#	self.y = CalculEntierMoins(Py)
 
 	# Donne la projection du point sur la ligne du segment donné
 	def projection(self,seg):

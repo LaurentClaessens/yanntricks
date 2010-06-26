@@ -264,6 +264,8 @@ def Graph(X,*arg):
 	try :
 		return X.default_associated_graph_class()(X,arg)
 	except TypeError,datay :
+		print "267",datay
+		print "268",arg
 		return X.default_associated_graph_class()(X)
 	except AttributeError,data :
 		raise
