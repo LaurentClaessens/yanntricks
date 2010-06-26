@@ -331,6 +331,8 @@ class GeometricCircle(object):
 		return self.get_minmax_data(angleI,angleF)['ymax']
 	def ymin(self,angleI,angleF):
 		return self.get_minmax_data(angleI,angleF)['ymin']
+	def graph(self):
+		return phystricks.GraphOfACircle(self)
 	def __str__(self):
 		return "Circle, center=%s, radius=%s"%(self.center.__str__(),str(self.radius))
 
