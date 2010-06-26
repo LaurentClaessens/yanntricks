@@ -26,7 +26,7 @@ A collection of tools for building LaTeX-pstricks figures with python.
 from sage.all import *
 #import numpy				# I do not remember why I used that.
 import math, sys
-from BasicGraphObjects import *
+#from BasicGraphObjects import *
 from BasicGeometricObjects import *
 from MathComputations import *
 from SmallComputations import *
@@ -93,9 +93,6 @@ class Fichier(object):
 		c = [l for l in self.file]
 		self.close_file()
 		return c
-
-#NomPointLibre = ListeNomsPoints()
-#BasicGraphObjects.NomPointLibre = NomPointLibre
 
 class CalculSage(object):
 	# I cannot merge the function for solving with respect to one or more variables because Sage returns like that:
@@ -264,8 +261,6 @@ def Graph(X,*arg):
 	try :
 		return X.default_associated_graph_class()(X,arg)
 	except TypeError,datay :
-		print "267",datay
-		print "268",arg
 		return X.default_associated_graph_class()(X)
 	except AttributeError,data :
 		raise
