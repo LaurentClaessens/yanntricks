@@ -855,7 +855,7 @@ class pspicture(object):
 			f=open(self.interWriteFile)
 		except IOError :
 			print "Warning : the auxiliary file seems not to exist. Compile your LaTeX file."
-			return defaut_value
+			return default_value
 		text = f.read().replace('\n','').split(":")
 		try:
 			return text[text.index(Id)+1]			
@@ -1172,6 +1172,7 @@ class pspicture(object):
 		self.BB.AddAxes(axes,self.xunit,self.yunit)
 
 	def DrawDefaultAxes(self):
+		self.math_BB.AddPoint(self.axes.C)
 		self.axes.BB = self.math_BB.copy()
 		epsilonX=float(self.axes.Dx)/2
 		epsilonY=float(self.axes.Dy)/2
