@@ -721,6 +721,8 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 		self.circle = self.obj
 		self.angleI = 0
 		self.angleF = 2*pi		# By default, the circle is drawn between the angles 0 and 2pi.
+	def math_bounding_box(self,pspict):
+		return self.bounding_box(pspict)
 	def bounding_box(self,pspict):
 		bb = BoundingBox()
 		bb.AddX(self.center.x+self.radius)
