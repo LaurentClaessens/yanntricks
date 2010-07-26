@@ -714,7 +714,6 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
 		a.append(self.graph_W.pstricks_code())
 		return "\n".join(a)
 
-
 class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 	def __init__(self,circle):
 		GraphOfAnObject.__init__(self,circle)

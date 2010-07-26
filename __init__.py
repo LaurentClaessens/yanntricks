@@ -564,7 +564,10 @@ def LineInterLine(l1,l2):
 	s = soluce[0]
 	return Point( s[0],s[1] )
 	
-	
+def SinglePicture(nom):
+	""" Return the tuple of pspicture and figure that one needs in 90% of the cases """
+	return pspicture(nom), GenericFigure(nom)
+
 def GenericFigure(nom):
 	"""
 	This function returns a figure with some default values. It creates coherent label, file name and prints the lines to be appended in the LaTeX file to include the figure.
@@ -575,7 +578,6 @@ def GenericFigure(nom):
 	print "The result is on the figure \\ref{"+label+"}"
 	print "\\newcommand{"+caption+"}{<+mettre le texte+>}"
 	print "\\input{Fig_"+nom+".pstricks}"
-	#return  figure(caption,label,REP+"/"+nFich)
 	return  figure(caption,label,nFich)
 
 # Une figure est le but ultime de ce script. Une figure est une suite de subfigures, lesquelles sont destinées à être essentiellement des pspictures.
@@ -622,8 +624,7 @@ class figure(object):
 		""" dilatations or contract that picture in both directions with the same coefficient """
 		self.dilatation_X(fact)
 		self.dilatation_Y(fact)
-
-	def AjouteSSfigure(self,ssFig):
+	def append_subfigure(self,ssFig):		# This function was initially names AjouteSSfigure
 		self.SSfigures.append(ssFig)
 	def add_pspicture(self,pspict):
 		self.add_latex_line(pspict.separator_dico["WRITE_AND_LABEL"],"WRITE_AND_LABEL")
@@ -636,21 +637,19 @@ class figure(object):
 		self.code[n:n]=ligne+"\n"
 	def AjouteCode(self,liste_code):
 		self.code.extend(liste_code)
-
 	def conclude(self):
 		if not globals_vars.special_exit() :
 			self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+"}","BEFORE SUBFIGURES")
 		for f in self.SSfigures :
 			self.add_latex_line("\subfigure["+f.caption+"]{%","SUBFIGURES")
 			self.add_latex_line(f.code,"SUBFIGURES")
-			self.add_latex_line("}					% Fermeture de la sous-figure "+str(self.SSfigures.index(f)+1),"SUBFIGURE")
+			self.add_latex_line("}					% Fermeture de la sous-figure "+str(self.SSfigures.index(f)+1),"SUBFIGURES")
 			self.add_latex_line("%","SUBFIGURES")
 		after_all=r"""\caption{%s}\label{%s}
 			\end{figure}
 			"""%(self.caption,self.label)
 		self.add_latex_line(after_all,"AFTER ALL")
 		self.contenu = DicoSeparatorToCode(self.separator_dico)
-
 	def write_the_file(self):					# Nous sommes dans la classe figure.
 		self.fichier.open_file("w")
 		self.fichier.file.write(self.contenu)
@@ -663,14 +662,12 @@ class subfigure(object):
 		self.caption = caption
 		self.label = label
 		self.code = []
-
 	def add_latex_line(self,ligne):
 		self.code.append(ligne)
 	def AjouteCode(self,cod):
 		self.code.extend(cod)
-
-	def add_pspicture(self,psp):
-		self.add_latex_line(psp.contenu())
+	def add_pspicture(self,pspict):
+		self.add_latex_line(pspict.contenu())
 
 class PspictureToOtherOutputs(object):
 	"""
