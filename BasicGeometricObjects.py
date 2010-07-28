@@ -498,18 +498,58 @@ class Mark(object):
 		"""return the central point of the mark, that is the point where the mark arrives"""
 		return self.graphe.translate(PolarVector(self.graphe,self.dist,self.angle))
 
+class FillParameters(object):
+	"""The filling parameters"""
+	def __init__(self):
+		self.color= None
+		self.style= "solid"
+	def add_to_options(self,opt):
+		if self.color :
+			opt.add_option("fillcolor=%s"%str(self.color))
+		if self.style :
+			opt.add_option("fillstyle=%s"%str(self.style))
+
+class HatchParameters(object):
+	"""Same as FillParameters, but when one speaks about atched"""
+	def __init__(self):
+		self.color = None
+		self._crossed = False
+		self.angle = -45
+	def crossed(self):
+		self._crossed=True
+	def add_to_options(self,opt):
+		opt.add_option("hatchangle=%s"%str(self.angle))
+		if self._crossed:
+			opt.add_option("fillstyle=crosshatch")
+		else:
+			opt.add_option("fillstyle=vlines")
+		if self.color :
+			opt.add_option("hatchcolor=%s"%str(self.color))
+
 class Parameters(object):
 	def __init__(self):
 		self.color = None
 		self.symbol = None
 		self.style = None
+		self.fill=FillParameters()
+		self.hatch=HatchParameters()
+		self._filled=False
+		self._hatched=False
+	def filled(self):
+		self._filled=True
+	def hatched(self):
+		self._hatched=True
 	def add_to_options(self,opt):
-		if not self.color is None:
+		if self.color :
 			opt.add_option("linecolor=%s"%str(self.color))
-		if not self.style is None:
+		if self.style :
 			opt.add_option("linestyle=%s"%str(self.style))
-		if not self.symbol is None:
+		if self.symbol :
 			opt.add_option("PointSymbol=%s"%str(self.symbol))
+		if self._filled:
+			self.fill.add_to_options(opt)
+		if self._hatched:
+			self.hatch.add_to_options(opt)
 
 class GraphOfAnObject(object):
 	""" This class is supposed to be used to create other "GraphOfA..." by inheritance. It is a superclass. """
