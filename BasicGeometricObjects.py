@@ -721,9 +721,13 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 		self.circle = self.obj
 		self.angleI = 0
 		self.angleF = 2*pi		# By default, the circle is drawn between the angles 0 and 2pi.
+	def copy(self):
+		"""Return a copy of the object as geometrical object: the style and drawing parameters are not copied."""
+		reurn Circle(self.center,self.radius)
 	def math_bounding_box(self,pspict):
 		return self.bounding_box(pspict)
 	def bounding_box(self,pspict):
+		# TODO : take into account self.angleI and self.angleF.
 		bb = BoundingBox()
 		bb.AddX(self.center.x+self.radius)
 		bb.AddX(self.center.x-self.radius)
