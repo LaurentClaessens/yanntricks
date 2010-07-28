@@ -1059,7 +1059,9 @@ class pspicture(object):
 			graphe = Graph(obj)
 			graphe.add_option(args)
 		self.DrawGraph(graphe)
-
+	def DrawGraphs(self,*args):
+		for g in args:
+			self.DrawGraph(g)
 	def DrawGraph(self,graphe,separator="DEFAULT",*args):
 		"""
 		Draw an object of type GraphOfA*.

@@ -365,6 +365,7 @@ class GeometricVector(object):
 	def length(self):
 		return self.polaires().r
 	def angle(self):
+		"""return the angle of the vector (gradient)"""
 		return self.polaires().theta
 	def lie(self,p):
 		return Vector(p,Point(p.x+self.Dx,p.y+self.Dy))
@@ -596,6 +597,7 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 		self.psNom = point.psNom		# The psNom of the point is erased when running Point.__init__
 		self.point = self.obj
 		self.add_option("PointSymbol=*")
+		self._advised_mark_angle=None
 	def bounding_box(self,pspict):
 		"""
 		return the bounding box of the point including its mark
@@ -618,7 +620,9 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 		a.append("\pstGeonode["+self.params()+"]"+self.coordinates()+"{"+self.psNom+"}")
 		if self.marque :
 			mark = self.mark
-			a.append(r"\rput(%s){\rput(%s;%s){%s}}"%(self.psNom,str(mark.dist),str(mark.angle),str(mark.text)))
+			R = RealField(round(log(10,2)*7))
+			angle=R(mark.angle)			# If not, pstricks complains because of a too long number.
+			a.append(r"\rput(%s){\rput(%s;%s){%s}}"%(self.psNom,str(mark.dist),str(angle),str(mark.text)))
 		return "\n".join(a)
 
 def Code_Pscurve(listePoints,params):
@@ -858,10 +862,13 @@ class phyFunction(object):
 		if self._derivative == None :
 			self._derivative = phyFunction(self.sage.derivative())
 		return self._derivative
-	def get_point(self,x):
-		return Point(float(x),self.eval(x))
-	def Listeget_point(self,l):
-		return [self.get_point(x) for x in l]
+	def get_point(self,x):		
+		P = Point(float(x),self.eval(x))
+		ca = self.derivative().eval(x) 
+		P.advised_mark_angle=degree(atan(ca))+90
+		return P
+	#def Listeget_point(self,l):
+	#	return [self.get_point(x) for x in l]
 	def normal_vector(self,x):
 		""" return a normalized normal vector to the graph of the function at x """
 		ca = self.derivative().eval(x) 
@@ -988,13 +995,19 @@ class ParametricCurve(object):
 	def pstricks(self):
 		var('t')
 		return "%s | %s "%(SubstitutionMathPsTricks(repr(self.f1.sage(x=t))),  SubstitutionMathPsTricks(repr(self.f2.sage(x=t))) )
+	def tangent_angle(self,llam):
+		""""Return the angle of the tangent (gradient)"""
+		dx=self.f1.derivative().eval(llam)
+		dy=self.f2.derivative().eval(llam)
+		ca=dy/dx
+		return atan(ca)
 	def derivative(self):
 		return ParametricCurve(self.f1.derivative(),self.f2.derivative())
 	def get_point(self,llam):
-		"""
-		Return the point on the curve for the value llam of the parameter.
-		"""
-		return Point( self.f1.eval(llam),self.f2.eval(llam) )
+		"""Return the point on the curve for the value llam of the parameter."""
+		P = Point( self.f1.eval(llam),self.f2.eval(llam) )
+		P.advised_mark_angle=degree(self.tangent_angle(llam))+90	# Here I cannot use the method normal_vector due to recursion.
+		return P
 	def tangent_vector(self,llam):
 		"""
 		returns the tangent vector to the curve for the value of the parameter given by llam.
@@ -1008,7 +1021,6 @@ class ParametricCurve(object):
 		   The vector is normed to 1.
 		"""
 		return self.tangent_vector(llam).orthogonal()
-
 	def get_minmax_data(self,deb,fin):
 		return parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) ).get_minmax_data()
 	def xmax(self,deb,fin):
