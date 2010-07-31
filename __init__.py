@@ -248,7 +248,6 @@ class GraphOfAParametricCurve(GraphOfAnObject,ParametricCurve):
 		ymin=self.ymin(self.llamI,self.llamF)
 		ymax=self.ymax(self.llamI,self.llamF)
 		bb = BoundingBox( Point(xmin,ymin),Point(xmax,ymax)  )
-		print "252", bb
 		return bb
 	def math_bounding_box(self,pspict=None):
 		return self.bounding_box(pspict)
