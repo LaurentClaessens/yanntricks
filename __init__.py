@@ -1271,6 +1271,7 @@ class pspicture(object):
 		"""
 		# Here we are supposed to be sure of the xunit, yunit, so we can compute the BB needed for the points with marks.
 		# For the same reason, all the marks that were asked to be drawn are added now.
+		# Most of the difficulty is when the user use pspicture.dilatation_X and Y with different coefficients.
 		for mark in self.record_marks:
 			central_point = mark.central_point(self)
 			central_point.parameters.color="red"
