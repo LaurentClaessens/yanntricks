@@ -242,19 +242,23 @@ class GraphOfAParametricCurve(GraphOfAnObject,ParametricCurve):
 		self.add_option("plotpoints=%s"%str(self.plotpoints))
 		self.add_option("plotstyle=%s"%str(self.plotstyle))
 		return self.options.code()
-	def bounding_box(self,pspict):
+	def bounding_box(self,pspict=None):
 		bb = BoundingBox()
 		bb.AddX(self.xmin(self.llamI,self.llamF))
 		bb.AddX(self.xmax(self.llamI,self.llamF))
 		bb.AddY(self.ymin(self.llamI,self.llamF))
 		bb.AddY(self.ymax(self.llamI,self.llamF))
 		return bb
+	def math_bounding_box(self,pspict=None):
+		return self.bounding_box(pspict)
 	def pstricks_code(self):
 		if self.wavy :
 			waviness = self.waviness
 			return Code_Pscurve( self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy) ,self.params())
 		else:
-			return "\parametricplot[%s]{%s}{%s}{%s}" %(self.params(),str(self.llamI),str(self.llamF),self.curve.pstricks())
+			initial = numerical_approx(self.llamI)		# Avoid the string "pi" in the pstricks code.
+			final = numerical_approx(self.llamF)
+			return "\parametricplot[%s]{%s}{%s}{%s}" %(self.params(),str(initial),str(final),self.curve.pstricks())
 
 def Graph(X,*arg):
 	"""This function is supposed to be only used by the end user."""

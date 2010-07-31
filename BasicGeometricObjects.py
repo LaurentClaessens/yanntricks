@@ -983,6 +983,9 @@ class ParametricCurve(object):
 	You create a parametric curve by
 		curve = ParamatricCurve(f1,f2)
 	where f1 and f2 are phyFunction.
+
+	The graph of curve with the parameter going from a to b is got by
+		curve.graph(a,b)
 	"""
 	def __init__(self,f1,f2):
 		if type(f1) is phyFunction : self.f1 = f1
