@@ -607,10 +607,19 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 		"""
 		bb = BoundingBox(Point(self.x-0.1,self.y-0.1),Point(self.x+0.1,self.y+0.1))
 		if self.marque:
+			pspict.record_point_mark.append(self)		# We cannot compute here the size of the bounding box
+									# due to the mark because xunit,yunit will only be fixed
+									# after possible use of pspict.Dilatation
+									# See pspicture.contenu
+
 			central_point = self.mark.central_point()
 			dimx,dimy=pspict.get_box_size(self.mark.text)
+			dimx=float(dimx)/pspict.xunit
+			dimy=float(dimy)/pspict.yunit
+			print "614",pspict.xunit
 			bb.AddPoint( Point(central_point.x-dimx/2,central_point.y-dimy/2) )
 			bb.AddPoint( Point(central_point.x+dimx/2,central_point.y+dimy/2) )
+
 		return bb
 	def math_bounding_box(self,pspict):
 		"""Return a bounding box which include itself and that's it."""

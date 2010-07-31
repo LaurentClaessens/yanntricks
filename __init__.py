@@ -808,6 +808,7 @@ class pspicture(object):
 		self.newwriteDone = False
 		self.interWriteFile = newwriteName()+".pstricks.aux"
 		self.NomPointLibre = ListeNomsPoints()
+		self.record_point_mark=[]
 		self.counterDone = False
 		self.newlengthDone = False
 		self.listePoint = []
@@ -947,14 +948,22 @@ class pspicture(object):
 		return self.BB
 	def DrawBB(self):
 		self.DrawBoundingBox(self.BB)
-	def DrawBoundingBox(self,obj,color="cyan"):
-		"""Draw the bounding box of an object when it has a method bounding_box. If not, assume that the object is the bounding box to be drawn."""
+	def DrawBoundingBox(self,obj=None,color="cyan"):
+		"""Draw the bounding box of an object when it has a method bounding_box
+
+		If not, assume that the object is the bounding box to be drawn.
+		If no object are given, draw its own bounding box
+		"""
+		if not obj:
+			obj=self
 		try :
 			bb = obj.bounding_box(self)
 		except AttributeError :
 			bb = obj
 		rect = Rectangle(bb.bg,bb.hd)
 		rect.parameters.color=color
+		print "964", color
+		self.DrawGraph(rect)
 
 	# Ici, typiquement, symbol sera "*" et params sera vide.
 	def DrawPoint(self,P,symbol,params):
@@ -1268,6 +1277,7 @@ class pspicture(object):
 		"""
 		Notice that if the option --eps/pdf is given, this method launches some compilations when creating contenu_eps/pdf 
 		"""
+		# Here we are supposed to be sure of the xunit, yunit, so we can compute the BB needed for the points with marks.
 		for sortie in globals_vars.list_exits:
 			if globals_vars.__getattribute__(sortie+"_exit"):
 				print "je vois %s"%sortie
