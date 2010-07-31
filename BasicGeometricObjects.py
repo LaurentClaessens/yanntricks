@@ -554,6 +554,10 @@ class Parameters(object):
 
 class GraphOfAnObject(object):
 	""" This class is supposed to be used to create other "GraphOfA..." by inheritance. It is a superclass. """
+	# self.record_add_to_bb is a list of points to be added to the bounding box.
+	# Typically, when a point has a mark, one can only know the size of the box at the end of the picture 
+	#(because of xunit, yunit that change when using dilatation)
+	# Thus if one wants to draw the bounding box, it has to be done at the end.
 	def __init__(self,obj):
 		self.obj = obj
 		self.parameters = Parameters()
@@ -563,6 +567,7 @@ class GraphOfAnObject(object):
 		self.marque = False
 		self.add_option("linecolor=black")
 		self.add_option("linestyle=solid")
+		self.record_add_to_bb=[]		 
 	def wave(self,dx,dy):					# dx is the wave length and dy is the amplitude
 		self.wavy = True
 		self.waviness = Waviness(self,dx,dy)
@@ -607,19 +612,12 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 		"""
 		bb = BoundingBox(Point(self.x-0.1,self.y-0.1),Point(self.x+0.1,self.y+0.1))
 		if self.marque:
-			pspict.record_point_mark.append(self)		# We cannot compute here the size of the bounding box
+			pspict.record_marks.append(self.mark)		# We cannot compute here the size of the bounding box
 									# due to the mark because xunit,yunit will only be fixed
 									# after possible use of pspict.Dilatation
 									# See pspicture.contenu
-
-			central_point = self.mark.central_point()
-			dimx,dimy=pspict.get_box_size(self.mark.text)
-			dimx=float(dimx)/pspict.xunit
-			dimy=float(dimy)/pspict.yunit
-			print "614",pspict.xunit
-			bb.AddPoint( Point(central_point.x-dimx/2,central_point.y-dimy/2) )
-			bb.AddPoint( Point(central_point.x+dimx/2,central_point.y+dimy/2) )
-
+		for P in self.record_add_to_bb:
+			bb.AddPoint(P)
 		return bb
 	def math_bounding_box(self,pspict):
 		"""Return a bounding box which include itself and that's it."""
@@ -1224,6 +1222,8 @@ class BoundingBox(object):
 		self.bg.y = enlarge_a_little_low(self.bg.y,Dy,epsilonY)
 		self.hd.x = enlarge_a_little_up(self.hd.x,Dx,epsilonX)
 		self.hd.y = enlarge_a_little_up(self.hd.y,Dy,epsilonY)
+	def bounding_box(self,pspict):
+		return self
 	def copy(self):
 		return BoundingBox(self.bg.copy(),self.hd.copy())
 	def __str__(self):
