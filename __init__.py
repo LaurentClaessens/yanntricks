@@ -630,6 +630,9 @@ class figure(object):
 		self.dilatation_Y(fact)
 	def append_subfigure(self,ssFig):		# This function was initially names AjouteSSfigure
 		self.SSfigures.append(ssFig)
+		if not ssFig.label:
+			ssFig.label=self.label+"ssFig"+str(len(self.self.SSfigures))
+		print r"See also the subfigure \ref{%s}"%ssFig.label
 	def add_pspicture(self,pspict):
 		self.add_latex_line(pspict.separator_dico["WRITE_AND_LABEL"],"WRITE_AND_LABEL")
 		pspict.separator_dico["WRITE_AND_LABEL"].latex_code=[]
@@ -662,9 +665,14 @@ class figure(object):
 # Le \subfigure[caption]{ ne se met pas dans le code de la classe subfigure parce que dans la classe figure, je numérote les sous-figures.
 # Typiquement, une sousfigure sera juste créée en ajoutant une pspicture d'un coup, et puis c'est tout.
 class subfigure(object):
-	def __init__(self,caption,label):
+	"""
+	This is a subfigure.
+
+	If no label are given, a default one will be set when included in the figure.
+	"""
+	def __init__(self,caption,label=None):
 		self.caption = caption
-		self.label = label
+		self.label = label		# The label will be given in figure.append_subfigure
 		self.code = []
 	def add_latex_line(self,ligne):
 		self.code.append(ligne)
