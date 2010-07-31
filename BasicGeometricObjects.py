@@ -997,7 +997,7 @@ class ParametricCurve(object):
 	#  C'est cela qui demande d'utiliser repr et la syntaxe f(x=t).
 	def pstricks(self):
 		var('t')
-		return "%s | %s "%(SubstitutionMathPsTricks(repr(self.f1.sage(x=t))),  SubstitutionMathPsTricks(repr(self.f2.sage(x=t))) )
+		return "%s | %s "%(SubstitutionMathPsTricks(repr(self.f1.sage(x=t)).replace("pi","3.1415")),  SubstitutionMathPsTricks(repr(self.f2.sage(x=t)).replace("pi","3.1415")) )
 	def tangent_angle(self,llam):
 		""""Return the angle of the tangent (gradient)"""
 		dx=self.f1.derivative().eval(llam)
