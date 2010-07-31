@@ -630,8 +630,10 @@ class figure(object):
 		self.dilatation_Y(fact)
 	def append_subfigure(self,ssFig):		# This function was initially names AjouteSSfigure
 		self.SSfigures.append(ssFig)
+		suffixe = "ssFig"+str(len(self.SSfigures))
 		if not ssFig.label:
-			ssFig.label=self.label+"ssFig"+str(len(self.self.SSfigures))
+			ssFig.label=self.label+suffixe
+		ssFig.pspicture.name=self.label+"pspict"+suffixe
 		print r"See also the subfigure \ref{%s}"%ssFig.label
 	def add_pspicture(self,pspict):
 		self.add_latex_line(pspict.separator_dico["WRITE_AND_LABEL"],"WRITE_AND_LABEL")
@@ -650,7 +652,8 @@ class figure(object):
 		for f in self.SSfigures :
 			self.add_latex_line("\subfigure["+f.caption+"]{%","SUBFIGURES")
 			self.add_latex_line(f.code,"SUBFIGURES")
-			self.add_latex_line("}					% Fermeture de la sous-figure "+str(self.SSfigures.index(f)+1),"SUBFIGURES")
+			self.add_latex_line("\label{%s}"%f.label,"SUBFIGURES")
+			self.add_latex_line("}					% Closing subfigure "+str(self.SSfigures.index(f)+1),"SUBFIGURES")
 			self.add_latex_line("%","SUBFIGURES")
 		after_all=r"""\caption{%s}\label{%s}
 			\end{figure}
@@ -674,12 +677,14 @@ class subfigure(object):
 		self.caption = caption
 		self.label = label		# The label will be given in figure.append_subfigure
 		self.code = []
+		self.pspicture=None
 	def add_latex_line(self,ligne):
 		self.code.append(ligne)
 	def AjouteCode(self,cod):
 		self.code.extend(cod)
-	def add_pspicture(self,pspict):
-		self.add_latex_line(pspict.contenu())
+	def add_pspicture(self,pspicture):
+		self.pspicture=pspicture		# Serves to give a name to the pspicture when the subfigure is included
+		self.add_latex_line(pspicture.contenu())
 
 class PspictureToOtherOutputs(object):
 	"""
