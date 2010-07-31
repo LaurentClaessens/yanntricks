@@ -243,11 +243,12 @@ class GraphOfAParametricCurve(GraphOfAnObject,ParametricCurve):
 		self.add_option("plotstyle=%s"%str(self.plotstyle))
 		return self.options.code()
 	def bounding_box(self,pspict=None):
-		bb = BoundingBox()
-		bb.AddX(self.xmin(self.llamI,self.llamF))
-		bb.AddX(self.xmax(self.llamI,self.llamF))
-		bb.AddY(self.ymin(self.llamI,self.llamF))
-		bb.AddY(self.ymax(self.llamI,self.llamF))
+		xmin=self.xmin(self.llamI,self.llamF)
+		xmax=self.xmax(self.llamI,self.llamF)
+		ymin=self.ymin(self.llamI,self.llamF)
+		ymax=self.ymax(self.llamI,self.llamF)
+		bb = BoundingBox( Point(xmin,ymin),Point(xmax,ymax)  )
+		print "252", bb
 		return bb
 	def math_bounding_box(self,pspict=None):
 		return self.bounding_box(pspict)
@@ -1272,10 +1273,11 @@ class pspicture(object):
 		# Here we are supposed to be sure of the xunit, yunit, so we can compute the BB needed for the points with marks.
 		# For the same reason, all the marks that were asked to be drawn are added now.
 		# Most of the difficulty is when the user use pspicture.dilatation_X and Y with different coefficients.
+		# TODO : everything is extremely buggy.
 		for mark in self.record_marks:
 			central_point = mark.central_point(self)
-			central_point.parameters.color="red"
-			self.DrawGraph(central_point)
+			#central_point.parameters.color="red"
+			#self.DrawGraph(central_point)
 
 			#TODO : here, use create_PSpoint instead
 			self.add_latex_line("\pstGeonode[]"+central_point.coordinates()+"{"+central_point.psNom+"}")
