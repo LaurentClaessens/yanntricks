@@ -206,7 +206,7 @@ class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
 		return bb
 	def math_bounding_box(self,pspict):
 		return self.bounding_box(pspict)
-	def pstricks_code(self):
+	def pstricks_code(self,pspict=None):
 		a = []
 		if self.marque :
 			P = self.get_point(self.Mx)
@@ -251,7 +251,7 @@ class GraphOfAParametricCurve(GraphOfAnObject,ParametricCurve):
 		return bb
 	def math_bounding_box(self,pspict=None):
 		return self.bounding_box(pspict)
-	def pstricks_code(self):
+	def pstricks_code(self,pspict=None):
 		if self.wavy :
 			waviness = self.waviness
 			return Code_Pscurve( self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy) ,self.params())
@@ -1097,7 +1097,7 @@ class pspicture(object):
 			raise AttributeError
 		try :
 			self.BB.add_graph(graphe,self)
-			self.add_latex_line(graphe.pstricks_code(),separator)
+			self.add_latex_line(graphe.pstricks_code(self),separator)
 		except AttributeError,data:
 			print data
 			raise
@@ -1270,16 +1270,25 @@ class pspicture(object):
 		Notice that if the option --eps/pdf is given, this method launches some compilations when creating contenu_eps/pdf 
 		"""
 		# Here we are supposed to be sure of the xunit, yunit, so we can compute the BB needed for the points with marks.
+		# For the same reason, all the marks that were asked to be drawn are added now.
 		for mark in self.record_marks:
-			central_point = mark.central_point()
+			central_point = mark.central_point(self)
+			central_point.parameters.color="red"
+			self.DrawGraph(central_point)
+
+			#TODO : here, use create_PSpoint instead
+			self.add_latex_line("\pstGeonode[]"+central_point.coordinates()+"{"+central_point.psNom+"}")
+			R = RealField(round(log(10,2)*7))
+			angle=R(mark.angle)			# If not, pstricks could complain because of a too long number.
+			self.add_latex_line(r"\rput(%s){\rput(%s;%s){%s}}"%(central_point.psNom,"0",0,str(mark.text)))
+
 			dimx,dimy=self.get_box_size(mark.text)
 			dimx=float(dimx)/self.xunit
 			dimy=float(dimy)/self.yunit
-			print "1287 xunit provisoire", self.xunit
 			pt1=Point(central_point.x-dimx/2,central_point.y-dimy/2) 
 			pt2=Point(central_point.x+dimx/2,central_point.y+dimy/2)
 			self.BB.AddPoint(pt1)
-			self.BB.AddPoint(pt1)
+			self.BB.AddPoint(pt2)
 			mark.graphe.record_add_to_bb.append(pt1)
 			mark.graphe.record_add_to_bb.append(pt2)
 		for obj in self.record_bounding_box:

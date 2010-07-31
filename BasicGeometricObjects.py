@@ -140,7 +140,7 @@ class GeometricPoint(object):
 		P = Point(self.x,self.y)
 		P.psNom = self.psNom
 		P.parameters.symbol="none"
-		return P.pstricks_code()+"\n"
+		return P.pstricks_code(None)+"\n"
 	def coordinates(self):
 		x = self.x
 		y = self.y
@@ -495,9 +495,27 @@ class Mark(object):
 		self.dist = dist
 		self.angle = angle
 		self.text = text
-	def central_point(self):
-		"""return the central point of the mark, that is the point where the mark arrives"""
-		return self.graphe.translate(PolarVector(self.graphe,self.dist,self.angle))
+	def central_point(self,pspict):
+		"""
+		return the central point of the mark, that is the point where the mark arrives
+
+		If pspict is given, we compute the deformation due to the dilatation. 
+		Be carefull : in that cas <dist> is given as _absolute value_ and the visual effect will not
+		be affected by dilatations.
+		The way we take the dilatation into account is that, if a is the original angle, we solve
+		(cos(a),sin(a))=(  A*m*cos(a'),B*m*sin(a')  )
+		with respect to m and a'. (A and B are the dilatation coefficients, i.e. xunit,yunit)<++>
+		"""
+		if pspict:
+			xunit=pspict.xunit
+			yunit=pspict.yunit
+			theta=radian(self.angle)
+			thetaP=atan(  yunit*tan(theta)/xunit  )
+			m=cos(theta)/(xunit*cos(thetaP))
+			alpha=degree(thetaP)
+			return self.graphe.translate(PolarVector(self.graphe,m,alpha))
+		else:
+			return self.graphe.translate(PolarVector(self.graphe,self.dist,self.angle))
 
 class FillParameters(object):
 	"""The filling parameters"""
@@ -607,10 +625,14 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 		"""
 		return the bounding box of the point including its mark
 
-		A small box of radius 0.1 is given in any case, and the mark is added if there is a one.
+		A small box of radius 0.1 (modulo xunit,yunit[1]) is given in any case, and the mark is added if there is a one.
 		You need to provide a pspict in order to compute the size since it can vary from the place in your document you place the figure.
+
+		[1] If you dont't know what is the "bounding box", or if you don't want to fine tune it, you don't care.
 		"""
-		bb = BoundingBox(Point(self.x-0.1,self.y-0.1),Point(self.x+0.1,self.y+0.1))
+		Xradius=0.1/pspict.xunit
+		Yradius=0.1/pspict.yunit
+		bb = BoundingBox(Point(self.x-Xradius,self.y-Yradius),Point(self.x+Xradius,self.y+Yradius))
 		if self.marque:
 			pspict.record_marks.append(self.mark)		# We cannot compute here the size of the bounding box
 									# due to the mark because xunit,yunit will only be fixed
@@ -622,15 +644,10 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 	def math_bounding_box(self,pspict):
 		"""Return a bounding box which include itself and that's it."""
 		return BoundingBox(self.point,self.point)
-	def pstricks_code(self):
-		a = []
-		a.append("\pstGeonode["+self.params()+"]"+self.coordinates()+"{"+self.psNom+"}")
-		if self.marque :
-			mark = self.mark
-			R = RealField(round(log(10,2)*7))
-			angle=R(mark.angle)			# If not, pstricks complains because of a too long number.
-			a.append(r"\rput(%s){\rput(%s;%s){%s}}"%(self.psNom,str(mark.dist),str(angle),str(mark.text)))
-		return "\n".join(a)
+	def pstricks_code(self,pspict):
+		# If there is a mark, this is not drawn now because of deformations by xunit,yunit.
+		# It is done later, in pspict.contenu()
+		return "\pstGeonode["+self.params()+"]"+self.coordinates()+"{"+self.psNom+"}\n"
 
 def Code_Pscurve(listePoints,params):
 	"""
@@ -656,7 +673,7 @@ class GraphOfASegment(GraphOfAnObject,GeometricSegment):
 		return BoundingBox(self.I,self.F)		# If you change this, maybe you have to adapt math_bounding_box
 	def math_bounding_box(self,pspicture=1):
 		return self.bounding_box(pspicture)
-	def pstricks_code(self):
+	def pstricks_code(self,pspict=None):
 		if self.wavy:
 			waviness = self.waviness
 			return Code_Pscurve(self.get_wavy_points(waviness.dx,waviness.dy),self.params())
@@ -676,7 +693,7 @@ class GraphOfAVector(GraphOfAnObject,GeometricVector):
 		return GraphOfASegment(self.segment).bounding_box()
 	def math_bounding_box(self,pspict):
 		return GraphOfASegment(self.segment).math_bounding_box(pspict)
-	def pstricks_code(self):
+	def pstricks_code(self,pspict=None):
 		a = self.segment.I.create_PSpoint() + self.segment.F.create_PSpoint()
 		a = a + "\\ncline["+self.params()+"]{->}{"+self.segment.I.psNom+"}{"+self.segment.F.psNom+"}"
 		if self.marque :
@@ -714,7 +731,7 @@ class MeasureLength(GraphOfASegment):
 			C.mark.graphe=C
 			bb.AddBB(C.bounding_box(pspict))
 		return bb
-	def pstricks_code(self):
+	def pstricks_code(self,pspict=None):
 		self.recompute()
 		a=[]
 		C=self.mseg.center()
@@ -757,7 +774,7 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
 		return BoundingBox(self.NW,self.SE)
 	def math_bounding_box(self,pspicture=1):
 		return self.bounding_box(pspicture)
-	def pstricks_code(self):
+	def pstricks_code(self,pspict=None):
 		a=[]
 		a.append(self.graph_N.pstricks_code())
 		a.append(self.graph_S.pstricks_code())
@@ -785,7 +802,7 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 		bb.AddY(self.center.y+self.radius)
 		bb.AddY(self.center.y-self.radius)
 		return bb
-	def pstricks_code(self):
+	def pstricks_code(self,pspict=None):
 		if self.wavy:
 			waviness = self.waviness
 			alphaI = radian(self.angleI)
@@ -1002,7 +1019,7 @@ class ParametricCurve(object):
 
 	# Le truc difficile avec le pstricks est que la syntaxe est  "f1(t) | f2(t)" avec t comme variable.
 	#  C'est cela qui demande d'utiliser repr et la syntaxe f(x=t).
-	def pstricks(self):
+	def pstricks(self,pspict=None):
 		var('t')
 		return "%s | %s "%(SubstitutionMathPsTricks(repr(self.f1.sage(x=t)).replace("pi","3.1415")),  SubstitutionMathPsTricks(repr(self.f2.sage(x=t)).replace("pi","3.1415")) )
 	def tangent_angle(self,llam):
