@@ -1137,6 +1137,17 @@ class BoundingBox(object):
 		return self.hd.x-self.bg.x
 	def tailleY(self):
 		return self.hd.y-self.bg.y
+	def extraX_left(self,l):
+		"""Enlarge the bounding box of a length l on the left"""
+		self.bg.x=self.bg.x-l
+	def extraX_right(self,l):
+		"""Enlarge the bounding box of a length l on the right"""
+		self.hd.x=self.hd.x+l
+	def extraX(self,l):
+		"""Enlarge the bounding box of a length l on both sides"""
+		self.extraX_left(l)
+		self.extraX_right(l)
+
 	def AddX(self,x):
 		self.bg = Point( min(self.bg.x,x), self.bg.y )
 		self.hd = Point( max(self.hd.x,x), self.hd.y )

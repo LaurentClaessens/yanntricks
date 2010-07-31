@@ -683,7 +683,13 @@ class subfigure(object):
 	def AjouteCode(self,cod):
 		self.code.extend(cod)
 	def add_pspicture(self,pspicture):
+		"""
+		When adding the pspicture, an extra length of pspicture.xunit is added on both sides.
+		If not, two pspictures are too closes each other.
+		"""
 		self.pspicture=pspicture		# Serves to give a name to the pspicture when the subfigure is included
+		xunit=self.pspicture.xunit
+		self.pspicture.BB.extraX(xunit)
 		self.add_latex_line(pspicture.contenu())
 
 class PspictureToOtherOutputs(object):
