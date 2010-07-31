@@ -688,8 +688,8 @@ class subfigure(object):
 		If not, two pspictures are too closes each other.
 		"""
 		self.pspicture=pspicture		# Serves to give a name to the pspicture when the subfigure is included
-		xunit=self.pspicture.xunit
-		self.pspicture.BB.extraX(xunit)
+		#xunit=self.pspicture.xunit
+		#self.pspicture.BB.extraX(float(xunit/2))
 		self.add_latex_line(pspicture.contenu())
 
 class PspictureToOtherOutputs(object):
