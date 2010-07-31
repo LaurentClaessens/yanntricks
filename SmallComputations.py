@@ -111,9 +111,21 @@ def PointToPolaire(P):
 	return coordinatesPolaires(r,alpha)
 
 def radian(theta):
-	return theta*math.pi/180
+	"""Convert from degree to radian. Return a value between 0 and 2pi (not 2pi itself)"""
+	angle = theta*math.pi/180
+	while angle >= 2*pi :
+		angle=angle-2*pi
+	while angle < 0 :
+		angle=angle+2*pi
+	return angle
 def degree(alpha):
-	return 180*alpha/math.pi
+	"""Convert from radian to degree. Return a value between 0 and 360 (not 360 itself)"""
+	angle = 180*alpha/math.pi
+	while angle >= 360 :
+		angle=angle-360
+	while angle < 0 :
+		angle=angle+360
+	return angle
 
 def Distance_sq(P,Q):
 	""" return the squared distance between P and Q """

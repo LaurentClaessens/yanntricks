@@ -1028,12 +1028,44 @@ class ParametricCurve(object):
 		dy=self.f2.derivative().eval(llam)
 		ca=dy/dx
 		return atan(ca)
-	def derivative(self):
-		return ParametricCurve(self.f1.derivative(),self.f2.derivative())
-	def get_point(self,llam):
-		"""Return the point on the curve for the value llam of the parameter."""
+	def derivative(self,n=1):
+		"""
+		Return the parametric curve given by the derivative. (f1,f2) -> (f1',f2').
+
+		If the optional parameter n is given, give higher order derivatives. If n=0, return itself.
+		"""
+		if n==0:
+			return self
+		if n==1:
+			return ParametricCurve(self.f1.derivative(),self.f2.derivative())
+		else:
+			return self.derivative(n-1).derivative()
+	def get_point(self,llam,advised=True):
+		"""
+		Return the point on the curve for the value llam of the parameter.
+		
+		Add the attribute advised_mark_angle which gives the normal exterior angle at the given point.
+		If you want to put a mark on the point P (obtained by get_point), you should consider to write
+		P.put_mark(r,P.advised_mark_angle,text)
+		The so build angle is somewhat "optimal" for a visual point of view.
+		"""
 		P = Point( self.f1.eval(llam),self.f2.eval(llam) )
-		P.advised_mark_angle=degree(self.tangent_angle(llam))+90	# Here I cannot use the method normal_vector due to recursion.
+		if advised :
+			angle_n=degree(self.tangent_angle(llam)+pi/2)	# Here I cannot use the method normal_vector due to recursion.
+				# Now we have to decide if we want to return angle or angle+180 (outside or inside).
+				# Changing here must be careful : angle_n and angle_c are in degree (not radian)
+			c=self.derivative(2).get_point(llam,False)
+			try :
+				angle_c=degree(atan(c.y/c.x))
+			except ZeroDivisionError :
+				if c.y>0:
+					angle_c=90
+				else :
+					angle_c=270
+			if abs(angle_n-angle_c)>90 :		# for this test I need the angles to be between 0 and 360
+				P.advised_mark_angle=angle_n
+			else:
+				P.advised_mark_angle=angle_n+180
 		return P
 	def tangent_vector(self,llam):
 		"""
@@ -1127,6 +1159,13 @@ class ParametricCurve(object):
 		return PTs
 	def graph(self,mx,Mx):
 		return phystricks.GraphOfAParametricCurve(self,mx,Mx)
+	def __str__(self):
+		var('t')
+		a=[]
+		a.append("The parametric curve given by")
+		a.append("x(t)=%s"%repr(self.f1.sage(x=t)))
+		a.append("y(t)=%s"%repr(self.f2.sage(x=t)))
+		return "\n".join(a)
 
 class Nuage_de_Points(object):
 	def __init__(self):
