@@ -700,7 +700,7 @@ class GraphOfAVector(GraphOfAnObject,GeometricVector):
 			P = self.F
 			P.parameters.symbol = "none"
 			P.put_mark(self.mark.dist,self.mark.angle,self.mark.text)
-			a = a + P.pstricks_code()
+			a = a + P.pstricks_code(pspict)
 		return a
 
 class MeasureLength(GraphOfASegment):
@@ -745,7 +745,7 @@ class MeasureLength(GraphOfASegment):
 		if self.marque :
 			C.mark=self.mark
 			C.add_option('PointSymbol=none')
-			a.append(C.pstricks_code())
+			a.append(C.pstricks_code(pspict))
 		return "\n".join(a)
 
 
@@ -881,15 +881,35 @@ class phyFunction(object):
 	def roots(self):
 		""" return roots of the function as a list of Points. Some can miss ! """
 		return self.PointsNiveau(0)
-	def derivative(self):
-		""" return the derivative of the function. The result is of type phyFunction """
-		if self._derivative == None :
-			self._derivative = phyFunction(self.sage.derivative())
-		return self._derivative
+	def derivative(self,n=1):
+		"""
+		return the derivative of the function. The result is of type phyFunction 
+
+		If the optional argument n is given, provides higher derivative. If n=0, return self.
+		"""
+		if n==0 :
+			return self
+		if n==1:
+			if self._derivative == None :
+				self._derivative = phyFunction(self.sage.derivative())
+			return self._derivative
+		else:
+			return self.derivative(n-1).derivative()
 	def get_point(self,x):		
+		"""
+		Return a point on the graphe of the function with the given x, i.e. it return the point (x,f(x)).
+
+		Also set an attribute advised_mark_angle to the point. This angle is the normal exterior to the graph; 
+		visually this is usually the best place to put a mark. Typically you use this as
+		P=f.get_point(3)
+		P.mark(radius,P.advised_mark_angle,"$P$")
+		"""
 		P = Point(float(x),self.eval(x))
 		ca = self.derivative().eval(x) 
-		P.advised_mark_angle=degree(atan(ca))+90
+		angle_n=degree(atan(ca)+pi/2)
+		if self.derivative(2).eval(x) > 0:
+			angle_n=angle_n+180
+		P.advised_mark_angle=angle_n
 		return P
 	#def Listeget_point(self,l):
 	#	return [self.get_point(x) for x in l]
