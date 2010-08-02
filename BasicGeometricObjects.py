@@ -560,7 +560,6 @@ class Parameters(object):
 		self._hatched=True
 	def add_to_options(self,opt):
 		if self.color :
-			print "563",self.color
 			opt.add_option("linecolor=%s"%str(self.color))
 		if self.style :
 			opt.add_option("linestyle=%s"%str(self.style))
