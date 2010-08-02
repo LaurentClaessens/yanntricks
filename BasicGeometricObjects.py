@@ -560,6 +560,7 @@ class Parameters(object):
 		self._hatched=True
 	def add_to_options(self,opt):
 		if self.color :
+			print "563",self.color
 			opt.add_option("linecolor=%s"%str(self.color))
 		if self.style :
 			opt.add_option("linestyle=%s"%str(self.style))
@@ -1019,6 +1020,16 @@ class phyFunction(object):
 		return phystricks.GraphOfAphyFunction(self,mx,Mx)
 	def __pow__(self,n):
 		return phyFunction(self.sage**n)
+
+def PolarCurve(f):
+	"""
+	return the parametric curve (class ParametricCurve) corresponding to the 
+	curve of equation r=f(theta) in polar coordinates.
+	"""
+	var('x')
+	f1=f*cos(x)
+	f2=f*sin(x)
+	return ParametricCurve(f1,f2)
 
 class ParametricCurve(object):
 	"""
