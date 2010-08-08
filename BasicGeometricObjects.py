@@ -1175,6 +1175,14 @@ class ParametricCurve(object):
 	def get_regular_points_old(self,mll,Mll,dl):
 		return [self.get_point(ll) for ll in self.get_regular_parameter_old(mll,Mll,dl)]
 	def get_regular_points(self,mll,Mll,dl):
+		"""
+		Return a list of points regularly spaced (with respect to the arc length) by dl. 
+
+		mll is the inital value of the parameter and Mll is the end value of the parameter.
+
+		In some applications, you prefer to use ParametricCurve.get_regular_parameter. The latter method returns the list of
+		values of the parameter instead of the list of points. This is what you need if you want to draw tangent vectors for example.
+		"""
 		return [self.get_point(ll) for ll in self.get_regular_parameter(mll,Mll,dl)]
 	def get_wavy_points(self,mll,Mll,dl,dy):
 		"""
