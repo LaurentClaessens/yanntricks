@@ -273,12 +273,14 @@ class GeometricSegment(object):
 	def dilate(self,coef):
 		""" return a Segment which is dilated by the coefficient coef """
 		return self.fix_size(self.length()*coef)
-	# La méthode suivante retourne un nouveau segment qui est allongé de lI du côté de self.I et de lF du côté de self.F
 	def add_size(self,lI,lF):
+		"""
+		Return a new Segment with extra length lI at the initial side and lF at the final side. 
+		"""
 		vI = Vector(self.center(),self.I)
 		vF = Vector(self.center(),self.F)
 		I = vI.add_size(lI).F
-		F = vI.add_size(lF).F
+		F = vF.add_size(lF).F
 		return Segment(I,F)
 	def fix_size(self,l):
 		vI = Vector(self.center(),self.I)
@@ -302,6 +304,8 @@ class GeometricSegment(object):
 	def default_associated_graph_class(self):
 		"""Return the class which is the Graph associated type"""
 		return phystricks.GraphOfASegment
+	def __str__(self):
+		return "Segment. I=%s, F=%s"%(str(self.I),str(self.F))
 
 class GeometricCircle(object):
 	def __init__(self,center,radius):
