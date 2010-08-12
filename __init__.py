@@ -221,8 +221,6 @@ class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
 			# The use of numerical_approx is intended to avoid strings like "2*pi" in the final pstricks code.
 			deb = numerical_approx(self.mx)	
 			fin = numerical_approx(self.Mx)
-			#for surf in self.f.ListeSurface:		# this will be a mess when I'll have to enable it back.
-			#	self.TraceSurfacephyFunction(surf)
 			a.append("\psplot["+self.params()+"]{"+str(deb)+"}{"+str(fin)+"}{"+self.f.pstricks+"}")
 		return a
 
@@ -946,63 +944,6 @@ class pspicture(object):
 		self.add_latex_line("\psplot[plotstyle=curve]{"+str(mx)+"}{"+str(Mx)+"}{"+f.pstricks+"}")
 		self.add_latex_line("\psplot[liftpen=1]{"+str(Mx)+"}{"+str(mx)+"}{"+g.pstricks+"}")
 		self.add_latex_line("}")
-
-	def TracephyFunction(self,fun,min,max,params):
-		raise AttributeError,"TracephyFunction is depreciated"
-		# The use of numerical_approx is intended to avoid strings like "2*pi" in the final pstricks code.
-		deb = numerical_approx(min)	
-		fin = numerical_approx(max)
-		self.BB.AddphyFunction(fun,deb,fin)
-		for surf in fun.ListeSurface:
-			self.TraceSurfacephyFunction(surf)
-		self.add_latex_line("\psplot["+params+"]{"+str(deb)+"}{"+str(fin)+"}{"+fun.pstricks+"}")
-	def DrawGraphOfASegment(self,graphe,separator="DEFAULT"):
-		raise AttributeError,"The method DrawGraphOfASegment is depreciated"
-		self.BB.add_graph(graphe,self)
-		if graphe.wavy == False :
-			a =  self.create_PSpoint(graphe.I) + self.create_PSpoint(graphe.F)
-			a=a+"\n\pstLineAB[%s]{%s}{%s}"%(graphe.params(),graphe.I.psNom,graphe.F.psNom)
-			self.add_latex_line(a,separator)
-		if graphe.wavy == True :
-			waviness = graphe.waviness
-			self.DrawWavySegment(graphe.seg,waviness.dx,waviness.dy,graphe.params(),separator=separator)
-
-	def DrawGraphOfACircle(self,graphe):
-		raise AttributeError,"The method DrawGraphOfACircle is depreciated"
-		if graphe.wavy == False :
-			if graphe.angleI == 0 and graphe.angleF == 2*pi :
-				self.TraceCircle(graphe.circle,graphe.params())
-			else :
-				self.TraceArcCircle(graphe.circle,graphe.angleI,graphe.angleF,graphe.params())
-		else :
-			waviness = graphe.waviness
-			alphaI = radian(graphe.angleI)
-			alphaF = radian(graphe.angleF)
-			curve = graphe.circle.parametric_curve()
-			G = GraphOfAParametricCurve(curve,alphaI,alphaF)
-			G.add_option(graphe.params())
-			# The two following lines are a pitty. If I add some properties, I have to change by hand...
-			G.parameters.style = graphe.parameters.style
-			G.parameters.color = graphe.color
-			G.wave(waviness.dx,waviness.dy)
-			self.DrawGraph(G)
-
-	def DrawGraphOfAphyFunction(self,graphe):
-		raise AttributeError,"The method DrawGraphOfAphyFunction is depreciated"
-		if graphe.wavy :			
-			waviness = graphe.waviness
-			self.TracephyFunctionOndule(graphe.f,waviness.mx,waviness.Mx,waviness.dx,waviness.dy,graphe.params())
-		else :
-			self.TracephyFunction(graphe.f,graphe.mx,graphe.Mx,graphe.params())
-
-	def DrawGraphOfAParametricCurve(self,graphe):
-		raise AttributeError,"The method DrawGraphOfAParametricCurve is depreciated"
-		if graphe.wavy :
-			waviness = graphe.waviness
-			self.TraceCourbeParametriqueOndule(graphe.curve,graphe.llamI,graphe.llamF,waviness.dx,waviness.dy,graphe.params())
-		else:
-			self.TraceCourbeParametrique(graphe.curve,graphe.llamI,graphe.llamF,graphe.params())
-
 	def TraceGrapheDesphyFunctions(self,liste_gf):
 		for gf in liste_gf.liste_GraphOfAphyFunction:
 			self.DrawGraphOfAphyFunction(gf)
@@ -1011,24 +952,6 @@ class pspicture(object):
 		self.BB.AddParametricCurve(f,mx,Mx)
 		self.add_latex_line("\parametricplot[%s]{%s}{%s}{%s}" %(params,str(mx),str(Mx),f.pstricks()))
 
-	def DrawObject(self,obj,*args):
-		"""
-		Create a default Graph object for <obj> and draw it. 
-		
-		Arguments in *args are passed as options to pstricks or to the default Graph builder (we try for obj.default_graph(args)).
-
-		We recommend to use DrawGraph insead.
-		"""
-		print "DrawObject should not be used"
-		raise
-		try :
-			graphe = obj.default_graph(args)
-		except AttributeError,data :
-			print data
-			raise
-			graphe = Graph(obj)
-			graphe.add_option(args)
-		self.DrawGraph(graphe)
 	def DrawGraphs(self,*args):
 		for g in args:
 			self.DrawGraph(g)
@@ -1043,7 +966,6 @@ class pspicture(object):
 			raise AttributeError
 		try :
 			self.BB.add_graph(graphe,self)
-			print "1046",graphe
 			self.add_latex_line(graphe.pstricks_code(self),separator)
 		except AttributeError,data:
 			print data

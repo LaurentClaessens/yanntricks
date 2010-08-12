@@ -103,7 +103,6 @@ class GeometricPoint(object):
 		"""
 		Return a default Graph
 		
-		If p is a Point, you can use pspict.DrawObject(p,symbol,arguments) in order to draw it in a default way.
 		<opt> is a tuple. The first is the symbol to the point (like "*" or "none").
 		The second is a string to be passed to pstricks, like "linecolor=blue,linestyle=dashed".
 		"""
@@ -122,7 +121,6 @@ class GeometricPoint(object):
 		more complex objects.
 		"""
 		print "This method is depreciated. Use Graph instead. Please, RTFM before to ask me silly thinks !"		
-		print "If you really want to draw the point without creating a Graph, you should use DrawObject"
 		return "\pstGeonode["+params+"]"+self.coordinates()+"{"+self.psNom+"}"
 	def create_PSpoint(self):
 		"""Return the code of creating a pstgeonode. The argument is a Point of GraphOfAPoint"""
@@ -134,8 +132,10 @@ class GeometricPoint(object):
 		x = self.x
 		y = self.y
 		# Ces petites précautions pour éviter d'avoir des 0.125547e-6, parce que pstricks n'aime pas cette notation.
-		if abs(x) < 0.0001 : x=0
-		if abs(y) < 0.0001 : y=0
+		if abs(x) < 0.0001 :
+			x=0
+		if abs(y) < 0.0001 :
+			y=0
 		return "("+str(x)+","+str(y)+")"
 	def coordinatesBr(self):
 		return self.coordinates.replace("(","{").replace(")","}")
@@ -619,7 +619,7 @@ class SurfaceUnderFunction(GraphOfAnObject):
 		GraphOfAnObject.__init__(self,f)
 		self.mx = mx
 		self.Mx = Mx
-		self.f = f
+		self.f = phyFunction(f)
 		self.add_option("fillstyle=vlines,linestyle=dashed,linecolor=black")	# Some default values
 		self.parameters.color="cyan"						# Default color
 	def bounding_box(self,pspict):
@@ -627,20 +627,22 @@ class SurfaceUnderFunction(GraphOfAnObject):
 		g = phyFunction(self.f).graph(self.mx,self.Mx)
 		bb.add_graph(g,pspict)
 		bb.AddY(0)
+		print "630", bb
 		return bb
 	def math_bounding_box(self,pspict):
-		return self.bounding_box()
-	def pstricks_code(self):
-		opt = surf.options
+		return self.bounding_box(pspict)
+	def pstricks_code(self,pspict):
 		A = Point(self.mx,0)
 		B = Point(self.Mx,0)
-		X = f.get_point(self.mx)
-		Y = f.get_point(self.Mx)
+		X = self.f.get_point(self.mx)
+		Y = self.f.get_point(self.Mx)
 		a=[]
+		deb = numerical_approx(self.mx)		# Avoid "pi" in the pstricks code
+		fin = numerical_approx(self.Mx)
 		self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
-		a.append("\pscustom["+opt.code()+"]{")
+		a.append("\pscustom["+self.options.code()+"]{")
 		a.append("\psline"+A.coordinates()+X.coordinates())
-		a.append("\psplot{"+str(self.mx)+"}{"+str(self.Mx)+"}{"+f.pstricks+"}")
+		a.append("\psplot{"+str(deb)+"}{"+str(fin)+"}{"+self.f.pstricks+"}")
 		a.append("\psline"+Y.coordinates()+B.coordinates())
 		a.append("}")
 		return "\n".join(a)
@@ -894,7 +896,7 @@ class phyFunction(object):
 	"""
 	def __init__(self,fun):
 		if type(fun) is phyFunction :
-			phyFunction.__init__(fun.sage)
+			phyFunction.__init__(self,fun.sage)
 		else :
 			var('x')
 			self.sage = fun
@@ -1059,6 +1061,8 @@ class phyFunction(object):
 		return phystricks.GraphOfAphyFunction(self,mx,Mx)
 	def __pow__(self,n):
 		return phyFunction(self.sage**n)
+	def __str__(self):
+		return str(self.sage)
 
 def PolarCurve(f):
 	"""
