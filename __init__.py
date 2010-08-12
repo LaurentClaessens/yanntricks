@@ -183,47 +183,6 @@ class Triangle(object):
 		self.B = B
 		self.C = C
 
-class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
-	def __init__(self,f,mx,Mx):
-		GraphOfAnObject.__init__(self,f)
-		phyFunction.__init__(self,f.sage)
-		self.f = self.obj
-		self.mx = mx
-		self.Mx = Mx
-		self.plotpoints	= 100					# We draw 100 points as default.
-		self.parameters.color = "blue"				# Modification with respect to the attribute in GraphOfAnObject
-	def params(self):
-		self.conclude_params()
-		self.add_option("plotpoints=%s"%str(self.plotpoints))
-		return self.options.code()
-	def bounding_box(self,pspict):
-		bb = BoundingBox()
-		bb.AddY(self.f.ymin(self.mx,self.Mx))
-		bb.AddY(self.f.ymax(self.mx,self.Mx))
-		bb.AddX(self.mx)
-		bb.AddX(self.Mx)
-		return bb
-	def math_bounding_box(self,pspict):
-		return self.bounding_box(pspict)
-	def pstricks_code(self,pspict=None):
-		a = []
-		if self.marque :
-			P = self.get_point(self.Mx)
-			P.parameters.symbol="none"
-			P.marque = True
-			P.mark = self.mark
-			a.append(P.pstricks_code())
-		if self.wavy :			
-			waviness = self.waviness
-			#self.TracephyFunctionOndule(self.f,waviness.mx,waviness.Mx,waviness.dx,waviness.dy,self.params())
-			a.append(Code_Pscurve( self.get_wavy_points(waviness.mx,waviness.Mx,waviness.dx,waviness.dy),self.params()))
-		else :
-			# The use of numerical_approx is intended to avoid strings like "2*pi" in the final pstricks code.
-			deb = numerical_approx(self.mx)	
-			fin = numerical_approx(self.Mx)
-			a.append("\psplot["+self.params()+"]{"+str(deb)+"}{"+str(fin)+"}{"+self.f.pstricks+"}")
-		return a
-
 class GraphOfAParametricCurve(GraphOfAnObject,ParametricCurve):
 	def __init__(self,curve,llamI,llamF):
 		GraphOfAnObject.__init__(self,curve)
@@ -976,7 +935,6 @@ class pspicture(object):
 			raise
 		if "math_bounding_box" in dir(graphe) :
 			self.math_BB.AddBB(graphe.math_bounding_box(self))
-			print "979", self.math_BB
 		else :
 			print "Warning: it seems to me that object %s has no method math_boundig_box"%graphe 
 			self.math_BB.add_graph(graphe,self)

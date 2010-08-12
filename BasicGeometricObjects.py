@@ -606,7 +606,7 @@ class GraphOfAnObject(object):
 		self.conclude_params()
 		return self.options.code()
 
-class SurfaceUnderFunction(GraphOfAnObject):
+class SurfaceUnderFunction(phystricks.GraphOfAphyFunction):
 	"""
 	Represent a surface under a function.
 
@@ -616,12 +616,15 @@ class SurfaceUnderFunction(GraphOfAnObject):
 	Mx : end x value
 	"""
 	def __init__(self,f,mx,Mx):
-		GraphOfAnObject.__init__(self,f)
+		phystricks.GraphOfAphyFunction.__init__(self,f,mx,Mx)
 		self.mx = mx
 		self.Mx = Mx
-		self.f = phyFunction(f)
-		self.add_option("fillstyle=vlines,linestyle=dashed,linecolor=black")	# Some default values
-		self.parameters.color="cyan"						# Default color
+		if "sage" in dir(f):		# This tests in the same time if the type if phyFunction or GraphOfAphyFunction
+			self.f = phyFunction(f.sage)
+		else :
+			self.f = phyFunction(f)
+		self.add_option("fillstyle=vlines,linestyle=dashed")	# Some default values
+		self.parameters.color="cyan"				# Default color
 	def bounding_box(self,pspict):
 		bb=BoundingBox()
 		g = phyFunction(self.f).graph(self.mx,self.Mx)
@@ -889,6 +892,47 @@ def SubstitutionMathPsTricks(fx):
 		a = a.replace(s[0],s[1])
 	return a
 
+class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
+	def __init__(self,f,mx,Mx):
+		GraphOfAnObject.__init__(self,f)
+		phyFunction.__init__(self,f.sage)
+		self.f = self.obj
+		self.mx = mx
+		self.Mx = Mx
+		self.plotpoints	= 100					# We draw 100 points as default.
+		self.parameters.color = "blue"				# Modification with respect to the attribute in GraphOfAnObject
+	def params(self):
+		self.conclude_params()
+		self.add_option("plotpoints=%s"%str(self.plotpoints))
+		return self.options.code()
+	def bounding_box(self,pspict):
+		bb = BoundingBox()
+		bb.AddY(self.f.ymin(self.mx,self.Mx))
+		bb.AddY(self.f.ymax(self.mx,self.Mx))
+		bb.AddX(self.mx)
+		bb.AddX(self.Mx)
+		return bb
+	def math_bounding_box(self,pspict):
+		return self.bounding_box(pspict)
+	def pstricks_code(self,pspict=None):
+		a = []
+		if self.marque :
+			P = self.get_point(self.Mx)
+			P.parameters.symbol="none"
+			P.marque = True
+			P.mark = self.mark
+			a.append(P.pstricks_code())
+		if self.wavy :			
+			waviness = self.waviness
+			#self.TracephyFunctionOndule(self.f,waviness.mx,waviness.Mx,waviness.dx,waviness.dy,self.params())
+			a.append(Code_Pscurve( self.get_wavy_points(waviness.mx,waviness.Mx,waviness.dx,waviness.dy),self.params()))
+		else :
+			# The use of numerical_approx is intended to avoid strings like "2*pi" in the final pstricks code.
+			deb = numerical_approx(self.mx)	
+			fin = numerical_approx(self.Mx)
+			a.append("\psplot["+self.params()+"]{"+str(deb)+"}{"+str(fin)+"}{"+self.f.pstricks+"}")
+		return a
+
 class phyFunction(object):
 	"""
 	Represent a function.
@@ -952,8 +996,6 @@ class phyFunction(object):
 			angle_n=angle_n+180
 		P.advised_mark_angle=angle_n
 		return P
-	#def Listeget_point(self,l):
-	#	return [self.get_point(x) for x in l]
 	def normal_vector(self,x):
 		""" return a normalized normal vector to the graph of the function at x """
 		ca = self.derivative().eval(x) 
@@ -1050,14 +1092,20 @@ class phyFunction(object):
 		Ad = Point( A.x+1,A.y+ca )
 		Ag = Point( A.x-1,A.y-ca )
 		return ( Segment(Ag,Ad) )
-	# Note que une surface créée par self.AjouteSurface sera automatiquement tracée par la méthode TracephyFunction de psfigure.
-	def AjouteSurface(self,mx,Mx):
-		self.ListeSurface.append( SurfacephyFunction(self,mx,Mx) )
-		# Ceci sont quelque réglages par défaut
-		self.ListeSurface[-1].ChangeCouleur("blue")
-		self.ListeSurface[-1].add_option("fillstyle=vlines,linestyle=dashed,linecolor=black")
 	def graph(self,mx,Mx):
 		return phystricks.GraphOfAphyFunction(self,mx,Mx)
+	def surface_under(self,mx=None,Mx=None):
+		"""
+		Return the graph of a surface under the function.
+
+		If mx and Mx are not given, try to use self.mx and self.Mx, assuming that the method is used on
+		an instance of GraphOfAphyFunction that inherits from here.
+		"""
+		if not mx :
+			mx=self.mx
+		if not Mx :
+			Mx=self.Mx
+		return SurfaceUnderFunction(self,mx,Mx)
 	def __pow__(self,n):
 		return phyFunction(self.sage**n)
 	def __str__(self):
