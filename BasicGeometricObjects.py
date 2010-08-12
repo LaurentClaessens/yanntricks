@@ -59,21 +59,6 @@ def Circle(center,radius):
 def Rectangle(NW,SE):
 	return GraphOfARectangle(GeometricRectangle(NW,SE))
 
-
-class SurfacephyFunction(object):
-	def __init__(self,f,mx,Mx):
-		self.mx = mx
-		self.Mx = Mx
-		self.f = f
-		self.options = Options()
-		self.add_option("fillstyle=vlines,linestyle=dashed,linecolor=black")
-		self.ChangeCouleur("cyan")							# Cela donne quelque réglages par défaut
-	def add_option(self,opt):
-		self.options.add_option(opt)
-	def ChangeCouleur(self,coul):
-		self.add_option("fillcolor="+coul+",linecolor="+coul+",hatchcolor="+coul)
-
-
 class GeometricPoint(object):
 	"""
 	This is a point. Each point comes with a name given by a class attribute.
@@ -621,6 +606,47 @@ class GraphOfAnObject(object):
 		self.conclude_params()
 		return self.options.code()
 
+class SurfaceUnderFunction(GraphOfAnObject):
+	"""
+	Represent a surface under a function.
+
+	Arguments :
+	f : a function
+	mx : initial x value
+	Mx : end x value
+	"""
+	def __init__(self,f,mx,Mx):
+		GraphOfAnObject.__init__(self,f)
+		self.mx = mx
+		self.Mx = Mx
+		self.f = f
+		self.add_option("fillstyle=vlines,linestyle=dashed,linecolor=black")	# Some default values
+		self.parameters.color="cyan"						# Default color
+	def bounding_box(self,pspict):
+		bb=BoundingBox()
+		g = phyFunction(self.f).graph(self.mx,self.Mx)
+		bb.add_graph(g,pspict)
+		bb.AddY(0)
+		return bb
+	def math_bounding_box(self,pspict):
+		return self.bounding_box()
+	def pstricks_code(self):
+		opt = surf.options
+		A = Point(self.mx,0)
+		B = Point(self.Mx,0)
+		X = f.get_point(self.mx)
+		Y = f.get_point(self.Mx)
+		a=[]
+		self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
+		a.append("\pscustom["+opt.code()+"]{")
+		a.append("\psline"+A.coordinates()+X.coordinates())
+		a.append("\psplot{"+str(self.mx)+"}{"+str(self.Mx)+"}{"+f.pstricks+"}")
+		a.append("\psline"+Y.coordinates()+B.coordinates())
+		a.append("}")
+		return "\n".join(a)
+	def __str__(self):
+		return "SurfaceUnderFunction %s x:%s->%s"%(self.f,str(self.mx),str(self.Mx))
+
 class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 	def __init__(self,point):
 		GraphOfAnObject.__init__(self,point)
@@ -863,19 +889,25 @@ def SubstitutionMathPsTricks(fx):
 	return a
 
 class phyFunction(object):
+	"""
+	Represent a function.
+	"""
 	def __init__(self,fun):
-		var('x')
-		self.sage = fun
-		self.sageFast = self.sage._fast_float_(x)
-		self.string = repr(self.sage)
-		self.fx = self.string.replace("^","**")
-		self.pstricks = SubstitutionMathPsTricks(self.fx)
-		self.ListeSurface = []
-		self.listeTests = []
-		self.TesteDX = 0
-		self.listeExtrema = []
-		self.listeExtrema_analytique = []
-		self._derivative = None
+		if type(fun) is phyFunction :
+			phyFunction.__init__(fun.sage)
+		else :
+			var('x')
+			self.sage = fun
+			self.sageFast = self.sage._fast_float_(x)
+			self.string = repr(self.sage)
+			self.fx = self.string.replace("^","**")
+			self.pstricks = SubstitutionMathPsTricks(self.fx)
+			self.ListeSurface = []
+			self.listeTests = []
+			self.TesteDX = 0
+			self.listeExtrema = []
+			self.listeExtrema_analytique = []
+			self._derivative = None
 	def eval(self,xe):
 		return numerical_approx(self.sageFast(xe))
 	def inverse(self,y):
@@ -1050,10 +1082,14 @@ class ParametricCurve(object):
 		curve.graph(a,b)
 	"""
 	def __init__(self,f1,f2):
-		if type(f1) is phyFunction : self.f1 = f1
-		else : self.f1 = phyFunction(f1)
-		if type(f2) is phyFunction : self.f2 = f2
-		else : self.f2 = phyFunction(f2)
+		if type(f1) is phyFunction : 
+			self.f1 = f1
+		else : 
+			self.f1 = phyFunction(f1)
+		if type(f2) is phyFunction :
+			self.f2 = f2
+		else : 
+			self.f2 = phyFunction(f2)
 
 	# Le truc difficile avec le pstricks est que la syntaxe est  "f1(t) | f2(t)" avec t comme variable.
 	#  C'est cela qui demande d'utiliser repr et la syntaxe f(x=t).
@@ -1284,10 +1320,7 @@ class BoundingBox(object):
 		self.AddPoint(bb.bg)
 		self.AddPoint(bb.hd)
 	def add_graph(self,graphe,pspict):
-		try :
-			self.AddBB(graphe.bounding_box(pspict))
-		except TypeError :
-			self.AddBB(graphe.bounding_box(pspict))
+		self.AddBB(graphe.bounding_box(pspict))
 	def AddCircleBB(self,Cer,xunit,yunit):
 		"""
 		Ajoute un cercle déformé par les xunit et yunit; c'est pratique pour agrandir la BB en taille réelle, pour

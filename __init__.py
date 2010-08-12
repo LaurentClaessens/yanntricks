@@ -166,7 +166,6 @@ class CalculPolynome(object):
 				l.append(int(rep))
 		return Polynome(l)
 
-
 def SubGridArray(mx,Mx,Dx,num_subX):
 	""" Provides the values between mx and Mx such that there are num_subX-1 numbers between two integer separated by Dx """
 	dx = float(Dx)/num_subX
@@ -295,21 +294,6 @@ def SubstitutionMathMaxima(exp):
 	for i in range(1,10):
 		a = a.replace("math.log"+str(i),"log("+str(i)+")^(-1)*log")
 	return a.replace("math.log","log").replace("math.tan","tan").replace("math.pi","%pi").replace("math.","")
-
-class SurfaceEntrephyFunctions(object):
-	def __init__(self,f,g,mx,Mx):
-		self.mx = mx
-		self.Mx = Mx
-		self.f = f
-		self.g = g
-		self.options = Options()
-		self.add_option("linestyle=none,fillstyle=vlines,linecolor=black")
-		self.ChangeCouleur("cyan")							# Cela donne quelque réglages par défaut
-	def add_option(self,opt):
-		self.options.add_option(opt)
-	def ChangeCouleur(self,coul):
-		self.add_option("fillcolor="+coul+",linecolor="+coul+",hatchcolor="+coul)
-
 
 class Grid(object):
 	"""
@@ -950,23 +934,6 @@ class pspicture(object):
 	def MarqueAngle(self,A,B,C,label,params):
 		self.add_latex_line("\pstMarkAngle["+params+"]{"+A.psNom+"}{"+B.psNom+"}{"+C.psNom+"}{"+label+"}")
 
-	def TraceSurfacephyFunction(self,surf):
-		mx = surf.mx
-		Mx = surf.Mx
-		f = surf.f
-		opt = surf.options
-		A = Point(mx,0)
-		B = Point(Mx,0)
-		X = f.get_point(mx)
-		Y = f.get_point(Mx)
-		self.BB.AddPoint(A)
-		self.BB.AddPoint(B)
-		self.BB.AddphyFunction(f,mx,Mx)
-		self.add_latex_line("\pscustom["+opt.code()+"]{")
-		self.add_latex_line("\psline"+A.coordinates()+X.coordinates())
-		self.add_latex_line("\psplot{"+str(mx)+"}{"+str(Mx)+"}{"+f.pstricks+"}")
-		self.add_latex_line("\psline"+Y.coordinates()+B.coordinates())
-		self.add_latex_line("}")
 	def TraceSurfaceEntrephyFunction(self,surf):
 		mx = surf.mx
 		Mx = surf.Mx
@@ -1076,6 +1043,7 @@ class pspicture(object):
 			raise AttributeError
 		try :
 			self.BB.add_graph(graphe,self)
+			print "1046",graphe
 			self.add_latex_line(graphe.pstricks_code(self),separator)
 		except AttributeError,data:
 			print data
