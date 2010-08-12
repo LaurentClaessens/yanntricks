@@ -296,27 +296,6 @@ def SubstitutionMathMaxima(exp):
 		a = a.replace("math.log"+str(i),"log("+str(i)+")^(-1)*log")
 	return a.replace("math.log","log").replace("math.tan","tan").replace("math.pi","%pi").replace("math.","")
 
-# Juste pour rappel, la commande \ValeurAbsolue est définie automatiquement dans la pspicure.
-# Juste pour re-rappel, j'ai commenté la ligne qui faisait ça.
-# Pour re-re-rappel, je crois que cette fonctione n'est plus du tout utilisée par des choses importantes.
-#def SubstitutionMathLaTeX(exp):
-#	a = exp
-#	for i in range(1,10):
-#		a = a.replace("math.log"+str(i),"\\log_{"+str(i)+"}")
-#	return a.replace("math.tan","\\tan").replace("math.log","\\ln").replace("math.","\\").replace("*"," ")
-class SurfacephyFunction(object):
-	def __init__(self,f,mx,Mx):
-		self.mx = mx
-		self.Mx = Mx
-		self.f = f
-		self.options = Options()
-		self.add_option("fillstyle=vlines,linestyle=dashed,linecolor=black")
-		self.ChangeCouleur("cyan")							# Cela donne quelque réglages par défaut
-	def add_option(self,opt):
-		self.options.add_option(opt)
-	def ChangeCouleur(self,coul):
-		self.add_option("fillcolor="+coul+",linecolor="+coul+",hatchcolor="+coul)
-
 class SurfaceEntrephyFunctions(object):
 	def __init__(self,f,g,mx,Mx):
 		self.mx = mx

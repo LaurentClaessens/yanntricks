@@ -32,7 +32,6 @@ This module also contains some specific "constructors" for some classes, like Po
 import math
 from sage.all import *
 from SmallComputations import *
-#from BasicGraphObjects import *
 import phystricks
 
 class ListeNomsPoints(object):
@@ -60,6 +59,21 @@ def Circle(center,radius):
 def Rectangle(NW,SE):
 	return GraphOfARectangle(GeometricRectangle(NW,SE))
 
+
+class SurfacephyFunction(object):
+	def __init__(self,f,mx,Mx):
+		self.mx = mx
+		self.Mx = Mx
+		self.f = f
+		self.options = Options()
+		self.add_option("fillstyle=vlines,linestyle=dashed,linecolor=black")
+		self.ChangeCouleur("cyan")							# Cela donne quelque réglages par défaut
+	def add_option(self,opt):
+		self.options.add_option(opt)
+	def ChangeCouleur(self,coul):
+		self.add_option("fillcolor="+coul+",linecolor="+coul+",hatchcolor="+coul)
+
+
 class GeometricPoint(object):
 	"""
 	This is a point. Each point comes with a name given by a class attribute.
@@ -73,22 +87,12 @@ class GeometricPoint(object):
 		self.y = float(y)
 		self.psNom = GeometricPoint.NomPointLibre.suivant()
 
-	# La méthode EntierPlus place le point sur les coordonnées entières plus grandes (ou égales) à les siennes.
-	#def EntierPlus(self):
-	#	Px = self.x
-	#	Py = self.y
-	#	self.x = CalculEntierPlus(Px)
-	#	self.y = CalculEntierPlus(Py)
-
-	# La méthode EntierMoins place le point sur les coordonnées entières plus petites (ou égales) à les siennes.
-	#def EntierMoins(self):
-	#	Px = self.x
-	#	Py = self.y
-	#	self.x = CalculEntierMoins(Px)
-	#	self.y = CalculEntierMoins(Py)
-
-	# Donne la projection du point sur la ligne du segment donné
 	def projection(self,seg):
+		"""
+		Return the projection of the point on the line of the given segment.
+
+		Return a point even if outside the segment.
+		"""
 		if seg.vertical :
 			return Point(seg.I.x,self.y)
 		if seg.horizontal :
