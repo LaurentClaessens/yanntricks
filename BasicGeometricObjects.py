@@ -627,7 +627,6 @@ class SurfaceUnderFunction(GraphOfAnObject):
 		g = phyFunction(self.f).graph(self.mx,self.Mx)
 		bb.add_graph(g,pspict)
 		bb.AddY(0)
-		print "630", bb
 		return bb
 	def math_bounding_box(self,pspict):
 		return self.bounding_box(pspict)

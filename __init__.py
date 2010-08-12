@@ -959,7 +959,11 @@ class pspicture(object):
 		"""
 		Draw an object of type GraphOfA*.
 
-		More generally, it can draw anything that has a method bounding_box and pstricks_code.
+		More generally, it can draw anything that has the methods
+			bounding_box
+			pstricks_code
+		The first one should return a bounding box and the second one should return a valid pstricks code as string. 
+		If the pstricks code is not valid, LaTeX will get angry but no warning are given here.
 		"""
 		if not "pstricks_code" in dir(graphe):
 			print "phystricks error : object %s has no pstricks_code method"%(str(graphe))
@@ -972,6 +976,7 @@ class pspicture(object):
 			raise
 		if "math_bounding_box" in dir(graphe) :
 			self.math_BB.AddBB(graphe.math_bounding_box(self))
+			print "979", self.math_BB
 		else :
 			print "Warning: it seems to me that object %s has no method math_boundig_box"%graphe 
 			self.math_BB.add_graph(graphe,self)
