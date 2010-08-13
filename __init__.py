@@ -20,6 +20,8 @@
 
 """
 A collection of tools for building LaTeX-pstricks figures with python.
+
+The documentation is available at
 """
 
 #from __future__ import division

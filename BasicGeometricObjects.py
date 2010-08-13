@@ -544,7 +544,7 @@ class FillParameters(object):
 			opt.add_option("fillstyle=%s"%str(self.style))
 
 class HatchParameters(object):
-	"""Same as FillParameters, but when one speaks about atched"""
+	"""Same as FillParameters, but when one speaks about hatching"""
 	def __init__(self):
 		self.color = None
 		self._crossed = False
@@ -642,6 +642,11 @@ class SurfaceBetweenFunction(GraphOfAnObject):
 	f1 : a function (sage or phyFunction)
 	f2 : an other (will be considered as lower)
 	mx,Mx : initial and end values of x
+
+	If x is an instance, 
+	x.parameters.color="blue"
+	will set everything blue. If you want to control separately the color of the function and the filling, you have
+	to use something else, like looking at the example in the documentation.
 	"""
 	def __init__(self,f1,f2,mx,Mx):
 		GraphOfAnObject.__init__(self,self)
@@ -650,7 +655,9 @@ class SurfaceBetweenFunction(GraphOfAnObject):
 		self.mx=mx
 		self.Mx=Mx
 		self.add_option("fillstyle=vlines,linestyle=dashed")	# Some default values
-		self.parameters.color="brown"				# Default color
+		# A default color is given in the pstricks_code; the reason is  that we want to be able 
+		#to control the color of each element separately. 
+		self.parameters.color=None				
 	def bounding_box(self,pspict):
 		bb=BoundingBox()
 		g = phyFunction(self.f1).graph(self.mx,self.Mx)
@@ -667,10 +674,15 @@ class SurfaceBetweenFunction(GraphOfAnObject):
 		bb.add_graph(g,pspict)
 		g = phyFunction(self.f2).graph(self.mx,self.Mx)
 		bb.add_graph(g,pspict)
+		if not self.parameters.color :		# Here we give a default color
+			self.parameters.color="yellow"
+		self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
 		a=[]
+		deb = numerical_approx(self.mx)		# Avoid "pi" in the pstricks code
+		fin = numerical_approx(self.Mx)
 		a.append("\pscustom["+self.options.code()+"]{")
-		a.append("\psplot[plotstyle=curve]{"+str(self.mx)+"}{"+str(self.Mx)+"}{"+self.f1.pstricks+"}")
-		a.append("\psplot[liftpen=1]{"+str(self.Mx)+"}{"+str(self.mx)+"}{"+self.f2.pstricks+"}")
+		a.append("\psplot[plotstyle=curve]{"+str(deb)+"}{"+str(fin)+"}{"+self.f1.pstricks+"}")
+		a.append("\psplot[liftpen=1]{"+str(fin)+"}{"+str(deb)+"}{"+self.f2.pstricks+"}")
 		a.append("}")
 		return "\n".join(a)
 
