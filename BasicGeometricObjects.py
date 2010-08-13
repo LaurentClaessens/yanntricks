@@ -648,44 +648,48 @@ class SurfaceBetweenFunction(GraphOfAnObject):
 
 	If x is an instance, 
 	x.parameters.color="blue"
-	will set everything blue. If you want to control separately the color of the function and the filling, you have
-	to use something else, like looking at the example in the documentation.
+	will set everything blue. 
+	If you want to control separately the color of the function and the filling, you have to use the methods
+	x.f1 and x.f2 
+	that are the graph of the functions. You control their parameters in the same way as others graphs of functions.
+
+	If nothing is said, the functions are not drawn at all.
+	You can also try to controle the option linestyle (use add_option).
 	"""
 	def __init__(self,f1,f2,mx,Mx):
 		GraphOfAnObject.__init__(self,self)
-		self.f1=EnsurephyFunction(f1)
-		self.f2=EnsurephyFunction(f2)
+		self.f1=EnsurephyFunction(f1).graph(mx,Mx)
+		self.f2=EnsurephyFunction(f2).graph(mx,Mx)
+		self.f1.parameters.style="none"
+		self.f2.parameters.style="none"
 		self.mx=mx
 		self.Mx=Mx
-		self.add_option("fillstyle=vlines,linestyle=dashed")	# Some default values
+		# linestyle=none corresponds to the fact that we do not want to draw the curve.
+		self.add_option("fillstyle=vlines,linestyle=none")	
 		# No default color are given; the reason is  that we want to be able 
 		#to control the color of each element separately. 
 		self.parameters.color=None				
 	def bounding_box(self,pspict):
 		bb=BoundingBox()
-		g = phyFunction(self.f1).graph(self.mx,self.Mx)
-		bb.add_graph(g,pspict)
-		g = phyFunction(self.f2).graph(self.mx,self.Mx)
-		bb.add_graph(g,pspict)
+		bb.add_graph(self.f1,pspict)
+		bb.add_graph(self.f2,pspict)
 		bb.AddY(0)
 		return bb
 	def math_bounding_box(self,pspict):
 		return self.bounding_box(pspict)
 	def pstricks_code(self,pspict):
-		bb=BoundingBox()
-		g = phyFunction(self.f1).graph(self.mx,self.Mx)
-		bb.add_graph(g,pspict)
-		g = phyFunction(self.f2).graph(self.mx,self.Mx)
-		bb.add_graph(g,pspict)
 		if self.parameters.color :		# Here we give a default color
 			self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
 		a=[]
 		deb = numerical_approx(self.mx)		# Avoid "pi" in the pstricks code
 		fin = numerical_approx(self.Mx)
 		a.append("\pscustom["+self.params()+"]{")
-		a.append("\psplot[plotstyle=curve]{"+str(deb)+"}{"+str(fin)+"}{"+self.f1.pstricks+"}")
-		a.append("\psplot[liftpen=1]{"+str(fin)+"}{"+str(deb)+"}{"+self.f2.pstricks+"}")
+		a.append("\psplot[linestyle=none]{"+str(deb)+"}{"+str(fin)+"}{"+self.f1.pstricks+"}")
+		a.append("\psplot[linestyle=none]{"+str(fin)+"}{"+str(deb)+"}{"+self.f2.pstricks+"}")
 		a.append("}")
+		a.append("\n".join(self.f1.pstricks_code()))
+		a.append("\n".join(self.f2.pstricks_code()))
+		print "692", a[4]
 		return "\n".join(a)
 
 class SurfaceUnderFunction(GraphOfAnObject):
