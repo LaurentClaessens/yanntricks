@@ -473,10 +473,6 @@ class Options(object):
 		return O
 	def style_ligne(self):
 		return self.sousOptions(OptionsStyleLigne())
-
-	def __getitem__(self,opt):
-		return self.DicoOptions[opt]
-
 	def code(self):
 		a = []
 		for op in self.DicoOptions.keys():
@@ -484,6 +480,9 @@ class Options(object):
 			a.append(",")
 		del a[-1:]
 		return "".join(a)
+	def __getitem__(self,opt):
+		return self.DicoOptions[opt]
+
 class Waviness(object):
 	"""
 	This class contains the informations about the waviness of a curve. It takes as argument a GraphOfAphyFunction and the parameters dx, dy of the wave.
@@ -574,6 +573,11 @@ class Parameters(object):
 	def hatched(self):
 		self._hatched=True
 	def add_to_options(self,opt):
+		"""
+		Add to the object <opt> (type Option) the different options that correspond to the parameters.
+
+		In an imaged way, this method adds self to the object <opt>.
+		"""
 		if self.color :
 			opt.add_option("linecolor=%s"%str(self.color))
 		if self.style :
@@ -655,7 +659,7 @@ class SurfaceBetweenFunction(GraphOfAnObject):
 		self.mx=mx
 		self.Mx=Mx
 		self.add_option("fillstyle=vlines,linestyle=dashed")	# Some default values
-		# A default color is given in the pstricks_code; the reason is  that we want to be able 
+		# No default color are given; the reason is  that we want to be able 
 		#to control the color of each element separately. 
 		self.parameters.color=None				
 	def bounding_box(self,pspict):
@@ -674,12 +678,12 @@ class SurfaceBetweenFunction(GraphOfAnObject):
 		bb.add_graph(g,pspict)
 		g = phyFunction(self.f2).graph(self.mx,self.Mx)
 		bb.add_graph(g,pspict)
-		if not self.parameters.color :		# Here we give a default color
-			self.parameters.color="yellow"
-		self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
+		if self.parameters.color :		# Here we give a default color
+			self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
 		a=[]
 		deb = numerical_approx(self.mx)		# Avoid "pi" in the pstricks code
 		fin = numerical_approx(self.Mx)
+		print "682", self.options.code()
 		a.append("\pscustom["+self.options.code()+"]{")
 		a.append("\psplot[plotstyle=curve]{"+str(deb)+"}{"+str(fin)+"}{"+self.f1.pstricks+"}")
 		a.append("\psplot[liftpen=1]{"+str(fin)+"}{"+str(deb)+"}{"+self.f2.pstricks+"}")
