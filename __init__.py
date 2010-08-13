@@ -891,18 +891,6 @@ class pspicture(object):
 	def MarqueAngle(self,A,B,C,label,params):
 		self.add_latex_line("\pstMarkAngle["+params+"]{"+A.psNom+"}{"+B.psNom+"}{"+C.psNom+"}{"+label+"}")
 
-	def TraceSurfaceEntrephyFunction(self,surf):
-		mx = surf.mx
-		Mx = surf.Mx
-		f = surf.f
-		g = surf.g
-		opt = surf.options
-		self.BB.AddphyFunction(f,mx,Mx)
-		self.BB.AddphyFunction(g,mx,Mx)
-		self.add_latex_line("\pscustom["+opt.code()+"]{")
-		self.add_latex_line("\psplot[plotstyle=curve]{"+str(mx)+"}{"+str(Mx)+"}{"+f.pstricks+"}")
-		self.add_latex_line("\psplot[liftpen=1]{"+str(Mx)+"}{"+str(mx)+"}{"+g.pstricks+"}")
-		self.add_latex_line("}")
 	def TraceGrapheDesphyFunctions(self,liste_gf):
 		for gf in liste_gf.liste_GraphOfAphyFunction:
 			self.DrawGraphOfAphyFunction(gf)

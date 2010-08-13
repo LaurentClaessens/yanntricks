@@ -34,6 +34,28 @@ from sage.all import *
 from SmallComputations import *
 import phystricks
 
+
+def SubstitutionMathPsTricks(fx):
+	listeSubst = []
+	listeSubst.append(["**","^"])
+	listeSubst.append(["math.exp","2.718281828459045^"])
+	listeSubst.append(["e^","2.718281828459045^"])
+	for i in range(1,10):	
+		listeSubst.append(["math.log"+str(i),str(0.43429448190325*math.log(i))+"*log"])
+	listeSubst.append(["math.log","2.302585092994046*log"])		# Parce que \psplot[]{1}{5}{log(x)} trace le logarithme en base 10
+									# Pour rappel, la formule est log_b(x)=log_a(x)/log_a(b)
+	listeSubst.append(["math.pi","3.141592653589793"])
+	listeSubst.append(["math.cosh","COSH"])
+	listeSubst.append(["math.tan","TAN"])
+	listeSubst.append(["math.sinh","SINH"])
+	listeSubst.append(["math.sinc","SINC"])
+	listeSubst.append(["math.",""])
+	listeSubst.append(["log","2.302585092994046*log"])		# Parce que \psplot[]{1}{5}{log(x)} trace le logarithme en base 10
+	a = fx
+	for s in listeSubst :
+		a = a.replace(s[0],s[1])
+	return a
+
 class ListeNomsPoints(object):
 	"""
 	This class serves to give a psname to my points. 
@@ -606,7 +628,53 @@ class GraphOfAnObject(object):
 		self.conclude_params()
 		return self.options.code()
 
-class SurfaceUnderFunction(phystricks.GraphOfAphyFunction):
+def EnsurephyFunction(f):
+	if "sage" in dir(f):		# This tests in the same time if the type if phyFunction or GraphOfAphyFunction
+		return phyFunction(f.sage)
+	else :
+		return phyFunction(f)
+
+class SurfaceBetweenFunction(GraphOfAnObject):
+	"""
+	Represents a surface between two functions.
+
+	Arguments
+	f1 : a function (sage or phyFunction)
+	f2 : an other (will be considered as lower)
+	mx,Mx : initial and end values of x
+	"""
+	def __init__(self,f1,f2,mx,Mx):
+		GraphOfAnObject.__init__(self,self)
+		self.f1=EnsurephyFunction(f1)
+		self.f2=EnsurephyFunction(f2)
+		self.mx=mx
+		self.Mx=Mx
+		self.add_option("fillstyle=vlines,linestyle=dashed")	# Some default values
+		self.parameters.color="brown"				# Default color
+	def bounding_box(self,pspict):
+		bb=BoundingBox()
+		g = phyFunction(self.f1).graph(self.mx,self.Mx)
+		bb.add_graph(g,pspict)
+		g = phyFunction(self.f2).graph(self.mx,self.Mx)
+		bb.add_graph(g,pspict)
+		bb.AddY(0)
+		return bb
+	def math_bounding_box(self,pspict):
+		return self.bounding_box(pspict)
+	def pstricks_code(self,pspict):
+		bb=BoundingBox()
+		g = phyFunction(self.f1).graph(self.mx,self.Mx)
+		bb.add_graph(g,pspict)
+		g = phyFunction(self.f2).graph(self.mx,self.Mx)
+		bb.add_graph(g,pspict)
+		a=[]
+		a.append("\pscustom["+self.options.code()+"]{")
+		a.append("\psplot[plotstyle=curve]{"+str(self.mx)+"}{"+str(self.Mx)+"}{"+self.f1.pstricks+"}")
+		a.append("\psplot[liftpen=1]{"+str(self.Mx)+"}{"+str(self.mx)+"}{"+self.f2.pstricks+"}")
+		a.append("}")
+		return "\n".join(a)
+
+class SurfaceUnderFunction(GraphOfAnObject):
 	"""
 	Represent a surface under a function.
 
@@ -616,13 +684,10 @@ class SurfaceUnderFunction(phystricks.GraphOfAphyFunction):
 	Mx : end x value
 	"""
 	def __init__(self,f,mx,Mx):
-		phystricks.GraphOfAphyFunction.__init__(self,f,mx,Mx)
+		self.f=EnsurephyFunction(f)
+		GraphOfAnObject.__init__(self,self)
 		self.mx = mx
 		self.Mx = Mx
-		if "sage" in dir(f):		# This tests in the same time if the type if phyFunction or GraphOfAphyFunction
-			self.f = phyFunction(f.sage)
-		else :
-			self.f = phyFunction(f)
 		self.add_option("fillstyle=vlines,linestyle=dashed")	# Some default values
 		self.parameters.color="cyan"				# Default color
 	def bounding_box(self,pspict):
@@ -870,69 +935,6 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 				a = PsA.create_PSpoint() + PsB.create_PSpoint()
 				a = a+"\pstArcOAB[%s]{%s}{%s}{%s}"%(self.params(),self.center.psNom,PsA.psNom,PsB.psNom)
 				return a
-
-def SubstitutionMathPsTricks(fx):
-	listeSubst = []
-	listeSubst.append(["**","^"])
-	listeSubst.append(["math.exp","2.718281828459045^"])
-	listeSubst.append(["e^","2.718281828459045^"])
-	for i in range(1,10):	
-		listeSubst.append(["math.log"+str(i),str(0.43429448190325*math.log(i))+"*log"])
-	listeSubst.append(["math.log","2.302585092994046*log"])		# Parce que \psplot[]{1}{5}{log(x)} trace le logarithme en base 10
-									# Pour rappel, la formule est log_b(x)=log_a(x)/log_a(b)
-	listeSubst.append(["math.pi","3.141592653589793"])
-	listeSubst.append(["math.cosh","COSH"])
-	listeSubst.append(["math.tan","TAN"])
-	listeSubst.append(["math.sinh","SINH"])
-	listeSubst.append(["math.sinc","SINC"])
-	listeSubst.append(["math.",""])
-	listeSubst.append(["log","2.302585092994046*log"])		# Parce que \psplot[]{1}{5}{log(x)} trace le logarithme en base 10
-	a = fx
-	for s in listeSubst :
-		a = a.replace(s[0],s[1])
-	return a
-
-class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
-	def __init__(self,f,mx,Mx):
-		GraphOfAnObject.__init__(self,f)
-		phyFunction.__init__(self,f.sage)
-		self.f = self.obj
-		self.mx = mx
-		self.Mx = Mx
-		self.plotpoints	= 100					# We draw 100 points as default.
-		self.parameters.color = "blue"				# Modification with respect to the attribute in GraphOfAnObject
-	def params(self):
-		self.conclude_params()
-		self.add_option("plotpoints=%s"%str(self.plotpoints))
-		return self.options.code()
-	def bounding_box(self,pspict):
-		bb = BoundingBox()
-		bb.AddY(self.f.ymin(self.mx,self.Mx))
-		bb.AddY(self.f.ymax(self.mx,self.Mx))
-		bb.AddX(self.mx)
-		bb.AddX(self.Mx)
-		return bb
-	def math_bounding_box(self,pspict):
-		return self.bounding_box(pspict)
-	def pstricks_code(self,pspict=None):
-		a = []
-		if self.marque :
-			P = self.get_point(self.Mx)
-			P.parameters.symbol="none"
-			P.marque = True
-			P.mark = self.mark
-			a.append(P.pstricks_code())
-		if self.wavy :			
-			waviness = self.waviness
-			#self.TracephyFunctionOndule(self.f,waviness.mx,waviness.Mx,waviness.dx,waviness.dy,self.params())
-			a.append(Code_Pscurve( self.get_wavy_points(waviness.mx,waviness.Mx,waviness.dx,waviness.dy),self.params()))
-		else :
-			# The use of numerical_approx is intended to avoid strings like "2*pi" in the final pstricks code.
-			deb = numerical_approx(self.mx)	
-			fin = numerical_approx(self.Mx)
-			a.append("\psplot["+self.params()+"]{"+str(deb)+"}{"+str(fin)+"}{"+self.f.pstricks+"}")
-		return a
-
 class phyFunction(object):
 	"""
 	Represent a function.
@@ -1110,6 +1112,47 @@ class phyFunction(object):
 		return phyFunction(self.sage**n)
 	def __str__(self):
 		return str(self.sage)
+
+class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
+	def __init__(self,f,mx,Mx):
+		GraphOfAnObject.__init__(self,f)
+		phyFunction.__init__(self,f.sage)
+		self.f = self.obj
+		self.mx = mx
+		self.Mx = Mx
+		self.plotpoints	= 100					# We draw 100 points as default.
+		self.parameters.color = "blue"				# Modification with respect to the attribute in GraphOfAnObject
+	def params(self):
+		self.conclude_params()
+		self.add_option("plotpoints=%s"%str(self.plotpoints))
+		return self.options.code()
+	def bounding_box(self,pspict):
+		bb = BoundingBox()
+		bb.AddY(self.f.ymin(self.mx,self.Mx))
+		bb.AddY(self.f.ymax(self.mx,self.Mx))
+		bb.AddX(self.mx)
+		bb.AddX(self.Mx)
+		return bb
+	def math_bounding_box(self,pspict):
+		return self.bounding_box(pspict)
+	def pstricks_code(self,pspict=None):
+		a = []
+		if self.marque :
+			P = self.get_point(self.Mx)
+			P.parameters.symbol="none"
+			P.marque = True
+			P.mark = self.mark
+			a.append(P.pstricks_code())
+		if self.wavy :			
+			waviness = self.waviness
+			#self.TracephyFunctionOndule(self.f,waviness.mx,waviness.Mx,waviness.dx,waviness.dy,self.params())
+			a.append(Code_Pscurve( self.get_wavy_points(waviness.mx,waviness.Mx,waviness.dx,waviness.dy),self.params()))
+		else :
+			# The use of numerical_approx is intended to avoid strings like "2*pi" in the final pstricks code.
+			deb = numerical_approx(self.mx)	
+			fin = numerical_approx(self.Mx)
+			a.append("\psplot["+self.params()+"]{"+str(deb)+"}{"+str(fin)+"}{"+self.f.pstricks+"}")
+		return a
 
 def PolarCurve(f):
 	"""
@@ -1383,18 +1426,6 @@ class BoundingBox(object):
 		self.AddPoint( axes.BB.bg )
 		self.AddPoint( axes.BB.hd )
 		#self.AddCircleBB( Circle(axes.C,0.7),xunit,yunit )			# This is to make enter the graduation of the axes.
-	def AddphyFunction(self,fun,deb,fin):
-		raise AttributeError,"method AddphyFunction is depreciated"
-		self.AddY(fun.ymin(deb,fin))
-		self.AddY(fun.ymax(deb,fin))
-		self.AddX(deb)
-		self.AddX(fin)
-	def AddParametricCurve(self,F,deb,fin):
-		raise AttributeError,"method AddParametricCurve is depreciated"
-		self.AddX(F.xmin(deb,fin))
-		self.AddX(F.xmax(deb,fin))
-		self.AddY(F.ymin(deb,fin))
-		self.AddY(F.ymax(deb,fin))
 	def enlarge_a_little(self,Dx,Dy,epsilonX,epsilonY):
 		"""
 		Essentially intended to the bounding box of a axis coordinate. 
