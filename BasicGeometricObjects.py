@@ -656,18 +656,21 @@ class SurfaceBetweenFunction(GraphOfAnObject):
 	If nothing is said, the functions are not drawn at all.
 	You can also try to controle the option linestyle (use add_option).
 	"""
+	# linestyle=none corresponds to the fact that we do not want to draw the curve.
+	# No default color are given; the reason is  that we want to be able  to control the color of each element separately. 
 	def __init__(self,f1,f2,mx,Mx):
 		GraphOfAnObject.__init__(self,self)
 		self.f1=EnsurephyFunction(f1).graph(mx,Mx)
 		self.f2=EnsurephyFunction(f2).graph(mx,Mx)
+		self.vertical_left=Segment(self.f1.get_point(mx),self.f2.get_point(mx))
+		self.vertical_right=Segment(self.f1.get_point(Mx),self.f2.get_point(Mx))
 		self.f1.parameters.style="none"
 		self.f2.parameters.style="none"
+		self.vertical_left.parameters.style="none"
+		self.vertical_right.parameters.style="none"
 		self.mx=mx
 		self.Mx=Mx
-		# linestyle=none corresponds to the fact that we do not want to draw the curve.
 		self.add_option("fillstyle=vlines,linestyle=none")	
-		# No default color are given; the reason is  that we want to be able 
-		#to control the color of each element separately. 
 		self.parameters.color=None				
 	def bounding_box(self,pspict):
 		bb=BoundingBox()
@@ -687,9 +690,14 @@ class SurfaceBetweenFunction(GraphOfAnObject):
 		a.append("\psplot[linestyle=none]{"+str(deb)+"}{"+str(fin)+"}{"+self.f1.pstricks+"}")
 		a.append("\psplot[linestyle=none]{"+str(fin)+"}{"+str(deb)+"}{"+self.f2.pstricks+"}")
 		a.append("}")
-		a.append("\n".join(self.f1.pstricks_code()))
-		a.append("\n".join(self.f2.pstricks_code()))
-		print "692", a[4]
+		if self.f1.parameters.style != "none":
+			a.append("\n".join(self.f1.pstricks_code()))
+		if self.f2.parameters.style != "none":
+			a.append("\n".join(self.f2.pstricks_code()))
+		if self.vertical_left.parameters.style != "none" :
+			a.append(self.vertical_left.pstricks_code())
+		if self.vertical_right.parameters.style != "none" :
+			a.append(self.vertical_right.pstricks_code())
 		return "\n".join(a)
 
 class SurfaceUnderFunction(GraphOfAnObject):
