@@ -441,7 +441,6 @@ class Options(object):
 	"""
 	def __init__(self):
 		self.DicoOptions = {}
-
 	# On ajoute une des options en donnant genre
 	# LineColor=blue,LineStyle=dashed
 	# Ou alors en donnant un dictionnaire genre
@@ -683,8 +682,7 @@ class SurfaceBetweenFunction(GraphOfAnObject):
 		a=[]
 		deb = numerical_approx(self.mx)		# Avoid "pi" in the pstricks code
 		fin = numerical_approx(self.Mx)
-		print "682", self.options.code()
-		a.append("\pscustom["+self.options.code()+"]{")
+		a.append("\pscustom["+self.params()+"]{")
 		a.append("\psplot[plotstyle=curve]{"+str(deb)+"}{"+str(fin)+"}{"+self.f1.pstricks+"}")
 		a.append("\psplot[liftpen=1]{"+str(fin)+"}{"+str(deb)+"}{"+self.f2.pstricks+"}")
 		a.append("}")
@@ -705,7 +703,7 @@ class SurfaceUnderFunction(GraphOfAnObject):
 		self.mx = mx
 		self.Mx = Mx
 		self.add_option("fillstyle=vlines,linestyle=dashed")	# Some default values
-		self.parameters.color="cyan"				# Default color
+		self.parameters.color=None
 	def bounding_box(self,pspict):
 		bb=BoundingBox()
 		g = phyFunction(self.f).graph(self.mx,self.Mx)
@@ -722,8 +720,9 @@ class SurfaceUnderFunction(GraphOfAnObject):
 		a=[]
 		deb = numerical_approx(self.mx)		# Avoid "pi" in the pstricks code
 		fin = numerical_approx(self.Mx)
-		self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
-		a.append("\pscustom["+self.options.code()+"]{")
+		if self.parameters.color:
+			self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
+		a.append("\pscustom["+self.params()+"]{")
 		a.append("\psline"+A.coordinates()+X.coordinates())
 		a.append("\psplot{"+str(deb)+"}{"+str(fin)+"}{"+self.f.pstricks+"}")
 		a.append("\psline"+Y.coordinates()+B.coordinates())
