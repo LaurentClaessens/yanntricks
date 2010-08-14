@@ -700,43 +700,6 @@ class SurfaceBetweenFunction(GraphOfAnObject):
 			a.append(self.vertical_right.pstricks_code())
 		return "\n".join(a)
 
-class SurfaceUnderFunction(GraphOfAnObject):
-	"""
-	"""
-	def __init__(self,f,mx,Mx):
-		self.f=EnsurephyFunction(f)
-		GraphOfAnObject.__init__(self,self)
-		self.mx = mx
-		self.Mx = Mx
-		self.add_option("fillstyle=vlines,linestyle=dashed")	# Some default values
-		self.parameters.color=None
-	def bounding_box(self,pspict):
-		bb=BoundingBox()
-		g = phyFunction(self.f).graph(self.mx,self.Mx)
-		bb.add_graph(g,pspict)
-		bb.AddY(0)
-		return bb
-	def math_bounding_box(self,pspict):
-		return self.bounding_box(pspict)
-	def pstricks_code(self,pspict):
-		A = Point(self.mx,0)
-		B = Point(self.Mx,0)
-		X = self.f.get_point(self.mx)
-		Y = self.f.get_point(self.Mx)
-		a=[]
-		deb = numerical_approx(self.mx)		# Avoid "pi" in the pstricks code
-		fin = numerical_approx(self.Mx)
-		if self.parameters.color:
-			self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
-		a.append("\pscustom["+self.params()+"]{")
-		a.append("\psline"+A.coordinates()+X.coordinates())
-		a.append("\psplot{"+str(deb)+"}{"+str(fin)+"}{"+self.f.pstricks+"}")
-		a.append("\psline"+Y.coordinates()+B.coordinates())
-		a.append("}")
-		return "\n".join(a)
-	def __str__(self):
-		return "SurfaceUnderFunction %s x:%s->%s"%(self.f,str(self.mx),str(self.Mx))
-
 class SurfaceUnderFunction(SurfaceBetweenFunction):
 	"""
 	Represent a surface under a function.
@@ -752,7 +715,13 @@ class SurfaceUnderFunction(SurfaceBetweenFunction):
 	The function f will also be recorded as self.f.
 	"""
 
-
+	def __init__(self,f,mx,Mx):
+		self.f=EnsurephyFunction(f)
+		var('x')
+		f2=0
+		SurfaceBetweenFunction(self.f,f2,mx,Mx)
+	def __str__(self):
+		return "SurfaceUnderFunction %s x:%s->%s"%(self.f,str(self.mx),str(self.Mx))
 
 class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 	def __init__(self,point):
