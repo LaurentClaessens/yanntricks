@@ -719,7 +719,7 @@ class SurfaceUnderFunction(SurfaceBetweenFunction):
 		self.f=EnsurephyFunction(f)
 		var('x')
 		f2=0
-		SurfaceBetweenFunction(self.f,f2,mx,Mx)
+		SurfaceBetweenFunction.__init__(self,self.f,f2,mx,Mx)
 	def __str__(self):
 		return "SurfaceUnderFunction %s x:%s->%s"%(self.f,str(self.mx),str(self.Mx))
 
@@ -951,8 +951,12 @@ class phyFunction(object):
 			phyFunction.__init__(self,fun.sage)
 		else :
 			var('x')
-			self.sage = fun
-			self.sageFast = self.sage._fast_float_(x)
+			try:
+				self.sage = fun
+				self.sageFast = self.sage._fast_float_(x)
+			except AttributeError:			# Happens when the function is given by a number like f=0  F=phyFunction(f)
+				self.sage = SR(fun)
+				self.sageFast = self.sage._fast_float_(x)
 			self.string = repr(self.sage)
 			self.fx = self.string.replace("^","**")
 			self.pstricks = SubstitutionMathPsTricks(self.fx)
