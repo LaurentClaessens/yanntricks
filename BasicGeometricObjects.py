@@ -656,7 +656,7 @@ class SurfaceBetweenFunction(GraphOfAnObject):
 	If nothing is said, the functions are not drawn at all.
 	You can also try to controle the option linestyle (use add_option).
 	"""
-	# linestyle=none corresponds to the fact that we do not want to draw the curve.
+	# linestyle=none in self.add_option corresponds to the fact that we do not want to draw the curve.
 	# No default color are given; the reason is  that we want to be able  to control the color of each element separately. 
 	def __init__(self,f1,f2,mx,Mx):
 		GraphOfAnObject.__init__(self,self)
