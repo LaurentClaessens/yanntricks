@@ -702,12 +702,6 @@ class SurfaceBetweenFunction(GraphOfAnObject):
 
 class SurfaceUnderFunction(GraphOfAnObject):
 	"""
-	Represent a surface under a function.
-
-	Arguments :
-	f : a function
-	mx : initial x value
-	Mx : end x value
 	"""
 	def __init__(self,f,mx,Mx):
 		self.f=EnsurephyFunction(f)
@@ -742,6 +736,23 @@ class SurfaceUnderFunction(GraphOfAnObject):
 		return "\n".join(a)
 	def __str__(self):
 		return "SurfaceUnderFunction %s x:%s->%s"%(self.f,str(self.mx),str(self.Mx))
+
+class SurfaceUnderFunction(SurfaceBetweenFunction):
+	"""
+	Represent a surface under a function.
+
+	This is a particular case of SurfaceBetweenFunction when the second function is the y=0 axis.
+
+	Arguments :
+	f : a function
+	mx : initial x value
+	Mx : end x value
+
+	The function f becomes self.f1 while self.f2 will be the function 0 (this is a consequence of inheritance).
+	The function f will also be recorded as self.f.
+	"""
+
+
 
 class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 	def __init__(self,point):
