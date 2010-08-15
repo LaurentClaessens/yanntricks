@@ -70,6 +70,11 @@ class ListeNomsPoints(object):
 		s = str(self.donne)
 		return "".join( [chr(int(c)+97) for c in s] )
 
+class PstricksCode(object):
+	def __init__(self):
+		self.principalText=""
+		self.pointsText=""
+
 def Point(x,y):
 	return GraphOfAPoint(GeometricPoint(x,y))
 def Segment(A,B):
@@ -136,14 +141,6 @@ class GeometricPoint(object):
 		"""Return the class which is the Graph associated type"""
 		return phystricks.GraphOfAPoint				# Graph is also a method of Sage
 
-	def code(self,params="PointSymbol=none,PointName=none"):
-		"""
-		Return the code if one wants to put the point with the options params (string).
-		It is typically used with PointSymbol=none,PointName=none in order to create the code of
-		more complex objects.
-		"""
-		print "This method is depreciated. Use Graph instead. Please, RTFM before to ask me silly thinks !"		
-		return "\pstGeonode["+params+"]"+self.coordinates()+"{"+self.psNom+"}"
 	def create_PSpoint(self):
 		"""Return the code of creating a pstgeonode. The argument is a Point of GraphOfAPoint"""
 		P = Point(self.x,self.y)
@@ -732,6 +729,59 @@ class SurfaceUnderFunction(SurfaceBetweenFunctions):
 		SurfaceBetweenFunctions.__init__(self,self.f,f2,mx,Mx)
 	def __str__(self):
 		return "SurfaceUnderFunction %s x:%s->%s"%(self.f,str(self.mx),str(self.Mx))
+
+class CustomSurface(GraphOfAnObject):
+	"""
+	Represent the surface contained between some lines and (parametric) curves.
+
+	Usage :
+	surf = CustomSurface(g1,g2)
+	describes whose border is g1 and g2 that have to be graphs.
+
+	The border is not drawn.
+
+	This is somewhat the more general use of the pstricks's macro \pscustom
+	"""
+	def __init__(self,*args):
+		GraphOfAnObject.__init__(self,self)
+		self.graphList=list(args)
+		self.add_option("fillstyle=vlines,linestyle=none")	
+	def bounding_box(self,pspict):
+		bb=BoundingBox()
+		for obj in self.graphList :
+			bb.AddBB(obj.bounding_box(pspict))
+		return bb
+	def math_bounding_box(self,pspict):
+		bb=BoundingBox()
+		for obj in self.graphList :
+			bb.AddBB(obj.math_bounding_box(pspict))
+		return bb
+	def pstricks_code(self,pspict):
+		# I cannot add all the obj.pstricks_code() inside the \pscustom because we cannot have \pstGeonode inside \pscustom
+		# Thus I have to hack the code in order to bring all the \pstGeonode before the opening of \pscustom
+		a=[]
+		for obj in self.graphList :
+			a.append(obj.pstricks_code())
+		insideBefore="\n".join(a)
+		insideBeforeList=insideBefore.split("\n")
+		outsideList=[]
+		insideList=[]
+		for line in insideBeforeList:
+			if "pstGeonode" in line :
+				outsideList.append(line)
+			else:
+				insideList.append(line)
+		outside="\n".join(outsideList)
+		inside="\n".join(insideList)
+		# Now we create the pscustom
+		a=[]
+		a.append(outside)
+		a.append("\pscustom["+self.params()+"]{")
+		a.append(inside)
+		a.append("}")
+		# And now we draw the objects of the border
+
+		return "\n".join(a)
 
 class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 	def __init__(self,point):

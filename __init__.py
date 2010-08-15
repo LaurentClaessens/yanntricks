@@ -858,13 +858,8 @@ class pspicture(object):
 		self.dilatation_X(l/self.BB.tailleX())
 	def fixe_tailleY(self,l):
 		self.dilatation_Y(l/self.BB.tailleY())
-	# AddPoint sert à créer un point pstricks. Pour le faire apparaître effectivement, il faut utiliser DrawGraphOfAPoint.
-	def CodeAddPoint(self,P):
-		self.listePoint.append(P.psNom)
-		return "\pstGeonode[PointSymbol=none,PointName=none]"+P.coordinates()+"{"+P.psNom+"}"
 	def AddPoint(self,P):
 		self.add_latex_line(self.CodeAddPoint(P))
-
 	def bounding_box(self,other):
 		return self.BB
 	def DrawBB(self):
