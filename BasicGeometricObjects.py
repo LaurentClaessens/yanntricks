@@ -647,7 +647,7 @@ def EnsurephyFunction(f):
 	else :
 		return phyFunction(f)
 
-class SurfaceBetweenFunction(GraphOfAnObject):
+class SurfaceBetweenFunctions(GraphOfAnObject):
 	"""
 	Represents a surface between two functions.
 
@@ -710,11 +710,11 @@ class SurfaceBetweenFunction(GraphOfAnObject):
 			a.append(self.vertical_right.pstricks_code())
 		return "\n".join(a)
 
-class SurfaceUnderFunction(SurfaceBetweenFunction):
+class SurfaceUnderFunction(SurfaceBetweenFunctions):
 	"""
 	Represent a surface under a function.
 
-	This is a particular case of SurfaceBetweenFunction when the second function is the y=0 axis.
+	This is a particular case of SurfaceBetweenFunctions when the second function is the y=0 axis.
 
 	Arguments :
 	f : a function
@@ -729,7 +729,7 @@ class SurfaceUnderFunction(SurfaceBetweenFunction):
 		self.f=EnsurephyFunction(f)
 		var('x')
 		f2=0
-		SurfaceBetweenFunction.__init__(self,self.f,f2,mx,Mx)
+		SurfaceBetweenFunctions.__init__(self,self.f,f2,mx,Mx)
 	def __str__(self):
 		return "SurfaceUnderFunction %s x:%s->%s"%(self.f,str(self.mx),str(self.Mx))
 
