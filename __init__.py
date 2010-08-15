@@ -501,7 +501,7 @@ def GenericFigure(nom):
 	caption = "\CaptionFig"+nom
 	nFich = "Fig_"+nom+".pstricks"
 	print "The result is on the figure \\ref{"+label+"}"
-	print "\\newcommand{"+caption+"}{<+mettre le texte+>}"
+	print "\\newcommand{"+caption+"}{<+Type your caption here+>}"
 	print "\\input{Fig_"+nom+".pstricks}"
 	return  figure(caption,label,nFich)
 
@@ -756,7 +756,6 @@ class pspicture(object):
 		self.new_separator("OTHER STUFF")
 		self.new_separator("DEFAULT")
 		self.new_separator("AFTER PSPICTURE")
-
 	def new_separator(self,title):
 		self.separator_number = self.separator_number + 1
 		self.separator_dico[title]=Separator(title,self.separator_number)
