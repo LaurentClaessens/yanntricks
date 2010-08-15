@@ -28,7 +28,6 @@ The documentation is available at
 from sage.all import *
 #import numpy				# I do not remember why I used that.
 import math, sys
-#from BasicGraphObjects import *
 from BasicGeometricObjects import *
 from MathComputations import *
 from SmallComputations import *
