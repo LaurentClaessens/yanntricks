@@ -697,10 +697,15 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
 		a.append("\psplot[linestyle=none]{"+str(deb)+"}{"+str(fin)+"}{"+self.f1.pstricks+"}")
 		a.append("\psplot[linestyle=none]{"+str(fin)+"}{"+str(deb)+"}{"+self.f2.pstricks+"}")
 		a.append("}")
+		# This was before a change in GraphOfAphyFunction.pstricks_code (13005)
+		#if self.f1.parameters.style != "none":
+		#	a.append("\n".join(self.f1.pstricks_code()))
+		#if self.f2.parameters.style != "none":
+		#	a.append("\n".join(self.f2.pstricks_code()))
 		if self.f1.parameters.style != "none":
-			a.append("\n".join(self.f1.pstricks_code()))
+			a.append(self.f1.pstricks_code())
 		if self.f2.parameters.style != "none":
-			a.append("\n".join(self.f2.pstricks_code()))
+			a.append(self.f2.pstricks_code())
 		if self.vertical_left.parameters.style != "none" :
 			a.append(self.vertical_left.pstricks_code())
 		if self.vertical_right.parameters.style != "none" :
@@ -1226,7 +1231,8 @@ class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
 			deb = numerical_approx(self.mx)	
 			fin = numerical_approx(self.Mx)
 			a.append("\psplot["+self.params()+"]{"+str(deb)+"}{"+str(fin)+"}{"+self.f.pstricks+"}")
-		return a
+		#return a				# I do not remember why it was like that. See also the change in SurfaceBetweenFunctions.pstricks_code (13005)
+		return "\n".join(a)
 
 def PolarCurve(f):
 	"""
