@@ -151,6 +151,16 @@ class GeometricPoint(object):
 		P.parameters.symbol="none"
 		return P.pstricks_code(None)+"\n"
 	def coordinates(self):
+		"""
+		Return the coordinates of the point as a string.
+
+		When one coordinate if very small (lower than 0.0001), it is rounded to zero in order to avoid string like "0.2335e-6" in the pstricks code.
+
+		Example : 
+		>>>P=Point(1,3)
+		>>>print P.coordinates()
+		(1,3)
+		"""
 		x = self.x
 		y = self.y
 		# Ces petites précautions pour éviter d'avoir des 0.125547e-6, parce que pstricks n'aime pas cette notation.
@@ -865,6 +875,8 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
 
 	graph_N returns the north side as a phystricks.Segment object
 	The parameters of the four sides have to be set independently.
+
+	The drawing is done by \psframe, so that, in principle, all the options are available.
 	"""
 	def __init__(self,rect):
 		GraphOfAnObject.__init__(self,rect)
@@ -885,12 +897,13 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
 	def math_bounding_box(self,pspicture=1):
 		return self.bounding_box(pspicture)
 	def pstricks_code(self,pspict=None):
-		a=[]
-		a.append(self.graph_N.pstricks_code())
-		a.append(self.graph_S.pstricks_code())
-		a.append(self.graph_E.pstricks_code())
-		a.append(self.graph_W.pstricks_code())
-		return "\n".join(a)
+		return "\psframe["+self.params()+"]"+self.rectangle.SW.coordinates()+self.rectangle.NE.coordinates()
+		#a=[]
+		#a.append(self.graph_N.pstricks_code())
+		#a.append(self.graph_S.pstricks_code())
+		#a.append(self.graph_E.pstricks_code())
+		#a.append(self.graph_W.pstricks_code())
+		#return "\n".join(a)
 
 class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 	def __init__(self,circle):
