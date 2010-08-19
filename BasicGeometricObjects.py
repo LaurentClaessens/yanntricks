@@ -253,7 +253,7 @@ class GeometricSegment(object):
 		The wavelength is dx and the amplitude is dy.
 		The first and the last points are self.I and self.F and are then *on* the segment. Thus the wave begins and ends on the segment.
 		"""
-		normal = self.normal_vector().fix_size(dy)
+		normal = self.get_normal_vector().fix_size(dy)
 		PI = self.get_regular_points(dx)
 		PIs = [self.I]
 		PIs.extend( [  PI[i]+normal*(-1)**i for i in range(1,len(PI))  ] )
@@ -274,7 +274,7 @@ class GeometricSegment(object):
 		return self.proportion(0.5)
 	def Vector(self):
 		return Vector(self.I,self.F)
-	def normal_vector(self):
+	def get_normal_vector(self):
 		"""
 		returns a normalized normal vector at the center of the segment
 		"""
@@ -339,7 +339,7 @@ class GeometricCircle(object):
 	# Donne le vecteur normal de norme 1 au cercle au point d'angle theta
 	def VectorTangent(self,theta):
 		return PolarPoint(1,theta+90).lie(self.get_point(theta))
-	def normal_vector(self,theta):
+	def get_normal_vector(self,theta):
 		return PolarPoint(1,theta).lie(self.get_point(theta))
 	# Donne les x et y min et max du cercle entre deux angles.
 	# Here, angleI and angleF are given in degree while parametric_plot uses radian.
@@ -402,6 +402,10 @@ class GeometricVector(object):
 		return phystricks.GraphOfAVector
 	def __mul__(self,coef):
 		return Vector(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
+	def __rmul__(self,coef):
+		return self*coef
+	def __neg__(self):
+		return self*(-1)
 	def __div__(self,coef):
 		return self * (1/coef)
 class GeometricRectangle(object):
@@ -877,13 +881,15 @@ class GraphOfAVector(GraphOfAnObject,GeometricVector):
 			P.put_mark(self.mark.dist,self.mark.angle,self.mark.text)
 			a = a + P.pstricks_code(pspict)
 		return a
+	def __str__(self):
+		return "Vecteur I=%s F=%s"%(str(self.I),str(self.F))
 
 class MeasureLength(GraphOfASegment):
 	def __init__(self,seg):
 		self.segment=seg
 		GraphOfASegment.__init__(self,seg)
 		self.dist=0.1
-		self.delta=self.normal_vector().fix_size(self.dist)
+		self.delta=self.get_normal_vector().fix_size(self.dist)
 		self.mseg=self.seg.translate(self.delta)
 		self.mI=self.mseg.I
 		self.mF=self.mseg.F
@@ -891,7 +897,7 @@ class MeasureLength(GraphOfASegment):
 		"""
 		Because self.dist can change, we have to be able to adapt the other features
 		"""
-		self.delta=self.normal_vector().fix_size(self.dist)
+		self.delta=self.get_normal_vector().fix_size(self.dist)
 		self.mseg=self.seg.translate(self.delta)
 		self.mI=self.mseg.I
 		self.mF=self.mseg.F
@@ -1077,19 +1083,22 @@ class phyFunction(object):
 			angle_n=angle_n+180
 		P.advised_mark_angle=angle_n
 		return P
-	def normal_vector(self,x):
+	def get_normal_vector(self,x):
 		""" return a normalized normal vector to the graph of the function at x """
 		ca = self.derivative().eval(x) 
 		return Point(-ca,1).normalize().lie(self.get_point(x))		
-	def VectorTangent(self,x):
+	def get_tangent_vector(self,x):
+		"""return a tangent vector at the point (x,f(x))"""
 		ca = self.derivative().eval(x)
 		return Point(1,ca).normalize().lie(self.get_point(x))
-	# Je donne une abcisse et une petite distance, et il retourne le point qui est sur la fonction, mais un peu décalé de cette distance dans la direction normale à la courbe.
+	def get_tangent_segment(self,x):
+		v=self.get_tangent_vector(x)
+		mv=-v
+		return Segment(mv.F,v.F)
 	def get_normal_point(self,x,dy):
 		""" return a point at distance dy in the normal direction of the point (x,f(x)) """
-		vecteurNormal =  self.normal_vector(x)
+		vecteurNormal =  self.get_normal_vector(x)
 		return self.get_point(x).translate(vecteurNormal.fix_size(dy))
-	
 	def get_regular_points(self,mx,Mx,dx):
 		"""
 		return a list of points regularly spaced (with respect to the arc length) on the curve x |-->(x,f(x))
@@ -1299,7 +1308,7 @@ class ParametricCurve(object):
 		"""
 		P = Point( self.f1.eval(llam),self.f2.eval(llam) )
 		if advised :
-			angle_n=degree(self.tangent_angle(llam)+pi/2)	# Here I cannot use the method normal_vector due to recursion.
+			angle_n=degree(self.tangent_angle(llam)+pi/2)	# Here I cannot use the method get_normal_vector due to recursion.
 				# Now we have to decide if we want to return angle or angle+180 (outside or inside).
 				# Changing here must be careful : angle_n and angle_c are in degree (not radian)
 			c=self.derivative(2).get_point(llam,False)
@@ -1315,19 +1324,26 @@ class ParametricCurve(object):
 			else:
 				P.advised_mark_angle=angle_n+180
 		return P
-	def tangent_vector(self,llam):
+	def get_tangent_vector(self,llam):
 		"""
 		returns the tangent vector to the curve for the value of the parameter given by llam.
 		   The vector is normed to 1.
 		"""
 		initial = self.get_point(llam)
 		return Vector( initial,Point(initial.x+self.derivative().f1.eval(llam),initial.y+self.derivative().f2.eval(llam)) ).normalize()
-	def normal_vector(self,llam):
+	def get_normal_vector(self,llam):
 		"""
 		Return the normal vector to the curve for the value llam of the parameter.
 		   The vector is normed to 1.
 		"""
-		return self.tangent_vector(llam).orthogonal()
+		return self.get_tangent_vector(llam).orthogonal()
+	def get_tangent_segment(self,llam):
+		"""
+		Return a tangent segment of length 2 centred at the given point. It is essentially two times get_tangent_vector.
+		"""
+		v=self.get_tangent_vector(llam)
+		mv=-v
+		return Segment(mv.F,v.F)
 	def get_minmax_data(self,deb,fin):
 		return parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) ).get_minmax_data()
 	def xmax(self,deb,fin):
@@ -1339,8 +1355,8 @@ class ParametricCurve(object):
 	def ymin(self,deb,fin):
 		return self.get_minmax_data(deb,fin)['ymin']
 	def get_normal_point(self,x,dy):
-		vecteurNormal =  self.normal_vector(x)
-		return self.get_point(x).translate(self.normal_vector.fix_size(dy))
+		vecteurNormal =  self.get_normal_vector(x)
+		return self.get_point(x).translate(self.get_normal_vector.fix_size(dy))
 	def arc_length(self,mll,Mll):
 		""" numerically returns the arc length on the curve between the value mll and Mll of the parameter """
 		g = sqrt( self.f1.derivative().sage**2+self.f2.derivative().sage**2 )
@@ -1410,9 +1426,19 @@ class ParametricCurve(object):
 		PTs = []
 		for i in range(0,len(PAs)) :
 			llam = float(PAs[i])
-			PTs.append( self.get_point(llam)+self.normal_vector(llam).fix_size(dy)*(-1)**i )
+			PTs.append( self.get_point(llam)+self.get_normal_vector(llam).fix_size(dy)*(-1)**i )
 		PTs.append(self.get_point(Mll))
 		return PTs
+	def rotate(self,theta):
+		"""
+		Return a new ParametricCurve which graph is rotated by <theta> with respect to self.
+
+		theta is given in degree.
+		"""
+		alpha=Gradient(theta)
+		g1=cos(alpha)*self.f1+sin(alpha)*self.f2
+		g2=-sin(alpha)*self.f1+cos(alpha)*self.f2
+		return ParametricCurve(g1,g2)
 	def graph(self,mx,Mx):
 		return phystricks.GraphOfAParametricCurve(self,mx,Mx)
 	def __str__(self):

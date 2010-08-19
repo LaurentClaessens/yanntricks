@@ -107,9 +107,9 @@ def PointToPolaire(P):
 		alpha = alpha + math.pi
 	if (P.x < 0) and (P.y < 0 ) :
 		alpha = alpha +math.pi
-	#theta = degree(alpha)
 	return coordinatesPolaires(r,alpha)
 
+# Convention : theta is in degree while alpha is in gradient.
 def radian(theta):
 	"""Convert from degree to radian. Return a value between 0 and 2pi (not 2pi itself)"""
 	angle = theta*math.pi/180
