@@ -383,7 +383,7 @@ class GeometricVector(object):
 		return PointToPolaire(self.Point)
 	def norme(self):
 		print "The method norme on Vector is depreciated use length instead"
-		return self.polaires().r
+		raise
 	def length(self):
 		return self.polaires().r
 	def angle(self):
