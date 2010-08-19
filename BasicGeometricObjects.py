@@ -288,7 +288,7 @@ class GeometricSegment(object):
 		return Distance(self.I,self.F)
 	def length(self):
 		return Distance(self.I,self.F)
-	def dilate(self,coef):
+	def dilatation(self,coef):
 		""" return a Segment which is dilated by the coefficient coef """
 		return self.fix_size(self.length()*coef)
 	def add_size(self,lI,lF):
