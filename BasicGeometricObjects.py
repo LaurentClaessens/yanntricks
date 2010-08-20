@@ -515,6 +515,11 @@ class Waviness(object):
 
 class Mark(object):
 	def __init__(self,graphe,dist,angle,text):
+		"""
+		Describe a mark (essentially a P on a point for example)
+
+		This class should not be used by the end-user.
+		"""
 		self.graphe = graphe
 		self.dist = dist
 		self.angle = angle
@@ -532,16 +537,16 @@ class Mark(object):
 		#(d*cos(a),d*sin(a))=(  A*l*cos(b),B*l*sin(b)  )
 		#with respect to l and b. (A and B are the dilatation coefficients, i.e. xunit,yunit)
 		"""
-		#if pspict:
-		#	A=pspict.xunit
-		#	B=pspict.yunit
-		#	d=self.dist
-		#	theta=radian(self.angle)
-		#	xP=d*cos(theta)/A
-		#	yP=d*sin(theta)/B
-		#	return self.graphe.translate(Vector(Point(0,0),Point(xP,yP)))
-		#else:
-		return self.graphe.translate(PolarVector(self.graphe,self.dist,self.angle))
+		if pspict:
+			A=pspict.xunit
+			B=pspict.yunit
+			d=self.dist
+			theta=radian(self.angle)
+			xP=d*cos(theta)/A
+			yP=d*sin(theta)/B
+			return self.graphe.translate(Vector(Point(0,0),Point(xP,yP)))
+		else:
+			return self.graphe.translate(PolarVector(self.graphe,self.dist,self.angle))
 
 class FillParameters(object):
 	"""The filling parameters"""
@@ -932,10 +937,8 @@ class MeasureLength(GraphOfASegment):
 		a.append(vF.pstricks_code())
 		if self.marque :
 			C.mark=self.mark
-			#C.add_option('PointSymbol=none')
-			pspict.DrawGraph(C)
-			#print "934 ",C.mark.angle 
-			#a.append(C.pstricks_code(pspict))
+			C.mark.graphe=C
+			pspict.record_marks.append(C.mark)
 		return "\n".join(a)
 
 
