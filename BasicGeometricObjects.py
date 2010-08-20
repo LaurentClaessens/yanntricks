@@ -526,20 +526,22 @@ class Mark(object):
 		If pspict is given, we compute the deformation due to the dilatation. 
 		Be carefull : in that cas <dist> is given as _absolute value_ and the visual effect will not
 		be affected by dilatations.
-		The way we take the dilatation into account is that, if a is the original angle and d the original distance, we solve
-		(d*cos(a),d*sin(a))=(  A*l*cos(b),B*l*sin(b)  )
-		with respect to l and b. (A and B are the dilatation coefficients, i.e. xunit,yunit)
+
+		# The following is no more done
+		#The way we take the dilatation into account is that, if a is the original angle and d the original distance, we solve
+		#(d*cos(a),d*sin(a))=(  A*l*cos(b),B*l*sin(b)  )
+		#with respect to l and b. (A and B are the dilatation coefficients, i.e. xunit,yunit)
 		"""
-		if pspict:
-			A=pspict.xunit
-			B=pspict.yunit
-			d=self.dist
-			theta=radian(self.angle)
-			xP=d*cos(theta)/A
-			yP=d*sin(theta)/B
-			return self.graphe.translate(Vector(Point(0,0),Point(xP,yP)))
-		else:
-			return self.graphe.translate(PolarVector(self.graphe,self.dist,self.angle))
+		#if pspict:
+		#	A=pspict.xunit
+		#	B=pspict.yunit
+		#	d=self.dist
+		#	theta=radian(self.angle)
+		#	xP=d*cos(theta)/A
+		#	yP=d*sin(theta)/B
+		#	return self.graphe.translate(Vector(Point(0,0),Point(xP,yP)))
+		#else:
+		return self.graphe.translate(PolarVector(self.graphe,self.dist,self.angle))
 
 class FillParameters(object):
 	"""The filling parameters"""
@@ -885,6 +887,11 @@ class GraphOfAVector(GraphOfAnObject,GeometricVector):
 		return "Vecteur I=%s F=%s"%(str(self.I),str(self.F))
 
 class MeasureLength(GraphOfASegment):
+	"""
+	When a segment exists, one wants sometimes to denote its length drawing a double-arrow parallel to the segment. This is what this class is intended to.
+
+	self.mseg : the parallel segment.
+	"""
 	def __init__(self,seg):
 		self.segment=seg
 		GraphOfASegment.__init__(self,seg)
@@ -925,8 +932,10 @@ class MeasureLength(GraphOfASegment):
 		a.append(vF.pstricks_code())
 		if self.marque :
 			C.mark=self.mark
-			C.add_option('PointSymbol=none')
-			a.append(C.pstricks_code(pspict))
+			#C.add_option('PointSymbol=none')
+			pspict.DrawGraph(C)
+			#print "934 ",C.mark.angle 
+			#a.append(C.pstricks_code(pspict))
 		return "\n".join(a)
 
 
