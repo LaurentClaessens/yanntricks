@@ -467,6 +467,31 @@ def CircleInterLigne(Cer,Ligne):
 		#print "Deux d'intersection"
 		return [Point(soluce[0][0],soluce[0][1]),Point(soluce[1][0],soluce[1][1])]
 
+def Intersection(f,g):
+	"""
+	When f and g are objects with an attribute equation, return the list of points of intersections.
+
+	Example (in a Sage console which has already imported phystricks)
+
+	sage: attach('phystricksAdhIntFr.py')
+	sage: fun=phyFunction(x**2-5*x+6)
+	sage: droite=phyFunction(2)
+	sage: pts = Intersection(fun,droite)
+	sage: for P in pts:
+	....:     print P
+	....:     
+	Point (4.0,2.0)
+	Point (1.0,2.0)
+	"""
+	var('x,y')
+	pts=[]
+	soluce=solve([f.equation,g.equation],[x,y])
+	for s in soluce:
+		a=s[0].rhs()
+		b=s[1].rhs()
+		pts.append(Point(a,b))
+	return pts
+
 def CircleInterphyFunction(Cer,f):
 	return CircleInterLigne(Cer,f)
 

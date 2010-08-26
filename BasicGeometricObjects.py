@@ -672,7 +672,7 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
 	that are the graph of the functions. You control their parameters in the same way as others graphs of functions.
 
 	If nothing is said, the functions are not drawn at all.
-	You can also try to controle the option linestyle (use add_option).
+	You can also try to control the option linestyle (use add_option).
 	"""
 	# linestyle=none in self.add_option corresponds to the fact that we do not want to draw the curve.
 	# No default color are given; the reason is  that we want to be able  to control the color of each element separately. 
@@ -834,6 +834,8 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 		# If there is a mark, this is not drawn now because of deformations by xunit,yunit.
 		# It is done later, in pspict.contenu()
 		return "\pstGeonode["+self.params()+"]"+self.coordinates()+"{"+self.psNom+"}\n"
+	#def __str__(self):
+	#	return "Point (%s,%s)"%(str(self.x),str(self.y))
 
 def Code_Pscurve(listePoints,params):
 	"""
@@ -1036,7 +1038,7 @@ class phyFunction(object):
 		if type(fun) is phyFunction :
 			phyFunction.__init__(self,fun.sage)
 		else :
-			var('x')
+			var('x,y')
 			try:
 				self.sage = fun
 				self.sageFast = self.sage._fast_float_(x)
@@ -1052,6 +1054,7 @@ class phyFunction(object):
 			self.listeExtrema = []
 			self.listeExtrema_analytique = []
 			self._derivative = None
+			self.equation=y==self.sage
 	def eval(self,xe):
 		return numerical_approx(self.sageFast(xe))
 	def inverse(self,y):
