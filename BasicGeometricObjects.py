@@ -1110,6 +1110,14 @@ class phyFunction(object):
 		v=self.get_tangent_vector(x)
 		mv=-v
 		return Segment(mv.F,v.F)
+	def tangent(self,x0):
+		"""
+		Return the tangent at the given point as a phyFunction
+		"""
+		var('x')
+		ca=self.derivative().eval(x0)
+		h0=self.get_point(x0).y
+		return phyFunction(h0+ca*(x-x0))
 	def get_normal_point(self,x,dy):
 		""" return a point at distance dy in the normal direction of the point (x,f(x)) """
 		vecteurNormal =  self.get_normal_vector(x)
@@ -1192,6 +1200,10 @@ class phyFunction(object):
 		print min.Affiche()
 		return min
 	def tangente(self,x):
+		"""
+		This should no more be used.
+		"""
+		raise
 		ca = self.derivative().eval(x)
 		A = self.get_point(x)
 		Ad = Point( A.x+1,A.y+ca )
