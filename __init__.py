@@ -473,7 +473,6 @@ def Intersection(f,g):
 
 	Example (in a Sage console which has already imported phystricks)
 
-	sage: attach('phystricksAdhIntFr.py')
 	sage: fun=phyFunction(x**2-5*x+6)
 	sage: droite=phyFunction(2)
 	sage: pts = Intersection(fun,droite)

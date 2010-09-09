@@ -210,18 +210,21 @@ class GeometricSegment(object):
 		else :
 			self.coefficient = (self.F.y-self.I.y)/(self.F.x-self.I.x)
 			self.independant = (self.F.x*self.I.y-self.F.y*self.I.x)/(self.F.x-self.I.x)
+			
 		if self.vertical :
-			self.equation = [1,0,-A.x]
+			self.coefs = [1,0,-A.x]
 		if self.horizontal :
-			self.equation = [0,1,-A.y]
+			self.coefs = [0,1,-A.y]
 		if not (self.vertical or self.horizontal) :
 			"""
-			self.equation is a list [a,b,c] which corresponds to the Cartesian equation
+			self.coefs is a list [a,b,c] which corresponds to the Cartesian equation
 			ax+by+c=0
 			"""
-			self.equation = [1,-(A.x-B.x)/(A.y-B.y),-(A.y*B.x-A.x*B.y)/(A.y-B.y)]
+			self.coefs = [1,-(A.x-B.x)/(A.y-B.y),-(A.y*B.x-A.x*B.y)/(A.y-B.y)]
+		var('x,y')
+		self.equation= self.coefs[0]*x+self.coefs[1]*y+self.coefs[2] == 0
 		self.longueur = Distance(self.I,self.F)
-		self.maxima = str(self.equation[0])+"*x+"+str(self.equation[1])+"*y+"+str(self.equation[2])+"=0"
+		#self.maxima = str(self.equation[0])+"*x+"+str(self.equation[1])+"*y+"+str(self.equation[2])+"=0"
 	def phyFunction(self):
 		if self.horizontal:
 			# The trick to define a constant function is explained here:
@@ -238,6 +241,8 @@ class GeometricSegment(object):
 		returns the Cartesian equation of the line as a instance of the sage's class
 		sage.symbolic.expression.Expression
 		"""
+		print "Should not be used. Use self.equation instead"
+		raise
 		var('x,y')
 		return self.equation[0]*x+self.equation[1]*y+self.equation[2] == 0
 	def get_regular_points(self,dx):
