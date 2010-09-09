@@ -329,12 +329,24 @@ class GeometricCircle(object):
 	def __init__(self,center,radius):
 		self.center = center
 		self.radius = radius
-	def parametric_curve(self):
+	def parametric_curve(self,a=None,b=None):
+		"""
+		Return the parametric curve associated to the circle.
+
+		If optional arguments <a> and <b> are given, return the corresponding graph between the values a and b of the angle.
+		"""
 		var('x')
 		f1 = phyFunction(self.center.x+self.radius*cos(x))
 		f2 = phyFunction(self.center.y+self.radius*sin(x))
-		return ParametricCurve(f1,f2)
+		curve = ParametricCurve(f1,f2)
+		if a == None :
+			return curve
+		else :
+			return curve.graph(a,b)
 	def get_point(self,theta):
+		"""
+		Return a point at angle <theta> on the circle. The angle is given in degree (as all the angles that are user intended)
+		"""
 		return Point(self.center.x+self.radius*math.cos(radian(theta)), self.center.y+self.radius*math.sin(radian(theta)) )
 	# Donne le vecteur normal de norme 1 au cercle au point d'angle theta
 	def VectorTangent(self,theta):
@@ -777,7 +789,7 @@ class CustomSurface(GraphOfAnObject):
 		# Thus I have to hack the code in order to bring all the \pstGeonode before the opening of \pscustom
 		a=[]
 		for obj in self.graphList :
-			a.append(obj.pstricks_code())
+			a.append(obj.pstricks_code(pspict))
 		insideBefore="\n".join(a)
 		insideBeforeList=insideBefore.split("\n")
 		outsideList=[]
@@ -990,6 +1002,14 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 	def copy(self):
 		"""Return a copy of the object as geometrical object: the style and drawing parameters are not copied."""
 		return Circle(self.center,self.radius)
+	def graph(self,angleI,angleF):
+		"""
+		Return a graph of the circle between the two angles given in degree
+		"""
+		C=GraphOfACircle(self.circle)
+		C.angleI=radian(angleI)
+		C.angleF=radian(angleF)
+		return C
 	def math_bounding_box(self,pspict):
 		return self.bounding_box(pspict)
 	def bounding_box(self,pspict):
@@ -1025,9 +1045,9 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 				# La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
 				#self.add_latex_line("\pscircle["+params+"]("+Cer.center.psNom+"){"+str(Cer.radius)+"}")
 			else :
-				PsA = self.get_point(self.angleI)
-				PsB = self.get_point(self.angleF)
-				a = PsA.create_PSpoint() + PsB.create_PSpoint()
+				PsA = self.get_point(degree(self.angleI))
+				PsB = self.get_point(degree(self.angleF))
+				a = PsA.create_PSpoint() + PsB.create_PSpoint() + self.center.create_PSpoint()
 				a = a+"\pstArcOAB[%s]{%s}{%s}{%s}"%(self.params(),self.center.psNom,PsA.psNom,PsB.psNom)
 				return a
 class phyFunction(object):
