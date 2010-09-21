@@ -524,7 +524,7 @@ def GenericFigure(nom):
 	label = "LabelFig"+nom
 	caption = "\CaptionFig"+nom
 	nFich = "Fig_"+nom+".pstricks"
-	print "The result is on the figure \\ref{"+label+"}"
+	print "The result is on figure \\ref{"+label+"}"
 	print "\\newcommand{"+caption+"}{<+Type your caption here+>}"
 	print "\\input{Fig_"+nom+".pstricks}"
 	return  figure(caption,label,nFich)
