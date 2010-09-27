@@ -75,6 +75,14 @@ class PstricksCode(object):
 		self.principalText=""
 		self.pointsText=""
 
+def CircleOA(O,A):
+	"""
+	From the centrer O and a point A, return the circle.
+	"""
+	center=O
+	radius=sqrt( (O.x-A.x)**2+(O.y-A.y)**2 )
+	return Circle(O,radius)
+
 def Point(x,y):
 	return GraphOfAPoint(GeometricPoint(x,y))
 def Segment(A,B):
@@ -133,6 +141,9 @@ class GeometricPoint(object):
 		"""Do a translation of the point with the vector v"""
 		return self+v
 	def lie(self,p):
+		print "This method is depreciated. Use self.origin instead"
+		raise AttributeError
+	def origin(self,p):
 		return Vector(p,Point(p.x+self.x,p.y+self.y))
 	def Vector(self):
 		return Vector(Point(0,0),self)
@@ -305,10 +316,10 @@ class GeometricSegment(object):
 		returns a normalized normal vector at the center of the segment
 		"""
 		if self.vertical :
-			return Point(-1,0).Vector().lie(self.center())
+			return Point(-1,0).Vector().origin(self.center())
 		else :
 			P = Point(-self.coefficient,1)
-			return P.Vector().normalize().lie(self.center())
+			return P.Vector().normalize().origin(self.center())
 	def norme(self):
 		print "The method norme of Segment is depreciated. Use length instead."
 		return Distance(self.I,self.F)
@@ -332,7 +343,6 @@ class GeometricSegment(object):
 		I = vI.fix_size(l/2).F
 		F = vF.fix_size(l/2).F
 		return Segment(I,F)
-
 	def Affiche(self):
 		return str(self.equation[0])+" x + "+str(self.equation[1])+" y + "+str(self.equation[2])
 	def Rotation(self,angle):
@@ -341,8 +351,6 @@ class GeometricSegment(object):
 		return Segment(self.I,Point(x,y))
 	def translate(self,vecteur):
 		return Segment(self.I.translate(vecteur),self.F.translate(vecteur))
-	#def code(self,params):
-	#	raise AttributeError,"Pas de code à un segment seul"
 	def graph(self):
 		return phystricks.GraphOfASegment(self)
 	def default_associated_graph_class(self):
@@ -574,13 +582,11 @@ class Mark(object):
 		return the central point of the mark, that is the point where the mark arrives
 
 		If pspict is given, we compute the deformation due to the dilatation. 
-		Be carefull : in that cas <dist> is given as _absolute value_ and the visual effect will not
+		Be carefull : in that case <dist> is given as _absolute value_ and the visual effect will not
 		be affected by dilatations.
 
-		# The following is no more done
-		#The way we take the dilatation into account is that, if a is the original angle and d the original distance, we solve
-		#(d*cos(a),d*sin(a))=(  A*l*cos(b),B*l*sin(b)  )
-		#with respect to l and b. (A and B are the dilatation coefficients, i.e. xunit,yunit)
+		The central point of the mark is computed from self.graphe.mark_point()
+		Thus an object that want to accept a mark has to have a method mark_point that returns the point on which the mark will be put.
 		"""
 		if pspict:
 			A=pspict.xunit
@@ -589,9 +595,9 @@ class Mark(object):
 			theta=radian(self.angle)
 			xP=d*cos(theta)/A
 			yP=d*sin(theta)/B
-			return self.graphe.translate(Vector(Point(0,0),Point(xP,yP)))
+			return self.graphe.mark_point().translate(Vector(Point(0,0),Point(xP,yP)))
 		else:
-			return self.graphe.translate(PolarVector(self.graphe,self.dist,self.angle))
+			return self.graphe.mark_point().translate(PolarVector(self.graphe,self.dist,self.angle))
 
 class FillParameters(object):
 	"""The filling parameters"""
@@ -743,7 +749,7 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
 		return bb
 	def math_bounding_box(self,pspict):
 		return self.bounding_box(pspict)
-	def pstricks_code(self,pspict):
+	def pstricks_code(self,pspict=None):
 		if self.parameters.color :		# Here we give a default color
 			self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
 		a=[]
@@ -840,8 +846,6 @@ class CustomSurface(GraphOfAnObject):
 		a.append("\pscustom["+self.params()+"]{")
 		a.append(inside)
 		a.append("}")
-		# And now we draw the objects of the border
-
 		return "\n".join(a)
 
 class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
@@ -852,23 +856,22 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 		self.point = self.obj
 		self.add_option("PointSymbol=*")
 		self._advised_mark_angle=None
+	def mark_point(self):
+		return self
 	def bounding_box(self,pspict):
 		"""
 		return the bounding box of the point including its mark
 
-		A small box of radius 0.1 (modulo xunit,yunit[1]) is given in any case, and the mark is added if there is a one.
+		A small box of radius 0.1 (modulo xunit,yunit[1]) is given in any case.
 		You need to provide a pspict in order to compute the size since it can vary from the place in your document you place the figure.
 
 		[1] If you dont't know what is the "bounding box", or if you don't want to fine tune it, you don't care.
 		"""
+		# We cannot compute here the size of the bounding box due to the mark because xunit,yunit will only be fixed
+		# after possible use of pspict.Dilatation. See pspicture.contenu
 		Xradius=0.1/pspict.xunit
 		Yradius=0.1/pspict.yunit
 		bb = BoundingBox(Point(self.x-Xradius,self.y-Yradius),Point(self.x+Xradius,self.y+Yradius))
-		if self.marque:
-			pspict.record_marks.append(self.mark)		# We cannot compute here the size of the bounding box
-									# due to the mark because xunit,yunit will only be fixed
-									# after possible use of pspict.Dilatation
-									# See pspicture.contenu
 		for P in self.record_add_to_bb:
 			bb.AddPoint(P)
 		return bb
@@ -876,8 +879,7 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 		"""Return a bounding box which include itself and that's it."""
 		return BoundingBox(self.point,self.point)
 	def pstricks_code(self,pspict):
-		# If there is a mark, this is not drawn now because of deformations by xunit,yunit.
-		# It is done later, in pspict.contenu()
+		# Because of deformations by xunit,yunit, the mark is drawn later, in in pspict.contenu()
 		return "\pstGeonode["+self.params()+"]"+self.coordinates()+"{"+self.psNom+"}\n"
 	#def __str__(self):
 	#	return "Point (%s,%s)"%(str(self.x),str(self.y))
@@ -902,6 +904,8 @@ class GraphOfASegment(GraphOfAnObject,GeometricSegment):
 		self.seg = self.obj
 		self.I = self.seg.I
 		self.F = self.seg.F
+	def mark_point(self):
+		return self.F
 	def bounding_box(self,pspicture=1):
 		return BoundingBox(self.I,self.F)		# If you change this, maybe you have to adapt math_bounding_box
 	def math_bounding_box(self,pspicture=1):
@@ -922,6 +926,8 @@ class GraphOfAVector(GraphOfAnObject,GeometricVector):
 		self.vector = self.obj
 		self.I.psNom = self.vector.I.psNom
 		self.F.psNom = self.vector.F.psNom
+	def mark_point(self):
+		return self.F
 	def bounding_box(self,pspict):
 		return GraphOfASegment(self.segment).bounding_box()
 	def math_bounding_box(self,pspict):
@@ -1018,12 +1024,6 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
 		return self.bounding_box(pspicture)
 	def pstricks_code(self,pspict=None):
 		return "\psframe["+self.params()+"]"+self.rectangle.SW.coordinates()+self.rectangle.NE.coordinates()
-		#a=[]
-		#a.append(self.graph_N.pstricks_code())
-		#a.append(self.graph_S.pstricks_code())
-		#a.append(self.graph_E.pstricks_code())
-		#a.append(self.graph_W.pstricks_code())
-		#return "\n".join(a)
 
 class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 	def __init__(self,circle):
@@ -1045,9 +1045,9 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 		return C
 	def math_bounding_box(self,pspict):
 		return self.bounding_box(pspict)
-	def bounding_box(self,pspict):
+	def bounding_box(self,pspict=None):
 		# TODO : take into account self.angleI and self.angleF.
-		bb = BoundingBox()
+		bb = BoundingBox(self.center,self.center)
 		bb.AddX(self.center.x+self.radius)
 		bb.AddX(self.center.x-self.radius)
 		bb.AddY(self.center.y+self.radius)
@@ -1135,7 +1135,7 @@ class phyFunction(object):
 			return self._derivative
 		else:
 			return self.derivative(n-1).derivative()
-	def get_point(self,x):		
+	def get_point(self,x,advised=False):		
 		"""
 		Return a point on the graphe of the function with the given x, i.e. it return the point (x,f(x)).
 
@@ -1154,11 +1154,11 @@ class phyFunction(object):
 	def get_normal_vector(self,x):
 		""" return a normalized normal vector to the graph of the function at x """
 		ca = self.derivative().eval(x) 
-		return Point(-ca,1).normalize().lie(self.get_point(x))		
+		return Point(-ca,1).normalize().origin(self.get_point(x))		
 	def get_tangent_vector(self,x,advised=False):
 		"""return a tangent vector at the point (x,f(x))"""
 		ca = self.derivative().eval(x)
-		return Point(1,ca).normalize().lie(self.get_point(x,advised))
+		return Point(1,ca).normalize().origin(self.get_point(x,advised))
 	def get_tangent_segment(self,x):
 		v=self.get_tangent_vector(x)
 		mv=-v
@@ -1392,9 +1392,14 @@ class ParametricCurve(object):
 				#											than the second derivative.
 				# Let N be the normal, S the second derivative vector and f(x,y)=0 be the equation of the tangent. We select N if f(N) has the same sign as f(S) and -N if
 				#												f(-N) has the same sign as f(S).
-			normal=self.get_normal_vector(llam,advised=False)
-			tangent=self.get_tangent_vector(llam)
-			second=self.get_second_derivative_vector(llam)
+			try :
+				normal=self.get_normal_vector(llam,advised=False)
+				tangent=self.get_tangent_vector(llam)
+				second=self.get_second_derivative_vector(llam)
+			except :
+				print "It seems that something got wrong in the computation of something. Return 0 as angle"
+				P.advised_mark_angle=0
+				return P
 			if normal.F.value_on_line(tangent.segment) * second.F.value_on_line(tangent.segment) > 0:
 				P.advised_mark_angle=degree(normal.angle())
 			else :
@@ -1420,8 +1425,15 @@ class ParametricCurve(object):
 		Note : if the parametrization is not normal, this is not orthogonal to the tangent. If you want a normal vector, use self.get_normal_vector
 		"""
 		initial=self.get_point(llam,advised)
-		c=self.derivative(2).get_point(llam,False)
+		c=self.get_derivative(llam,2)
 		return c.Vector().origin(initial).normalize()
+	def get_derivative(self,llam,order=1):
+		"""
+		Return the derivative of the curve. If the curve is f(t), return f'(t) or f''(t) or higher derivatives.
+
+		Return a Point, not a vector. This is not normalised.
+		"""
+		return self.derivative(order).get_point(llam,False)
 	def get_tangent_segment(self,llam):
 		"""
 		Return a tangent segment of length 2 centred at the given point. It is essentially two times get_tangent_vector.
@@ -1429,6 +1441,18 @@ class ParametricCurve(object):
 		v=self.get_tangent_vector(llam)
 		mv=-v
 		return Segment(mv.F,v.F)
+	def get_osculating_circle(self,llam):
+		"""
+		Return the osculating circle to the parametric curve.
+		"""
+		P=self.get_point(llam)
+		first=self.get_derivative(llam,1)
+		second=self.get_derivative(llam,2)
+		coefficient = (first.x**2+first.y**2)/(first.x*second.y-second.x*first.y)
+		Ox=P.x-first.y*coefficient
+		Oy=P.y+first.x*coefficient
+		center=Point(Ox,Oy)
+		return CircleOA(center,P)
 	def get_minmax_data(self,deb,fin):
 		return parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) ).get_minmax_data()
 	def xmax(self,deb,fin):
@@ -1630,6 +1654,10 @@ class BoundingBox(object):
 		self.bg.y = enlarge_a_little_low(self.bg.y,Dy,epsilonY)
 		self.hd.x = enlarge_a_little_up(self.hd.x,Dx,epsilonX)
 		self.hd.y = enlarge_a_little_up(self.hd.y,Dy,epsilonY)
+	def pstricks_code(self,pspict=None):
+		rect=Rectangle(self.SO(),self.NE())
+		rect.parameters.color="cyan"
+		return rect.pstricks_code(pspict)
 	def bounding_box(self,pspict):
 		return self
 	def copy(self):

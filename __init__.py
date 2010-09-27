@@ -910,14 +910,13 @@ class pspicture(object):
 	def MarqueAngle(self,A,B,C,label,params):
 		self.add_latex_line("\pstMarkAngle["+params+"]{"+A.psNom+"}{"+B.psNom+"}{"+C.psNom+"}{"+label+"}")
 
-	def TraceGrapheDesphyFunctions(self,liste_gf):
-		for gf in liste_gf.liste_GraphOfAphyFunction:
-			self.DrawGraphOfAphyFunction(gf)
+	#def TraceGrapheDesphyFunctions(self,liste_gf):
+	#	for gf in liste_gf.liste_GraphOfAphyFunction:
+	#		self.DrawGraphOfAphyFunction(gf)
 	def TraceCourbeParametrique(self,f,mx,Mx,params):
 		raise AttributeError,"The method TraceCourbeParametrique is depreciated"
 		self.BB.AddParametricCurve(f,mx,Mx)
 		self.add_latex_line("\parametricplot[%s]{%s}{%s}{%s}" %(params,str(mx),str(Mx),f.pstricks()))
-
 	def DrawGraphs(self,*args):
 		for g in args:
 			self.DrawGraph(g)
@@ -935,6 +934,11 @@ class pspicture(object):
 			print "phystricks error : object %s has no pstricks_code method"%(str(graphe))
 			raise AttributeError
 		try :
+			if graphe.marque:
+				self.record_marks.append(graphe.mark)		
+		except AttributeError :
+			pass
+		try :
 			self.BB.add_graph(graphe,self)
 			self.add_latex_line(graphe.pstricks_code(self),separator)
 		except AttributeError,data:
@@ -950,63 +954,13 @@ class pspicture(object):
 		self.BB.AddBB(grid.BB)
 		for element in grid.drawing():
 			self.DrawGraph(element,"GRID")
-
-	def TracePsCurve(self,listePoints,params,on_BB=False,separator="DEFAULT"):
-		"""
-		By default, we don't take these points into account in the bounding box because this method is almost only 
-		   used to draw wavy lines. It is sufficient to put the line in the BB.
-		"""
-		raise AttributeError,"method TracePsCurve is depreciated"
-		l = []
-		l.append("\pscurve["+params+"]")
-		for p in listePoints :
-			l.append(p.coordinates())
-			if on_BB :
-				self.BB.AddPoint(p)
-		ligne = "".join(l)
-		self.add_latex_line(ligne,separator)
-
-	def DrawWavySegment(self,seg,dx,dy,params,separator):
-		raise AttributeError,"method DrawWavySegment is depreciated"
-		A = seg.I
-		B = seg.F
-		self.BB.AddPoint(seg.I)
-		self.BB.AddPoint(seg.F)
-		self.TracePsCurve(seg.get_wavy_points(dx,dy),params,separator=separator)
-	def TracephyFunctionOndule(self,f,mx,Mx,dx,dy,params):
-		raise AttributeError,"method TracephyFunctionOndule is depreciated"
-		self.BB.AddphyFunction(f,mx,Mx)
-		self.TracePsCurve( f.get_wavy_points(mx,Mx,dx,dy) ,params)
-	def TraceCourbeParametriqueOndule(self,curve,llamI,llamF,dx,dy,params):
-		raise AttributeError,"method TraceCourbeParametriqueOndule is depreciated"
-		self.BB.AddParametricCurve(curve,llamI,llamF)
-		self.TracePsCurve( curve.get_wavy_points(llamI,llamF,dx,dy) ,params)
-		
 	def TraceTriangle(self,tri,params):
+		print "Method TraceTriangle is depreciated"
+		raise AttributeError
 		self.BB.AddPoint(tri.A)
 		self.BB.AddPoint(tri.B)
 		self.BB.AddPoint(tri.C)
 		self.add_latex_line("\pstTriangle["+params+",PointSymbol=none]"+tri.A.coordinates()+"{A}"+tri.B.coordinates()+"{B}"+tri.C.coordinates()+"{C}")
-		
-	def TraceCircle(self,Cer,params):
-		raise AttributeError,"method TraceCircle is depreciated"
-		self.BB.AddCircle(Cer)
-		self.AddPoint(Cer.center)
-		# Besoin d'un point sur le cercle pour le tracer avec \pstCircleOA,"")
-		PsA = Point (Cer.center.x-Cer.rayon,Cer.center.y)		
-		self.AddPoint(PsA)
-		self.add_latex_line("\pstCircleOA["+params+"]{"+Cer.center.psNom+"}{"+PsA.psNom+"}")
-		# La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
-		#self.add_latex_line("\pscircle["+params+"]("+Cer.center.psNom+"){"+str(Cer.rayon)+"}")
-	def TraceArcCircle(self,Cer,angleI,angleF,params):
-		raise AttributeError,"method TraceArcCircle is depreciated"
-		self.BB.AddArcCircle(Cer,angleI,angleF)
-		self.AddPoint(Cer.center)
-		PsA = Cer.get_point(angleI)
-		PsB = Cer.get_point(angleF)
-		self.AddPoint(PsA)
-		self.AddPoint(PsB)
-		self.add_latex_line("\pstArcOAB[%s]{%s}{%s}{%s}"%(params,Cer.center.psNom,PsA.psNom,PsB.psNom))
 	# Les grilles se présentent sous la même forme que les axes : on en a par défaut pspicture.grille qu'on a intérêt à tracer
 	#	avec pspicture.TraceGridDefaut()
 	def TraceGrid(self,grille):
