@@ -120,12 +120,17 @@ class GeometricPoint(object):
 		return Vector(p,Point(p.x+self.x,p.y+self.y))
 	def Vector(self):
 		return Vector(Point(0,0),self)
-
 	def norme(self):
 		return Segment(Point(0,0),self).longueur
 	# La méthode normalize voit le point comme un vecteur partant de zéro, et en donne le vecteur de taille 1
-	def normalize(self):
-		return self*(1/self.norme())
+	def normalize(self,l=None):
+		"""
+		Return a vector of norm <l>. If <l> is not given, take 1.
+		"""
+		unit = self*(1/self.norme())
+		if l :
+			return unit*l
+		return unit
 	def default_graph(self,opt):
 		"""
 		Return a default Graph
@@ -406,15 +411,21 @@ class GeometricVector(object):
 	def angle(self):
 		"""return the angle of the vector (gradient)"""
 		return self.polaires().theta
+	def origin(self,P):
+		"""
+		return a vector (in affine space) whose origin is P.
+		"""
+		return Vector(P,Point(P.x+self.Dx,P.y+self.Dy))
 	def lie(self,p):
-		return Vector(p,Point(p.x+self.Dx,p.y+self.Dy))
+		print "use self.origin instead"
+		raise AttributeError
 	def fix_size(self,l):
 		return self.dilatation(l/self.length())
 	def add_size(self,l):
 		""" return a Vector with added length on its extremity """
 		return self*((self.length()+l) / self.length())	
-	def normalize(self):
-		return self.fix_size(1)
+	def normalize(self,l=1):
+		return self.fix_size(l)
 	def default_associated_graph_class(self):
 		return phystricks.GraphOfAVector
 	def __mul__(self,coef):
@@ -1389,6 +1400,13 @@ class ParametricCurve(object):
 		   The vector is normed to 1.
 		"""
 		return self.get_tangent_vector(llam).orthogonal()
+	def get_principal_normal(self,llam):
+		"""
+		return the principal normal normalised to 1
+		"""
+		initial=self.get_point(llam)
+		c=self.derivative(2).get_point(llam,False)
+		return c.Vector().origin(initial).normalize()
 	def get_tangent_segment(self,llam):
 		"""
 		Return a tangent segment of length 2 centred at the given point. It is essentially two times get_tangent_vector.
