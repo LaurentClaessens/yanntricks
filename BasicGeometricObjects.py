@@ -113,6 +113,22 @@ class GeometricPoint(object):
 			Rx = (self.y*seg.coefficient - seg.coefficient*seg.independant + self.x)/(seg.coefficient**2 + 1)
 			Ry = (self.y*seg.coefficient**2 + self.x*seg.coefficient + seg.independant)/(seg.coefficient**2 + 1)
 			return Point(Rx,Ry)
+	def get_polar_point(self,l,theta):
+		"""
+		Return the point located at distance l and angle theta from point self.
+
+		theta is given in degree.
+		"""
+		alpha=radian(theta)
+		return Point(self.x+l*cos(alpha),self.y+l*sin(alpha))
+	def value_on_line(self,line):
+		"""
+		If f(x,y)=0 is the equation if <line>, return the number f(self.x,self.y).
+
+		<line> has to have an attribute line.equation
+		"""
+		x,y=var('x,y')
+		return line.equation.lhs()(x=self.x,y=self.y)
 	def translate(self,v):
 		"""Do a translation of the point with the vector v"""
 		return self+v
@@ -409,7 +425,7 @@ class GeometricVector(object):
 	def length(self):
 		return self.polaires().r
 	def angle(self):
-		"""return the angle of the vector (gradient)"""
+		"""return the angle of the vector (radian)"""
 		return self.polaires().theta
 	def origin(self,P):
 		"""
@@ -436,6 +452,7 @@ class GeometricVector(object):
 		return self*(-1)
 	def __div__(self,coef):
 		return self * (1/coef)
+
 class GeometricRectangle(object):
 	"""
 	The four points of the square are designated by NW,NE,SW and SE.
@@ -1138,10 +1155,10 @@ class phyFunction(object):
 		""" return a normalized normal vector to the graph of the function at x """
 		ca = self.derivative().eval(x) 
 		return Point(-ca,1).normalize().lie(self.get_point(x))		
-	def get_tangent_vector(self,x):
+	def get_tangent_vector(self,x,advised=False):
 		"""return a tangent vector at the point (x,f(x))"""
 		ca = self.derivative().eval(x)
-		return Point(1,ca).normalize().lie(self.get_point(x))
+		return Point(1,ca).normalize().lie(self.get_point(x,advised))
 	def get_tangent_segment(self,x):
 		v=self.get_tangent_vector(x)
 		mv=-v
@@ -1343,7 +1360,7 @@ class ParametricCurve(object):
 		var('t')
 		return "%s | %s "%(SubstitutionMathPsTricks(repr(self.f1.sage(x=t)).replace("pi","3.1415")),  SubstitutionMathPsTricks(repr(self.f2.sage(x=t)).replace("pi","3.1415")) )
 	def tangent_angle(self,llam):
-		""""Return the angle of the tangent (gradient)"""
+		""""Return the angle of the tangent (radient)"""
 		dx=self.f1.derivative().eval(llam)
 		dy=self.f2.derivative().eval(llam)
 		ca=dy/dx
@@ -1367,44 +1384,42 @@ class ParametricCurve(object):
 		Add the attribute advised_mark_angle which gives the normal exterior angle at the given point.
 		If you want to put a mark on the point P (obtained by get_point), you should consider to write
 		P.put_mark(r,P.advised_mark_angle,text)
-		The so build angle is somewhat "optimal" for a visual point of view.
+		The so build angle is somewhat "optimal" for a visual point of view. The attribute self.get_point(llam).advised_mark_angle is given in degree.
 		"""
 		P = Point( self.f1.eval(llam),self.f2.eval(llam) )
 		if advised :
-			angle_n=degree(self.tangent_angle(llam)+pi/2)	# Here I cannot use the method get_normal_vector due to recursion.
-				# Now we have to decide if we want to return angle or angle+180 (outside or inside).
-				# Changing here must be careful : angle_n and angle_c are in degree (not radian)
-			c=self.derivative(2).get_point(llam,False)
-			try :
-				angle_c=degree(atan(c.y/c.x))
-			except ZeroDivisionError :
-				if c.y>0:
-					angle_c=90
-				else :
-					angle_c=270
-			if abs(angle_n-angle_c)>90 :		# for this test I need the angles to be between 0 and 360
-				P.advised_mark_angle=angle_n
-			else:
-				P.advised_mark_angle=angle_n+180
+				# Now we have to decide if we want to return angle or angle+180 (outside or inside). We select the angle which is on the same side of the curve
+				#											than the second derivative.
+				# Let N be the normal, S the second derivative vector and f(x,y)=0 be the equation of the tangent. We select N if f(N) has the same sign as f(S) and -N if
+				#												f(-N) has the same sign as f(S).
+			normal=self.get_normal_vector(llam,advised=False)
+			tangent=self.get_tangent_vector(llam)
+			second=self.get_second_derivative_vector(llam)
+			if normal.F.value_on_line(tangent.segment) * second.F.value_on_line(tangent.segment) > 0:
+				P.advised_mark_angle=degree(normal.angle())
+			else :
+				P.advised_mark_angle=degree(normal.angle()+pi)
 		return P
-	def get_tangent_vector(self,llam):
+	def get_tangent_vector(self,llam,advised=False):
 		"""
 		returns the tangent vector to the curve for the value of the parameter given by llam.
 		   The vector is normed to 1.
 		"""
-		initial = self.get_point(llam)
+		initial = self.get_point(llam,advised)
 		return Vector( initial,Point(initial.x+self.derivative().f1.eval(llam),initial.y+self.derivative().f2.eval(llam)) ).normalize()
-	def get_normal_vector(self,llam):
+	def get_normal_vector(self,llam,advised=False):
 		"""
 		Return the normal vector to the curve for the value llam of the parameter.
 		   The vector is normed to 1.
 		"""
 		return self.get_tangent_vector(llam).orthogonal()
-	def get_principal_normal(self,llam):
+	def get_second_derivative_vector(self,llam,advised=False):
+		r"""
+		return the second derivative vector normalised to 1.
+
+		Note : if the parametrization is not normal, this is not orthogonal to the tangent. If you want a normal vector, use self.get_normal_vector
 		"""
-		return the principal normal normalised to 1
-		"""
-		initial=self.get_point(llam)
+		initial=self.get_point(llam,advised)
 		c=self.derivative(2).get_point(llam,False)
 		return c.Vector().origin(initial).normalize()
 	def get_tangent_segment(self,llam):
@@ -1464,7 +1479,7 @@ class ParametricCurve(object):
 			ell = (petit+grand)/2
 			while abs(self.arc_length( ll, ell )-dl) > prop_precision:
 				if prop_precision == 0:
-					print "prop_precision is zero. Something sucks. You probably want to launch me in an infinite loop. I'm going to crash now; please contact my labour union."
+					print "prop_precision is zero. Something sucks. You probably want to launch me in an infinite loop."
 					print "dl=",dl
 					raise ValueError
 				ell = (grand+petit)/2
