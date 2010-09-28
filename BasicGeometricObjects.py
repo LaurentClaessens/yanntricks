@@ -1404,7 +1404,7 @@ class ParametricCurve(object):
 		P.put_mark(r,P.advised_mark_angle,text)
 		The so build angle is somewhat "optimal" for a visual point of view. The attribute self.get_point(llam).advised_mark_angle is given in degree.
 		"""
-		P = Point( self.f1(llam),self.f2(llam) )
+		P = Point(self.f1(llam),self.f2(llam))
 		if advised :
 			try :
 				P.advised_mark_angle=self.get_normal_vector(llam).angle()
@@ -1429,20 +1429,22 @@ class ParametricCurve(object):
 
 		If you want the second derivative vector, use self.get_derivative(2). This will not produce a normal vector in general.
 		"""
-		N = self.get_tangent_vector(llam).orthogonal()
+		tangent=self.get_tangent_vector(llam)
+		N = tangent.orthogonal()
 		# The delicate part is to decide if we want to return N or -N. We select the angle which is on the same side of the curve
 		#											than the second derivative.
-		# Let N be the normal, S the second derivative vector and f(x,y)=0 be the equation of the tangent. We select N if f(N) has the same sign as f(S) and -N if
+		# Let S be the second derivative vector and f(x,y)=0 be the equation of the tangent. We select N if f(N) has the same sign as f(S) and -N if
 		#												f(-N) has the same sign as f(S).
-
-			try :
-				tangent=self.get_tangent_vector(llam)
-				second=self.get_second_derivative_vector(llam)
-			if normal.F.value_on_line(tangent.segment) * second.F.value_on_line(tangent.segment) > 0:
-				P.advised_mark_angle=degree(normal.angle())
-			else :
-				P.advised_mark_angle=degree(normal.angle()+pi)
-
+		try :
+			second=self.get_second_derivative_vector(llam)
+		except :
+			print "Something got wrong with the computation of the second derivative. I Return the default normal vector"
+			return N
+		if N.F.value_on_line(tangent.segment) * second.F.value_on_line(tangent.segment) > 0:
+			v=N
+		else :
+				v=-N
+		return v
 	def get_second_derivative_vector(self,llam,advised=False):
 		r"""
 		return the second derivative vector normalised to 1.
@@ -1576,7 +1578,8 @@ class ParametricCurve(object):
 	def graph(self,mx,Mx):
 		return phystricks.GraphOfAParametricCurve(self,mx,Mx)
 	def __call__(self,llam,approx=False):
-		return Point(self.f1(llam,approx),self.f2(llam,approx))
+		return self.get_point(llam,approx)
+		#return Point(self.f1(llam,approx),self.f2(llam,approx))
 	def __str__(self):
 		var('t')
 		a=[]
