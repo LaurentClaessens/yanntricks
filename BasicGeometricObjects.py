@@ -45,6 +45,7 @@ def SubstitutionMathPsTricks(fx):
 	listeSubst.append(["math.log","2.302585092994046*log"])		# Parce que \psplot[]{1}{5}{log(x)} trace le logarithme en base 10
 									# Pour rappel, la formule est log_b(x)=log_a(x)/log_a(b)
 	listeSubst.append(["math.pi","3.141592653589793"])
+	listeSubst.append(["pi","3.141516"])
 	listeSubst.append(["math.cosh","COSH"])
 	listeSubst.append(["math.tan","TAN"])
 	listeSubst.append(["math.sinh","SINH"])
@@ -70,10 +71,10 @@ class ListeNomsPoints(object):
 		s = str(self.donne)
 		return "".join( [chr(int(c)+97) for c in s] )
 
-class PstricksCode(object):
-	def __init__(self):
-		self.principalText=""
-		self.pointsText=""
+#class PstricksCode(object):		# This class seems useless (28 sept 2010)
+#	def __init__(self):
+#		self.principalText=""
+#		self.pointsText=""
 
 def CircleOA(O,A):
 	"""
@@ -223,6 +224,10 @@ class GeometricPoint(object):
 				print "You seem to add myself with something which is not a Point neither a Vector. Sorry, but I'm going to crash."
 				raise
 		return Point(self.x+dx,self.y+dy)
+	def __sub__(self,v):
+		return self+(-v)
+	def __neg__(self):
+		return Point(-self.x,-self.y)
 	def __mul__(self,r):
 		return Point(r*self.x,r*self.y)
 	def __str__(self):
@@ -443,7 +448,14 @@ class GeometricVector(object):
 	def lie(self,p):
 		print "use self.origin instead"
 		raise AttributeError
+	def direction(self):
+		d=self.F-self.I
+		return d
 	def fix_size(self,l):
+		L=self.length()
+		if L == 0:
+			print "This vector has a norm equal to zero"
+			return self
 		return self.dilatation(l/self.length())
 	def add_size(self,l):
 		""" return a Vector with added length on its extremity """
@@ -460,6 +472,8 @@ class GeometricVector(object):
 		return self*(-1)
 	def __div__(self,coef):
 		return self * (1/coef)
+	def __str__(self):
+		return "Vector I=%s F=%s; Direction=%s"%(str(self.I),str(self.F),str(self.direction()))
 
 class GeometricRectangle(object):
 	"""
@@ -941,8 +955,6 @@ class GraphOfAVector(GraphOfAnObject,GeometricVector):
 			P.put_mark(self.mark.dist,self.mark.angle,self.mark.text)
 			a = a + P.pstricks_code(pspict)
 		return a
-	def __str__(self):
-		return "Vecteur I=%s F=%s"%(str(self.I),str(self.F))
 
 class MeasureLength(GraphOfASegment):
 	"""
@@ -1109,6 +1121,8 @@ class phyFunction(object):
 			self._derivative = None
 			self.equation=y==self.sage
 	def eval(self,xe):
+		print "This method is depreciated. Use the syntax f(x) instead of f.eval(x)"
+		raise AttributeError
 		return numerical_approx(self.sageFast(xe))
 	def inverse(self,y):
 		""" returns a list of values x such that f(x)=y """
@@ -1144,20 +1158,20 @@ class phyFunction(object):
 		P=f.get_point(3)
 		P.mark(radius,P.advised_mark_angle,"$P$")
 		"""
-		P = Point(float(x),self.eval(x))
-		ca = self.derivative().eval(x) 
+		P = Point(float(x),self(x))
+		ca = self.derivative()(x) 
 		angle_n=degree(atan(ca)+pi/2)
-		if self.derivative(2).eval(x) > 0:
+		if self.derivative(2)(x) > 0:
 			angle_n=angle_n+180
 		P.advised_mark_angle=angle_n
 		return P
 	def get_normal_vector(self,x):
 		""" return a normalized normal vector to the graph of the function at x """
-		ca = self.derivative().eval(x) 
+		ca = self.derivative()(x) 
 		return Point(-ca,1).normalize().origin(self.get_point(x))		
 	def get_tangent_vector(self,x,advised=False):
 		"""return a tangent vector at the point (x,f(x))"""
-		ca = self.derivative().eval(x)
+		ca = self.derivative()(x)
 		return Point(1,ca).normalize().origin(self.get_point(x,advised))
 	def get_tangent_segment(self,x):
 		v=self.get_tangent_vector(x)
@@ -1168,7 +1182,7 @@ class phyFunction(object):
 		Return the tangent at the given point as a phyFunction
 		"""
 		var('x')
-		ca=self.derivative().eval(x0)
+		ca=self.derivative()(x0)
 		h0=self.get_point(x0).y
 		return phyFunction(h0+ca*(x-x0))
 	def get_normal_point(self,x,dy):
@@ -1205,7 +1219,7 @@ class phyFunction(object):
 		min = self.get_point(mx)
 		max = self.get_point(mx)
 		for ex in list(xsrange(mx,Mx,dx,include_endpoint=true)):
-			ey = self.eval(ex)
+			ey = self(ex)
 			if ey > max.y : max = Point(ex,ey)
 			if ey < min.y : min = Point(ex,ey)
 		self.listeExtrema.extend([min,max])
@@ -1257,7 +1271,7 @@ class phyFunction(object):
 		This should no more be used.
 		"""
 		raise
-		ca = self.derivative().eval(x)
+		ca = self.derivative()(x)
 		A = self.get_point(x)
 		Ad = Point( A.x+1,A.y+ca )
 		Ag = Point( A.x-1,A.y-ca )
@@ -1276,6 +1290,11 @@ class phyFunction(object):
 		if not Mx :
 			Mx=self.Mx
 		return SurfaceUnderFunction(self,mx,Mx)
+	def __call__(self,xe,approx=True):
+		if approx :
+			return numerical_approx(self.sageFast(xe))
+		else :
+			return self.sage(x=xe)
 	def __pow__(self,n):
 		return phyFunction(self.sage**n)
 	def __str__(self):
@@ -1353,16 +1372,15 @@ class ParametricCurve(object):
 			self.f2 = f2
 		else : 
 			self.f2 = phyFunction(f2)
-
 	# Le truc difficile avec le pstricks est que la syntaxe est  "f1(t) | f2(t)" avec t comme variable.
 	#  C'est cela qui demande d'utiliser repr et la syntaxe f(x=t).
 	def pstricks(self,pspict=None):
 		var('t')
 		return "%s | %s "%(SubstitutionMathPsTricks(repr(self.f1.sage(x=t)).replace("pi","3.1415")),  SubstitutionMathPsTricks(repr(self.f2.sage(x=t)).replace("pi","3.1415")) )
 	def tangent_angle(self,llam):
-		""""Return the angle of the tangent (radient)"""
-		dx=self.f1.derivative().eval(llam)
-		dy=self.f2.derivative().eval(llam)
+		""""Return the angle of the tangent (radian)"""
+		dx=self.f1.derivative()(llam)
+		dy=self.f2.derivative()(llam)
 		ca=dy/dx
 		return atan(ca)
 	def derivative(self,n=1):
@@ -1386,24 +1404,13 @@ class ParametricCurve(object):
 		P.put_mark(r,P.advised_mark_angle,text)
 		The so build angle is somewhat "optimal" for a visual point of view. The attribute self.get_point(llam).advised_mark_angle is given in degree.
 		"""
-		P = Point( self.f1.eval(llam),self.f2.eval(llam) )
+		P = Point( self.f1(llam),self.f2(llam) )
 		if advised :
-				# Now we have to decide if we want to return angle or angle+180 (outside or inside). We select the angle which is on the same side of the curve
-				#											than the second derivative.
-				# Let N be the normal, S the second derivative vector and f(x,y)=0 be the equation of the tangent. We select N if f(N) has the same sign as f(S) and -N if
-				#												f(-N) has the same sign as f(S).
 			try :
-				normal=self.get_normal_vector(llam,advised=False)
-				tangent=self.get_tangent_vector(llam)
-				second=self.get_second_derivative_vector(llam)
+				P.advised_mark_angle=self.get_normal_vector(llam).angle()
 			except :
-				print "It seems that something got wrong in the computation of something. Return 0 as angle"
+				print "It seems that something got wrong in the computation of something. Return 0 as angle."
 				P.advised_mark_angle=0
-				return P
-			if normal.F.value_on_line(tangent.segment) * second.F.value_on_line(tangent.segment) > 0:
-				P.advised_mark_angle=degree(normal.angle())
-			else :
-				P.advised_mark_angle=degree(normal.angle()+pi)
 		return P
 	def get_tangent_vector(self,llam,advised=False):
 		"""
@@ -1411,13 +1418,31 @@ class ParametricCurve(object):
 		   The vector is normed to 1.
 		"""
 		initial = self.get_point(llam,advised)
-		return Vector( initial,Point(initial.x+self.derivative().f1.eval(llam),initial.y+self.derivative().f2.eval(llam)) ).normalize()
+		return Vector( initial,Point(initial.x+self.derivative().f1(llam),initial.y+self.derivative().f2(llam)) ).normalize()
 	def get_normal_vector(self,llam,advised=False):
 		"""
-		Return the normal vector to the curve for the value llam of the parameter.
+		Return the outside normal vector to the curve for the value llam of the parameter.
 		   The vector is normed to 1.
+
+		An other way to produce normal vector is to use
+		self.get_tangent_vector(llam).orthogonal()
+
+		If you want the second derivative vector, use self.get_derivative(2). This will not produce a normal vector in general.
 		"""
-		return self.get_tangent_vector(llam).orthogonal()
+		N = self.get_tangent_vector(llam).orthogonal()
+		# The delicate part is to decide if we want to return N or -N. We select the angle which is on the same side of the curve
+		#											than the second derivative.
+		# Let N be the normal, S the second derivative vector and f(x,y)=0 be the equation of the tangent. We select N if f(N) has the same sign as f(S) and -N if
+		#												f(-N) has the same sign as f(S).
+
+			try :
+				tangent=self.get_tangent_vector(llam)
+				second=self.get_second_derivative_vector(llam)
+			if normal.F.value_on_line(tangent.segment) * second.F.value_on_line(tangent.segment) > 0:
+				P.advised_mark_angle=degree(normal.angle())
+			else :
+				P.advised_mark_angle=degree(normal.angle()+pi)
+
 	def get_second_derivative_vector(self,llam,advised=False):
 		r"""
 		return the second derivative vector normalised to 1.
@@ -1481,7 +1506,7 @@ class ParametricCurve(object):
 		ll = mll
 		PIs = []
 		while ll < Mll :
-			v = math.sqrt( (fp.f1.eval(ll))**2+(fp.f2.eval(ll))**2 )
+			v = math.sqrt( (fp.f1(ll))**2+(fp.f2(ll))**2 )
 			if v == 0 :
 				print "v=0"
 				Dll = minDll
@@ -1544,12 +1569,14 @@ class ParametricCurve(object):
 
 		theta is given in degree.
 		"""
-		alpha=Gradient(theta)
+		alpha=radian(theta)
 		g1=cos(alpha)*self.f1+sin(alpha)*self.f2
 		g2=-sin(alpha)*self.f1+cos(alpha)*self.f2
 		return ParametricCurve(g1,g2)
 	def graph(self,mx,Mx):
 		return phystricks.GraphOfAParametricCurve(self,mx,Mx)
+	def __call__(self,llam,approx=False):
+		return Point(self.f1(llam,approx),self.f2(llam,approx))
 	def __str__(self):
 		var('t')
 		a=[]
