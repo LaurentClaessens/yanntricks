@@ -726,12 +726,17 @@ class Separator(object):
 		if self.number > other.number :
 			return 1
 
-class LabelNotFound(object):
-	def __init__(self,message):
-		self.message=message
+#class LabelNotFound(exception):		#(suppressed 29 sept 2010)
+#	def __init__(self,message):
+#		self.message=message
 
 class DrawElement(object):
-	def __init__(self,graphe,separator,*args):
+	# The attributes take_xxx are intended to say what we have to take into account in the element.
+	# If you put take_graph=False, this element will not be drawn, but its bounding boxes are going to be taken into account.
+	def __init__(self,graphe,separator,take_graph=True,take_BB=True,take_math_BB=True,*args):
+		self.take_graphe=take_graph
+		self.take_BB=take_BB
+		self.take_math_BB=take_math_BB
 		self.graphe=graphe
 		self.separator=separator
 		self.st_args=args
@@ -764,16 +769,18 @@ class pspicture(object):
 		self.record_marks=[]
 		self.record_bounding_box=[]
 		self.record_draw_graph=[]
+		self.record_math_BB=[]
+		self.record_BB=[]
 		self.counterDone = False
 		self.newlengthDone = False
 		self.listePoint = []
 		self.xunit = 1
 		self.yunit = 1
 		self.LabelSep = 1
-		self.BB = BoundingBox(Point(1000,1000),Point(-1000,-1000))
-		self.math_BB = BoundingBox(Point(1000,1000),Point(-1000,-1000))
-		self.axes = Axes( Point(0,0), self.math_BB.copy() )
-		self.grid = Grid(self.math_BB.copy())
+		#self.BB = BoundingBox(Point(1000,1000),Point(-1000,-1000))
+		#self.math_BB = BoundingBox(Point(1000,1000),Point(-1000,-1000))
+		self.axes = Axes( Point(0,0),BoundingBox(Point(1000,1000),Point(-1000,-1000))  )
+		self.grid = Grid(self.axes.BB.copy())
 		# We add the "anchors" %GRID and %AXES in order to force the axes and the grid to be written at these places.
 		#    see the functions DrawAxes and DrawGrid and the fact that they use IncrusteLigne
 
@@ -918,10 +925,6 @@ class pspicture(object):
 
 	def MarqueAngle(self,A,B,C,label,params):
 		self.add_latex_line("\pstMarkAngle["+params+"]{"+A.psNom+"}{"+B.psNom+"}{"+C.psNom+"}{"+label+"}")
-
-	#def TraceGrapheDesphyFunctions(self,liste_gf):
-	#	for gf in liste_gf.liste_GraphOfAphyFunction:
-	#		self.DrawGraphOfAphyFunction(gf)
 	def TraceCourbeParametrique(self,f,mx,Mx,params):
 		raise AttributeError,"The method TraceCourbeParametrique is depreciated"
 		self.BB.AddParametricCurve(f,mx,Mx)
@@ -941,6 +944,8 @@ class pspicture(object):
 		"""
 		x=DrawElement(graphe,separator,args)
 		self.record_draw_graph.append(x)
+		self.record_math_BB.append(graphe.math_bounding_box(self))
+		self.record_BB.append(graphe.bounding_box(self))
 	def DrawGrid(self,grid):
 		# The difficulty is that the grid has to be draw first, while most of time it is given last because of the bounding box.
 		self.BB.AddBB(grid.BB)
@@ -978,48 +983,21 @@ class pspicture(object):
 			P.put_mark(axes.DistLabelY,axes.AngleLabelY,axes.LabelY)
 			self.DrawGraph(P)
 		self.BB.AddAxes(axes,self.xunit,self.yunit)
-
 	def DrawDefaultAxes(self):
-		self.math_BB.AddPoint(self.axes.C)
-		self.axes.BB = self.math_BB.copy()
+		self.record_math_BB.append(self.axes.C)
+		self.axes.BB = self.math_BB()
 		epsilonX=float(self.axes.Dx)/2
 		epsilonY=float(self.axes.Dy)/2
 		self.axes.BB.enlarge_a_little(self.axes.Dx,self.axes.Dy,epsilonX,epsilonY)
 		self.DrawAxes(self.axes)
 	def DrawDefaultGrid(self):
-		self.grid.BB = self.math_BB.copy()
+		self.grid.BB = self.math_BB()
 		Dx=self.grid.Dx
 		Dy=self.grid.Dy
 		epsilonX=0
 		epsilonY=0
 		self.grid.BB.enlarge_a_little(Dx,Dy,epsilonX,epsilonY)	# Make the grid end on its "big" subdivision.
 		self.DrawGrid(self.grid)
-	def TraceDynkin(self,Dynkin):
-		Adjacence	= Dynkin.description.Adjacence
-		ronds		= Dynkin.description.ronds
-		remplissure	= Dynkin.description.remplissure
-		distMark	= Dynkin.decoration.distMark
-		angleMark	= Dynkin.decoration.angleMark
-		visMark		= Dynkin.decoration.visMark
-		n = len( Adjacence )
-		for i in range(0,n):
-			for j in range(0,n):
-				if Adjacence[i][j]==1:
-					self.DrawSegment( Segment(ronds[i],ronds[j]),"" )
-				if Adjacence[i][j]==2:
-					self.DrawSegment( Segment(ronds[i],ronds[j]),"doubleline=true" )
-				if Adjacence[i][j]==4:
-					self.DrawSegment( Segment(ronds[i],ronds[j]),"linestyle=dotted" )
-				# Je dois encore faire le cas avec trois lignes, mais je ne sais pas comment faire :-(
-		for i in range(0,n):
-				self.MarkThePoint(ronds[i],distMark[i],angleMark[i],remplissure[i],visMark[i])
-
-	def TraceYoung(self,Y):
-		for i in range(0,len(Y.diagramme)):
-			for j in range(0,len(Y.diagramme[i])):
-				self.TraceRectangle( Rectangle( Point(j,-i),Point(j+1,-i-1) ),"" )
-				self.MarkThePoint( Point(j,-i), 0.5,-45,"none", Y.diagramme[i][j] )
-
 	def add_latex_line(self,ligne,separator_name="DEFAULT"):
 		"""
 		Add a line in the pstricks code. The optional argument <position> is the name of a marker like %GRID, %AXES, ...
@@ -1050,11 +1028,23 @@ class pspicture(object):
 		self.add_latex_line("\end{pspicture}\n","AFTER PSPICTURE")
 		self.add_latex_line(self.pstricks_code,"OTHER STUFF")
 		return DicoSeparatorToCode(self.separator_dico)
+	def math_BB(self):
+		"""
+		Return the current BoundingBox, that is the BoundingBox of the objects that are currently in the list of objects to be drawn.
+		"""
+		bb = BoundingBox(Point(1000,1000),Point(-1000,-1000))
+		for graphe in [x.graphe for x in self.record_draw_graph if x.take_math_BB]:
+			try :
+				bb.AddBB(graphe.math_bounding_box(self))
+			except AttributeError:
+				print "Warning: it seems to me that object %s has no method math_boundig_box"%str(graphe)
+				bb.add_graph(graphe,self)
+		return bb
 	def contenu(self):
 		"""
 		Notice that if the option --eps/pdf is given, this method launches some compilations when creating contenu_eps/pdf 
 		"""
-		for x in self.record_draw_graph:
+		for x in [a for a in self.record_draw_graph if a.take_graph]:
 			graphe=x.graphe
 			separator=x.separator
 			st_args=x.st_args
@@ -1072,11 +1062,6 @@ class pspicture(object):
 			except AttributeError,data:
 				print data
 				raise
-			if "math_bounding_box" in dir(graphe) :
-				self.math_BB.AddBB(graphe.math_bounding_box(self))
-			else :
-				print "Warning: it seems to me that object %s has no method math_boundig_box"%graphe 
-				self.math_BB.add_graph(graphe,self)
 		# Here we are supposed to be sure of the xunit, yunit, so we can compute the BB needed for the points with marks.
 		# For the same reason, all the marks that were asked to be drawn are added now.
 		# Most of the difficulty is when the user use pspicture.dilatation_X and Y with different coefficients.

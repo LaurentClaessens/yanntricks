@@ -1644,12 +1644,6 @@ class BoundingBox(object):
 	def AddSegment(self,seg):
 		self.AddPoint(seg.I)
 		self.AddPoint(seg.F)
-	def AddCircle(self,Cer):
-		raise AttributeError,"method AddCircle is depreciated"
-		self.AddX(Cer.radius.x+Cer.radius)
-		self.AddX(Cer.radius.x-Cer.radius)
-		self.AddY(Cer.radius.y+Cer.radius)
-		self.AddY(Cer.radius.y-Cer.radius)
 	def AddArcCircle(self,Cer,deb,fin):
 		self.AddX(Cer.xmin(deb,fin))
 		self.AddY(Cer.ymin(deb,fin))
@@ -1660,6 +1654,12 @@ class BoundingBox(object):
 		self.AddPoint(bb.hd)
 	def add_graph(self,graphe,pspict):
 		self.AddBB(graphe.bounding_box(pspict))
+	def add_math_graph(self,graphe,pspict):
+		try :
+			self.addBB(graphe.math_bounding_box(pspict))
+		except AttributeError :
+			print "%s seems not to have a method math_bounding_box. I add its bounding_box instead"%str(graphe)
+			self.addBB(graphe.bounding_box(pspict))
 	def AddCircleBB(self,Cer,xunit,yunit):
 		"""
 		Ajoute un cercle déformé par les xunit et yunit; c'est pratique pour agrandir la BB en taille réelle, pour

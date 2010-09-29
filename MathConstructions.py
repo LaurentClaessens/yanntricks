@@ -327,3 +327,33 @@ class DivEuclide(object):
 		self.fichier.file.write(self.code(nombre_etapes))
 		self.fichier.file.close()
 		
+
+
+
+class OldStuff(object):
+	# This is not a class. I put here old methods that were in pspicture.
+	def TraceDynkin(self,Dynkin):
+		Adjacence	= Dynkin.description.Adjacence
+		ronds		= Dynkin.description.ronds
+		remplissure	= Dynkin.description.remplissure
+		distMark	= Dynkin.decoration.distMark
+		angleMark	= Dynkin.decoration.angleMark
+		visMark		= Dynkin.decoration.visMark
+		n = len( Adjacence )
+		for i in range(0,n):
+			for j in range(0,n):
+				if Adjacence[i][j]==1:
+					self.DrawSegment( Segment(ronds[i],ronds[j]),"" )
+				if Adjacence[i][j]==2:
+					self.DrawSegment( Segment(ronds[i],ronds[j]),"doubleline=true" )
+				if Adjacence[i][j]==4:
+					self.DrawSegment( Segment(ronds[i],ronds[j]),"linestyle=dotted" )
+				# Je dois encore faire le cas avec trois lignes, mais je ne sais pas comment faire :-(
+		for i in range(0,n):
+				self.MarkThePoint(ronds[i],distMark[i],angleMark[i],remplissure[i],visMark[i])
+
+	def TraceYoung(self,Y):
+		for i in range(0,len(Y.diagramme)):
+			for j in range(0,len(Y.diagramme[i])):
+				self.TraceRectangle( Rectangle( Point(j,-i),Point(j+1,-i-1) ),"" )
+				self.MarkThePoint( Point(j,-i), 0.5,-45,"none", Y.diagramme[i][j] )
