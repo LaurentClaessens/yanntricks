@@ -302,9 +302,10 @@ class Grid(object):
 		self.border = GraphOfASegment(Segment(Point(0,1),Point(1,1)))	
 		self.border.parameters.color = "gray"
 		self.border.parameters.style = "dotted"
+	def bounding_box(self,pspict=None):		# This method is for the sake of "Special cases aren't special enough to break the rules."
+		return self.BB
 	def add_option(self,opt):
 		self.options.add_option(opt)
-
 	def optionsTrace(self):
 		return self.options.sousOptions(OptionsStyleLigne())
 	def optionsParams(self):
@@ -400,20 +401,18 @@ class Axes(object):
 		self.Dx = 1
 		self.Dy = 1						# Ce sont les valeurs par défaut.
 		self.arrows = "->"
-	
+		self.separator="AXES"
 	# Cette méthode ne devrait pas être utilisée parce qu'il n'y a pas de grille associée à un système d'axes.
 	def AjouteGrid(self):
 		self.IsGrid = 1
 		self.grille.add_option("gridlabels=0")
 		self.grille.add_option("subgriddiv=0")
 		self.grille.add_option("griddots=5")
-
 	def add_label_X(self,dist,angle,marque):
 		self.IsLabelX = 1
 		self.LabelX = marque
 		self.DistLabelX = dist
 		self.AngleLabelX = angle
-
 	def add_label_Y(self,dist,angle,marque):
 		self.IsLabelY = 1
 		self.LabelY = marque
@@ -433,6 +432,8 @@ class Axes(object):
 		self.BB.AddCircle(Cer)
 	def AjusteGraphephyFunction(self,gf):
 		self.AjustephyFunction(gf.f,gf.mx,gf.Mx)
+	def bounding_box(self,pspict=None):
+		return self.BB
 	def code(self):
 		# Ce petit morceau évite d'avoir le bord bas gauche des axes sur une coordonnée entière, ce qui fait en général moche. Cela se fait ici et non dans __init__, parce que les limites des axes peuvent changer, par exemple en ajustant une fonction.
 		# Note qu'il faut donner ses coordonnées à la grille avant, sinon, au moment de s'ajuster sur une valeur entière, la grille perd en fait toute une unité.
@@ -446,8 +447,24 @@ class Axes(object):
 			bgy = self.BB.bg.y +0.01
 		self.BB.bg = Point (bgx,bgy)
 
-		#return "\psaxes["+self.options.code()+"]{"+self.arrows"}"+self.C.coordinates()+self.BB.coordinates()
-		return "\psaxes[%s]{%s}%s%s"%(self.options.code(),self.arrows,self.C.coordinates(),self.BB.coordinates())
+		c=[]
+			
+		if axes.IsLabelX == 1:
+			P = Point(axes.BB.hd.x,0)
+			P.parameters.symbol="none"
+			P.put_mark(axes.DistLabelX,axes.AngleLabelX,axes.LabelX)
+			#self.DrawGraph(P)
+			c.append(P.code())
+		if axes.IsLabelY == 1:
+			P = Point(0,axes.BB.hd.y)
+			P.parameters.symbol="none"
+			P.put_mark(axes.DistLabelY,axes.AngleLabelY,axes.LabelY)
+			#self.DrawGraph(P)
+			c.append(P.code())
+		#self.BB.AddAxes(axes,self.xunit,self.yunit)
+		self.record_draw_graph.append(axes,take_graph=False)
+		c.append("\psaxes[%s]{%s}%s%s"%(self.options.code(),self.arrows,self.C.coordinates(),self.BB.coordinates()))
+		return "\n".join(c)
 
 # Pour demander l'intersection avec une fonction, utiliser la fonction CircleInterphyFunction.
 def CircleInterLigne(Cer,Ligne):
@@ -734,10 +751,10 @@ class DrawElement(object):
 	# The attributes take_xxx are intended to say what we have to take into account in the element.
 	# If you put take_graph=False, this element will not be drawn, but its bounding boxes are going to be taken into account.
 	def __init__(self,graphe,separator,take_graph=True,take_BB=True,take_math_BB=True,*args):
-		self.take_graphe=take_graph
+		self.take_graph=take_graph
 		self.take_BB=take_BB
 		self.take_math_BB=take_math_BB
-		self.graphe=graphe
+		self.graph=graphe
 		self.separator=separator
 		self.st_args=args
 
@@ -777,10 +794,12 @@ class pspicture(object):
 		self.xunit = 1
 		self.yunit = 1
 		self.LabelSep = 1
-		#self.BB = BoundingBox(Point(1000,1000),Point(-1000,-1000))
-		#self.math_BB = BoundingBox(Point(1000,1000),Point(-1000,-1000))
+		self.BB = BoundingBox(Point(1000,1000),Point(-1000,-1000))
+		self.math_BB = BoundingBox(Point(1000,1000),Point(-1000,-1000))		# self.BB and self.math_BB serve to add some objects by hand.
+											# If you need the bounding box, use self.bounding_box()
+											# or self.math_bounding_box()
 		self.axes = Axes( Point(0,0),BoundingBox(Point(1000,1000),Point(-1000,-1000))  )
-		self.grid = Grid(self.axes.BB.copy())
+		self.grid = Grid(self.axes.bounding_box())
 		# We add the "anchors" %GRID and %AXES in order to force the axes and the grid to be written at these places.
 		#    see the functions DrawAxes and DrawGrid and the fact that they use IncrusteLigne
 
@@ -899,8 +918,11 @@ class pspicture(object):
 		self.dilatation_Y(l/self.BB.tailleY())
 	def AddPoint(self,P):
 		self.add_latex_line(self.CodeAddPoint(P))
-	def bounding_box(self,other):
-		return self.BB
+	def bounding_box(self,pspict=None):
+		bb=self.BB
+		for a in [x.graph.bounding_box(self) for x in self.record_draw_graph if x.take_math_BB or x.take_BB] :
+			bb.AddBB(a)
+		return bb
 	def DrawBB(self):
 		self.DrawBoundingBox(self.BB)
 	def DrawBoundingBox(self,obj=None,color="cyan"):
@@ -932,7 +954,7 @@ class pspicture(object):
 	def DrawGraphs(self,*args):
 		for g in args:
 			self.DrawGraph(g)
-	def DrawGraph(self,graphe,separator="DEFAULT",*args):
+	def DrawGraph(self,graphe,separator=None,*args):
 		"""
 		Draw an object of type GraphOfA*.
 
@@ -942,13 +964,18 @@ class pspicture(object):
 		The first one should return a bounding box and the second one should return a valid pstricks code as string. 
 		If the pstricks code is not valid, LaTeX will get angry but no warning are given here.
 		"""
+		if separator==None:
+			try :
+				separator=graphe.separator
+			except AttributeError :
+				separator="DEFAULT"
 		x=DrawElement(graphe,separator,args)
 		self.record_draw_graph.append(x)
-		self.record_math_BB.append(graphe.math_bounding_box(self))
-		self.record_BB.append(graphe.bounding_box(self))
 	def DrawGrid(self,grid):
 		# The difficulty is that the grid has to be draw first, while most of time it is given last because of the bounding box.
-		self.BB.AddBB(grid.BB)
+		#self.BB.AddBB(grid.BB)
+		x=DrawElement(grid,None,take_graph=False)
+		self.record_draw_graph.append(x)
 		for element in grid.drawing():
 			self.DrawGraph(element,"GRID")
 	def TraceTriangle(self,tri,params):
@@ -965,39 +992,22 @@ class pspicture(object):
 	def AjusteGrid(self,grille):
 		grille.BB = self.BB
 	def DrawAxes(self,axes):
-		# C'est important d'ajuster la bounding box de la pspicture et les grilles après ajouter le code parce que axes.BB n'est définit qu'au moment de produire le code, voir l'appel à grille.BB.hd.EntierPlus() dans self.TraceGrid par exemple.
-		try :
-			self.add_latex_line(axes.code(),"AXES")
-		except ValueError :
-			print "Mon self.pstricks_code vaut :"
-			print self.pstricks_code
-			raise
-		if axes.IsLabelX == 1:
-			P = Point(axes.BB.hd.x,0)
-			P.parameters.symbol="none"
-			P.put_mark(axes.DistLabelX,axes.AngleLabelX,axes.LabelX)
-			self.DrawGraph(P)
-		if axes.IsLabelY == 1:
-			P = Point(0,axes.BB.hd.y)
-			P.parameters.symbol="none"
-			P.put_mark(axes.DistLabelY,axes.AngleLabelY,axes.LabelY)
-			self.DrawGraph(P)
-		self.BB.AddAxes(axes,self.xunit,self.yunit)
+		print "This method is depreciated"
+		raise AttributeError
 	def DrawDefaultAxes(self):
-		self.record_math_BB.append(self.axes.C)
-		self.axes.BB = self.math_BB()
+		self.axes.BB = self.math_bounding_box()
 		epsilonX=float(self.axes.Dx)/2
 		epsilonY=float(self.axes.Dy)/2
 		self.axes.BB.enlarge_a_little(self.axes.Dx,self.axes.Dy,epsilonX,epsilonY)
-		self.DrawAxes(self.axes)
+		self.DrawGraph(self.axes)
 	def DrawDefaultGrid(self):
-		self.grid.BB = self.math_BB()
+		self.grid.BB = self.math_bounding_box()
 		Dx=self.grid.Dx
 		Dy=self.grid.Dy
 		epsilonX=0
 		epsilonY=0
 		self.grid.BB.enlarge_a_little(Dx,Dy,epsilonX,epsilonY)	# Make the grid end on its "big" subdivision.
-		self.DrawGrid(self.grid)
+		self.DrawGraph(self.grid)
 	def add_latex_line(self,ligne,separator_name="DEFAULT"):
 		"""
 		Add a line in the pstricks code. The optional argument <position> is the name of a marker like %GRID, %AXES, ...
@@ -1024,16 +1034,16 @@ class pspicture(object):
 		add_latex_line_entete(self)
 		self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+",LabelSep="+str(self.LabelSep)+"}","BEFORE PSPICTURE")
 		self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}\n","BEFORE PSPICTURE")
-		self.add_latex_line("\\begin{pspicture}%s%s\n"%(self.BB.bg.coordinates(),self.BB.hd.coordinates()),"BEGIN PSPICTURE")
+		self.add_latex_line("\\begin{pspicture}%s%s\n"%(self.bounding_box(self).bg.coordinates(),self.bounding_box(self).hd.coordinates()),"BEGIN PSPICTURE")
 		self.add_latex_line("\end{pspicture}\n","AFTER PSPICTURE")
 		self.add_latex_line(self.pstricks_code,"OTHER STUFF")
 		return DicoSeparatorToCode(self.separator_dico)
-	def math_BB(self):
+	def math_bounding_box(self):
 		"""
 		Return the current BoundingBox, that is the BoundingBox of the objects that are currently in the list of objects to be drawn.
 		"""
-		bb = BoundingBox(Point(1000,1000),Point(-1000,-1000))
-		for graphe in [x.graphe for x in self.record_draw_graph if x.take_math_BB]:
+		bb = self.math_BB
+		for graphe in [x.graph for x in self.record_draw_graph if x.take_math_BB]:
 			try :
 				bb.AddBB(graphe.math_bounding_box(self))
 			except AttributeError:
@@ -1045,7 +1055,7 @@ class pspicture(object):
 		Notice that if the option --eps/pdf is given, this method launches some compilations when creating contenu_eps/pdf 
 		"""
 		for x in [a for a in self.record_draw_graph if a.take_graph]:
-			graphe=x.graphe
+			graphe=x.graph
 			separator=x.separator
 			st_args=x.st_args
 			if not "pstricks_code" in dir(graphe):
@@ -1084,8 +1094,8 @@ class pspicture(object):
 			pt2=Point(central_point.x+dimx/2,central_point.y+dimy/2)
 			self.BB.AddPoint(pt1)
 			self.BB.AddPoint(pt2)
-			mark.graphe.record_add_to_bb.append(pt1)
-			mark.graphe.record_add_to_bb.append(pt2)
+			mark.graph.record_add_to_bb.append(pt1)
+			mark.graph.record_add_to_bb.append(pt2)
 		for obj in self.record_bounding_box:
 			bb=obj.bounding_box(self)
 			rect = Rectangle(bb.bg,bb.hd)

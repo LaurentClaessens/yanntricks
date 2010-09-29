@@ -566,14 +566,14 @@ class Waviness(object):
 	Waviness.get_wavy_points		returns a list of points which are disposed around the graph of the curve. These are the points to be linked
 					   by a bezier or something in order to get the wavy graph of the function.
 	"""
-	def __init__(self,graphe,dx,dy):
-		self.graphe = graphe
+	def __init__(self,graph,dx,dy):
+		self.graph = graph
 		self.dx = dx
 		self.dy = dy
-		self.obj = self.graphe.obj
+		self.obj = self.graph.obj
 		if type(self.obj) == phyFunction :
-			self.Mx = self.graphe.Mx
-			self.mx = self.graphe.mx
+			self.Mx = self.graph.Mx
+			self.mx = self.graph.mx
 	def get_wavy_points(self):
 		if type(self.obj) == phyFunction :
 			return self.obj.get_wavy_points(self.mx,self.Mx,self.dx,self.dy)
@@ -581,17 +581,17 @@ class Waviness(object):
 			return self.obj.get_wavy_points(self.dx,self.dy)
 
 class Mark(object):
-	def __init__(self,graphe,dist,angle,text):
+	def __init__(self,graph,dist,angle,text):
 		"""
 		Describe a mark (essentially a P on a point for example)
 
 		This class should not be used by the end-user.
 		"""
-		self.graphe = graphe
+		self.graph = graph
 		self.dist = dist
 		self.angle = angle
 		self.text = text
-	def central_point(self,pspict):
+	def central_point(self,pspict=None):
 		"""
 		return the central point of the mark, that is the point where the mark arrives
 
@@ -599,7 +599,7 @@ class Mark(object):
 		Be carefull : in that case <dist> is given as _absolute value_ and the visual effect will not
 		be affected by dilatations.
 
-		The central point of the mark is computed from self.graphe.mark_point()
+		The central point of the mark is computed from self.graph.mark_point()
 		Thus an object that want to accept a mark has to have a method mark_point that returns the point on which the mark will be put.
 		"""
 		if pspict:
@@ -609,9 +609,9 @@ class Mark(object):
 			theta=radian(self.angle)
 			xP=d*cos(theta)/A
 			yP=d*sin(theta)/B
-			return self.graphe.mark_point().translate(Vector(Point(0,0),Point(xP,yP)))
+			return self.graph.mark_point().translate(Vector(Point(0,0),Point(xP,yP)))
 		else:
-			return self.graphe.mark_point().translate(PolarVector(self.graphe,self.dist,self.angle))
+			return self.graph.mark_point().translate(PolarVector(self.graph,self.dist,self.angle))
 
 class FillParameters(object):
 	"""The filling parameters"""
@@ -699,15 +699,15 @@ class GraphOfAnObject(object):
 		return self.options.DicoOptions[opt]
 	def remove_option(opt):
 		self.options.remove_option(opt)
-	def merge_options(self,graphe):
+	def merge_options(self,graph):
 		"""
 		takes an other object GraphOfA... and merges the options as explained in the documentation
 		of the class Options. That merge takes into account the attributes "color", "style", wavy
 		"""
-		self.parameters = graphe.parameters
-		self.options.merge_options(graphe.options)
-		self.wavy = graphe.wavy
-		self.waviness = graphe.waviness
+		self.parameters = graph.parameters
+		self.options.merge_options(graph.options)
+		self.wavy = graph.wavy
+		self.waviness = graph.waviness
 	def conclude_params(self):
 		self.parameters.add_to_options(self.options)
 	def params(self):
@@ -755,13 +755,13 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
 		self.Mx=Mx
 		self.add_option("fillstyle=vlines,linestyle=none")	
 		self.parameters.color=None				
-	def bounding_box(self,pspict):
+	def bounding_box(self,pspict=None):
 		bb=BoundingBox()
-		bb.add_graph(self.f1,pspict)
-		bb.add_graph(self.f2,pspict)
+		bb.add_graph(self.f1,pspict=None)
+		bb.add_graph(self.f2,pspict=None)
 		bb.AddY(0)
 		return bb
-	def math_bounding_box(self,pspict):
+	def math_bounding_box(self,pspict=None):
 		return self.bounding_box(pspict)
 	def pstricks_code(self,pspict=None):
 		if self.parameters.color :		# Here we give a default color
@@ -827,17 +827,17 @@ class CustomSurface(GraphOfAnObject):
 		GraphOfAnObject.__init__(self,self)
 		self.graphList=list(args)
 		self.add_option("fillstyle=vlines,linestyle=none")	
-	def bounding_box(self,pspict):
+	def bounding_box(self,pspict=None):
 		bb=BoundingBox()
 		for obj in self.graphList :
 			bb.AddBB(obj.bounding_box(pspict))
 		return bb
-	def math_bounding_box(self,pspict):
+	def math_bounding_box(self,pspict=None):
 		bb=BoundingBox()
 		for obj in self.graphList :
 			bb.AddBB(obj.math_bounding_box(pspict))
 		return bb
-	def pstricks_code(self,pspict):
+	def pstricks_code(self,pspict=None):
 		# I cannot add all the obj.pstricks_code() inside the \pscustom because we cannot have \pstGeonode inside \pscustom
 		# Thus I have to hack the code in order to bring all the \pstGeonode before the opening of \pscustom
 		a=[]
@@ -872,7 +872,7 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 		self._advised_mark_angle=None
 	def mark_point(self):
 		return self
-	def bounding_box(self,pspict):
+	def bounding_box(self,pspict=None):
 		"""
 		return the bounding box of the point including its mark
 
@@ -883,20 +883,23 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 		"""
 		# We cannot compute here the size of the bounding box due to the mark because xunit,yunit will only be fixed
 		# after possible use of pspict.Dilatation. See pspicture.contenu
-		Xradius=0.1/pspict.xunit
-		Yradius=0.1/pspict.yunit
+		Xradius=0.1
+		Yradius=0.1
+		try :
+			Xradius=0.1/pspict.xunit
+			Yradius=0.1/pspict.yunit
+		except :
+			print "You should consider to give a pspict as argument. If not the boundig box of  %s could be bad"%str(self)
 		bb = BoundingBox(Point(self.x-Xradius,self.y-Yradius),Point(self.x+Xradius,self.y+Yradius))
 		for P in self.record_add_to_bb:
 			bb.AddPoint(P)
 		return bb
-	def math_bounding_box(self,pspict):
+	def math_bounding_box(self,pspict=None):
 		"""Return a bounding box which include itself and that's it."""
 		return BoundingBox(self.point,self.point)
-	def pstricks_code(self,pspict):
+	def pstricks_code(self,pspict=None):
 		# Because of deformations by xunit,yunit, the mark is drawn later, in in pspict.contenu()
 		return "\pstGeonode["+self.params()+"]"+self.coordinates()+"{"+self.psNom+"}\n"
-	#def __str__(self):
-	#	return "Point (%s,%s)"%(str(self.x),str(self.y))
 
 def Code_Pscurve(listePoints,params):
 	"""
@@ -920,10 +923,10 @@ class GraphOfASegment(GraphOfAnObject,GeometricSegment):
 		self.F = self.seg.F
 	def mark_point(self):
 		return self.F
-	def bounding_box(self,pspicture=1):
+	def bounding_box(self,pspict=None):
 		return BoundingBox(self.I,self.F)		# If you change this, maybe you have to adapt math_bounding_box
-	def math_bounding_box(self,pspicture=1):
-		return self.bounding_box(pspicture)
+	def math_bounding_box(self,pspict=None):
+		return self.bounding_box(pspict)
 	def pstricks_code(self,pspict=None):
 		if self.wavy:
 			waviness = self.waviness
@@ -942,9 +945,9 @@ class GraphOfAVector(GraphOfAnObject,GeometricVector):
 		self.F.psNom = self.vector.F.psNom
 	def mark_point(self):
 		return self.F
-	def bounding_box(self,pspict):
+	def bounding_box(self,pspict=None):
 		return GraphOfASegment(self.segment).bounding_box()
-	def math_bounding_box(self,pspict):
+	def math_bounding_box(self,pspict=None):
 		return GraphOfASegment(self.segment).math_bounding_box(pspict)
 	def pstricks_code(self,pspict=None):
 		a = self.segment.I.create_PSpoint() + self.segment.F.create_PSpoint()
@@ -978,15 +981,15 @@ class MeasureLength(GraphOfASegment):
 		self.mseg=self.seg.translate(self.delta)
 		self.mI=self.mseg.I
 		self.mF=self.mseg.F
-	def math_bounding_box(self,pspict):
+	def math_bounding_box(self,pspict=None):
 		return GraphOfASegment(self.mseg).math_bounding_box()
-	def bounding_box(self,pspict):
+	def bounding_box(self,pspict=None):
 		bb=self.mseg.bounding_box(pspict)
 		if self.marque:
 			C=self.mseg.center()
 			C.marque=self.marque
 			C.mark=self.mark
-			C.mark.graphe=C
+			C.mark.graph=C
 			bb.AddBB(C.bounding_box(pspict))
 		return bb
 	def pstricks_code(self,pspict=None):
@@ -1002,7 +1005,7 @@ class MeasureLength(GraphOfASegment):
 		a.append(vF.pstricks_code())
 		if self.marque :
 			C.mark=self.mark
-			C.mark.graphe=C
+			C.mark.graph=C
 			pspict.record_marks.append(C.mark)
 		return "\n".join(a)
 
@@ -1055,7 +1058,7 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 		C.angleI=radian(angleI)
 		C.angleF=radian(angleF)
 		return C
-	def math_bounding_box(self,pspict):
+	def math_bounding_box(self,pspict=None):
 		return self.bounding_box(pspict)
 	def bounding_box(self,pspict=None):
 		# TODO : take into account self.angleI and self.angleF.
@@ -1151,7 +1154,7 @@ class phyFunction(object):
 			return self.derivative(n-1).derivative()
 	def get_point(self,x,advised=False):		
 		"""
-		Return a point on the graphe of the function with the given x, i.e. it return the point (x,f(x)).
+		Return a point on the graph of the function with the given x, i.e. it return the point (x,f(x)).
 
 		Also set an attribute advised_mark_angle to the point. This angle is the normal exterior to the graph; 
 		visually this is usually the best place to put a mark. Typically you use this as
@@ -1313,14 +1316,14 @@ class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
 		self.conclude_params()
 		self.add_option("plotpoints=%s"%str(self.plotpoints))
 		return self.options.code()
-	def bounding_box(self,pspict):
+	def bounding_box(self,pspict=None):
 		bb = BoundingBox()
 		bb.AddY(self.f.ymin(self.mx,self.Mx))
 		bb.AddY(self.f.ymax(self.mx,self.Mx))
 		bb.AddX(self.mx)
 		bb.AddX(self.Mx)
 		return bb
-	def math_bounding_box(self,pspict):
+	def math_bounding_box(self,pspict=None):
 		return self.bounding_box(pspict)
 	def pstricks_code(self,pspict=None):
 		a = []
@@ -1652,9 +1655,9 @@ class BoundingBox(object):
 	def AddBB(self,bb):
 		self.AddPoint(bb.bg)
 		self.AddPoint(bb.hd)
-	def add_graph(self,graphe,pspict):
+	def add_graph(self,graphe,pspict=None):
 		self.AddBB(graphe.bounding_box(pspict))
-	def add_math_graph(self,graphe,pspict):
+	def add_math_graph(self,graphe,pspict=None):
 		try :
 			self.addBB(graphe.math_bounding_box(pspict))
 		except AttributeError :
@@ -1667,7 +1670,7 @@ class BoundingBox(object):
 		"""
 		self.AddPoint( Point( Cer.center.x-Cer.radius/xunit,Cer.center.y-Cer.radius/yunit ) )
 		self.AddPoint( Point( Cer.center.x+Cer.radius/xunit,Cer.center.y+Cer.radius/yunit ) )
-	def AddAxes(self,axes,xunit,yunit):
+	def AddAxes(self,axes):
 		self.AddPoint( axes.BB.bg )
 		self.AddPoint( axes.BB.hd )
 		#self.AddCircleBB( Circle(axes.C,0.7),xunit,yunit )			# This is to make enter the graduation of the axes.
@@ -1688,7 +1691,7 @@ class BoundingBox(object):
 		rect=Rectangle(self.SO(),self.NE())
 		rect.parameters.color="cyan"
 		return rect.pstricks_code(pspict)
-	def bounding_box(self,pspict):
+	def bounding_box(self,pspict=None):
 		return self
 	def copy(self):
 		return BoundingBox(self.bg.copy(),self.hd.copy())
