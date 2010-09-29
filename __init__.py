@@ -730,6 +730,12 @@ class LabelNotFound(object):
 	def __init__(self,message):
 		self.message=message
 
+class DrawElement(object):
+	def __init__(self,graphe,separator,*args):
+		self.graphe=graphe
+		self.separator=separator
+		self.st_args=args
+
 class pspicture(object):
 	r"""
 	self.pstricks_code contains the pstricks code of what has to be between \begin{pspicture} and \end{pspicture}. This is not the environment itself, neither the definition of xunit, yunit.
@@ -757,6 +763,7 @@ class pspicture(object):
 		self.NomPointLibre = ListeNomsPoints()
 		self.record_marks=[]
 		self.record_bounding_box=[]
+		self.record_draw_graph=[]
 		self.counterDone = False
 		self.newlengthDone = False
 		self.listePoint = []
@@ -932,25 +939,8 @@ class pspicture(object):
 		The first one should return a bounding box and the second one should return a valid pstricks code as string. 
 		If the pstricks code is not valid, LaTeX will get angry but no warning are given here.
 		"""
-		if not "pstricks_code" in dir(graphe):
-			print "phystricks error : object %s has no pstricks_code method"%(str(graphe))
-			raise AttributeError
-		try :
-			if graphe.marque:
-				self.record_marks.append(graphe.mark)		
-		except AttributeError :
-			pass
-		try :
-			self.BB.add_graph(graphe,self)
-			self.add_latex_line(graphe.pstricks_code(self),separator)
-		except AttributeError,data:
-			print data
-			raise
-		if "math_bounding_box" in dir(graphe) :
-			self.math_BB.AddBB(graphe.math_bounding_box(self))
-		else :
-			print "Warning: it seems to me that object %s has no method math_boundig_box"%graphe 
-			self.math_BB.add_graph(graphe,self)
+		x=DrawElement(graphe,separator,args)
+		self.record_draw_graph.append(x)
 	def DrawGrid(self,grid):
 		# The difficulty is that the grid has to be draw first, while most of time it is given last because of the bounding box.
 		self.BB.AddBB(grid.BB)
@@ -1064,6 +1054,29 @@ class pspicture(object):
 		"""
 		Notice that if the option --eps/pdf is given, this method launches some compilations when creating contenu_eps/pdf 
 		"""
+		for x in self.record_draw_graph:
+			graphe=x.graphe
+			separator=x.separator
+			st_args=x.st_args
+			if not "pstricks_code" in dir(graphe):
+				print "phystricks error : object %s has no pstricks_code method"%(str(graphe))
+				raise AttributeError
+			try :
+				if graphe.marque:
+					self.record_marks.append(graphe.mark)		
+			except AttributeError :
+				pass
+			try :
+				self.BB.add_graph(graphe,self)
+				self.add_latex_line(graphe.pstricks_code(self),separator)
+			except AttributeError,data:
+				print data
+				raise
+			if "math_bounding_box" in dir(graphe) :
+				self.math_BB.AddBB(graphe.math_bounding_box(self))
+			else :
+				print "Warning: it seems to me that object %s has no method math_boundig_box"%graphe 
+				self.math_BB.add_graph(graphe,self)
 		# Here we are supposed to be sure of the xunit, yunit, so we can compute the BB needed for the points with marks.
 		# For the same reason, all the marks that were asked to be drawn are added now.
 		# Most of the difficulty is when the user use pspicture.dilatation_X and Y with different coefficients.
