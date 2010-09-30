@@ -687,6 +687,7 @@ class GraphOfAnObject(object):
 		self.add_option("linecolor=black")
 		self.add_option("linestyle=solid")
 		self.record_add_to_bb=[]		 
+		self.separator_name="DEFAULT"
 	def wave(self,dx,dy):					# dx is the wave length and dy is the amplitude
 		self.wavy = True
 		self.waviness = Waviness(self,dx,dy)
@@ -1300,6 +1301,12 @@ class phyFunction(object):
 			return self.sage(x=xe)
 	def __pow__(self,n):
 		return phyFunction(self.sage**n)
+	def __mul__(self,other):
+		try :
+			f=phyFunction(self.sage*other)
+		except TypeError :
+			f=phyFunction(self.sage * other.sage)
+		return f
 	def __str__(self):
 		return str(self.sage)
 
@@ -1350,7 +1357,7 @@ def PolarCurve(f):
 	return the parametric curve (class ParametricCurve) corresponding to the 
 	curve of equation r=f(theta) in polar coordinates.
 	"""
-	var('x')
+	x=var('x')
 	f1=f*cos(x)
 	f2=f*sin(x)
 	return ParametricCurve(f1,f2)
@@ -1608,6 +1615,10 @@ class BoundingBox(object):
 	def __init__(self,dbg=GeometricPoint(0,0),dhd=GeometricPoint(0,0)):
 		self.bg = dbg
 		self.hd = dhd
+	def N(self):
+		return Segment(self.NO(),self.NE()).center()
+	def S(self):
+		return Segment(self.SO(),self.SE()).center()
 	def NO(self):
 		return Point(self.bg.x,self.hd.y)
 	def NE(self):
