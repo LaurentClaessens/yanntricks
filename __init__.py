@@ -786,8 +786,9 @@ class pspicture(object):
 		self.record_marks=[]
 		self.record_bounding_box=[]
 		self.record_draw_graph=[]
-		self.record_math_BB=[]
-		self.record_BB=[]
+		self.record_force_math_bounding_box=[]
+		#self.record_math_BB=[]
+		#self.record_BB=[]
 		self.counterDone = False
 		self.newlengthDone = False
 		self.listePoint = []
@@ -1037,6 +1038,11 @@ class pspicture(object):
 		self.add_latex_line("\end{pspicture}\n","AFTER PSPICTURE")
 		self.add_latex_line(self.pstricks_code,"OTHER STUFF")
 		return DicoSeparatorToCode(self.separator_dico)
+	def force_math_bounding_box(self,g):
+		"""
+		Add an object to the math bounding box of the pspicture. This object will not be drawn, but the axes and the grid will take it into account.
+		"""
+		self.record_force_math_bounding_box.append(g)
 	def math_bounding_box(self):
 		"""
 		Return the current BoundingBox, that is the BoundingBox of the objects that are currently in the list of objects to be drawn.
