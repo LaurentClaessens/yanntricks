@@ -33,6 +33,21 @@ from MathComputations import *
 from SmallComputations import *
 import MathConstructions
 
+def RemoveLastZeros(x,n):
+	"""
+	Take a number <x>, cuts to <n> decimals and then remove the last zeros. 
+
+	Example:
+	RemoveLastZeros(1.000) returns the string "1."
+	"""
+	#http://www.java2s.com/Code/Python/Development/StringformatFivedigitsafterdecimalinfloat.htm
+	s="%.15f"%x
+	t=s[:s.find(".")+n+1]
+	k=len(t)-1
+	while t[k]=="0":
+		k=k-1
+	return t[:k+1]
+
 def _latinize(word):
 	latin = ""
 	for s in word:
@@ -441,12 +456,10 @@ class Axes(object):
 	def pstricks_code(self,pspict=None):
 		# Ce petit morceau évite d'avoir le bord bas gauche des axes sur une coordonnée entière, ce qui fait en général moche. Cela se fait ici et non dans __init__, parce que les limites des axes peuvent changer, par exemple en ajustant une fonction.
 		# Note qu'il faut donner ses coordonnées à la grille avant, sinon, au moment de s'ajuster sur une valeur entière, la grille perd en fait toute une unité.
-		#self.add_option("Dx=%s"%str(self.Dx))
-		#self.add_option("Dy=%s"%str(self.Dy))
-		#http://www.java2s.com/Code/Python/Development/StringformatFivedigitsafterdecimalinfloat.htm
-		self.add_option("Dx=%.3f"%float(self.Dx))
-		self.add_option("Dy=%.3f"%float(self.Dy))
-		print "Dy=%.3f"%float(self.Dy)
+		sDx=RemoveLastZeros(self.Dx,10)
+		sDy=RemoveLastZeros(self.Dy,10)
+		self.add_option("Dx="+sDx)
+		self.add_option("Dy="+sDy)
 		bgx = self.BB.bg.x
 		bgy = self.BB.bg.y
 		if self.BB.bg.x == int(self.BB.bg.x): 
@@ -454,9 +467,7 @@ class Axes(object):
 		if self.BB.bg.y == int(self.BB.bg.y):
 			bgy = self.BB.bg.y +0.01
 		self.BB.bg = Point (bgx,bgy)
-
 		c=[]
-			
 		if self.IsLabelX == 1:
 			P = Point(self.bounding_box().hd.x,0)
 			P.parameters.symbol="none"
@@ -470,8 +481,9 @@ class Axes(object):
 		c.append("\psaxes[%s]{%s}%s%s"%(self.options.code(),self.arrows,self.C.coordinates(),self.bounding_box().coordinates()))
 		return "\n".join(c)
 
-# Pour demander l'intersection avec une fonction, utiliser la fonction CircleInterphyFunction.
 def CircleInterLigne(Cer,Ligne):
+	print "This function is depreciated. Please use Intersection instead"
+	raise
 	if type(Ligne) == phyFunction :
 		soluce = maxima().solve( [Cer.maxima,"y="+Ligne.maxima],["x","y"] )
 	else :
