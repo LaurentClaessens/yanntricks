@@ -37,8 +37,13 @@ def RemoveLastZeros(x,n):
 	"""
 	Take a number <x>, cuts to <n> decimals and then remove the last zeros. 
 
+	If there remain no decimals, also remove the dot.
+
 	Example:
-	RemoveLastZeros(1.000) returns the string "1."
+	RemoveLastZeros(1.000,4) returns the string "1"
+	RemoveLastZeros(3/4,1) returns the string "0.7"
+	RemoveLastZeros(3/4,3) returns the string "0.75"
+	RemoveLastZeros(3/4,4) returns the string "0.75"
 	"""
 	#http://www.java2s.com/Code/Python/Development/StringformatFivedigitsafterdecimalinfloat.htm
 	s="%.15f"%x
@@ -46,7 +51,10 @@ def RemoveLastZeros(x,n):
 	k=len(t)-1
 	while t[k]=="0":
 		k=k-1
-	return t[:k+1]
+	u=t[:k+1]
+	if u[-1]==".":
+		return u[:-1]
+	return u
 
 def _latinize(word):
 	latin = ""
