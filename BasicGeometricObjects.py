@@ -1615,43 +1615,50 @@ class BoundingBox(object):
 	def __init__(self,dbg=GeometricPoint(0,0),dhd=GeometricPoint(0,0)):
 		self.bg = dbg
 		self.hd = dhd
+		self.mx=self.bg.x
+		self.Mx=self.hd.x
+		self.my=self.bg.y
+		self.My=self.hd.y
 	def N(self):
 		return Segment(self.NO(),self.NE()).center()
 	def S(self):
 		return Segment(self.SO(),self.SE()).center()
-	def NO(self):
-		return Point(self.bg.x,self.hd.y)
 	def NE(self):
-		return self.hd
-	def SO(self):
-		return self.bg
+		return Point(self.mx,self.My)
+	def NO(self):
+		return Point(self.Mx,self.My)
 	def SE(self):
-		return Point(self.hd.x,self.bg.y)
+		print "Warning : this was SO before. Please, use SW, and better : do not use"
+		raise
+		return self.bg
+	def SW(self):
+		return Point(self.Mx,self.my)
 	def coordinates(self):
-		return self.bg.coordinates()+self.hd.coordinates()
+		return self.SW().coordinates()+self.NE().coordinates()
 	def Affiche(self):
+		print "This is depreciated"
+		raise
 		return self.coordinates()
 	def tailleX(self):
-		return self.hd.x-self.bg.x
+		return self.Mx-self.mx
 	def tailleY(self):
-		return self.hd.y-self.bg.y
+		return self.My-self.my
 	def extraX_left(self,l):
 		"""Enlarge the bounding box of a length l on the left"""
-		self.bg.x=self.bg.x-l
+		self.mx=self.mx-l
 	def extraX_right(self,l):
 		"""Enlarge the bounding box of a length l on the right"""
-		self.hd.x=self.hd.x+l
+		self.Mx=self.Mx+l
 	def extraX(self,l):
 		"""Enlarge the bounding box of a length l on both sides"""
 		self.extraX_left(l)
 		self.extraX_right(l)
-
 	def AddX(self,x):
-		self.bg = Point( min(self.bg.x,x), self.bg.y )
-		self.hd = Point( max(self.hd.x,x), self.hd.y )
+		self.Mx=max(self.Mx,x)
+		self.mx=min(self.mx,x)
 	def AddY(self,y):
-		self.bg = Point( self.bg.x, min(self.bg.y,y) )
-		self.hd = Point( self.hd.x, max(self.hd.y,y) )
+		self.My=max(self.My,y)
+		self.my=min(self.my,y)
 	def AddPoint(self,P):
 		self.AddX(P.x)
 		self.AddY(P.y)
@@ -1664,8 +1671,10 @@ class BoundingBox(object):
 		self.AddX(Cer.xmax(deb,fin))
 		self.AddY(Cer.ymax(deb,fin))
 	def AddBB(self,bb):
-		self.AddPoint(bb.bg)
-		self.AddPoint(bb.hd)
+		self.AddX(bb.mx)
+		self.AddX(bb.Mx)
+		self.AddY(bb.my)
+		self.AddY(bb.My)
 	def add_graph(self,graphe,pspict=None):
 		self.AddBB(graphe.bounding_box(pspict))
 	def add_math_graph(self,graphe,pspict=None):
@@ -1682,9 +1691,8 @@ class BoundingBox(object):
 		self.AddPoint( Point( Cer.center.x-Cer.radius/xunit,Cer.center.y-Cer.radius/yunit ) )
 		self.AddPoint( Point( Cer.center.x+Cer.radius/xunit,Cer.center.y+Cer.radius/yunit ) )
 	def AddAxes(self,axes):
-		self.AddPoint( axes.BB.bg )
-		self.AddPoint( axes.BB.hd )
-		#self.AddCircleBB( Circle(axes.C,0.7),xunit,yunit )			# This is to make enter the graduation of the axes.
+		self.AddPoint( axes.BB.SW() )
+		self.AddPoint( axes.BB.NE() )
 	def enlarge_a_little(self,Dx,Dy,epsilonX,epsilonY):
 		"""
 		Essentially intended to the bounding box of a axis coordinate. 
@@ -1694,10 +1702,10 @@ class BoundingBox(object):
 			further than the limit of the picture.
 		The aim is to make the axes slightly bigger than their (Dx,Dy) in order the last graduation to be visible.
 		"""
-		self.bg.x = enlarge_a_little_low(self.bg.x,Dx,epsilonX)
-		self.bg.y = enlarge_a_little_low(self.bg.y,Dy,epsilonY)
-		self.hd.x = enlarge_a_little_up(self.hd.x,Dx,epsilonX)
-		self.hd.y = enlarge_a_little_up(self.hd.y,Dy,epsilonY)
+		self.mx = enlarge_a_little_low(self.mx,Dx,epsilonX)
+		self.my = enlarge_a_little_low(self.my,Dy,epsilonY)
+		self.Mx = enlarge_a_little_up(self.Mx,Dx,epsilonX)
+		self.My = enlarge_a_little_up(self.My,Dy,epsilonY)
 	def pstricks_code(self,pspict=None):
 		rect=Rectangle(self.SO(),self.NE())
 		rect.parameters.color="cyan"
@@ -1705,6 +1713,6 @@ class BoundingBox(object):
 	def bounding_box(self,pspict=None):
 		return self
 	def copy(self):
-		return BoundingBox(self.bg.copy(),self.hd.copy())
+		return BoundingBox(self.NS(),self.NE())
 	def __str__(self):
-		return "(%s,%s),(%s,%s)"%tuple(str(x) for x in(self.bg.x,self.bg.y,self.hd.x,self.hd.y))
+		return "(%s,%s),(%s,%s)"%tuple(str(x) for x in(self.mx,self.my,self.Mx,self.My))

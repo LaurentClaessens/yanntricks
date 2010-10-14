@@ -397,17 +397,23 @@ class Grid(object):
 			a.append(element.pstricks_code(pspict))
 		return "\n".join(a)
 
+class AxesUnit(object):
+	def __init__(self,numerical_value,latex_symbol):
+		self.numerical_value=numerical_value
+		self.latex_symbol=latex_symbol
+	def symbol(self,x):
+		return latex(x)+self.latex_symbol
+
 class Axes(object):
 	"""
 	ATTRIBUTS
 		self.grille :		la grille associée
 		self.Dx, self.Dy :	l'intervalle avec laquelle des marques sont faites sur les axes
 	MÉTHODES
-		self.AjouteGrid	Crée une grille avec des options par défaut
-		self.add_label_X	Ajoute un label X (idem pour Y)
-		self.add_option	Ajoute une option. Ceci doit être fait avec la syntaxe pstricks
+		self.AjouteGrid			Crée une grille avec des options par défaut
+		self.add_label_X		Ajoute un label X (idem pour Y)
+		self.add_option			Ajoute une option. Ceci doit être fait avec la syntaxe pstricks
 		self.no_graduation		Pas de marques sur les axes
-		self.AjustephyFunction	Ajuste les axes sur une fonction donnée. Ceci ne devrait pas être utilisé si on utilise la grille par défaut de pspict, cf. TraceGridDefaut
 	"""
 	def __init__(self,C,bb):
 		self.C = C						# Attention : celui-ci a changé, avant c'était O, mais maintenant c'est C.
@@ -431,6 +437,8 @@ class Axes(object):
 		self.separator_name="AXES"
 	# Cette méthode ne devrait pas être utilisée parce qu'il n'y a pas de grille associée à un système d'axes.
 	def AjouteGrid(self):
+		print "This is depreciated"
+		raise
 		self.IsGrid = 1
 		self.grille.add_option("gridlabels=0")
 		self.grille.add_option("subgriddiv=0")
@@ -451,13 +459,15 @@ class Axes(object):
 		self.options.add_option(opt)
 	def no_graduation(self):
 		self.add_option("labels=none,ticks=none")
-
-	# AjustephyFunction sert à élargir les axes pour ajuster une fonction entre deux abcisses.
 	def AjustephyFunction(self,f,mx,Mx):
+		print "This is depreciated"
+		raise
 		self.BB.AddphyFunction(f,mx,Mx)
 	def AjusteCircle(self,Cer):
 		self.BB.AddCircle(Cer)
 	def AjusteGraphephyFunction(self,gf):
+		print "This is depreciated"
+		raise
 		self.AjustephyFunction(gf.f,gf.mx,gf.Mx)
 	def bounding_box(self,pspict=None):
 		return self.BB
@@ -484,7 +494,15 @@ class Axes(object):
 			P.parameters.symbol="none"
 			P.put_mark(self.DistLabelY,self.AngleLabelY,self.LabelY)
 			c.append(P.pstricks_code())
-		c.append("\psaxes[%s]{%s}%s%s"%(self.options.code(),self.arrows,self.C.coordinates(),self.bounding_box().coordinates()))
+		#c.append("\psaxes[%s]{%s}%s%s"%(self.options.code(),self.arrows,self.C.coordinates(),self.bounding_box().coordinates()))
+		h1=Point(self.bounding_box().mx,self.C.y)
+		h2=Point(self.bounding_box().Mx,self.C.y)
+		v1=Point(self.C.x,self.bounding_box().my)
+		v2=Point(self.C.x,self.bounding_box().My)
+		h=Vector(h1,h2)
+		v=Vector(v1,v2)
+		c.append(h.pstricks_code())
+		c.append(v.pstricks_code())
 		return "\n".join(c)
 
 def CircleInterLigne(Cer,Ligne):
@@ -494,16 +512,11 @@ def CircleInterLigne(Cer,Ligne):
 		soluce = maxima().solve( [Cer.maxima,"y="+Ligne.maxima],["x","y"] )
 	else :
 		soluce = maxima().solve( [Cer.maxima,Ligne.maxima],["x","y"] )
-	#print Ligne.maxima
-	#print soluce
 	if len(soluce) == 0:
-		#print "Pas d'intersection"
 		return [Point(0,0),Point(0,0)]
 	if len(soluce) == 1:
-		#print "Une d'intersection"
 		return [Point(soluce[0][0],soluce[0][1]),Point(0,0)]
 	if len(soluce) == 2:
-		#print "Deux d'intersection"
 		return [Point(soluce[0][0],soluce[0][1]),Point(soluce[1][0],soluce[1][1])]
 
 def Intersection(f,g):
