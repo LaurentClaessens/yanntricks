@@ -338,9 +338,9 @@ class Grid(object):
 		a = []
 		# ++++++++++++ Le bord ++++++++ 
 		if self.draw_border :
-			if self.BB.SO().x <> int(self.BB.SO().x):
+			if self.BB.SE().x <> int(self.BB.SE().x):
 				#print "SOx"
-				seg = Segment( self.BB.SO(),self.BB.NO() )
+				seg = Segment( self.BB.SE(),self.BB.NO() )
 				S = GraphOfASegment(seg)
 				S.merge_options(self.border)
 				a.append(S)
@@ -356,28 +356,28 @@ class Grid(object):
 				S = GraphOfASegment(seg)
 				S.merge_options(self.border)
 				a.append(S)
-			if self.BB.SO().y <> int(self.BB.SO().y):
+			if self.BB.SE().y <> int(self.BB.SE().y):
 				#print "SOy"
-				seg = Segment( self.BB.SO(),self.BB.SE() )
+				seg = Segment( self.BB.SE(),self.BB.SE() )
 				S = GraphOfASegment(seg)
 				S.merge_options(self.border)
 				a.append(S)
 		# ++++++++++++ The vertical sub grid ++++++++ 
 		if self.num_subX <> 0 :
-			for x in  SubGridArray(self.BB.SO().x,self.BB.SE().x,self.Dx,self.num_subX) :
-					seg = Segment( Point(x,self.BB.SO().y),Point(x,self.BB.NO().y) )
+			for x in  SubGridArray(self.BB.SE().x,self.BB.SE().x,self.Dx,self.num_subX) :
+					seg = Segment( Point(x,self.BB.SE().y),Point(x,self.BB.NO().y) )
 					S = GraphOfASegment(seg)
 					S.merge_options(self.sub_vertical)
 					a.append(S)
 		# ++++++++++++ The horizontal sub grid ++++++++ 
 		if self.num_subY <> 0 :
-			for y in  SubGridArray(self.BB.SO().y,self.BB.NO().y,self.Dy,self.num_subY) :
-					seg = Segment( Point(self.BB.SO().x,y),Point(self.BB.SE().x,y) )
+			for y in  SubGridArray(self.BB.SE().y,self.BB.NO().y,self.Dy,self.num_subY) :
+					seg = Segment( Point(self.BB.SE().x,y),Point(self.BB.SE().x,y) )
 					S = GraphOfASegment(seg)
 					S.merge_options(self.sub_horizontal)
 					a.append(S)
 		# ++++++++++++ Les lignes horizontales principales ++++++++ 
-		y=MultipleBigger(self.BB.SO().y,self.Dy) 
+		y=MultipleBigger(self.BB.SE().y,self.Dy) 
 		while y <= MultipleLower(self.BB.NO().y,self.Dy)  :
 			seg = Segment( Point(self.BB.bg.x,y),Point(self.BB.hd.x,y) )
 			S = GraphOfASegment(seg)
@@ -385,8 +385,8 @@ class Grid(object):
 			a.append(S)
 			y = y+self.Dy
 		# ++++++++++++ Les lignes verticales principales ++++++++
-		for x in range(MultipleBigger(self.BB.SO().x,self.Dx),MultipleLower(self.BB.SE().x,self.Dx)+1,self.Dx):
-			seg = Segment( Point(x,self.BB.SO().y),Point(x,self.BB.NO().y) )
+		for x in range(MultipleBigger(self.BB.SE().x,self.Dx),MultipleLower(self.BB.SE().x,self.Dx)+1,self.Dx):
+			seg = Segment( Point(x,self.BB.SE().y),Point(x,self.BB.NO().y) )
 			S = GraphOfASegment(seg)
 			S.merge_options(self.main_vertical)
 			a.append(S)
@@ -1101,7 +1101,7 @@ class pspicture(object):
 			try :
 				if graphe.marque:
 					self.record_marks.append(graphe.mark)		
-			except AttributeError :
+			except AttributeError,a :
 				pass
 			try :
 				self.BB.add_graph(graphe,self)

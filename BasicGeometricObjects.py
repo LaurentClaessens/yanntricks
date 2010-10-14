@@ -1628,8 +1628,6 @@ class BoundingBox(object):
 	def NO(self):
 		return Point(self.Mx,self.My)
 	def SE(self):
-		print "Warning : this was SO before. Please, use SW, and better : do not use"
-		raise
 		return self.bg
 	def SW(self):
 		return Point(self.Mx,self.my)
@@ -1707,12 +1705,12 @@ class BoundingBox(object):
 		self.Mx = enlarge_a_little_up(self.Mx,Dx,epsilonX)
 		self.My = enlarge_a_little_up(self.My,Dy,epsilonY)
 	def pstricks_code(self,pspict=None):
-		rect=Rectangle(self.SO(),self.NE())
+		rect=Rectangle(self.SW(),self.NE())
 		rect.parameters.color="cyan"
 		return rect.pstricks_code(pspict)
 	def bounding_box(self,pspict=None):
 		return self
 	def copy(self):
-		return BoundingBox(self.NS(),self.NE())
+		return BoundingBox(self.SW(),self.NE())
 	def __str__(self):
 		return "(%s,%s),(%s,%s)"%tuple(str(x) for x in(self.mx,self.my,self.Mx,self.My))
