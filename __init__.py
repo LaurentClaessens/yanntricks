@@ -379,7 +379,7 @@ class Grid(object):
 		# ++++++++++++ Les lignes horizontales principales ++++++++ 
 		y=MultipleBigger(self.BB.SE().y,self.Dy) 
 		while y <= MultipleLower(self.BB.NO().y,self.Dy)  :
-			seg = Segment( Point(self.BB.bg.x,y),Point(self.BB.hd.x,y) )
+			seg = Segment( Point(self.BB.mx,y),Point(self.BB.Mx,y) )
 			S = GraphOfASegment(seg)
 			S.merge_options(self.main_horizontal)
 			a.append(S)
@@ -398,11 +398,37 @@ class Grid(object):
 		return "\n".join(a)
 
 class AxesUnit(object):
-	def __init__(self,numerical_value,latex_symbol):
+	def __init__(self,numerical_value,latex_symbol=""):
 		self.numerical_value=numerical_value
 		self.latex_symbol=latex_symbol
 	def symbol(self,x):
 		return latex(x)+self.latex_symbol
+	def place_list(self,mx,Mx,frac=1):
+		"""
+		return a tuple of 
+		1. values that are all the integer multiple of <frac>*self.numerical_value between mx and Mx
+		2. the text to be put
+
+		Please give <frac> as litteral real. Recall that python evaluates 1/2 to 0. If you pass 0.5, it will be converted to 1/2 for a nice display.
+		"""
+		try :
+			frac=sage.rings.rational.Rational(frac)		# If the user enter "0.5", it is converted to 1/2
+		except TypeError :
+			pass
+		if frac==0:
+			raise ValueError,"frac is zero in AxesUnit.place_list(). Maybe you are giving the fraction 1/2 instead of 0.5\n Are you trying to push me in an infinite loop ?"
+		l=[]
+		x=mx
+		step=self.numerical_value*frac
+		n=int(float(mx)/step
+		x0=floor(n)*self.numerical_value
+		i=0
+		while x <= Mx:
+			i=i+1
+			x=x0+i*n
+			l.append(x)
+			x=x+frac*self.numerical_value
+		return l
 
 class Axes(object):
 	"""
@@ -416,21 +442,24 @@ class Axes(object):
 		self.no_graduation		Pas de marques sur les axes
 	"""
 	def __init__(self,C,bb):
-		self.C = C						# Attention : celui-ci a changé, avant c'était O, mais maintenant c'est C.
+		self.C = C						
 		self.BB = bb.copy()
-		self.BB.AddPoint( Point(C.x-0.5,C.y-0.7) )		# Celle-ci est pour tenir compte des chiffres écrits sur les axes X et Y
+		#self.BB.AddPoint( Point(C.x-0.5,C.y-0.7) )		# Celle-ci est pour tenir compte des chiffres écrits sur les axes X et Y
+									# No more usefull because they are now numbers put «by hand».
 		self.options = Options()
 		self.grille = Grid(self.BB)
 		self.IsLabelX = False
 		self.IsLabelY = False
-		self.N=Point( self.C.x,self.BB.hd.y )
-		self.S=Point( self.C.x,self.BB.bg.y )
-		self.O=Point( self.BB.bg.x,self.C.y )
-		self.E=Point( self.BB.hd.x,self.C.y )
-		self.SO=Point(self.O.x,self.S.y)
-		self.NE=Point(self.E.x,self.N.y)
-		self.SE=Point(self.E.x,self.S.y)
-		self.NO=Point(self.O.x,self.N.y)
+		self.axes_unitX=AxesUnit(1,"")
+		self.axes_unitY=AxesUnit(1,"")
+		#self.N=Point( self.C.x,self.BB.My )
+		#self.S=Point( self.C.x,self.BB.my )
+		#self.O=Point( self.BB.mx,self.C.y )
+		#self.E=Point( self.BB.Mx,self.C.y )
+		#self.SO=Point(self.O.x,self.S.y)
+		#self.NE=Point(self.E.x,self.N.y)
+		#self.SE=Point(self.E.x,self.S.y)
+		#self.NO=Point(self.O.x,self.N.y)
 		self.Dx = 1
 		self.Dy = 1						# Ce sont les valeurs par défaut.
 		self.arrows = "->"
@@ -476,24 +505,35 @@ class Axes(object):
 		sDy=RemoveLastZeros(self.Dy,10)
 		self.add_option("Dx="+sDx)
 		self.add_option("Dy="+sDy)
-		bgx = self.BB.bg.x
-		bgy = self.BB.bg.y
-		if self.BB.bg.x == int(self.BB.bg.x):		# Avoid having end of axes on an integer coordinate for aesthetic reasons.
-			bgx = self.BB.bg.x + 0.01
-		if self.BB.bg.y == int(self.BB.bg.y):
-			bgy = self.BB.bg.y +0.01
-		self.BB.bg = Point (bgx,bgy)
+		bgx = self.BB.mx
+		bgy = self.BB.my
+		if self.BB.mx == int(self.BB.mx):		# Avoid having end of axes on an integer coordinate for aesthetic reasons.
+			bgx = self.BB.mx + 0.01
+		if self.BB.my == int(self.BB.my):
+			bgy = self.BB.my +0.01
+		self.BB.mx = bgx
+		self.BB.my = bgy
 		c=[]
 		if self.IsLabelX :
-			P = Point(self.bounding_box().hd.x,0)
+			P = Point(self.bounding_box().Mx,0)
 			P.parameters.symbol="none"
 			P.put_mark(self.DistLabelX,self.AngleLabelX,self.LabelX)
 			c.append(P.pstricks_code())
 		if self.IsLabelY :
-			P = Point(0,self.bounding_box().hd.y)
+			P = Point(0,self.bounding_box().My)
 			P.parameters.symbol="none"
 			P.put_mark(self.DistLabelY,self.AngleLabelY,self.LabelY)
 			c.append(P.pstricks_code())
+		for x in self.axes_unitX.place_list(self.bounding_box(pspict).mx,self.bounding_box(pspict).Mx,self.Dx):
+			if x != 0:
+				A=Point(x,0)
+				if self.axes_unitX.latex_symbol != "":
+					text="$%s%s$"%(latex(x),self.axes_unitX.latex_symbol)
+				else :
+					text="$%s$"%(latex(x))
+				A.put_mark(0.3,-90,text)
+				c.append(A.pstricks_code())
+				pspict.record_marks.append(A.mark)
 		#c.append("\psaxes[%s]{%s}%s%s"%(self.options.code(),self.arrows,self.C.coordinates(),self.bounding_box().coordinates()))
 		h1=Point(self.bounding_box().mx,self.C.y)
 		h2=Point(self.bounding_box().Mx,self.C.y)
@@ -1069,7 +1109,7 @@ class pspicture(object):
 		add_latex_line_entete(self)
 		self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+",LabelSep="+str(self.LabelSep)+"}","BEFORE PSPICTURE")
 		self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}\n","BEFORE PSPICTURE")
-		self.add_latex_line("\\begin{pspicture}%s%s\n"%(self.bounding_box(self).bg.coordinates(),self.bounding_box(self).hd.coordinates()),"BEGIN PSPICTURE")
+		self.add_latex_line("\\begin{pspicture}%s%s\n"%(self.bounding_box(self).SW().coordinates(),self.bounding_box(self).NE().coordinates()),"BEGIN PSPICTURE")
 		self.add_latex_line("\end{pspicture}\n","AFTER PSPICTURE")
 		self.add_latex_line(self.pstricks_code,"OTHER STUFF")
 		return DicoSeparatorToCode(self.separator_dico)
@@ -1138,7 +1178,7 @@ class pspicture(object):
 			mark.graph.record_add_to_bb.append(pt2)
 		for obj in self.record_bounding_box:
 			bb=obj.bounding_box(self)
-			rect = Rectangle(bb.bg,bb.hd)
+			rect = Rectangle(bb.SW(),bb.NE())
 			rect.parameters.color="cyan"
 			self.DrawGraph(rect)
 		for sortie in globals_vars.list_exits:

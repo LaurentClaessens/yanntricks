@@ -1628,7 +1628,7 @@ class BoundingBox(object):
 	def NO(self):
 		return Point(self.Mx,self.My)
 	def SE(self):
-		return self.bg
+		return Point(self.Mx,self.my)
 	def SW(self):
 		return Point(self.Mx,self.my)
 	def coordinates(self):
