@@ -415,8 +415,8 @@ class Axes(object):
 		self.BB.AddPoint( Point(C.x-0.5,C.y-0.7) )		# Celle-ci est pour tenir compte des chiffres écrits sur les axes X et Y
 		self.options = Options()
 		self.grille = Grid(self.BB)
-		self.IsLabelX = 0
-		self.IsLabelY = 0
+		self.IsLabelX = False
+		self.IsLabelY = False
 		self.N=Point( self.C.x,self.BB.hd.y )
 		self.S=Point( self.C.x,self.BB.bg.y )
 		self.O=Point( self.BB.bg.x,self.C.y )
@@ -436,12 +436,12 @@ class Axes(object):
 		self.grille.add_option("subgriddiv=0")
 		self.grille.add_option("griddots=5")
 	def add_label_X(self,dist,angle,marque):
-		self.IsLabelX = 1
+		self.IsLabelX = True
 		self.LabelX = marque
 		self.DistLabelX = dist
 		self.AngleLabelX = angle
 	def add_label_Y(self,dist,angle,marque):
-		self.IsLabelY = 1
+		self.IsLabelY = True
 		self.LabelY = marque
 		self.DistLabelY = dist
 		self.AngleLabelY = angle
@@ -462,26 +462,24 @@ class Axes(object):
 	def bounding_box(self,pspict=None):
 		return self.BB
 	def pstricks_code(self,pspict=None):
-		# Ce petit morceau évite d'avoir le bord bas gauche des axes sur une coordonnée entière, ce qui fait en général moche. Cela se fait ici et non dans __init__, parce que les limites des axes peuvent changer, par exemple en ajustant une fonction.
-		# Note qu'il faut donner ses coordonnées à la grille avant, sinon, au moment de s'ajuster sur une valeur entière, la grille perd en fait toute une unité.
 		sDx=RemoveLastZeros(self.Dx,10)
 		sDy=RemoveLastZeros(self.Dy,10)
 		self.add_option("Dx="+sDx)
 		self.add_option("Dy="+sDy)
 		bgx = self.BB.bg.x
 		bgy = self.BB.bg.y
-		if self.BB.bg.x == int(self.BB.bg.x): 
+		if self.BB.bg.x == int(self.BB.bg.x):		# Avoid having end of axes on an integer coordinate for aesthetic reasons.
 			bgx = self.BB.bg.x + 0.01
 		if self.BB.bg.y == int(self.BB.bg.y):
 			bgy = self.BB.bg.y +0.01
 		self.BB.bg = Point (bgx,bgy)
 		c=[]
-		if self.IsLabelX == 1:
+		if self.IsLabelX :
 			P = Point(self.bounding_box().hd.x,0)
 			P.parameters.symbol="none"
 			P.put_mark(self.DistLabelX,self.AngleLabelX,self.LabelX)
 			c.append(P.pstricks_code())
-		if self.IsLabelY == 1:
+		if self.IsLabelY :
 			P = Point(0,self.bounding_box().hd.y)
 			P.parameters.symbol="none"
 			P.put_mark(self.DistLabelY,self.AngleLabelY,self.LabelY)
