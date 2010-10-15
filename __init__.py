@@ -407,7 +407,7 @@ class AxesUnit(object):
 		"""
 		return a tuple of 
 		1. values that are all the integer multiple of <frac>*self.numerical_value between mx and Mx
-		2. the text to be put
+		2. the multiple of the basis unit.
 
 		Please give <frac> as litteral real. Recall that python evaluates 1/2 to 0. If you pass 0.5, it will be converted to 1/2 for a nice display.
 		"""
@@ -419,15 +419,15 @@ class AxesUnit(object):
 			raise ValueError,"frac is zero in AxesUnit.place_list(). Maybe you are giving the fraction 1/2 instead of 0.5\n Are you trying to push me in an infinite loop ?"
 		l=[]
 		x=mx
+		step=var(self.latex_symbol)
 		step=self.numerical_value*frac
-		n=int(float(mx)/step
-		x0=floor(n)*self.numerical_value
-		i=0
-		while x <= Mx:
-			i=i+1
-			x=x0+i*n
-			l.append(x)
-			x=x+frac*self.numerical_value
+		ni=ceil(float(mx)/step)
+		nf=floor(float(Mx)/step)
+		x0=ni*step
+		for i in range(ni,nf+1):
+			if i != 0:
+				x=i*step
+				l.append((x,latex(x)))
 		return l
 
 class Axes(object):
@@ -524,13 +524,14 @@ class Axes(object):
 			P.parameters.symbol="none"
 			P.put_mark(self.DistLabelY,self.AngleLabelY,self.LabelY)
 			c.append(P.pstricks_code())
-		for x in self.axes_unitX.place_list(self.bounding_box(pspict).mx,self.bounding_box(pspict).Mx,self.Dx):
+		for x,symbol in self.axes_unitX.place_list(self.bounding_box(pspict).mx,self.bounding_box(pspict).Mx,self.Dx):
 			if x != 0:
 				A=Point(x,0)
 				if self.axes_unitX.latex_symbol != "":
-					text="$%s%s$"%(latex(x),self.axes_unitX.latex_symbol)
+					text="$%s$"%(symbol)
+					print text
 				else :
-					text="$%s$"%(latex(x))
+					text="$%s$"%(latex(n))
 				A.put_mark(0.3,-90,text)
 				c.append(A.pstricks_code())
 				pspict.record_marks.append(A.mark)
