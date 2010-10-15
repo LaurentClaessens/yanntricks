@@ -33,6 +33,8 @@ from MathComputations import *
 from SmallComputations import *
 import MathConstructions
 
+print "36 Fini les imports"
+
 def RemoveLastZeros(x,n):
 	"""
 	Take a number <x>, cuts to <n> decimals and then remove the last zeros. 
@@ -607,9 +609,11 @@ def Intersection(f,g):
 	return pts
 
 def CircleInterphyFunction(Cer,f):
+	raise AttributeError,"This is depreciated, use LineInterLine instead"		#(15 oct 2010)
 	return CircleInterLigne(Cer,f)
 
 def phyFunctionInterphyFunction(f,g):
+	raise AttributeError,"This is depreciated, use LineInterLine instead"		#(15 oct 2010)
 	var('x,y')
 	eq1 = y == f.sage(x)
 	eq2 = y == g.sage(x)
@@ -622,17 +626,17 @@ def phyFunctionInterphyFunction(f,g):
 
 def LineInterLine(l1,l2):
 	var('x,y')
-	#eq1 = l1.sage_equation()
-	#eq2 = l2.sage_equation()
 	eq1 = l1.equation
 	eq2 = l2.equation
 	soluce = CalculSage().solve_more_vars( [eq1,eq2],x,y )
 	s = soluce[0]
 	return Point( s[0],s[1] )
 	
-def SinglePicture(nom):
+def SinglePicture(name):
 	""" Return the tuple of pspicture and figure that one needs in 90% of the cases """
-	return pspicture(nom), GenericFigure(nom)
+	fig = GenericFigure(name)
+	pspict=fig.new_pspicture(name)
+	return pspict,fig
 
 def GenericFigure(nom):
 	"""
@@ -646,11 +650,10 @@ def GenericFigure(nom):
 	print "\\input{Fig_"+nom+".pstricks}"
 	return  figure(caption,label,nFich)
 
-# Une figure est le but ultime de ce script. Une figure est une suite de subfigures, lesquelles sont destinées à être essentiellement des pspictures.
 class figure(object):
-	def __init__(self,caption,label,fich):
+	def __init__(self,caption,name,fich):
 		self.caption = caption
-		self.label = label
+		self.name = name
 		self.xunit = 1
 		self.yunit = 1
 		self.code = []
@@ -692,21 +695,24 @@ class figure(object):
 
 		The end-user should use this instead of append_subfigure
 		"""
-		ssfig=subfigure(caption,self.label+"ss"+name)
+		ssfig=subfigure(caption,self.name+"ss"+name)
 		ssfig.mother=self
 		self.append_subfigure(ssfig)
 		return ssfig
 	def append_subfigure(self,ssFig):		# This function was initially named AjouteSSfigure
 		self.SSfigures.append(ssFig)
 		suffixe = "ssFig"+str(len(self.SSfigures))
-		if not ssFig.label:
-			ssFig.label=self.label+suffixe
-		ssFig.pspicture.name=self.label+"pspict"+suffixe
-		print r"See also the subfigure \ref{%s}"%ssFig.label
+		if not ssFig.name:
+			ssFig.name=self.name+suffixe
+		#ssFig.pspicture.name=self.name+"pspict"+suffixe	(no more useful 15 oct 2010)
+		print r"See also the subfigure \ref{%s}"%ssFig.name
+	def new_pspicture(self,name):
+		pspict=pspicture("FIG"+self.name+"PICT"+name)
+		pspict.mother=self
+		self.add_pspicture(pspict)
+		return pspict
 	def add_pspicture(self,pspict):
-		self.add_latex_line(pspict.separator_dico["WRITE_AND_LABEL"],"WRITE_AND_LABEL")
-		pspict.separator_dico["WRITE_AND_LABEL"].latex_code=[]
-		self.add_latex_line(pspict.contenu(),"PSPICTURE")			# Here, what is added depends on --eps
+		self.record_pspicture.append(pspict)
 	def add_latex_line(self,ligne,separator_name="DEFAULT"):
 		self.separator_dico[separator_name].add_latex_line(ligne)
 	def IncrusteLigne(self,ligne,n):
@@ -715,17 +721,22 @@ class figure(object):
 	def AjouteCode(self,liste_code):
 		self.code.extend(liste_code)
 	def conclude(self):
+		for pspict in self.record_pspicture :
+			# What has to be written in the WRITE_AND_LABEL part of the picture is written now
+			self.add_latex_line(pspict.separator_dico["WRITE_AND_LABEL"].latex_code,"WRITE_AND_LABEL")
+			pspict.separator_dico["WRITE_AND_LABEL"].latex_code=[]
+			self.add_latex_line(pspict.contenu(),"PSPICTURE")			# Here, what is added depends on --eps
 		if not globals_vars.special_exit() :
 			self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+"}","BEFORE SUBFIGURES")
 		for f in self.SSfigures :
 			self.add_latex_line("\subfigure["+f.caption+"]{%","SUBFIGURES")
-			self.add_latex_line(f.code,"SUBFIGURES")
-			self.add_latex_line("\label{%s}"%f.label,"SUBFIGURES")
+			self.add_latex_line(f.subfigure_code(),"SUBFIGURES")
+			self.add_latex_line("\label{%s}"%f.name,"SUBFIGURES")
 			self.add_latex_line("}					% Closing subfigure "+str(self.SSfigures.index(f)+1),"SUBFIGURES")
 			self.add_latex_line("%","SUBFIGURES")
 		after_all=r"""\caption{%s}\label{%s}
 			\end{figure}
-			"""%(self.caption,self.label)
+			"""%(self.caption,self.name)
 		self.add_latex_line(after_all,"AFTER ALL")
 		self.contenu = DicoSeparatorToCode(self.separator_dico)
 	def write_the_file(self):					# Nous sommes dans la classe figure.
@@ -744,20 +755,27 @@ class subfigure(object):
 	def __init__(self,caption,name=None):
 		self.caption = caption
 		self.name = name		# The label will be given in figure.append_subfigure
-		self.code = []
+		#self.code = []
+		self.record_pspicture=[]
 		self.mother=None
-	def add_latex_line(self,ligne):
-		self.code.append(ligne)
-	def AjouteCode(self,cod):
-		self.code.extend(cod)
+	def add_latex_line(self,ligne,separator_name):
+		self.mother.add_latex_line(ligne,separator_name)
+	#def AjouteCode(self,cod):
+	#	self.code.extend(cod)
 	def new_pspicture(self,name):
 		pspict=pspicture("FIG"+self.name+"PICT"+name)
 		pspict.mother=self
 		self.add_pspicture(pspict)
 		return pspict
+	def subfigure_code(self):
+		a=[]
+		for pspict in self.record_pspicture :
+			a.append(pspict.contenu())
+		return "\n".join(a)
 	def add_pspicture(self,pspicture):
-		self.pspicture=pspicture		# Serves to give a name to the pspicture when the subfigure is included
-		self.add_latex_line(pspicture.contenu())
+		#self.pspicture=pspicture		# Serves to give a name to the pspicture when the subfigure is included
+		self.record_pspicture.append(pspicture)
+		#self.add_latex_line(pspicture.contenu())
 
 class PspictureToOtherOutputs(object):
 	"""
@@ -1117,7 +1135,7 @@ class pspicture(object):
 		if separator_name==None:
 			separator_name="DEFAULT"
 		if separator_name=="WRITE_AND_LABEL" and self.mother :
-			self.mother.add_latex_line(ligne,separator)
+			self.mother.add_latex_line(ligne,separator_name)
 		else :
 			self.separator_dico[separator_name].add_latex_line(ligne)
 	def IncrusteLigne(self,ligne,n):
