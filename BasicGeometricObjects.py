@@ -231,7 +231,7 @@ class GeometricPoint(object):
 	def __mul__(self,r):
 		return Point(r*self.x,r*self.y)
 	def __str__(self):
-		return "Point (%s,%s)"%(str(self.x),str(self.y))
+		return "Point(%s,%s)"%(str(self.x),str(self.y))
 
 class GeometricSegment(object):
 	def __init__(self,A,B):

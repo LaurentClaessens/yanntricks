@@ -527,6 +527,7 @@ class Axes(object):
 		for x,symbol in self.axes_unitX.place_list(self.bounding_box(pspict).mx,self.bounding_box(pspict).Mx,self.Dx):
 			if x != 0:
 				A=Point(x,0)
+				A.psName=A.psName+pspict.name+symbol		# Make the name of the point unique.
 				if self.axes_unitX.latex_symbol != "":
 					text="$%s$"%(symbol)
 					print text
