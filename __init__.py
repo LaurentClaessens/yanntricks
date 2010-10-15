@@ -1023,7 +1023,7 @@ class pspicture(object):
 			self.DrawPoint(P,symbol,params)
 
 	def MarqueAngle(self,A,B,C,label,params):
-		self.add_latex_line("\pstMarkAngle["+params+"]{"+A.psNom+"}{"+B.psNom+"}{"+C.psNom+"}{"+label+"}")
+		self.add_latex_line("\pstMarkAngle["+params+"]{"+A.psName+"}{"+B.psName+"}{"+C.psName+"}{"+label+"}")
 	def TraceCourbeParametrique(self,f,mx,Mx,params):
 		raise AttributeError,"The method TraceCourbeParametrique is depreciated"
 		self.BB.AddParametricCurve(f,mx,Mx)
@@ -1163,10 +1163,10 @@ class pspicture(object):
 			#self.DrawGraph(central_point)
 
 			#TODO : here, use create_PSpoint instead
-			self.add_latex_line("\pstGeonode[]"+central_point.coordinates()+"{"+central_point.psNom+"}")
+			self.add_latex_line("\pstGeonode[]"+central_point.coordinates()+"{"+central_point.psName+"}")
 			R = RealField(round(log(10,2)*7))
 			angle=R(mark.angle)			# If not, pstricks could complain because of a too long number.
-			self.add_latex_line(r"\rput(%s){\rput(%s;%s){%s}}"%(central_point.psNom,"0",0,str(mark.text)))
+			self.add_latex_line(r"\rput(%s){\rput(%s;%s){%s}}"%(central_point.psName,"0",0,str(mark.text)))
 
 			dimx,dimy=self.get_box_size(mark.text)
 			dimx=float(dimx)/self.xunit

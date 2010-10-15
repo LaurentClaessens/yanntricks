@@ -106,7 +106,7 @@ class GeometricPoint(object):
 		if type(y) == str : print "Attention : y est du type str"
 		self.x = float(x)
 		self.y = float(y)
-		self.psNom = GeometricPoint.NomPointLibre.suivant()
+		self.psName = GeometricPoint.NomPointLibre.suivant()
 
 	def projection(self,seg):
 		"""
@@ -177,7 +177,7 @@ class GeometricPoint(object):
 	def create_PSpoint(self):
 		"""Return the code of creating a pstgeonode. The argument is a Point of GraphOfAPoint"""
 		P = Point(self.x,self.y)
-		P.psNom = self.psNom
+		P.psName = self.psName
 		P.parameters.symbol="none"
 		return P.pstricks_code(None)+"\n"
 	def coordinates(self):
@@ -867,7 +867,7 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 	def __init__(self,point):
 		GraphOfAnObject.__init__(self,point)
 		GeometricPoint.__init__(self,point.x,point.y)
-		self.psNom = point.psNom		# The psNom of the point is erased when running Point.__init__
+		self.psName = point.psName		# The psName of the point is erased when running Point.__init__
 		self.point = self.obj
 		self.add_option("PointSymbol=*")
 		self._advised_mark_angle=None
@@ -900,7 +900,7 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 		return BoundingBox(self.point,self.point)
 	def pstricks_code(self,pspict=None):
 		# Because of deformations by xunit,yunit, the mark is drawn later, in in pspict.contenu()
-		return "\pstGeonode["+self.params()+"]"+self.coordinates()+"{"+self.psNom+"}\n"
+		return "\pstGeonode["+self.params()+"]"+self.coordinates()+"{"+self.psName+"}\n"
 
 def Code_Pscurve(listePoints,params):
 	"""
@@ -934,7 +934,7 @@ class GraphOfASegment(GraphOfAnObject,GeometricSegment):
 			return Code_Pscurve(self.get_wavy_points(waviness.dx,waviness.dy),self.params())
 		else:
 			a =  self.I.create_PSpoint() + self.F.create_PSpoint()
-			a=a+"\n\pstLineAB[%s]{%s}{%s}"%(self.params(),self.I.psNom,self.F.psNom)
+			a=a+"\n\pstLineAB[%s]{%s}{%s}"%(self.params(),self.I.psName,self.F.psName)
 			return a
 
 class GraphOfAVector(GraphOfAnObject,GeometricVector):
@@ -942,8 +942,8 @@ class GraphOfAVector(GraphOfAnObject,GeometricVector):
 		GraphOfAnObject.__init__(self,vect)
 		GeometricVector.__init__(self,vect.I,vect.F)
 		self.vector = self.obj
-		self.I.psNom = self.vector.I.psNom
-		self.F.psNom = self.vector.F.psNom
+		self.I.psName = self.vector.I.psName
+		self.F.psName = self.vector.F.psName
 	def mark_point(self):
 		return self.F
 	def bounding_box(self,pspict=None):
@@ -952,7 +952,7 @@ class GraphOfAVector(GraphOfAnObject,GeometricVector):
 		return GraphOfASegment(self.segment).math_bounding_box(pspict)
 	def pstricks_code(self,pspict=None):
 		a = self.segment.I.create_PSpoint() + self.segment.F.create_PSpoint()
-		a = a + "\\ncline["+self.params()+"]{->}{"+self.segment.I.psNom+"}{"+self.segment.F.psNom+"}"
+		a = a + "\\ncline["+self.params()+"]{->}{"+self.segment.I.psName+"}{"+self.segment.F.psName+"}"
 		if self.marque :
 			P = self.F
 			P.parameters.symbol = "none"
@@ -1087,17 +1087,17 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 				PsA = Point(self.center.x-self.radius,self.center.y)		
 				a = PsA.create_PSpoint()
 				a = a + self.center.create_PSpoint()
-				a = a + "\pstCircleOA["+self.params()+"]{"+self.center.psNom+"}{"+PsA.psNom+"}"
+				a = a + "\pstCircleOA["+self.params()+"]{"+self.center.psName+"}{"+PsA.psName+"}"
 				return a
 				# Some remarks :
 				# Besoin d'un point sur le cercle pour le tracer avec \pstCircleOA,"")
 				# La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
-				#self.add_latex_line("\pscircle["+params+"]("+Cer.center.psNom+"){"+str(Cer.radius)+"}")
+				#self.add_latex_line("\pscircle["+params+"]("+Cer.center.psName+"){"+str(Cer.radius)+"}")
 			else :
 				PsA = self.get_point(degree(self.angleI))
 				PsB = self.get_point(degree(self.angleF))
 				a = PsA.create_PSpoint() + PsB.create_PSpoint() + self.center.create_PSpoint()
-				a = a+"\pstArcOAB[%s]{%s}{%s}{%s}"%(self.params(),self.center.psNom,PsA.psNom,PsB.psNom)
+				a = a+"\pstArcOAB[%s]{%s}{%s}{%s}"%(self.params(),self.center.psName,PsA.psName,PsB.psName)
 				return a
 class phyFunction(object):
 	"""
