@@ -421,6 +421,10 @@ class Grid(object):
 
 class AxesUnit(object):
 	def __init__(self,numerical_value,latex_symbol=""):
+		try :
+			numerical_value=sage.rings.rational.Rational(numerical_value)
+		except TypeError :
+			pass
 		self.numerical_value=numerical_value
 		self.latex_symbol=latex_symbol
 	def symbol(self,x):
@@ -441,7 +445,8 @@ class AxesUnit(object):
 			raise ValueError,"frac is zero in AxesUnit.place_list(). Maybe you are giving the fraction 1/2 instead of 0.5\n Are you trying to push me in an infinite loop ?"
 		l=[]
 		x=mx
-		step=var(self.latex_symbol)
+		step=var("step")
+		k=var("TheTag")
 		step=self.numerical_value*frac
 		ni=ceil(float(mx)/step)
 		nf=floor(float(Mx)/step)
@@ -449,7 +454,12 @@ class AxesUnit(object):
 		for i in range(ni,nf+1):
 			if i != 0:
 				x=i*step
-				l.append((x,latex(x)))
+				if self.latex_symbol == "":
+					l.append((x,"$"+latex(x)+"$"))
+				else :
+					pos=(x/self.numerical_value)*k
+					text="$"+latex(pos).replace("\mbox{TheTag}",self.latex_symbol)+"$"	# This risk to be Sage-version dependant.
+					l.append((x,text))
 		return l
 
 class Axes(object):
@@ -553,11 +563,7 @@ class Axes(object):
 				A=Point(x,0)
 				A.parameters.symbol="|"
 				A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(x)))		# Make the name of the point unique.
-				if self.axes_unitX.latex_symbol != "":
-					text="$%s$"%(symbol)
-				else :
-					text="$%s$"%(symbol)
-				A.put_mark(0.4,-90,text)	# TODO : use the size of the box as distance
+				A.put_mark(0.4,-90,symbol)	# TODO : use the size of the box as distance
 				c.append(A.pstricks_code())
 				pspict.record_marks.append(A.mark)
 		for y,symbol in self.axes_unitY.place_list(self.bounding_box(pspict).my,self.bounding_box(pspict).My,self.Dy):
@@ -566,11 +572,7 @@ class Axes(object):
 				A.parameters.symbol="|"
 				A.add_option("dotangle=90")
 				A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(y)))		# Make the name of the point unique.
-				if self.axes_unitY.latex_symbol != "":
-					text="$%s$"%(symbol)
-				else :
-					text="$%s$"%(symbol)
-				A.put_mark(0.4,180,text)	# TODO : use the size of the box as distance
+				A.put_mark(0.4,180,symbol)	# TODO : use the size of the box as distance
 				c.append(A.pstricks_code())
 				pspict.record_marks.append(A.mark)
 		#c.append("\psaxes[%s]{%s}%s%s"%(self.options.code(),self.arrows,self.C.coordinates(),self.bounding_box().coordinates()))
