@@ -745,14 +745,16 @@ class subfigure(object):
 		self.caption = caption
 		self.name = name		# The label will be given in figure.append_subfigure
 		self.code = []
-		#self.pspicture=None
 		self.mother=None
 	def add_latex_line(self,ligne):
 		self.code.append(ligne)
 	def AjouteCode(self,cod):
 		self.code.extend(cod)
 	def new_pspicture(self,name):
-
+		pspict=pspicture("FIG"+self.name+"PICT"+name)
+		pspict.mother=self
+		self.add_pspicture(pspict)
+		return pspict
 	def add_pspicture(self,pspicture):
 		self.pspicture=pspicture		# Serves to give a name to the pspicture when the subfigure is included
 		self.add_latex_line(pspicture.contenu())
@@ -879,6 +881,7 @@ class pspicture(object):
 			When a graph object has a method math_bounding_box, this is the one taken into account in the math_BB here.
 		"""
 		self.name = name		# self.name is used in order to name the intermediate files when one produces the eps file.
+		self.mother=None
 		self.pstricks_code = []
 		self.specific_needs = ""	# See the class PspictureToOtherOutputs
 		self.newwriteDone = False
@@ -1113,7 +1116,10 @@ class pspicture(object):
 		"""
 		if separator_name==None:
 			separator_name="DEFAULT"
-		self.separator_dico[separator_name].add_latex_line(ligne)
+		if separator_name=="WRITE_AND_LABEL" and self.mother :
+			self.mother.add_latex_line(ligne,separator)
+		else :
+			self.separator_dico[separator_name].add_latex_line(ligne)
 	def IncrusteLigne(self,ligne,n):
 		print "The method pspicture.IncrusteLigne() is depreciated."
 		self.pstricks_code[n:n]=ligne+"\n"
