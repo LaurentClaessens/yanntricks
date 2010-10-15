@@ -61,6 +61,28 @@ def _latinize(word):
 	for s in word:
 		if s.lower() in "abcdefghijklmnopqrstuvwxyz" :
 			latin = latin+s
+		if s=="1":
+			latin = latin+"O"
+		if s=="2":
+			latin = latin+"T"
+		if s=="3":
+			latin = latin+"Th"
+		if s=="4":
+			latin = latin+"F"
+		if s=="5":
+			latin = latin+"Fi"
+		if s=="6":
+			latin = latin+"S"
+		if s=="7":
+			latin = latin+"Se"
+		if s=="8":
+			latin = latin+"H"
+		if s=="9":
+			latin = latin+"N"
+		if s=="0":
+			latin = latin+"Z"
+		if s==".":
+			latin = latin+"D"
 	return latin
 
 sysargvzero = sys.argv[0][:]
@@ -527,10 +549,9 @@ class Axes(object):
 		for x,symbol in self.axes_unitX.place_list(self.bounding_box(pspict).mx,self.bounding_box(pspict).Mx,self.Dx):
 			if x != 0:
 				A=Point(x,0)
-				A.psName=A.psName+pspict.name+symbol		# Make the name of the point unique.
+				A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(x)))		# Make the name of the point unique.
 				if self.axes_unitX.latex_symbol != "":
 					text="$%s$"%(symbol)
-					print text
 				else :
 					text="$%s$"%(latex(n))
 				A.put_mark(0.3,-90,text)
@@ -653,13 +674,9 @@ class figure(object):
 
 		self.add_latex_line("\\begin{figure}[ht]","BEFORE SUBFIGURES")
 		self.add_latex_line("\centering","BEFORE SUBFIGURES")
-	# Note qu'il est préférable d'utiliser les commandes de dilatation avant de commencer à composer la pspicture,
-	# parce que la BoundingBox doit aussi tenir compte de choses écrites en taille réelle.
-
 	def new_separator(self,title):
 		self.separator_number = self.separator_number + 1
 		self.separator_dico[title]=Separator(title,self.separator_number)
-
 	def dilatation_X(self,fact):
 		""" Makes a dilatation of the whole picture in the X direction. A contraction if the coefficient is lower than 1 """
 		self.xunit = self.xunit * fact
@@ -669,7 +686,17 @@ class figure(object):
 		""" dilatations or contract that picture in both directions with the same coefficient """
 		self.dilatation_X(fact)
 		self.dilatation_Y(fact)
-	def append_subfigure(self,ssFig):		# This function was initially names AjouteSSfigure
+	def new_subfigure(self,caption,name):
+		"""
+		Create a subfigure in the figure and return it.
+
+		The end-user should use this instead of append_subfigure
+		"""
+		ssfig=subfigure(caption,self.label+"ss"+name)
+		ssfig.mother=self
+		self.append_subfigure(ssfig)
+		return ssfig
+	def append_subfigure(self,ssFig):		# This function was initially named AjouteSSfigure
 		self.SSfigures.append(ssFig)
 		suffixe = "ssFig"+str(len(self.SSfigures))
 		if not ssFig.label:
@@ -714,23 +741,20 @@ class subfigure(object):
 
 	If no label are given, a default one will be set when included in the figure.
 	"""
-	def __init__(self,caption,label=None):
+	def __init__(self,caption,name=None):
 		self.caption = caption
-		self.label = label		# The label will be given in figure.append_subfigure
+		self.name = name		# The label will be given in figure.append_subfigure
 		self.code = []
-		self.pspicture=None
+		#self.pspicture=None
+		self.mother=None
 	def add_latex_line(self,ligne):
 		self.code.append(ligne)
 	def AjouteCode(self,cod):
 		self.code.extend(cod)
+	def new_pspicture(self,name):
+
 	def add_pspicture(self,pspicture):
-		"""
-		When adding the pspicture, an extra length of pspicture.xunit is added on both sides.
-		If not, two pspictures are too closes each other.
-		"""
 		self.pspicture=pspicture		# Serves to give a name to the pspicture when the subfigure is included
-		#xunit=self.pspicture.xunit
-		#self.pspicture.BB.extraX(float(xunit/2))
 		self.add_latex_line(pspicture.contenu())
 
 class PspictureToOtherOutputs(object):

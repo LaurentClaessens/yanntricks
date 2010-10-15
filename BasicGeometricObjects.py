@@ -71,11 +71,6 @@ class ListeNomsPoints(object):
 		s = str(self.donne)
 		return "".join( [chr(int(c)+97) for c in s] )
 
-#class PstricksCode(object):		# This class seems useless (28 sept 2010)
-#	def __init__(self):
-#		self.principalText=""
-#		self.pointsText=""
-
 def CircleOA(O,A):
 	"""
 	From the centrer O and a point A, return the circle.
