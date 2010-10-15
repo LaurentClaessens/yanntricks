@@ -33,8 +33,6 @@ from MathComputations import *
 from SmallComputations import *
 import MathConstructions
 
-print "36 Fini les imports"
-
 def RemoveLastZeros(x,n):
 	"""
 	Take a number <x>, cuts to <n> decimals and then remove the last zeros. 
@@ -657,7 +655,8 @@ class figure(object):
 		self.xunit = 1
 		self.yunit = 1
 		self.code = []
-		self.SSfigures = []
+		self.record_subfigure = []
+		self.record_pspicture=[]
 		self.fichier = Fichier (fich)
 
 		# The order of declaration is important, because it is recorded in the Separator.number attribute.
@@ -700,8 +699,8 @@ class figure(object):
 		self.append_subfigure(ssfig)
 		return ssfig
 	def append_subfigure(self,ssFig):		# This function was initially named AjouteSSfigure
-		self.SSfigures.append(ssFig)
-		suffixe = "ssFig"+str(len(self.SSfigures))
+		self.record_subfigure.append(ssFig)
+		suffixe = "ssFig"+str(len(self.record_subfigure))
 		if not ssFig.name:
 			ssFig.name=self.name+suffixe
 		#ssFig.pspicture.name=self.name+"pspict"+suffixe	(no more useful 15 oct 2010)
@@ -726,13 +725,15 @@ class figure(object):
 			self.add_latex_line(pspict.separator_dico["WRITE_AND_LABEL"].latex_code,"WRITE_AND_LABEL")
 			pspict.separator_dico["WRITE_AND_LABEL"].latex_code=[]
 			self.add_latex_line(pspict.contenu(),"PSPICTURE")			# Here, what is added depends on --eps
+			print "728 J'ai ajouté"
+			print "729",pspict.contenu()
 		if not globals_vars.special_exit() :
 			self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+"}","BEFORE SUBFIGURES")
-		for f in self.SSfigures :
+		for f in self.record_subfigure :
 			self.add_latex_line("\subfigure["+f.caption+"]{%","SUBFIGURES")
 			self.add_latex_line(f.subfigure_code(),"SUBFIGURES")
 			self.add_latex_line("\label{%s}"%f.name,"SUBFIGURES")
-			self.add_latex_line("}					% Closing subfigure "+str(self.SSfigures.index(f)+1),"SUBFIGURES")
+			self.add_latex_line("}					% Closing subfigure "+str(self.record_subfigure.index(f)+1),"SUBFIGURES")
 			self.add_latex_line("%","SUBFIGURES")
 		after_all=r"""\caption{%s}\label{%s}
 			\end{figure}
