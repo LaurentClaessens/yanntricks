@@ -522,6 +522,8 @@ class Axes(object):
 		self.AjustephyFunction(gf.f,gf.mx,gf.Mx)
 	def bounding_box(self,pspict=None):
 		return self.BB
+	def math_bounding_box(self,pspict=None):
+		return self.bounding_box(pspict)
 	def pstricks_code(self,pspict=None):
 		sDx=RemoveLastZeros(self.Dx,10)
 		sDy=RemoveLastZeros(self.Dy,10)
@@ -549,12 +551,26 @@ class Axes(object):
 		for x,symbol in self.axes_unitX.place_list(self.bounding_box(pspict).mx,self.bounding_box(pspict).Mx,self.Dx):
 			if x != 0:
 				A=Point(x,0)
+				A.parameters.symbol="|"
 				A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(x)))		# Make the name of the point unique.
 				if self.axes_unitX.latex_symbol != "":
 					text="$%s$"%(symbol)
 				else :
-					text="$%s$"%(latex(n))
-				A.put_mark(0.3,-90,text)
+					text="$%s$"%(symbol)
+				A.put_mark(0.4,-90,text)	# TODO : use the size of the box as distance
+				c.append(A.pstricks_code())
+				pspict.record_marks.append(A.mark)
+		for y,symbol in self.axes_unitY.place_list(self.bounding_box(pspict).my,self.bounding_box(pspict).My,self.Dy):
+			if y != 0:
+				A=Point(0,y)
+				A.parameters.symbol="|"
+				A.add_option("dotangle=90")
+				A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(y)))		# Make the name of the point unique.
+				if self.axes_unitY.latex_symbol != "":
+					text="$%s$"%(symbol)
+				else :
+					text="$%s$"%(symbol)
+				A.put_mark(0.4,180,text)	# TODO : use the size of the box as distance
 				c.append(A.pstricks_code())
 				pspict.record_marks.append(A.mark)
 		#c.append("\psaxes[%s]{%s}%s%s"%(self.options.code(),self.arrows,self.C.coordinates(),self.bounding_box().coordinates()))
@@ -725,8 +741,6 @@ class figure(object):
 			self.add_latex_line(pspict.separator_dico["WRITE_AND_LABEL"].latex_code,"WRITE_AND_LABEL")
 			pspict.separator_dico["WRITE_AND_LABEL"].latex_code=[]
 			self.add_latex_line(pspict.contenu(),"PSPICTURE")			# Here, what is added depends on --eps
-			print "728 J'ai ajouté"
-			print "729",pspict.contenu()
 		if not globals_vars.special_exit() :
 			self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+"}","BEFORE SUBFIGURES")
 		for f in self.record_subfigure :
