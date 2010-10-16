@@ -360,21 +360,22 @@ class Grid(object):
 		a = []
 		# ++++++++++++ Le bord ++++++++ 
 		if self.draw_border :
+			# Right border
 			if self.BB.SE().x <> int(self.BB.SE().x):
-				#print "SOx"
 				seg = Segment( self.BB.SE(),self.BB.NO() )
+				S = GraphOfASegment(seg)
+				S.merge_options(self.border)
+				a.append(S)
+			# Left border
+			if self.BB.NW().x <> int(self.BB.NE().x):
+				#print "NEx"
+				seg = Segment( self.BB.NE(),self.BB.SE() )
 				S = GraphOfASegment(seg)
 				S.merge_options(self.border)
 				a.append(S)
 			if self.BB.NW().y <> int(self.BB.NE().y):
 				#print "NEy"
 				seg = Segment( self.BB.NO(),self.BB.NE() )
-				S = GraphOfASegment(seg)
-				S.merge_options(self.border)
-				a.append(S)
-			if self.BB.NW().x <> int(self.BB.NE().x):
-				#print "NEx"
-				seg = Segment( self.BB.NE(),self.BB.SE() )
 				S = GraphOfASegment(seg)
 				S.merge_options(self.border)
 				a.append(S)
