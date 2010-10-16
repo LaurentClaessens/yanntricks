@@ -366,13 +366,13 @@ class Grid(object):
 				S = GraphOfASegment(seg)
 				S.merge_options(self.border)
 				a.append(S)
-			if self.BB.NE().y <> int(self.BB.NE().y):
+			if self.BB.NW().y <> int(self.BB.NE().y):
 				#print "NEy"
 				seg = Segment( self.BB.NO(),self.BB.NE() )
 				S = GraphOfASegment(seg)
 				S.merge_options(self.border)
 				a.append(S)
-			if self.BB.NE().x <> int(self.BB.NE().x):
+			if self.BB.NW().x <> int(self.BB.NE().x):
 				#print "NEx"
 				seg = Segment( self.BB.NE(),self.BB.SE() )
 				S = GraphOfASegment(seg)
@@ -386,7 +386,10 @@ class Grid(object):
 				a.append(S)
 		# ++++++++++++ The vertical sub grid ++++++++ 
 		if self.num_subX <> 0 :
-			for x in  SubGridArray(self.BB.SE().x,self.BB.SE().x,self.Dx,self.num_subX) :
+			print "389 SW",self.BB.SW()
+			print "390 SE",self.BB.SE()
+			for x in  SubGridArray(self.BB.SW().x,self.BB.SE().x,self.Dx,self.num_subX) :
+					print "390",x
 					seg = Segment( Point(x,self.BB.SE().y),Point(x,self.BB.NO().y) )
 					S = GraphOfASegment(seg)
 					S.merge_options(self.sub_vertical)

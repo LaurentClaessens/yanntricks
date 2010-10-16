@@ -1623,7 +1623,7 @@ class BoundingBox(object):
 	def NO(self):
 		return Point(self.Mx,self.My)
 	def SE(self):
-		return Point(self.Mx,self.my)
+		return Point(self.mx,self.my)
 	def SW(self):
 		return Point(self.Mx,self.my)
 	def coordinates(self):
