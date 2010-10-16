@@ -358,62 +358,53 @@ class Grid(object):
 		return self.options.sousOptions(["Dx","Dy"])
 	def drawing(self):
 		a = []
-		# ++++++++++++ Le bord ++++++++ 
+		# ++++++++++++ Border ++++++++ 
+		self.draw_border = False		# 16 oct 2010 : no more border
 		if self.draw_border :
 			# Right border
-			if self.BB.SE().x <> int(self.BB.SE().x):
-				seg = Segment( self.BB.SE(),self.BB.NO() )
-				S = GraphOfASegment(seg)
+			if self.BB.Mx <> int(self.BB.Mx):
+				print "right"
+				S = self.BB.east_segment()
 				S.merge_options(self.border)
 				a.append(S)
 			# Left border
-			if self.BB.NW().x <> int(self.BB.NE().x):
-				#print "NEx"
-				seg = Segment( self.BB.NE(),self.BB.SE() )
-				S = GraphOfASegment(seg)
+			if self.BB.mx <> int(self.BB.mx):
+				print "left"
+				S = self.BB.west_segment()
 				S.merge_options(self.border)
 				a.append(S)
-			if self.BB.NW().y <> int(self.BB.NE().y):
-				#print "NEy"
-				seg = Segment( self.BB.NO(),self.BB.NE() )
-				S = GraphOfASegment(seg)
+			# Upper border
+			if self.BB.My <> int(self.BB.My):
+				print "upper"
+				S = self.BB.north_segment()
 				S.merge_options(self.border)
 				a.append(S)
-			if self.BB.SE().y <> int(self.BB.SE().y):
-				#print "SOy"
-				seg = Segment( self.BB.SE(),self.BB.SE() )
-				S = GraphOfASegment(seg)
+			# Lower border
+			if self.BB.my <> int(self.BB.my):
+				print "lower"
+				s = self.BB.south_segment()
 				S.merge_options(self.border)
 				a.append(S)
 		# ++++++++++++ The vertical sub grid ++++++++ 
 		if self.num_subX <> 0 :
-			print "389 SW",self.BB.SW()
-			print "390 SE",self.BB.SE()
-			for x in  SubGridArray(self.BB.SW().x,self.BB.SE().x,self.Dx,self.num_subX) :
-					print "390",x
-					seg = Segment( Point(x,self.BB.SE().y),Point(x,self.BB.NO().y) )
-					S = GraphOfASegment(seg)
+			for x in  SubGridArray(self.BB.mx,self.BB.Mx,self.Dx,self.num_subX) :
+					S = Segment( Point(x,self.BB.my),Point(x,self.BB.My) )
 					S.merge_options(self.sub_vertical)
 					a.append(S)
 		# ++++++++++++ The horizontal sub grid ++++++++ 
 		if self.num_subY <> 0 :
-			for y in  SubGridArray(self.BB.SE().y,self.BB.NO().y,self.Dy,self.num_subY) :
-					seg = Segment( Point(self.BB.SE().x,y),Point(self.BB.SE().x,y) )
-					S = GraphOfASegment(seg)
+			for y in  SubGridArray(self.BB.my,self.BB.My,self.Dy,self.num_subY) :
+					S = Segment( Point(self.BB.mx,y),Point(self.BB.Mx,y) )
 					S.merge_options(self.sub_horizontal)
 					a.append(S)
-		# ++++++++++++ Les lignes horizontales principales ++++++++ 
-		y=MultipleBigger(self.BB.SE().y,self.Dy) 
-		while y <= MultipleLower(self.BB.NO().y,self.Dy)  :
-			seg = Segment( Point(self.BB.mx,y),Point(self.BB.Mx,y) )
-			S = GraphOfASegment(seg)
-			S.merge_options(self.main_horizontal)
+		# ++++++++++++ Principal horizontal lines ++++++++ 
+		for y in range(MultipleBigger(self.BB.my,self.Dy),MultipleLower(self.BB.My,self.Dy)+1,self.Dy):
+			S = Segment( Point(self.BB.mx,y),Point(self.BB.Mx,y) )
+			S.merge_options(self.main_vertical)
 			a.append(S)
-			y = y+self.Dy
-		# ++++++++++++ Les lignes verticales principales ++++++++
-		for x in range(MultipleBigger(self.BB.SE().x,self.Dx),MultipleLower(self.BB.SE().x,self.Dx)+1,self.Dx):
-			seg = Segment( Point(x,self.BB.SE().y),Point(x,self.BB.NO().y) )
-			S = GraphOfASegment(seg)
+		# ++++++++++++ Principal vertical lines ++++++++
+		for x in range(MultipleBigger(self.BB.mx,self.Dx),MultipleLower(self.BB.Mx,self.Dx)+1,self.Dx):
+			S = Segment( Point(x,self.BB.my),Point(x,self.BB.My) )
 			S.merge_options(self.main_vertical)
 			a.append(S)
 		return a

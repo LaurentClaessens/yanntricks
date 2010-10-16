@@ -1615,17 +1615,25 @@ class BoundingBox(object):
 		self.my=self.bg.y
 		self.My=self.hd.y
 	def N(self):
-		return Segment(self.NO(),self.NE()).center()
+		return Segment(self.NW(),self.NE()).center()
 	def S(self):
-		return Segment(self.SO(),self.SE()).center()
+		return Segment(self.SW(),self.SE()).center()
 	def NE(self):
-		return Point(self.mx,self.My)
-	def NO(self):
 		return Point(self.Mx,self.My)
+	def NW(self):
+		return Point(self.mx,self.My)
 	def SE(self):
-		return Point(self.mx,self.my)
+		return Point(self.Mx,self.My)
 	def SW(self):
-		return Point(self.Mx,self.my)
+		return Point(self.mx,self.my)
+	def north_segment(self):
+		return Segment( self.NW(),self.NE() )
+	def south_segment(self):
+		return Segment( self.SW(),self.SE() )
+	def east_segment(self):
+		return Segment( self.NE(),self.SE() )
+	def west_segment(self):
+		return Segment( self.NW(),self.SW() )
 	def coordinates(self):
 		return self.SW().coordinates()+self.NE().coordinates()
 	def Affiche(self):
