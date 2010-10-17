@@ -29,25 +29,6 @@ import math
 from sage.all import *
 
 
-
-# Cette définition retourne l'entier plus grand ou égal à un nombre donné
-#def CalculEntierPlus(x):
-#	t = x
-#	if t <> int(t):
-#		if t < 0 : t = t-1
-#		t = int(t) + 1
-#		return float(t)
-#	else : return x
-
-# Cette définition retourne l'entier plus grand ou égal à un nombre donné
-#def CalculEntierMoins(x):
-#	t = x
-#	if t <> int(t):
-#		if t < 0 : t = t-1
-#		t = int(t)
-#		return float(t)
-#	else : return x
-
 def MultipleLower(x,m):
 	""" return the biggest multiple of m which is lower or equal to x"""
 	return floor(x/m)*m

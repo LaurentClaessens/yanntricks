@@ -183,7 +183,6 @@ class CalculPolynome(object):
 	def reponse(self,ligne):
 		ligne = self.calcul(ligne,"|grep o2")
 		return ligne.replace("(%o2)","").replace(" ","")
-
 	def DivPoly(self,P,Q):
 		l = []
 		m = []
@@ -194,14 +193,12 @@ class CalculPolynome(object):
 			ligne =  "coeff( expand( divide("+P.maxima+","+Q.maxima+"))[2],x,"+str(Q.deg-i)+")"
 			m.append( int (self.reponse(ligne) ) )
 		return [Polynome(l),Polynome(m)]
-
 	def MulPoly(self,P,Q):
 		l = []
 		for i in range(0,P.deg+Q.deg+1):
 			ligne = "coeff( expand(("+P.maxima+")*("+Q.maxima+")),x,"+str(P.deg+Q.deg-i)+")"    
 			l.append( int( self.reponse(ligne)) )
 		return Polynome(l)
-
 	# Cette méthode est exactement la même que la précédente, au changement près de * vers +. Y'a peut être moyen de factoriser ...
 	def sub_polynome(self,P,Q):
 		l = []
@@ -222,6 +219,25 @@ def SubGridArray(mx,Mx,Dx,num_subX):
 		if (tentative < Mx) and (tentative > mx) and ( i % num_subX <> 0 ) :
 			valeurs.append(tentative)
 	return valeurs
+
+def MainGridArray(mx,Mx,Dx):
+		"""
+		Return the list of number that are
+		1. integer multiple of Dy
+		2. between mx and Mx
+
+		If mx=-1.4 and Dx=0.5, the first element of the list will be -1
+		If mx=-1.5 and Dx=0.5, the first element of the list will be -1.5
+		"""
+		#for y in range(MultipleBigger(self.BB.my,self.Dy),MultipleLower(self.BB.My,self.Dy)+1,self.Dy):
+		a=[]
+		m = floor(mx/Dx - 1)
+		M = ceil(Mx/Dx + 1)
+		for i in range(m,M):
+			tentative=i*Dx
+			if (tentative >= mx) and (tentative <= Mx):
+				a.append(tentative)
+		return a
 
 class Triangle(object):
 	def __init__(self,A,B,C):
@@ -382,7 +398,7 @@ class Grid(object):
 			# Lower border
 			if self.BB.my <> int(self.BB.my):
 				print "lower"
-				s = self.BB.south_segment()
+				S = self.BB.south_segment()
 				S.merge_options(self.border)
 				a.append(S)
 		# ++++++++++++ The vertical sub grid ++++++++ 
@@ -398,12 +414,12 @@ class Grid(object):
 					S.merge_options(self.sub_horizontal)
 					a.append(S)
 		# ++++++++++++ Principal horizontal lines ++++++++ 
-		for y in range(MultipleBigger(self.BB.my,self.Dy),MultipleLower(self.BB.My,self.Dy)+1,self.Dy):
+		for y in MainGridArray(self.BB.my,self.BB.My,self.Dy) :
 			S = Segment( Point(self.BB.mx,y),Point(self.BB.Mx,y) )
 			S.merge_options(self.main_vertical)
 			a.append(S)
 		# ++++++++++++ Principal vertical lines ++++++++
-		for x in range(MultipleBigger(self.BB.mx,self.Dx),MultipleLower(self.BB.Mx,self.Dx)+1,self.Dx):
+		for x in MainGridArray(self.BB.mx,self.BB.Mx,self.Dx) :
 			S = Segment( Point(x,self.BB.my),Point(x,self.BB.My) )
 			S.merge_options(self.main_vertical)
 			a.append(S)
@@ -1116,8 +1132,6 @@ class pspicture(object):
 		self.BB.AddPoint(tri.B)
 		self.BB.AddPoint(tri.C)
 		self.add_latex_line("\pstTriangle["+params+",PointSymbol=none]"+tri.A.coordinates()+"{A}"+tri.B.coordinates()+"{B}"+tri.C.coordinates()+"{C}")
-	# Les grilles se présentent sous la même forme que les axes : on en a par défaut pspicture.grille qu'on a intérêt à tracer
-	#	avec pspicture.TraceGridDefaut()
 	def TraceGrid(self,grille):
 		self.IncrusteLigne(grille.code(self),2)
 	def AjusteGrid(self,grille):
@@ -1138,7 +1152,7 @@ class pspicture(object):
 		Dy=self.grid.Dy
 		epsilonX=0
 		epsilonY=0
-		self.grid.BB.enlarge_a_little(Dx,Dy,epsilonX,epsilonY)	# Make the grid end on its "big" subdivision.
+		self.grid.BB.enlarge_a_little(Dx,Dy,epsilonX,epsilonY)	# Make the grid end on its "big" subdivisions.
 		self.DrawGraph(self.grid)
 	def add_latex_line(self,ligne,separator_name="DEFAULT"):
 		"""
@@ -1184,7 +1198,7 @@ class pspicture(object):
 		"""
 		Return the current BoundingBox, that is the BoundingBox of the objects that are currently in the list of objects to be drawn.
 		"""
-		bb = self.math_BB
+		bb = self.math_BB.copy()
 		for graphe in [x.graph for x in self.record_draw_graph if x.take_math_BB]:
 			try :
 				bb.AddBB(graphe.math_bounding_box(self))
@@ -1196,21 +1210,21 @@ class pspicture(object):
 		"""
 		Notice that if the option --eps/pdf is given, this method launches some compilations when creating contenu_eps/pdf 
 		"""
-		a=self.record_draw_graph[0]
+		#a=self.record_draw_graph[0]
 		for x in [a for a in self.record_draw_graph if a.take_graph]:
-			graphe=x.graph
+			graph=x.graph
 			separator_name=x.separator_name
 			try :
-				if graphe.marque:
-					self.record_marks.append(graphe.mark)		
-			except AttributeError,a :
+				if graph.marque:
+					self.record_marks.append(graph.mark)		
+			except AttributeError :
 				pass
 			try :
-				self.BB.add_graph(graphe,self)
-				self.add_latex_line(graphe.pstricks_code(self),separator_name)
+				self.BB.add_graph(graph,self)
+				self.add_latex_line(graph.pstricks_code(self),separator_name)
 			except AttributeError,data:
-				if not "pstricks_code" in dir(graphe):
-					print "phystricks error : object %s has no pstricks_code method"%(str(graphe))
+				if not "pstricks_code" in dir(graph):
+					print "phystricks error : object %s has no pstricks_code method"%(str(graph))
 					raise AttributeError
 				print data
 				raise

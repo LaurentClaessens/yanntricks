@@ -1037,12 +1037,15 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
 		return "\psframe["+self.params()+"]"+self.rectangle.SW.coordinates()+self.rectangle.NE.coordinates()
 
 class GraphOfACircle(GraphOfAnObject,GeometricCircle):
+	"""
+	The attributes self.angleI and self.angleF are in degree since they are to be used by the end-user.
+	"""
 	def __init__(self,circle):
 		GraphOfAnObject.__init__(self,circle)
 		GeometricCircle.__init__(self,circle.center,circle.radius)
 		self.circle = self.obj
 		self.angleI = 0
-		self.angleF = 2*pi		# By default, the circle is drawn between the angles 0 and 2pi.
+		self.angleF = 360		# By default, the circle is drawn between the angles 0 and 2pi.
 	def copy(self):
 		"""Return a copy of the object as geometrical object: the style and drawing parameters are not copied."""
 		return Circle(self.center,self.radius)
@@ -1051,8 +1054,8 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 		Return a graph of the circle between the two angles given in degree
 		"""
 		C=GraphOfACircle(self.circle)
-		C.angleI=radian(angleI)
-		C.angleF=radian(angleF)
+		C.angleI=angleI
+		C.angleF=angleF
 		return C
 	def math_bounding_box(self,pspict=None):
 		return self.bounding_box(pspict)
@@ -1069,6 +1072,8 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 			waviness = self.waviness
 			alphaI = radian(self.angleI)
 			alphaF = radian(self.angleF)
+			if self.angleF==360:		# Because the function radian simplifies modulo 2pi.
+				alphaF=2*pi
 			curve = self.parametric_curve()
 			G = phystricks.GraphOfAParametricCurve(curve,alphaI,alphaF)
 			G.add_option(self.params())
@@ -1078,7 +1083,7 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 			G.wave(waviness.dx,waviness.dy)
 			return G.pstricks_code()
 		else:
-			if self.angleI == 0 and self.angleF == 2*pi :
+			if self.angleI == 0 and self.angleF == 360 :
 				PsA = Point(self.center.x-self.radius,self.center.y)		
 				a = PsA.create_PSpoint()
 				a = a + self.center.create_PSpoint()
@@ -1089,8 +1094,8 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 				# La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
 				#self.add_latex_line("\pscircle["+params+"]("+Cer.center.psName+"){"+str(Cer.radius)+"}")
 			else :
-				PsA = self.get_point(degree(self.angleI))
-				PsB = self.get_point(degree(self.angleF))
+				PsA = self.get_point(self.angleI)
+				PsB = self.get_point(self.angleF)
 				a = PsA.create_PSpoint() + PsB.create_PSpoint() + self.center.create_PSpoint()
 				a = a+"\pstArcOAB[%s]{%s}{%s}{%s}"%(self.params(),self.center.psName,PsA.psName,PsB.psName)
 				return a
