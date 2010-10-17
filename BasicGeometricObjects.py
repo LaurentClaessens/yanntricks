@@ -620,10 +620,6 @@ class Mark(object):
 		pt2=Point(central_point.x+dimx/2,central_point.y+dimy/2)
 		bb.AddPoint(pt1)
 		bb.AddPoint(pt2)
-		print "623"
-		print pt1
-		print pt2
-		print bb
 		#self.graph.record_add_to_bb.append(pt1)
 		#self.graph.record_add_to_bb.append(pt2)
 		return bb
