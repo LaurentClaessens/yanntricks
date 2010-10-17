@@ -560,12 +560,12 @@ class Axes(object):
 		self.BB.my = bgy
 		c=[]
 		if self.IsLabelX :
-			P = Point(self.bounding_box().Mx,0)
+			P = Point(self.bounding_box(pspict).Mx,0)
 			P.parameters.symbol="none"
 			P.put_mark(self.DistLabelX,self.AngleLabelX,self.LabelX)
 			c.append(P.pstricks_code())
 		if self.IsLabelY :
-			P = Point(0,self.bounding_box().My)
+			P = Point(0,self.bounding_box(pspict).My)
 			P.parameters.symbol="none"
 			P.put_mark(self.DistLabelY,self.AngleLabelY,self.LabelY)
 			c.append(P.pstricks_code())
@@ -587,10 +587,10 @@ class Axes(object):
 				c.append(A.pstricks_code())
 				pspict.record_marks.append(A.mark)
 		#c.append("\psaxes[%s]{%s}%s%s"%(self.options.code(),self.arrows,self.C.coordinates(),self.bounding_box().coordinates()))
-		h1=Point(self.bounding_box().mx,self.C.y)
-		h2=Point(self.bounding_box().Mx,self.C.y)
-		v1=Point(self.C.x,self.bounding_box().my)
-		v2=Point(self.C.x,self.bounding_box().My)
+		h1=Point(self.bounding_box(pspict).mx,self.C.y)
+		h2=Point(self.bounding_box(pspict).Mx,self.C.y)
+		v1=Point(self.C.x,self.bounding_box(pspict).my)
+		v2=Point(self.C.x,self.bounding_box(pspict).My)
 		h=Vector(h1,h2)
 		v=Vector(v1,v2)
 		c.append(h.pstricks_code())
@@ -1072,6 +1072,7 @@ class pspicture(object):
 	def bounding_box(self,pspict=None):
 		bb=self.BB
 		for a in [x.graph.bounding_box(self) for x in self.record_draw_graph if x.take_math_BB or x.take_BB] :
+			print "1075",type(a)
 			bb.AddBB(a)
 		return bb
 	def DrawBB(self):
@@ -1210,13 +1211,30 @@ class pspicture(object):
 		"""
 		Notice that if the option --eps/pdf is given, this method launches some compilations when creating contenu_eps/pdf 
 		"""
-		#a=self.record_draw_graph[0]
-		for x in [a for a in self.record_draw_graph if a.take_graph]:
+		# Here we are supposed to be sure of the xunit, yunit, so we can compute the BB's needed for the points with marks.
+		# For the same reason, all the marks that were asked to be drawn are added now.
+		# Most of the difficulty is when the user use pspicture.dilatation_X and Y with different coefficients.
+		list_to_be_drawn = [a.graph for a in self.record_draw_graph if a.take_graph]
+		for graph in list_to_be_drawn:
+			print "1219",type(graph)
+			try :
+				if graph.draw_bounding_box:
+					print "1219",type(graph)
+					bb=graph.bounding_box(self)
+					rect = Rectangle(bb.SW(),bb.NE())
+					rect.parameters.color="cyan"
+					self.DrawGraph(rect)
+			except AttributeError :
+				pass
+		list_to_be_drawn = [a for a in self.record_draw_graph if a.take_graph]
+		for x in list_to_be_drawn:
 			graph=x.graph
 			separator_name=x.separator_name
 			try :
 				if graph.marque:
-					self.record_marks.append(graph.mark)		
+					self.BB.AddBB(graph.mark.bounding_box(self))
+					print "1235",graph.mark.pstricks_code(self)
+					self.add_latex_line(graph.mark.pstricks_code(self))
 			except AttributeError :
 				pass
 			try :
@@ -1225,38 +1243,7 @@ class pspicture(object):
 			except AttributeError,data:
 				if not "pstricks_code" in dir(graph):
 					print "phystricks error : object %s has no pstricks_code method"%(str(graph))
-					raise AttributeError
-				print data
-				raise
-		# Here we are supposed to be sure of the xunit, yunit, so we can compute the BB needed for the points with marks.
-		# For the same reason, all the marks that were asked to be drawn are added now.
-		# Most of the difficulty is when the user use pspicture.dilatation_X and Y with different coefficients.
-		# TODO : everything is extremely buggy.
-		for mark in self.record_marks:
-			central_point = mark.central_point(self)
-			#central_point.parameters.color="red"
-			#self.DrawGraph(central_point)
-
-			#TODO : here, use create_PSpoint instead
-			self.add_latex_line("\pstGeonode[]"+central_point.coordinates()+"{"+central_point.psName+"}")
-			R = RealField(round(log(10,2)*7))
-			angle=R(mark.angle)			# If not, pstricks could complain because of a too long number.
-			self.add_latex_line(r"\rput(%s){\rput(%s;%s){%s}}"%(central_point.psName,"0",0,str(mark.text)))
-
-			dimx,dimy=self.get_box_size(mark.text)
-			dimx=float(dimx)/self.xunit
-			dimy=float(dimy)/self.yunit
-			pt1=Point(central_point.x-dimx/2,central_point.y-dimy/2) 
-			pt2=Point(central_point.x+dimx/2,central_point.y+dimy/2)
-			self.BB.AddPoint(pt1)
-			self.BB.AddPoint(pt2)
-			mark.graph.record_add_to_bb.append(pt1)
-			mark.graph.record_add_to_bb.append(pt2)
-		for obj in self.record_bounding_box:
-			bb=obj.bounding_box(self)
-			rect = Rectangle(bb.SW(),bb.NE())
-			rect.parameters.color="cyan"
-			self.DrawGraph(rect)
+					raise 
 		for sortie in globals_vars.list_exits:
 			if globals_vars.__getattribute__(sortie+"_exit"):
 				print "I've to make an exit : %s"%sortie

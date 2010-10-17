@@ -607,6 +607,30 @@ class Mark(object):
 			return self.graph.mark_point().translate(Vector(Point(0,0),Point(xP,yP)))
 		else:
 			return self.graph.mark_point().translate(PolarVector(self.graph,self.dist,self.angle))
+	def bounding_box(self,pspict=None):
+		bb=BoundingBox()
+		central_point=self.central_point(pspict)
+		dimx,dimy=pspict.get_box_size(self.text)
+		try :
+			dimx=float(dimx)/pspict.xunit
+			dimy=float(dimy)/pspict.yunit
+		except AttributeError:
+			print "Try to pass a pspicture when computing the bounding box of",type(self)
+		pt1=Point(central_point.x-dimx/2,central_point.y-dimy/2) 
+		pt2=Point(central_point.x+dimx/2,central_point.y+dimy/2)
+		bb.AddPoint(pt1)
+		bb.AddPoint(pt2)
+		#self.graph.record_add_to_bb.append(pt1)
+		#self.graph.record_add_to_bb.append(pt2)
+	def pstricks_code(self,pspict=None):
+		l=[]
+		central_point=self.central_point(pspict)
+		#TODO : Use create_PSpoint instead of \pstGeonode.
+		l.append("\pstGeonode[]"+central_point.coordinates()+"{"+central_point.psName+"}")
+		R = RealField(round(log(10,2)*7))
+		angle=R(mark.angle)			# If not, pstricks could complain because of a too long number.
+		l.append(r"\rput(%s){\rput(%s;%s){%s}}"%(central_point.psName,"0",0,str(mark.text)))
+		return "\n".join(l)
 
 class FillParameters(object):
 	"""The filling parameters"""
@@ -679,6 +703,7 @@ class GraphOfAnObject(object):
 		self.waviness = None
 		self.options = Options()
 		self.marque = False
+		self.draw_bounding_box=False
 		self.add_option("linecolor=black")
 		self.add_option("linestyle=solid")
 		self.record_add_to_bb=[]		 
@@ -877,8 +902,6 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 
 		[1] If you dont't know what is the "bounding box", or if you don't want to fine tune it, you don't care.
 		"""
-		# We cannot compute here the size of the bounding box due to the mark because xunit,yunit will only be fixed
-		# after possible use of pspict.Dilatation. See pspicture.contenu
 		Xradius=0.1
 		Yradius=0.1
 		try :
@@ -886,6 +909,7 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 			Yradius=0.1/pspict.yunit
 		except :
 			print "You should consider to give a pspict as argument. If not the boundig box of  %s could be bad"%str(self)
+			raise
 		bb = BoundingBox(Point(self.x-Xradius,self.y-Yradius),Point(self.x+Xradius,self.y+Yradius))
 		for P in self.record_add_to_bb:
 			bb.AddPoint(P)
@@ -942,7 +966,7 @@ class GraphOfAVector(GraphOfAnObject,GeometricVector):
 	def mark_point(self):
 		return self.F
 	def bounding_box(self,pspict=None):
-		return GraphOfASegment(self.segment).bounding_box()
+		return GraphOfASegment(self.segment).bounding_box(pspict)
 	def math_bounding_box(self,pspict=None):
 		return GraphOfASegment(self.segment).math_bounding_box(pspict)
 	def pstricks_code(self,pspict=None):
@@ -978,7 +1002,7 @@ class MeasureLength(GraphOfASegment):
 		self.mI=self.mseg.I
 		self.mF=self.mseg.F
 	def math_bounding_box(self,pspict=None):
-		return GraphOfASegment(self.mseg).math_bounding_box()
+		return GraphOfASegment(self.mseg).math_bounding_box(pspict)
 	def bounding_box(self,pspict=None):
 		bb=self.mseg.bounding_box(pspict)
 		if self.marque:
