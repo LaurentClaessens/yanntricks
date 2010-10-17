@@ -1072,7 +1072,6 @@ class pspicture(object):
 	def bounding_box(self,pspict=None):
 		bb=self.BB
 		for a in [x.graph.bounding_box(self) for x in self.record_draw_graph if x.take_math_BB or x.take_BB] :
-			print "1075",type(a)
 			bb.AddBB(a)
 		return bb
 	def DrawBB(self):
@@ -1216,10 +1215,8 @@ class pspicture(object):
 		# Most of the difficulty is when the user use pspicture.dilatation_X and Y with different coefficients.
 		list_to_be_drawn = [a.graph for a in self.record_draw_graph if a.take_graph]
 		for graph in list_to_be_drawn:
-			print "1219",type(graph)
 			try :
 				if graph.draw_bounding_box:
-					print "1219",type(graph)
 					bb=graph.bounding_box(self)
 					rect = Rectangle(bb.SW(),bb.NE())
 					rect.parameters.color="cyan"
@@ -1233,7 +1230,6 @@ class pspicture(object):
 			try :
 				if graph.marque:
 					self.BB.AddBB(graph.mark.bounding_box(self))
-					print "1235",graph.mark.pstricks_code(self)
 					self.add_latex_line(graph.mark.pstricks_code(self))
 			except AttributeError :
 				pass

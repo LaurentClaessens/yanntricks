@@ -608,8 +608,8 @@ class Mark(object):
 		else:
 			return self.graph.mark_point().translate(PolarVector(self.graph,self.dist,self.angle))
 	def bounding_box(self,pspict=None):
-		bb=BoundingBox()
 		central_point=self.central_point(pspict)
+		bb=BoundingBox(central_point,central_point)
 		dimx,dimy=pspict.get_box_size(self.text)
 		try :
 			dimx=float(dimx)/pspict.xunit
@@ -620,16 +620,21 @@ class Mark(object):
 		pt2=Point(central_point.x+dimx/2,central_point.y+dimy/2)
 		bb.AddPoint(pt1)
 		bb.AddPoint(pt2)
+		print "623"
+		print pt1
+		print pt2
+		print bb
 		#self.graph.record_add_to_bb.append(pt1)
 		#self.graph.record_add_to_bb.append(pt2)
+		return bb
 	def pstricks_code(self,pspict=None):
 		l=[]
 		central_point=self.central_point(pspict)
 		#TODO : Use create_PSpoint instead of \pstGeonode.
 		l.append("\pstGeonode[]"+central_point.coordinates()+"{"+central_point.psName+"}")
 		R = RealField(round(log(10,2)*7))
-		angle=R(mark.angle)			# If not, pstricks could complain because of a too long number.
-		l.append(r"\rput(%s){\rput(%s;%s){%s}}"%(central_point.psName,"0",0,str(mark.text)))
+		angle=R(self.angle)			# If not, pstricks could complain because of a too long number.
+		l.append(r"\rput(%s){\rput(%s;%s){%s}}"%(central_point.psName,"0",0,str(self.text)))
 		return "\n".join(l)
 
 class FillParameters(object):
@@ -1636,13 +1641,11 @@ def PolarVector(P,r,theta):
 	return Vector(P, Point(P.x+r*math.cos(alpha),P.y+r*math.sin(alpha)) )
 
 class BoundingBox(object):
-	def __init__(self,dbg=GeometricPoint(0,0),dhd=GeometricPoint(0,0)):
-		self.bg = dbg
-		self.hd = dhd
-		self.mx=self.bg.x
-		self.Mx=self.hd.x
-		self.my=self.bg.y
-		self.My=self.hd.y
+	def __init__(self,dSW=GeometricPoint(0,0),dNE=GeometricPoint(0,0)):
+		self.mx=dSW.x
+		self.Mx=dNE.x
+		self.my=dSW.y
+		self.My=dNE.y
 	def N(self):
 		return Segment(self.NW(),self.NE()).center()
 	def S(self):
