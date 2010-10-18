@@ -304,8 +304,7 @@ class GeometricSegment(object):
 		"""
 		return self.I*(1-p) + self.F*p
 	def milieu(self):
-		print "This method is depreciated. Use Segment.center() instead"
-		raise
+		raise DeprecationWarning,"This method is depreciated. Use Segment.center() instead"
 		return self.center()
 	def center(self):
 		return self.proportion(0.5)
@@ -606,7 +605,7 @@ class Mark(object):
 			yP=d*sin(theta)/B
 			return self.graph.mark_point().translate(Vector(Point(0,0),Point(xP,yP)))
 		else:
-			return self.graph.mark_point().translate(PolarVector(self.graph,self.dist,self.angle))
+			return self.graph.mark_point().translate(PolarVector(Point(0,0),self.dist,self.angle))
 	def bounding_box(self,pspict=None):
 		central_point=self.central_point(pspict)
 		bb=BoundingBox(central_point,central_point)
@@ -629,7 +628,7 @@ class Mark(object):
 		#TODO : Use create_PSpoint instead of \pstGeonode.
 		l.append("\pstGeonode[]"+central_point.coordinates()+"{"+central_point.psName+"}")
 		R = RealField(round(log(10,2)*7))
-		angle=R(self.angle)			# If not, pstricks could complain because of a too long number.
+		angle=R(self.angle)		# pstricks does not accept too long number.
 		l.append(r"\rput(%s){\rput(%s;%s){%s}}"%(central_point.psName,"0",0,str(self.text)))
 		return "\n".join(l)
 
@@ -919,8 +918,11 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 		"""Return a bounding box which include itself and that's it."""
 		return BoundingBox(self.point,self.point)
 	def pstricks_code(self,pspict=None):
-		# Because of deformations by xunit,yunit, the mark is drawn later, in in pspict.contenu()
-		return "\pstGeonode["+self.params()+"]"+self.coordinates()+"{"+self.psName+"}\n"
+		l=[]
+		if self.marque:
+			l.append(self.mark.pstricks_code(pspict))
+		l.append("\pstGeonode["+self.params()+"]"+self.coordinates()+"{"+self.psName+"}")
+		return "\n".join(l)
 
 def Code_Pscurve(listePoints,params):
 	"""
@@ -984,22 +986,15 @@ class MeasureLength(GraphOfASegment):
 	"""
 	When a segment exists, one wants sometimes to denote its length drawing a double-arrow parallel to the segment. This is what this class is intended to.
 
-	self.mseg : the parallel segment.
+	The segment (and then the graph associated with the mark) is the parallel one,
+	not the segment given in argument.
 	"""
-	def __init__(self,seg):
+	def __init__(self,seg,dist):
 		self.segment=seg
-		GraphOfASegment.__init__(self,seg)
-		self.dist=0.1
-		self.delta=self.get_normal_vector().fix_size(self.dist)
-		self.mseg=self.seg.translate(self.delta)
-		self.mI=self.mseg.I
-		self.mF=self.mseg.F
-	def recompute(self):
-		"""
-		Because self.dist can change, we have to be able to adapt the other features
-		"""
-		self.delta=self.get_normal_vector().fix_size(self.dist)
-		self.mseg=self.seg.translate(self.delta)
+		self.dist=dist
+		self.delta=seg.get_normal_vector().fix_size(self.dist)
+		self.mseg=seg.translate(self.delta)
+		GraphOfASegment.__init__(self,self.mseg)
 		self.mI=self.mseg.I
 		self.mF=self.mseg.F
 	def math_bounding_box(self,pspict=None):
@@ -1013,11 +1008,11 @@ class MeasureLength(GraphOfASegment):
 			C.mark.graph=C
 			bb.AddBB(C.bounding_box(pspict))
 		return bb
+	def mark_point(self):
+		return self.mseg.center()
 	def pstricks_code(self,pspict=None):
-		self.recompute()
 		a=[]
 		C=self.mseg.center()
-		C.marque=self.marque
 		vI=Vector(C,self.mI)
 		vF=Vector(C,self.mF)
 		vI.parameters=self.parameters
@@ -1025,9 +1020,7 @@ class MeasureLength(GraphOfASegment):
 		a.append(vI.pstricks_code())
 		a.append(vF.pstricks_code())
 		if self.marque :
-			C.mark=self.mark
-			C.mark.graph=C
-			pspict.record_marks.append(C.mark)
+			a.append(self.mark.pstricks_code(pspict))
 		return "\n".join(a)
 
 

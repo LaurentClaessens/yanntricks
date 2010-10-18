@@ -379,25 +379,21 @@ class Grid(object):
 		if self.draw_border :
 			# Right border
 			if self.BB.Mx <> int(self.BB.Mx):
-				print "right"
 				S = self.BB.east_segment()
 				S.merge_options(self.border)
 				a.append(S)
 			# Left border
 			if self.BB.mx <> int(self.BB.mx):
-				print "left"
 				S = self.BB.west_segment()
 				S.merge_options(self.border)
 				a.append(S)
 			# Upper border
 			if self.BB.My <> int(self.BB.My):
-				print "upper"
 				S = self.BB.north_segment()
 				S.merge_options(self.border)
 				a.append(S)
 			# Lower border
 			if self.BB.my <> int(self.BB.my):
-				print "lower"
 				S = self.BB.south_segment()
 				S.merge_options(self.border)
 				a.append(S)
@@ -495,22 +491,14 @@ class Axes(object):
 		self.IsLabelY = False
 		self.axes_unitX=AxesUnit(1,"")
 		self.axes_unitY=AxesUnit(1,"")
-		#self.N=Point( self.C.x,self.BB.My )
-		#self.S=Point( self.C.x,self.BB.my )
-		#self.O=Point( self.BB.mx,self.C.y )
-		#self.E=Point( self.BB.Mx,self.C.y )
-		#self.SO=Point(self.O.x,self.S.y)
-		#self.NE=Point(self.E.x,self.N.y)
-		#self.SE=Point(self.E.x,self.S.y)
-		#self.NO=Point(self.O.x,self.N.y)
 		self.Dx = 1
 		self.Dy = 1						# Ce sont les valeurs par défaut.
 		self.arrows = "->"
 		self.separator_name="AXES"
+		self.graduation=True
 	# Cette méthode ne devrait pas être utilisée parce qu'il n'y a pas de grille associée à un système d'axes.
 	def AjouteGrid(self):
-		print "This is depreciated"
-		raise
+		raise DeprecationWarning
 		self.IsGrid = 1
 		self.grille.add_option("gridlabels=0")
 		self.grille.add_option("subgriddiv=0")
@@ -530,16 +518,14 @@ class Axes(object):
 	def add_option(self,opt):
 		self.options.add_option(opt)
 	def no_graduation(self):
-		self.add_option("labels=none,ticks=none")
+		self.graduation=False
 	def AjustephyFunction(self,f,mx,Mx):
-		print "This is depreciated"
-		raise
+		raise DeprecationWarning, "This is depreciated"
 		self.BB.AddphyFunction(f,mx,Mx)
 	def AjusteCircle(self,Cer):
 		self.BB.AddCircle(Cer)
 	def AjusteGraphephyFunction(self,gf):
-		print "This is depreciated"
-		raise
+		raise DeprecationWarning, "This is depreciated"
 		self.AjustephyFunction(gf.f,gf.mx,gf.Mx)
 	def bounding_box(self,pspict=None):
 		return self.BB
@@ -569,24 +555,22 @@ class Axes(object):
 			P.parameters.symbol="none"
 			P.put_mark(self.DistLabelY,self.AngleLabelY,self.LabelY)
 			c.append(P.pstricks_code())
-		for x,symbol in self.axes_unitX.place_list(self.bounding_box(pspict).mx,self.bounding_box(pspict).Mx,self.Dx):
-			if x != 0:
-				A=Point(x,0)
-				A.parameters.symbol="|"
-				A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(x)))		# Make the name of the point unique.
-				A.put_mark(0.4,-90,symbol)	# TODO : use the size of the box as distance
-				c.append(A.pstricks_code())
-				pspict.record_marks.append(A.mark)
-		for y,symbol in self.axes_unitY.place_list(self.bounding_box(pspict).my,self.bounding_box(pspict).My,self.Dy):
-			if y != 0:
-				A=Point(0,y)
-				A.parameters.symbol="|"
-				A.add_option("dotangle=90")
-				A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(y)))		# Make the name of the point unique.
-				A.put_mark(0.4,180,symbol)	# TODO : use the size of the box as distance
-				c.append(A.pstricks_code())
-				pspict.record_marks.append(A.mark)
-		#c.append("\psaxes[%s]{%s}%s%s"%(self.options.code(),self.arrows,self.C.coordinates(),self.bounding_box().coordinates()))
+		if self.graduation :
+			for x,symbol in self.axes_unitX.place_list(self.bounding_box(pspict).mx,self.bounding_box(pspict).Mx,self.Dx):
+				if x != 0:
+					A=Point(x,0)
+					A.parameters.symbol="|"
+					A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(x)))		# Make the name of the point unique.
+					A.put_mark(0.4,-90,symbol)	# TODO : use the size of the box as distance
+					c.append(A.pstricks_code())
+			for y,symbol in self.axes_unitY.place_list(self.bounding_box(pspict).my,self.bounding_box(pspict).My,self.Dy):
+				if y != 0:
+					A=Point(0,y)
+					A.parameters.symbol="|"
+					A.add_option("dotangle=90")
+					A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(y)))		# Make the name of the point unique.
+					A.put_mark(0.4,180,symbol)	# TODO : use the size of the box as distance
+					c.append(A.pstricks_code())
 		h1=Point(self.bounding_box(pspict).mx,self.C.y)
 		h2=Point(self.bounding_box(pspict).Mx,self.C.y)
 		v1=Point(self.C.x,self.bounding_box(pspict).my)
@@ -598,7 +582,7 @@ class Axes(object):
 		return "\n".join(c)
 
 def CircleInterLigne(Cer,Ligne):
-	print "This function is depreciated. Please use Intersection instead"
+	raise DeprecationWarning, "This function is depreciated. Please use Intersection instead"
 	raise
 	if type(Ligne) == phyFunction :
 		soluce = maxima().solve( [Cer.maxima,"y="+Ligne.maxima],["x","y"] )
@@ -1105,7 +1089,7 @@ class pspicture(object):
 	def DrawGraphs(self,*args):
 		for g in args:
 			self.DrawGraph(g)
-	def DrawGraph(self,graphe,separator_name=None):
+	def DrawGraph(self,graph,separator_name=None):
 		"""
 		Draw an object of type GraphOfA*.
 
@@ -1117,17 +1101,21 @@ class pspicture(object):
 		"""
 		if separator_name==None:
 			try :
-				separator_name=graphe.separator_name
+				separator_name=graph.separator_name
 			except AttributeError :
 				separator_name="DEFAULT"
-		x=DrawElement(graphe,separator_name)
+		x=DrawElement(graph,separator_name)
 		self.record_draw_graph.append(x)
+		try :
+			if graph.marque:
+				x=DrawElement(graph.mark,separator_name)
+				self.record_draw_graph.appen(x)
+		except AttributeError :
+			pass
 	def DrawGrid(self,grid):
-		print "This is depreciated. The grid has to be drawn with DrawGraph as everyone"
-		raise
+		raise DeprecationWarning,"This is depreciated. The grid has to be drawn with DrawGraph as everyone"
 	def TraceTriangle(self,tri,params):
-		print "Method TraceTriangle is depreciated"
-		raise AttributeError
+		raise DeprecationWarning, "Method TraceTriangle is depreciated"
 		self.BB.AddPoint(tri.A)
 		self.BB.AddPoint(tri.B)
 		self.BB.AddPoint(tri.C)
@@ -1137,8 +1125,7 @@ class pspicture(object):
 	def AjusteGrid(self,grille):
 		grille.BB = self.BB
 	def DrawAxes(self,axes):
-		print "This method is depreciated"
-		raise AttributeError
+		raise DeprecationWarning, "This method is depreciated"
 	def DrawDefaultAxes(self):
 		self.axes.BB = self.math_bounding_box()
 		self.axes.BB.AddPoint(Point(0,0))
@@ -1165,14 +1152,13 @@ class pspicture(object):
 		else :
 			self.separator_dico[separator_name].add_latex_line(ligne)
 	def IncrusteLigne(self,ligne,n):
-		print "The method pspicture.IncrusteLigne() is depreciated."
+		raise DeprecationWarning, "The method pspicture.IncrusteLigne() is depreciated."
 		self.pstricks_code[n:n]=ligne+"\n"
 	def contenu_eps(self):
 		to_eps = PspictureToOtherOutputs(self)
 		to_eps.create_eps_file()
 		return to_eps.input_code_eps
 	def contenu_pdf(self):
-		print "contenu_pdf"
 		to_pdf = PspictureToOtherOutputs(self)
 		to_pdf.create_pdf_file()
 		return to_pdf.input_code_pdf
@@ -1228,12 +1214,6 @@ class pspicture(object):
 			graph=x.graph
 			separator_name=x.separator_name
 			try :
-				if graph.marque:
-					self.BB.AddBB(graph.mark.bounding_box(self))
-					self.add_latex_line(graph.mark.pstricks_code(self))
-			except AttributeError :
-				pass
-			try :
 				self.BB.add_graph(graph,self)
 				self.add_latex_line(graph.pstricks_code(self),separator_name)
 			except AttributeError,data:
@@ -1245,7 +1225,6 @@ class pspicture(object):
 				print "I've to make an exit : %s"%sortie
 				return self.__getattribute__("contenu_"+sortie)()
 		return self.contenu_pstricks()
-
 	# Important de pouvoir produire des fichiers qui ne contiennent qu'une pspicture parce que ça peut être inséré directement 
 	# à l'intérieur d'une ligne en LaTeX. J'utilise ça pour des diagrammes de Dynkin par exemple.
 	def write_the_file(self,f):					# Nous sommes dans la classe pspicture
