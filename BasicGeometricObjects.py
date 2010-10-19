@@ -989,7 +989,7 @@ class MeasureLength(GraphOfASegment):
 	The segment (and then the graph associated with the mark) is the parallel one,
 	not the segment given in argument.
 	"""
-	def __init__(self,seg,dist):
+	def __init__(self,seg,dist=0.1):
 		self.segment=seg
 		self.dist=dist
 		self.delta=seg.get_normal_vector().fix_size(self.dist)
