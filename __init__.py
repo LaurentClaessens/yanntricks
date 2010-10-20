@@ -1087,8 +1087,12 @@ class pspicture(object):
 		self.BB.AddParametricCurve(f,mx,Mx)
 		self.add_latex_line("\parametricplot[%s]{%s}{%s}{%s}" %(params,str(mx),str(Mx),f.pstricks()))
 	def DrawGraphs(self,*args):
-		for g in args:
-			self.DrawGraph(g)
+		for gr in args:
+			try :
+				for h in gr:
+					self.DrawGraph(h)
+			except TypeError:
+				self.DrawGraph(gr)
 	def DrawGraph(self,graph,separator_name=None):
 		"""
 		Draw an object of type GraphOfA*.
