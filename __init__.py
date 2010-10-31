@@ -709,9 +709,9 @@ class figure(object):
 		"""
 		ssfig=subfigure(caption,self.name+"ss"+name)
 		ssfig.mother=self
-		self.append_subfigure(ssfig)
+		self._append_subfigure(ssfig)
 		return ssfig
-	def append_subfigure(self,ssFig):		# This function was initially named AjouteSSfigure
+	def _append_subfigure(self,ssFig):		# This function was initially named AjouteSSfigure
 		self.record_subfigure.append(ssFig)
 		suffixe = "ssFig"+str(len(self.record_subfigure))
 		if not ssFig.name:
@@ -721,10 +721,14 @@ class figure(object):
 	def new_pspicture(self,name):
 		pspict=pspicture("FIG"+self.name+"PICT"+name)
 		pspict.mother=self
-		self.add_pspicture(pspict)
+		self._add_pspicture(pspict)
 		return pspict
-	def add_pspicture(self,pspict):
+	def _add_pspicture(self,pspict):
 		self.record_pspicture.append(pspict)
+	def add_pspicture(self,pspict):
+		raise DeprecationWarning,"Use fig.new_pspicture instead"
+	def append_subfigure(self,pspict):
+		raise DeprecationWarning,"Use fig.new_subfigure instead"
 	def add_latex_line(self,ligne,separator_name="DEFAULT"):
 		self.separator_dico[separator_name].add_latex_line(ligne)
 	def IncrusteLigne(self,ligne,n):
@@ -766,28 +770,25 @@ class subfigure(object):
 	"""
 	def __init__(self,caption,name=None):
 		self.caption = caption
-		self.name = name		# The label will be given in figure.append_subfigure
-		#self.code = []
+		self.name = name
 		self.record_pspicture=[]
 		self.mother=None
 	def add_latex_line(self,ligne,separator_name):
 		self.mother.add_latex_line(ligne,separator_name)
-	#def AjouteCode(self,cod):
-	#	self.code.extend(cod)
 	def new_pspicture(self,name):
 		pspict=pspicture("FIG"+self.name+"PICT"+name)
 		pspict.mother=self
-		self.add_pspicture(pspict)
+		self._add_pspicture(pspict)
 		return pspict
 	def subfigure_code(self):
 		a=[]
 		for pspict in self.record_pspicture :
 			a.append(pspict.contenu())
 		return "\n".join(a)
-	def add_pspicture(self,pspicture):
-		#self.pspicture=pspicture		# Serves to give a name to the pspicture when the subfigure is included
+	def _add_pspicture(self,pspicture):
 		self.record_pspicture.append(pspicture)
-		#self.add_latex_line(pspicture.contenu())
+	def add_pspicture(self,pspicture):
+		raise DeprecationWarning,"use subfigure.new_pspicture instead"
 
 class PspictureToOtherOutputs(object):
 	"""
