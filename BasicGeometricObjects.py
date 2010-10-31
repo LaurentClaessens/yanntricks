@@ -448,7 +448,7 @@ class GeometricVector(object):
 	def fix_size(self,l):
 		L=self.length()
 		if L == 0:
-			print "This vector has a norm equal to zero"
+			print "fix_size problem: this vector has a norm equal to zero"
 			return self
 		return self.dilatation(l/self.length())
 	def add_size(self,l):
@@ -1466,7 +1466,7 @@ class ParametricCurve(object):
 		try :
 			second=self.get_second_derivative_vector(llam)
 		except :
-			print "Something got wrong with the computation of the second derivative. I Return the default normal vector"
+			print "Something got wrong with the computation of the second derivative. I return the default normal vector"
 			return N
 		if N.F.value_on_line(tangent.segment) * second.F.value_on_line(tangent.segment) > 0:
 			v=N

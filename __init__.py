@@ -656,7 +656,7 @@ def GenericFigure(nom):
 	label = "LabelFig"+nom
 	caption = "\CaptionFig"+nom
 	nFich = "Fig_"+nom+".pstricks"
-	print "The result is on figure \\ref{"+label+"}"
+	print "The result is on figure \\ref{"+label+"}."
 	print "\\newcommand{"+caption+"}{<+Type your caption here+>}"
 	print "\\input{Fig_"+nom+".pstricks}"
 	return  figure(caption,label,nFich)
@@ -718,8 +718,9 @@ class figure(object):
 			ssFig.name=self.name+suffixe
 		#ssFig.pspicture.name=self.name+"pspict"+suffixe	(no more useful 15 oct 2010)
 		print r"See also the subfigure \ref{%s}"%ssFig.name
-	def new_pspicture(self,name):
-		pspict=pspicture("FIG"+self.name+"PICT"+name)
+	def new_pspicture(self,name,pspict=None):
+		if pspict==None:
+			pspict=pspicture("FIG"+self.name+"PICT"+name)
 		pspict.mother=self
 		self._add_pspicture(pspict)
 		return pspict
