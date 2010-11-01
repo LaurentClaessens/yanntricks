@@ -496,6 +496,7 @@ class Axes(object):
 		self.arrows = "->"
 		self.separator_name="AXES"
 		self.graduation=True
+		self.numbering=True
 	# Cette méthode ne devrait pas être utilisée parce qu'il n'y a pas de grille associée à un système d'axes.
 	def AjouteGrid(self):
 		raise DeprecationWarning
@@ -519,6 +520,8 @@ class Axes(object):
 		self.options.add_option(opt)
 	def no_graduation(self):
 		self.graduation=False
+	def no_numbering(self):
+		self.numbering=False
 	def AjustephyFunction(self,f,mx,Mx):
 		raise DeprecationWarning, "This is depreciated"
 		self.BB.AddphyFunction(f,mx,Mx)
@@ -561,7 +564,8 @@ class Axes(object):
 					A=Point(x,0)
 					A.parameters.symbol="|"
 					A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(x)))		# Make the name of the point unique.
-					A.put_mark(0.4,-90,symbol)	# TODO : use the size of the box as distance
+					if self.numbering :
+						A.put_mark(0.4,-90,symbol)	# TODO : use the size of the box as distance
 					c.append(A.pstricks_code())
 			for y,symbol in self.axes_unitY.place_list(self.bounding_box(pspict).my,self.bounding_box(pspict).My,self.Dy):
 				if y != 0:
@@ -569,7 +573,8 @@ class Axes(object):
 					A.parameters.symbol="|"
 					A.add_option("dotangle=90")
 					A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(y)))		# Make the name of the point unique.
-					A.put_mark(0.4,180,symbol)	# TODO : use the size of the box as distance
+					if self.numbering :
+						A.put_mark(0.4,180,symbol)	# TODO : use the size of the box as distance
 					c.append(A.pstricks_code())
 		h1=Point(self.bounding_box(pspict).mx,self.C.y)
 		h2=Point(self.bounding_box(pspict).Mx,self.C.y)
