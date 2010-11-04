@@ -1200,7 +1200,7 @@ class pspicture(object):
 			try :
 				bb.AddBB(graphe.math_bounding_box(self))
 			except AttributeError:
-				print "Warning: it seems to me that object %s has no method math_boundig_box"%str(graphe)
+				print "Warning: it seems to me that object %s (%s) has no method math_boundig_box"%(str(graphe),type(graphe))
 				bb.add_graph(graphe,self)
 		return bb
 	def contenu(self):

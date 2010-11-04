@@ -50,6 +50,9 @@ def SubstitutionMathPsTricks(fx):
 	listeSubst.append(["math.tan","TAN"])
 	listeSubst.append(["math.sinh","SINH"])
 	listeSubst.append(["math.sinc","SINC"])
+	listeSubst.append(["arccos","acos"])		# See the documentation of pst-math package
+	listeSubst.append(["arcsin","asin"])
+	listeSubst.append(["arctan","atan"])
 	listeSubst.append(["math.",""])
 	listeSubst.append(["log","2.302585092994046*log"])		# Parce que \psplot[]{1}{5}{log(x)} trace le logarithme en base 10
 	a = fx
@@ -1370,14 +1373,27 @@ class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
 		#return a				# I do not remember why it was like that. See also the change in SurfaceBetweenFunctions.pstricks_code (13005)
 		return "\n".join(a)
 
-def PolarCurve(f):
+def PolarCurve(fr,ftheta=None):
 	"""
 	return the parametric curve (class ParametricCurve) corresponding to the 
 	curve of equation r=f(theta) in polar coordinates.
+
+	If ftheta is not given, return the curve
+	x(t)=fr(t)cos(t)
+	y(t)=fr(t)sin(t)
+
+	If ftheta is given, return the curve
+	x(t)=fr(t)cos( ftheta(t) )
+	y(t)=fr(t)sin( ftheta(t) )
+
 	"""
 	x=var('x')
-	f1=f*cos(x)
-	f2=f*sin(x)
+	if ftheta==None :
+		f1=fr*cos(x)
+		f2=fr*sin(x)
+	else:
+		f1=fr(x=x)*cos(ftheta(x=x))
+		f2=fr(x=x)*sin(ftheta(x=x))
 	return ParametricCurve(f1,f2)
 
 class ParametricCurve(object):
@@ -1509,7 +1525,8 @@ class ParametricCurve(object):
 		center=Point(Ox,Oy)
 		return CircleOA(center,P)
 	def get_minmax_data(self,deb,fin):
-		return parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) ).get_minmax_data()
+		#return parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) ).get_minmax_data()
+		return parametric_plot( (self.f1,self.f2), (deb,fin) ).get_minmax_data()
 	def xmax(self,deb,fin):
 		return self.get_minmax_data(deb,fin)['xmax']
 	def xmin(self,deb,fin):
