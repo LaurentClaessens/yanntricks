@@ -27,6 +27,7 @@ The documentation is available at
 #from __future__ import division
 from sage.all import *
 #import numpy				# I do not remember why I used that.
+import codecs
 import math, sys
 from BasicGeometricObjects import *
 from MathComputations import *
@@ -123,7 +124,7 @@ class Fichier(object):
 		self.chemin = self.NomComplet				
 		self.nom = os.path.basename(self.chemin)
 	def open_file(self,opt):
-		self.file = open(self.chemin,opt)			
+		self.file = codecs.open(self.chemin,encoding="utf8",mode=opt)			
 	def close_file(self):
 		self.file.close()
 	def write(self,texte,opt):				
