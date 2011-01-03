@@ -727,10 +727,11 @@ class figure(object):
 	def new_pspicture(self,name,pspict=None):
 		if pspict==None:
 			pspict=pspicture("FIG"+self.name+"PICT"+name)
-		pspict.mother=self
+		#pspict.mother=self
 		self._add_pspicture(pspict)
 		return pspict
 	def _add_pspicture(self,pspict):
+		pspict.mother=self		# This was in self.new_pspicture
 		self.record_pspicture.append(pspict)
 	def add_pspicture(self,pspict):
 		raise DeprecationWarning,"Use fig.new_pspicture instead"
@@ -958,6 +959,33 @@ class pspicture(object):
 		self.new_separator("OTHER STUFF")
 		self.new_separator("DEFAULT")
 		self.new_separator("AFTER PSPICTURE")
+	def default_figure(self,name=None):
+		"""
+		Create and return a Figure object that contains self.
+
+		Example. If pspict is in class pspicture :
+		fig=pspict.default_figure
+		fig.conclude()
+		fig.write_the_file()
+		"""
+		if name == None :
+			figname= "DefaultFig"+self.name
+		else:
+			figname = name
+		fig=GenericFigure(figname)
+		fig._add_pspicture(self)
+		return fig
+	def write_the_figure_file(self,name):
+		"""
+		Produce a file that contains self in a default figure.
+
+		To be used if you have a figure at hand and you just want to use it in a figure without particular needs.
+
+		If you want to use the figure outside a figure, use self.write_the_file instead.
+		"""
+		fig=self.default_figure(name+self.name)
+		fig.conclude()
+		fig.write_the_file()
 	def new_separator(self,title):
 		self.separator_number = self.separator_number + 1
 		self.separator_dico[title]=Separator(title,self.separator_number)

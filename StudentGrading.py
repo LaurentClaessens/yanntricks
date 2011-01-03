@@ -114,7 +114,6 @@ class Grades(object):
 		pspict.DrawDefaultAxes()
 		pspict.DrawDefaultGrid()
 		return pspict
-
 	def average_bigger(self,pspictName):
 		"""
 		return the pspict that represents the graph of the function
@@ -146,7 +145,7 @@ class Grades(object):
 		pspict.DrawDefaultAxes()
 		pspict.DrawDefaultGrid()
 		return pspict
-	def proportion_between(self,pspictName,delta):
+	def proportion_between(self,pspictName,delta=1):
 		"""
 		return the pspict that represents the graph of the function
 		y(x)=proportion of students in [x-delta,x+delta].
@@ -171,5 +170,12 @@ class Grades(object):
 		pspict.DrawDefaultAxes()
 		pspict.DrawDefaultGrid()
 		return pspict
+	def all_statistics(self,name,delta=1):
+		"""
+		Create all the figures and write them in files.
+		"""
+		self.y_is_percent_bigger_than_x(name+"_pcb").write_the_figure_file("svt")
+		self.average_bigger(name+"_avb").write_the_figure_file("svt")
+		self.proportion_between(name+"_pcb",delta=1).write_the_figure_file("svt")
 	def __str__(self):
 		return str(self.grades_list)
