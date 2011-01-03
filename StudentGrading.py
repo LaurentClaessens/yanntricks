@@ -87,7 +87,7 @@ class Grades(object):
 	def convert_to_full_grade(self,n):
 		""" return the list of grades if the maximum is n instead of self.full_grade """
 		return Grades([c*n/self.full_grade for c in self.grades_list],n)
-	def y_is_percent_bigger_than_x(self,pspictName):
+	def y_is_proportion_bigger_than_x(self,pspictName,tailleX=10,tailleY=10):
 		"""
 		Return the pspict that represents the graph of the function
 		y(x) = proportion of the students that have x or more.
@@ -113,6 +113,8 @@ class Grades(object):
 		pspict.axes.Dy = 0.1
 		pspict.DrawDefaultAxes()
 		pspict.DrawDefaultGrid()
+		pspict.dilatation_X(float(tailleX)/self.full_grade)
+		pspict.dilatation_Y(tailleY)
 		return pspict
 	def average_bigger(self,pspictName):
 		"""
@@ -174,8 +176,8 @@ class Grades(object):
 		"""
 		Create all the figures and write them in files.
 		"""
-		self.y_is_percent_bigger_than_x(name+"_pcb").write_the_figure_file("svt")
-		self.average_bigger(name+"_avb").write_the_figure_file("svt")
-		self.proportion_between(name+"_pcb",delta=1).write_the_figure_file("svt")
+		self.y_is_proportion_bigger_than_x(name+"pcb").write_the_figure_file("svt")
+		self.average_bigger(name+"avb").write_the_figure_file("svt")
+		self.proportion_between(name+"pbt",delta=1).write_the_figure_file("svt")
 	def __str__(self):
 		return str(self.grades_list)
