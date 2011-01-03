@@ -498,9 +498,8 @@ class Axes(object):
 		self.separator_name="AXES"
 		self.graduation=True
 		self.numbering=True
-	# Cette méthode ne devrait pas être utilisée parce qu'il n'y a pas de grille associée à un système d'axes.
 	def AjouteGrid(self):
-		raise DeprecationWarning
+		raise DeprecationWarning,"There are no grid associated with a axe system"
 		self.IsGrid = 1
 		self.grille.add_option("gridlabels=0")
 		self.grille.add_option("subgriddiv=0")
@@ -516,7 +515,6 @@ class Axes(object):
 		self.DistLabelY = dist
 		self.AngleLabelY = angle
 		# Je crois que le label n'est pas encore prit en compte dans la BB.
-
 	def add_option(self,opt):
 		self.options.add_option(opt)
 	def no_graduation(self):
@@ -564,18 +562,18 @@ class Axes(object):
 				if x != 0:
 					A=Point(x,0)
 					A.parameters.symbol="|"
-					A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(x)))		# Make the name of the point unique.
+					A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(x)))	# Make the point name unique.
 					if self.numbering :
-						A.put_mark(0.4,-90,symbol)	# TODO : use the size of the box as distance
+						A.put_mark(0.4/pspict.yunit,-90,symbol)	# TODO : use the size of the box as distance
 					c.append(A.pstricks_code())
 			for y,symbol in self.axes_unitY.place_list(self.bounding_box(pspict).my,self.bounding_box(pspict).My,self.Dy):
 				if y != 0:
 					A=Point(0,y)
 					A.parameters.symbol="|"
 					A.add_option("dotangle=90")
-					A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(y)))		# Make the name of the point unique.
+					A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(y)))	# Make the point name unique.
 					if self.numbering :
-						A.put_mark(0.4,180,symbol)	# TODO : use the size of the box as distance
+						A.put_mark(0.4/pspict.xunit,180,symbol)	# TODO : use the size of the box as distance instead of 0.4
 					c.append(A.pstricks_code())
 		h1=Point(self.bounding_box(pspict).mx,self.C.y)
 		h2=Point(self.bounding_box(pspict).Mx,self.C.y)
@@ -589,7 +587,6 @@ class Axes(object):
 
 def CircleInterLigne(Cer,Ligne):
 	raise DeprecationWarning, "This function is depreciated. Please use Intersection instead"
-	raise
 	if type(Ligne) == phyFunction :
 		soluce = maxima().solve( [Cer.maxima,"y="+Ligne.maxima],["x","y"] )
 	else :

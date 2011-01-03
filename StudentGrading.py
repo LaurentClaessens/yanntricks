@@ -87,7 +87,7 @@ class Grades(object):
 	def convert_to_full_grade(self,n):
 		""" return the list of grades if the maximum is n instead of self.full_grade """
 		return Grades([c*n/self.full_grade for c in self.grades_list],n)
-	def y_is_proportion_bigger_than_x(self,pspictName,tailleX=10,tailleY=10):
+	def y_is_proportion_bigger_than_x(self,pspictName,tailleX=15,tailleY=10):
 		"""
 		Return the pspict that represents the graph of the function
 		y(x) = proportion of the students that have x or more.
@@ -111,8 +111,8 @@ class Grades(object):
 		pspict.grid.num_subX = 0
 		pspict.grid.num_subY = 5
 		pspict.axes.Dy = 0.1
-		pspict.DrawDefaultAxes()
 		pspict.DrawDefaultGrid()
+		pspict.DrawDefaultAxes()
 		pspict.dilatation_X(float(tailleX)/self.full_grade)
 		pspict.dilatation_Y(tailleY)
 		return pspict
@@ -144,8 +144,8 @@ class Grades(object):
 		pspict.grid.num_subX = 0
 		pspict.grid.num_subY = 5
 		pspict.axes.Dy = 1
-		pspict.DrawDefaultAxes()
 		pspict.DrawDefaultGrid()
+		pspict.DrawDefaultAxes()
 		return pspict
 	def proportion_between(self,pspictName,delta=1):
 		"""
@@ -169,8 +169,8 @@ class Grades(object):
 		pspict.grid.num_subX = 0
 		pspict.grid.num_subY = 5
 		pspict.axes.Dy = 0.1
-		pspict.DrawDefaultAxes()
 		pspict.DrawDefaultGrid()
+		pspict.DrawDefaultAxes()
 		return pspict
 	def all_statistics(self,name,delta=1):
 		"""
