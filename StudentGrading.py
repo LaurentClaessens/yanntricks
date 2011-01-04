@@ -84,10 +84,12 @@ class Grades(object):
 		self.grades_list = grades_list
 		self.full_grade = float(full_grade)
 		self.media = self.full_grade/2
+		self.list_of_grades_list=[self.grades_list]
+		self.list_of_colors=["blue","green","cyan","brown"]
 	def convert_to_full_grade(self,n):
 		""" return the list of grades if the maximum is n instead of self.full_grade """
 		return Grades([c*n/self.full_grade for c in self.grades_list],n)
-	def y_is_proportion_bigger_than_x(self,pspictName,tailleX=15,tailleY=10):
+	def y_is_proportion_bigger_than_x(self,pspictName,Xsize=15,Ysize=10):
 		"""
 		Return the pspict that represents the graph of the function
 		y(x) = proportion of the students that have x or more.
@@ -95,13 +97,17 @@ class Grades(object):
 		The intervals are X=[0,self.full_grade] and Y=[0,1]
 		"""
 		pspict=pspicture(pspictName)
-		abcisses=self.grades_list
-		abcisses.extend([0,self.full_grade,self.full_grade/2])
-		for x in abcisses:
-			y = ProportionHaveMore(self.grades_list,x)
-			P = Point( x, y )
-			P.parameters.color = "blue"
-			pspict.DrawGraph(P)
+
+		for i in range(len(self.list_of_grades_list)):
+			grades_list=self.list_of_grades_list[i]
+			color=self.list_of_colors[i]
+			abcisses=grades_list
+			abcisses.extend([0,self.full_grade,self.full_grade/2])
+			for x in abcisses:
+				y = ProportionHaveMore(grades_list,x)
+				P = Point( x, y )
+				P.parameters.color = color
+				pspict.DrawGraph(P)
 
 		S = Segment( Point(self.media,0),Point(self.media,1) )
 		S.parameters.color = "red"
@@ -113,10 +119,10 @@ class Grades(object):
 		pspict.axes.Dy = 0.1
 		pspict.DrawDefaultGrid()
 		pspict.DrawDefaultAxes()
-		pspict.dilatation_X(float(tailleX)/self.full_grade)
-		pspict.dilatation_Y(tailleY)
+		pspict.dilatation_X(float(Xsize)/self.full_grade)
+		pspict.dilatation_Y(Ysize)
 		return pspict
-	def average_bigger(self,pspictName):
+	def average_bigger(self,pspictName,Xsize=15,Ysize=10):
 		"""
 		return the pspict that represents the graph of the function
 		y(x)=average of grades that are bigger than x
@@ -125,7 +131,7 @@ class Grades(object):
 		"""
 		pspict=pspicture(pspictName)
 		abcisses=self.grades_list
-		abcisses.extend([0,self.full_grade,self.full_grade/2])
+		abcisses.extend([0,self.full_grade,self.media])
 		for x in abcisses:
 			y = AverageBigger(self.grades_list,x)
 			P = Point( x, y )
@@ -134,10 +140,9 @@ class Grades(object):
 
 		segmentH = Segment( Point(0,self.media),Point(self.full_grade,self.media) )
 		segmentH.parameters.color = "red"
-		pspict.DrawGraph(segmentH)
 		segmentV = Segment( Point(self.media,0),Point(self.media,self.full_grade) )
-		segmentV.parameters.color = "red"
-		pspict.DrawGraph(segmentV)
+		segmentV.parameters = segmentH.parameters
+		pspict.DrawGraphs(segmentV,segmentH)
 		pspict.math_BB.AddPoint(Point(0,0))
 
 		pspict.grid.Dy = 1
@@ -146,8 +151,10 @@ class Grades(object):
 		pspict.axes.Dy = 1
 		pspict.DrawDefaultGrid()
 		pspict.DrawDefaultAxes()
+		pspict.dilatation_X(float(Xsize)/self.full_grade)
+		pspict.dilatation_Y(float(Ysize)/self.full_grade)
 		return pspict
-	def proportion_between(self,pspictName,delta=1):
+	def proportion_between(self,pspictName,delta=1,Xsize=15,Ysize=10):
 		"""
 		return the pspict that represents the graph of the function
 		y(x)=proportion of students in [x-delta,x+delta].
@@ -171,13 +178,15 @@ class Grades(object):
 		pspict.axes.Dy = 0.1
 		pspict.DrawDefaultGrid()
 		pspict.DrawDefaultAxes()
+		pspict.dilatation_X(float(Xsize)/self.full_grade)
+		pspict.dilatation_Y(Ysize)
 		return pspict
-	def all_statistics(self,name,delta=1):
+	def all_statistics(self,name,delta=1,Xsize=15,Ysize=10):
 		"""
 		Create all the figures and write them in files.
 		"""
-		self.y_is_proportion_bigger_than_x(name+"pcb").write_the_figure_file("svt")
-		self.average_bigger(name+"avb").write_the_figure_file("svt")
-		self.proportion_between(name+"pbt",delta=1).write_the_figure_file("svt")
+		self.y_is_proportion_bigger_than_x(name+"pcb",Xsize=Xsize,Ysize=Ysize).write_the_figure_file("svt")
+		self.average_bigger(name+"avb",Xsize=Xsize,Ysize=Ysize).write_the_figure_file("svt")
+		self.proportion_between(name+"pbt",delta,Xsize=Xsize,Ysize=Ysize).write_the_figure_file("svt")
 	def __str__(self):
 		return str(self.grades_list)
