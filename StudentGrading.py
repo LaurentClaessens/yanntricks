@@ -130,13 +130,16 @@ class Grades(object):
 		The intervals are X=[0,self.full_grade] and Y=[0,self.full_grade]
 		"""
 		pspict=pspicture(pspictName)
-		abcisses=self.grades_list
-		abcisses.extend([0,self.full_grade,self.media])
-		for x in abcisses:
-			y = AverageBigger(self.grades_list,x)
-			P = Point( x, y )
-			P.parameters.color = "blue"
-			pspict.DrawGraph(P)
+		for i in range(len(self.list_of_grades_list)):
+			grades_list=self.list_of_grades_list[i]
+			color=self.list_of_colors[i]
+			abcisses=grades_list
+			abcisses.extend([0,self.full_grade,self.full_grade/2])
+			for x in abcisses:
+				y = AverageBigger(grades_list,x)
+				P = Point( x, y )
+				P.parameters.color = color
+				pspict.DrawGraph(P)
 
 		segmentH = Segment( Point(0,self.media),Point(self.full_grade,self.media) )
 		segmentH.parameters.color = "red"
@@ -162,13 +165,16 @@ class Grades(object):
 		The intervals are X=[0,self.full_grade] and Y=[0,1]
 		"""
 		pspict=pspicture(pspictName)
-		abcisses=self.grades_list
-		abcisses.extend([0,self.full_grade,self.full_grade/2])
-		for x in abcisses:
-			y = ProportionBetween(self.grades_list,x,delta)
-			P = Point( x, y )
-			P.parameters.color = "blue"
-			pspict.DrawGraph(P)
+		for i in range(len(self.list_of_grades_list)):
+			grades_list=self.list_of_grades_list[i]
+			color=self.list_of_colors[i]
+			abcisses=grades_list
+			abcisses.extend([0,self.full_grade,self.full_grade/2])
+			for x in abcisses:
+				y = ProportionBetween(grades_list,x,delta)
+				P = Point( x, y )
+				P.parameters.color = color
+				pspict.DrawGraph(P)
 
 		#pspict.math_BB.AddPoint(Point(0,0))
 
