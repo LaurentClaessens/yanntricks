@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010
+# copyright (c) Laurent Claessens, 2010-2011
 # email: moky.math@gmai.com
 
 """
@@ -1131,7 +1131,11 @@ class phyFunction(object):
 			var('x,y')
 			try:
 				self.sage = fun
-				self.sageFast = self.sage._fast_float_(x)
+				try :
+					self.sageFast = self.sage._fast_float_(x)
+				except NotImplementedError,TypeError :		# Happens when the derivative of the function is not implemented in Sage
+					self.sageFast = self.sage(x)
+
 			except AttributeError:			# Happens when the function is given by a number like f=0  F=phyFunction(f)
 				self.sage = SR(fun)
 				self.sageFast = self.sage._fast_float_(x)
@@ -1170,7 +1174,7 @@ class phyFunction(object):
 			return self
 		if n==1:
 			if self._derivative == None :
-				self._derivative = phyFunction(self.sage.derivative())
+				self._derivative = phyFunction(self.sage.derivative(x=x))
 			return self._derivative
 		else:
 			return self.derivative(n-1).derivative()
@@ -1184,11 +1188,14 @@ class phyFunction(object):
 		P.mark(radius,P.advised_mark_angle,"$P$")
 		"""
 		P = Point(float(x),self(x))
-		ca = self.derivative()(x) 
-		angle_n=degree(atan(ca)+pi/2)
-		if self.derivative(2)(x) > 0:
-			angle_n=angle_n+180
-		P.advised_mark_angle=angle_n
+		try :
+			ca = self.derivative()(x=x) 
+			angle_n=degree(atan(ca)+pi/2)
+			if self.derivative(2)(x) > 0:
+				angle_n=angle_n+180
+			P.advised_mark_angle=angle_n
+		except TypeError :		# Happens when Sage has no derivative of the function.
+			pass
 		return P
 	def get_normal_vector(self,x):
 		""" return a normalized normal vector to the graph of the function at x """

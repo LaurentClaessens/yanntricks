@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010
+# copyright (c) Laurent Claessens, 2010-2011
 # email: moky.math@gmai.com
 
 """

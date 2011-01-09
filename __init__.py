@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2010
+# copyright (c) Laurent Claessens, 2009-2011
 # email: moky.math@gmail.com
 
 """
