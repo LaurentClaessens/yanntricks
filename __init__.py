@@ -481,19 +481,22 @@ class SingleAxe(object):
 		self.options=Options()
 		self.IsLabel=False
 		self.axes_unit=AxesUnit(1,"")
+		self.Dx=1
+		self.arrows="->"
+		self.graduation=True
+		self.numbering=True
 
 class Axes(object):
 	"""
 	Describe a system of axes (two axes).
+
+	By default an orthogonal)
 	"""
 	def __init__(self,C,bb):
 		self.C = C						
 		self.BB = bb.copy()
 		self.options = Options()
 		self.grille = Grid(self.BB)
-		self.IsLabelX = False
-		self.IsLabelY = False
-		self.axes_unitX=AxesUnit(1,"")
 		self.axes_unitY=AxesUnit(1,"")
 		self.Dx = 1
 		self.Dy = 1						# Ce sont les valeurs par défaut.
@@ -501,6 +504,7 @@ class Axes(object):
 		self.separator_name="AXES"
 		self.graduation=True
 		self.numbering=True
+		self.single_axeX=SingleAxe(self.C)
 	def AjouteGrid(self):
 		raise DeprecationWarning,"There are no grid associated with a axe system"
 		self.IsGrid = 1
