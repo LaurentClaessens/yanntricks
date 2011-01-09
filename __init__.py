@@ -470,22 +470,25 @@ class AxesUnit(object):
 					l.append((x,text))
 		return l
 
+
+class SingleAxe(object):
+	"""
+	Describe an axe
+	"""
+	def __init__(self,C,base):
+		self.C=C
+		self.base=base
+		self.options=Options()
+		self.IsLabel=False
+		self.axes_unit=AxesUnit(1,"")
+
 class Axes(object):
 	"""
-	ATTRIBUTS
-		self.grille :		la grille associée
-		self.Dx, self.Dy :	l'intervalle avec laquelle des marques sont faites sur les axes
-	MÉTHODES
-		self.AjouteGrid			Crée une grille avec des options par défaut
-		self.add_label_X		Ajoute un label X (idem pour Y)
-		self.add_option			Ajoute une option. Ceci doit être fait avec la syntaxe pstricks
-		self.no_graduation		Pas de marques sur les axes
+	Describe a system of axes (two axes).
 	"""
 	def __init__(self,C,bb):
 		self.C = C						
 		self.BB = bb.copy()
-		#self.BB.AddPoint( Point(C.x-0.5,C.y-0.7) )		# Celle-ci est pour tenir compte des chiffres écrits sur les axes X et Y
-									# No more usefull because they are now numbers put «by hand».
 		self.options = Options()
 		self.grille = Grid(self.BB)
 		self.IsLabelX = False
