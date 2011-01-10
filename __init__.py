@@ -473,9 +473,15 @@ class AxesUnit(object):
 
 class SingleAxe(object):
 	"""
-	Describe an axe
+	Describe an axe.
+	
+	ARGUMENS
+	C : the center
+	base : the basic vector
+	mx : the initial value (typically negative)
+	Mx : the final value (typically positive)
 	"""
-	def __init__(self,C,base):
+	def __init__(self,C,base,mx,Mx):
 		self.C=C
 		self.base=base
 		self.options=Options()
@@ -485,7 +491,48 @@ class SingleAxe(object):
 		self.arrows="->"
 		self.graduation=True
 		self.numbering=True
-
+	def bounding_box(self,pspict=None):
+		return self.BB
+	def pstricks_code(self,pspict=None):
+		sDx=RemoveLastZeros(self.Dx,10)
+		self.add_option("Dx="+sDx)
+		bgx = self.BB.mx
+		if self.BB.mx == int(self.BB.mx):		# Avoid having end of axes on an integer coordinate for aesthetic reasons.
+			bgx = self.BB.mx + 0.01
+		self.BB.mx = bgx
+		c=[]
+		if self.IsLabel :
+			P = Point(self.bounding_box(pspict).Mx,0)
+			P.parameters.symbol="none"
+			P.put_mark(self.DistLabelX,self.AngleLabelX,self.LabelX)
+			c.append(P.pstricks_code())
+		if self.graduation :
+			for x,symbol in self.axes_unitX.place_list(self.bounding_box(pspict).mx,self.bounding_box(pspict).Mx,self.Dx):
+				if x != 0:
+					A=Point(x,0)
+					A.parameters.symbol="|"
+					A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(x)))	# Make the point name unique.
+					if self.numbering :
+						A.put_mark(0.4/pspict.yunit,-90,symbol)	# TODO : use the size of the box as distance
+					c.append(A.pstricks_code())
+			for y,symbol in self.axes_unitY.place_list(self.bounding_box(pspict).my,self.bounding_box(pspict).My,self.Dy):
+				if y != 0:
+					A=Point(0,y)
+					A.parameters.symbol="|"
+					A.add_option("dotangle=90")
+					A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(y)))	# Make the point name unique.
+					if self.numbering :
+						A.put_mark(0.4/pspict.xunit,180,symbol)	# TODO : use the size of the box as distance instead of 0.4
+					c.append(A.pstricks_code())
+		h1=Point(self.bounding_box(pspict).mx,self.C.y)
+		h2=Point(self.bounding_box(pspict).Mx,self.C.y)
+		v1=Point(self.C.x,self.bounding_box(pspict).my)
+		v2=Point(self.C.x,self.bounding_box(pspict).My)
+		h=Vector(h1,h2)
+		v=Vector(v1,v2)
+		c.append(h.pstricks_code())
+		c.append(v.pstricks_code())
+		return "\n".join(c)
 class Axes(object):
 	"""
 	Describe a system of axes (two axes).
