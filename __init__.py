@@ -470,7 +470,6 @@ class AxesUnit(object):
 					l.append((x,text))
 		return l
 
-
 class SingleAxe(object):
 	"""
 	Describe an axe.
@@ -551,7 +550,7 @@ class Axes(object):
 		self.separator_name="AXES"
 		self.graduation=True
 		self.numbering=True
-		self.single_axeX=SingleAxe(self.C)
+		self.single_axeX=SingleAxe(self.C,Vector(1,1),0,2)
 	def AjouteGrid(self):
 		raise DeprecationWarning,"There are no grid associated with a axe system"
 		self.IsGrid = 1
