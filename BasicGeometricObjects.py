@@ -92,7 +92,7 @@ def AffineVector(A=None,B=None):
 	It also accepts a segment as argument
 	"""
 	try :
-		return GraphOfAVector(A.I,A.F)
+		return GraphOfAVector(AffineVector(A.I,A.F))
 	except AttributeError :
 		return GraphOfAVector(GeometricVector(A,B))
 def Vector(x,y):
@@ -113,7 +113,6 @@ class GeometricPoint(object):
 	def __init__(self,x,y):
 		if type(x) == str : print "Attention : x est du type str"
 		if type(y) == str : print "Attention : y est du type str"
-		print "115",type(x),x
 		self.x = float(x)
 		self.y = float(y)
 		self.psName = GeometricPoint.NomPointLibre.suivant()
@@ -397,7 +396,7 @@ class GeometricCircle(object):
 		return Point(self.center.x+self.radius*math.cos(radian(theta)), self.center.y+self.radius*math.sin(radian(theta)) )
 	# Donne le vecteur normal de norme 1 au cercle au point d'angle theta
 	def VectorTangent(self,theta):
-		raise DeprecationWarning "Usge get_tangent_vector instead"
+		raise DeprecationWarning,"Usge get_tangent_vector instead"
 		return PolarPoint(1,theta+90).lie(self.get_point(theta))
 	def get_tangent_vector(self,theta):
 		return PolarPoint(1,theta+90).lie(self.get_point(theta))
