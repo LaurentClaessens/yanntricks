@@ -295,7 +295,7 @@ def Graph(X,*arg):
 			return GraphOfAParametricCurve(X,arg[0],arg[1])
 		if type(X) == Segment :
 			return GraphOfASegment(X)
-		if type(X) == Vector :
+		if type(X) == AffineVector :
 			return GraphOfAVector(X)
 		if type(X) == Circle :
 			return GraphOfACircle(X)
@@ -483,6 +483,8 @@ class SingleAxe(object):
 	def __init__(self,C,base,mx,Mx):
 		self.C=C
 		self.base=base
+		self.mx=mx
+		self.Mx=Mx
 		self.options=Options()
 		self.IsLabel=False
 		self.axes_unit=AxesUnit(1,"")
@@ -490,15 +492,37 @@ class SingleAxe(object):
 		self.arrows="->"
 		self.graduation=True
 		self.numbering=True
-	def bounding_box(self,pspict=None):
-		return self.BB
+		self.segment=Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
+	def add_option(self,opt):
+		self.options.add_option(opt)
+	def graduation_points(self,pspict):
+		"""Return the list of points that makes the graduation of the axes"""
+		if self.graduation :
+			points_list=[]
+			for l,symbol in self.axes_unit.place_list(self.base.length()*self.mx,self.base.length()*self.Mx,self.Dx):
+				if l != 0:
+					P=self.base.fix_size(l).F
+					P.parameters.symbol="|"
+					P.psName=P.psName+pspict.name+_latinize(str(numerical_approx(l)))	# Make the point name unique.
+					if self.numbering :
+						P.put_mark(0.4/pspict.yunit,-90,symbol)	# TODO : use the size of the box as distance
+				points_list.append(P)
+			return points_list
+		else :
+			return None
+	def bounding_box(self,pspict):
+		BB=BoundingBox()
+		for P in self.graduation_points(pspict):
+			BB.append(P,pspict)
+		BB.append(self.segment,pspict)
+		return BB
 	def pstricks_code(self,pspict=None):
 		sDx=RemoveLastZeros(self.Dx,10)
 		self.add_option("Dx="+sDx)
-		bgx = self.BB.mx
-		if self.BB.mx == int(self.BB.mx):		# Avoid having end of axes on an integer coordinate for aesthetic reasons.
-			bgx = self.BB.mx + 0.01
-		self.BB.mx = bgx
+		#bgx = self.BB.mx
+		#if self.BB.mx == int(self.BB.mx):		# Avoid having end of axes on an integer coordinate for aesthetic reasons.
+		#	bgx = self.BB.mx + 0.01
+		#self.BB.mx = bgx
 		c=[]
 		if self.IsLabel :
 			P = Point(self.bounding_box(pspict).Mx,0)
@@ -506,31 +530,10 @@ class SingleAxe(object):
 			P.put_mark(self.DistLabelX,self.AngleLabelX,self.LabelX)
 			c.append(P.pstricks_code())
 		if self.graduation :
-			for x,symbol in self.axes_unitX.place_list(self.bounding_box(pspict).mx,self.bounding_box(pspict).Mx,self.Dx):
-				if x != 0:
-					A=Point(x,0)
-					A.parameters.symbol="|"
-					A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(x)))	# Make the point name unique.
-					if self.numbering :
-						A.put_mark(0.4/pspict.yunit,-90,symbol)	# TODO : use the size of the box as distance
-					c.append(A.pstricks_code())
-			for y,symbol in self.axes_unitY.place_list(self.bounding_box(pspict).my,self.bounding_box(pspict).My,self.Dy):
-				if y != 0:
-					A=Point(0,y)
-					A.parameters.symbol="|"
-					A.add_option("dotangle=90")
-					A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(y)))	# Make the point name unique.
-					if self.numbering :
-						A.put_mark(0.4/pspict.xunit,180,symbol)	# TODO : use the size of the box as distance instead of 0.4
-					c.append(A.pstricks_code())
-		h1=Point(self.bounding_box(pspict).mx,self.C.y)
-		h2=Point(self.bounding_box(pspict).Mx,self.C.y)
-		v1=Point(self.C.x,self.bounding_box(pspict).my)
-		v2=Point(self.C.x,self.bounding_box(pspict).My)
-		h=Vector(h1,h2)
-		v=Vector(v1,v2)
-		c.append(h.pstricks_code())
-		c.append(v.pstricks_code())
+			for P in self.graduation_points(pspict):
+				c.append(P.pstricks_code(pspict))
+		h=AffineVector(self.segment)
+		c.append(h.pstricks_code(pspicture))
 		return "\n".join(c)
 class Axes(object):
 	"""
@@ -632,8 +635,8 @@ class Axes(object):
 		h2=Point(self.bounding_box(pspict).Mx,self.C.y)
 		v1=Point(self.C.x,self.bounding_box(pspict).my)
 		v2=Point(self.C.x,self.bounding_box(pspict).My)
-		h=Vector(h1,h2)
-		v=Vector(v1,v2)
+		h=AffineVector(h1,h2)
+		v=AffineVector(v1,v2)
 		c.append(h.pstricks_code())
 		c.append(v.pstricks_code())
 		return "\n".join(c)
@@ -1201,7 +1204,7 @@ class pspicture(object):
 				x=DrawElement(graph.mark,separator_name)
 				self.record_draw_graph.appen(x)
 		except AttributeError :
-			pass
+			pass				# This happens when the graph has no mark; that is most of the time.
 	def DrawGrid(self,grid):
 		raise DeprecationWarning,"This is depreciated. The grid has to be drawn with DrawGraph as everyone"
 	def TraceTriangle(self,tri,params):
@@ -1288,7 +1291,7 @@ class pspicture(object):
 		"""
 		# Here we are supposed to be sure of the xunit, yunit, so we can compute the BB's needed for the points with marks.
 		# For the same reason, all the marks that were asked to be drawn are added now.
-		# Most of the difficulty is when the user use pspicture.dilatation_X and Y with different coefficients.
+		# Most of the difficulty is when the user use pspicture.dilatation_X and Y with different coefficients. TODO : take it into account.
 		list_to_be_drawn = [a.graph for a in self.record_draw_graph if a.take_graph]
 		for graph in list_to_be_drawn:
 			try :
@@ -1302,14 +1305,18 @@ class pspicture(object):
 		list_to_be_drawn = [a for a in self.record_draw_graph if a.take_graph]
 		for x in list_to_be_drawn:
 			graph=x.graph
+			print "1306",graph
 			separator_name=x.separator_name
 			try :
 				self.BB.add_graph(graph,self)
+				print "1312",graph.pstricks_code(self)
+				print "1313"
 				self.add_latex_line(graph.pstricks_code(self),separator_name)
 			except AttributeError,data:
 				if not "pstricks_code" in dir(graph):
 					print "phystricks error : object %s has no pstricks_code method"%(str(graph))
 					raise 
+				raise
 		for sortie in globals_vars.list_exits:
 			if globals_vars.__getattribute__(sortie+"_exit"):
 				print "I've to make an exit : %s"%sortie

@@ -86,8 +86,20 @@ def Point(x,y):
 	return GraphOfAPoint(GeometricPoint(x,y))
 def Segment(A,B):
 	return GraphOfASegment(GeometricSegment(A,B))
-def Vector(a,b):
-	return GraphOfAVector(GeometricVector(a,b))
+def AffineVector(A=None,B=None):
+	"""
+	From points A and B, return the AFFINE vector from A to B.
+	It also accepts a segment as argument
+	"""
+	try :
+		return GraphOfAVector(A.I,A.F)
+	except AttributeError :
+		return GraphOfAVector(GeometricVector(A,B))
+def Vector(x,y):
+	"""
+	From the coordinates x,y, return the corresponding vector, i.e. the affine vector from (0,0) to (x,y).
+	"""
+	return AffineVector(Point(0,0),Point(x,y))
 def Circle(center,radius):
 	return GraphOfACircle(GeometricCircle(center,radius))
 def Rectangle(NW,SE):
@@ -98,14 +110,13 @@ class GeometricPoint(object):
 	This is a point. Each point comes with a name given by a class attribute.
 	"""
 	NomPointLibre = ListeNomsPoints()
-
 	def __init__(self,x,y):
 		if type(x) == str : print "Attention : x est du type str"
 		if type(y) == str : print "Attention : y est du type str"
+		print "115",type(x),x
 		self.x = float(x)
 		self.y = float(y)
 		self.psName = GeometricPoint.NomPointLibre.suivant()
-
 	def projection(self,seg):
 		"""
 		Return the projection of the point on the line of the given segment.
@@ -143,9 +154,9 @@ class GeometricPoint(object):
 		print "This method is depreciated. Use self.origin instead"
 		raise AttributeError
 	def origin(self,p):
-		return Vector(p,Point(p.x+self.x,p.y+self.y))
+		return AffineVector(p,Point(p.x+self.x,p.y+self.y))
 	def Vector(self):
-		return Vector(Point(0,0),self)
+		return AffineVector(Point(0,0),self)
 	def norme(self):
 		return Segment(Point(0,0),self).longueur
 	# La méthode normalize voit le point comme un vecteur partant de zéro, et en donne le vecteur de taille 1
@@ -311,8 +322,8 @@ class GeometricSegment(object):
 		return self.center()
 	def center(self):
 		return self.proportion(0.5)
-	def Vector(self):
-		return Vector(self.I,self.F)
+	def AffineVector(self):
+		return AffineVector(self.I,self.F)
 	def get_normal_vector(self):
 		"""
 		returns a normalized normal vector at the center of the segment
@@ -334,14 +345,14 @@ class GeometricSegment(object):
 		"""
 		Return a new Segment with extra length lI at the initial side and lF at the final side. 
 		"""
-		vI = Vector(self.center(),self.I)
-		vF = Vector(self.center(),self.F)
+		vI = AffineVector(self.center(),self.I)
+		vF = AffineVector(self.center(),self.F)
 		I = vI.add_size(lI).F
 		F = vF.add_size(lF).F
 		return Segment(I,F)
 	def fix_size(self,l):
-		vI = Vector(self.center(),self.I)
-		vF = Vector(self.center(),self.F)
+		vI = AffineVector(self.center(),self.I)
+		vF = AffineVector(self.center(),self.F)
 		I = vI.fix_size(l/2).F
 		F = vF.fix_size(l/2).F
 		return Segment(I,F)
@@ -386,6 +397,9 @@ class GeometricCircle(object):
 		return Point(self.center.x+self.radius*math.cos(radian(theta)), self.center.y+self.radius*math.sin(radian(theta)) )
 	# Donne le vecteur normal de norme 1 au cercle au point d'angle theta
 	def VectorTangent(self,theta):
+		raise DeprecationWarning "Usge get_tangent_vector instead"
+		return PolarPoint(1,theta+90).lie(self.get_point(theta))
+	def get_tangent_vector(self,theta):
 		return PolarPoint(1,theta+90).lie(self.get_point(theta))
 	def get_normal_vector(self,theta):
 		return PolarPoint(1,theta).lie(self.get_point(theta))
@@ -420,9 +434,9 @@ class GeometricVector(object):
 		self.Dx = self.F.x-self.I.x
 		self.Dy = self.F.y-self.I.y
 	def inverse(self):
-		return Vector(self.I,Point(self.I.x-self.Dx,self.I.y-self.Dy))
+		return AffineVector(self.I,Point(self.I.x-self.Dx,self.I.y-self.Dy))
 	def rotation(self,angle):
-		return PolarVector(self.I,self.polaires().r,degree(self.polaires().theta)+angle)
+		return PolarAffneVector(self.I,self.polaires().r,degree(self.polaires().theta)+angle)
 	def orthogonal(self):
 		return self.rotation(90)
 	def dilatation(self,coef):
@@ -441,7 +455,7 @@ class GeometricVector(object):
 		"""
 		return a vector (in affine space) whose origin is P.
 		"""
-		return Vector(P,Point(P.x+self.Dx,P.y+self.Dy))
+		return AffineVector(P,Point(P.x+self.Dx,P.y+self.Dy))
 	def lie(self,p):
 		print "use self.origin instead"
 		raise AttributeError
@@ -462,7 +476,7 @@ class GeometricVector(object):
 	def default_associated_graph_class(self):
 		return phystricks.GraphOfAVector
 	def __mul__(self,coef):
-		return Vector(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
+		return AffineVector(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
 	def __rmul__(self,coef):
 		return self*coef
 	def __neg__(self):
@@ -470,7 +484,7 @@ class GeometricVector(object):
 	def __div__(self,coef):
 		return self * (1/coef)
 	def __str__(self):
-		return "Vector I=%s F=%s; Direction=%s"%(str(self.I),str(self.F),str(self.direction()))
+		return "AffineVector I=%s F=%s; Direction=%s"%(str(self.I),str(self.F),str(self.direction()))
 
 class GeometricRectangle(object):
 	"""
@@ -606,9 +620,9 @@ class Mark(object):
 			theta=radian(self.angle)
 			xP=d*cos(theta)/A
 			yP=d*sin(theta)/B
-			return self.graph.mark_point().translate(Vector(Point(0,0),Point(xP,yP)))
+			return self.graph.mark_point().translate(AffineVector(Point(0,0),Point(xP,yP)))
 		else:
-			return self.graph.mark_point().translate(PolarVector(Point(0,0),self.dist,self.angle))
+			return self.graph.mark_point().translate(PolarAffineVector(Point(0,0),self.dist,self.angle))
 	def bounding_box(self,pspict=None):
 		central_point=self.central_point(pspict)
 		bb=BoundingBox(central_point,central_point)
@@ -911,8 +925,8 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 			Xradius=0.1/pspict.xunit
 			Yradius=0.1/pspict.yunit
 		except :
-			print "You should consider to give a pspict as argument. If not the boundig box of  %s could be bad"%str(self)
-			raise
+			print "You should consider to give a pspict as argument. If not the boundig box of %s could be bad"%str(self)
+			raise AttributeError
 		bb = BoundingBox(Point(self.x-Xradius,self.y-Yradius),Point(self.x+Xradius,self.y+Yradius))
 		for P in self.record_add_to_bb:
 			bb.AddPoint(P)
@@ -1016,8 +1030,8 @@ class MeasureLength(GraphOfASegment):
 	def pstricks_code(self,pspict=None):
 		a=[]
 		C=self.mseg.center()
-		vI=Vector(C,self.mI)
-		vF=Vector(C,self.mF)
+		vI=AffineVector(C,self.mI)
+		vF=AffineVector(C,self.mF)
 		vI.parameters=self.parameters
 		vF.parameters=self.parameters
 		a.append(vI.pstricks_code())
@@ -1469,7 +1483,7 @@ class ParametricCurve(object):
 		   The vector is normed to 1.
 		"""
 		initial = self.get_point(llam,advised)
-		return Vector( initial,Point(initial.x+self.derivative().f1(llam),initial.y+self.derivative().f2(llam)) ).normalize()
+		return AffineVector( initial,Point(initial.x+self.derivative().f1(llam),initial.y+self.derivative().f2(llam)) ).normalize()
 	def get_normal_vector(self,llam,advised=False):
 		"""
 		Return the outside normal vector to the curve for the value llam of the parameter.
@@ -1646,12 +1660,12 @@ class Nuage_de_Points(object):
 	def ajoute_point(self,p):
 		self.listePoints.append(p)
 
-def PolarVector(P,r,theta):
+def PolarAffineVector(P,r,theta):
 	"""
 	returns a vector on the base point P (class Point) of length r angle theta (degree)
 	"""
 	alpha = radian(theta)
-	return Vector(P, Point(P.x+r*math.cos(alpha),P.y+r*math.sin(alpha)) )
+	return AffineVector(P, Point(P.x+r*math.cos(alpha),P.y+r*math.sin(alpha)) )
 
 class BoundingBox(object):
 	def __init__(self,dSW=GeometricPoint(0,0),dNE=GeometricPoint(0,0)):
@@ -1722,6 +1736,8 @@ class BoundingBox(object):
 		self.AddY(bb.my)
 		self.AddY(bb.My)
 	def add_graph(self,graphe,pspict=None):
+		self.AddBB(graphe.bounding_box(pspict))
+	def append(self,graphe,pspict=None):		# It seems to me that the method name "append" is more intuitive that "add_graph"
 		self.AddBB(graphe.bounding_box(pspict))
 	def add_math_graph(self,graphe,pspict=None):
 		try :
