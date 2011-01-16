@@ -450,7 +450,7 @@ class AxesUnit(object):
 		except TypeError :
 			pass
 		if frac==0:
-			raise ValueError,"frac is zero in AxesUnit.place_list(). Maybe you are giving the fraction 1/2 instead of 0.5\n Are you trying to push me in an infinite loop ?"
+			raise ValueError,"frac is zero in AxesUnit.place_list(). Maybe you ignore that python evaluates 1/2 to 0 ? (writes literal 0.5 instead) \n Or are you trying to push me in an infinite loop ?"
 		l=[]
 		x=mx
 		step=var("step")
@@ -476,8 +476,8 @@ class SingleAxe(object):
 	
 	ARGUMENS
 	C : the center
-	base : the basic vector
-	mx : the initial value (typically negative)
+	base : the base of the axes
+	mx : the initial value (typically negative). It is taken in units of <base>.
 	Mx : the final value (typically positive)
 	"""
 	def __init__(self,C,base,mx,Mx):
@@ -487,11 +487,12 @@ class SingleAxe(object):
 		self.Mx=Mx
 		self.options=Options()
 		self.IsLabel=False
-		self.axes_unit=AxesUnit(1,"")
+		self.axes_unit=AxesUnit(self.base.length(),"")
 		self.Dx=1
 		self.arrows="->"
 		self.graduation=True
 		self.numbering=True
+		self.mark_origin=True
 		self.segment=Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
 	def add_option(self,opt):
 		self.options.add_option(opt)
@@ -554,6 +555,7 @@ class Axes(object):
 		self.graduation=True
 		self.numbering=True
 		self.single_axeX=SingleAxe(self.C,Vector(1,1),0,2)
+		self.single_axeX.mark_origin=False
 	def AjouteGrid(self):
 		raise DeprecationWarning,"There are no grid associated with a axe system"
 		self.IsGrid = 1
@@ -1305,12 +1307,9 @@ class pspicture(object):
 		list_to_be_drawn = [a for a in self.record_draw_graph if a.take_graph]
 		for x in list_to_be_drawn:
 			graph=x.graph
-			print "1306",graph
 			separator_name=x.separator_name
 			try :
 				self.BB.add_graph(graph,self)
-				print "1312",graph.pstricks_code(self)
-				print "1313"
 				self.add_latex_line(graph.pstricks_code(self),separator_name)
 			except AttributeError,data:
 				if not "pstricks_code" in dir(graph):
