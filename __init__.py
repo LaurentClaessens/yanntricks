@@ -427,6 +427,19 @@ class Grid(object):
 			a.append(element.pstricks_code(pspict))
 		return "\n".join(a)
 
+def MultipleBetween(Dx,mx,Mx,mark_origin=True):
+	"""
+	Return the list of values that are all the integer multiple of Dx between mx and Mx.
+
+	If <mark_origin> is True, the list includes 0 if applicable.
+	"""
+	ni=ceil(float(mx)/Dx)
+	nf=floor(float(Mx)/Dx)
+	l = [i*Dx for i in range(ni,nf+1)]
+	if not mark_origin :
+		l.remove(0)
+	return l
+
 class AxesUnit(object):
 	def __init__(self,numerical_value,latex_symbol=""):
 		try :
@@ -437,7 +450,7 @@ class AxesUnit(object):
 		self.latex_symbol=latex_symbol
 	def symbol(self,x):
 		return latex(x)+self.latex_symbol
-	def place_list(self,mx,Mx,frac=1):
+	def place_list(self,mx,Mx,frac=1,mark_origin=True):
 		"""
 		return a tuple of 
 		1. values that are all the integer multiple of <frac>*self.numerical_value between mx and Mx
@@ -446,28 +459,20 @@ class AxesUnit(object):
 		Please give <frac> as litteral real. Recall that python evaluates 1/2 to 0. If you pass 0.5, it will be converted to 1/2 for a nice display.
 		"""
 		try :
-			frac=sage.rings.rational.Rational(frac)		# If the user enter "0.5", it is converted to 1/2
+			frac=sage.rings.rational.Rational(frac)		# If the user enters "0.5", it is converted to 1/2
 		except TypeError :
 			pass
 		if frac==0:
 			raise ValueError,"frac is zero in AxesUnit.place_list(). Maybe you ignore that python evaluates 1/2 to 0 ? (writes literal 0.5 instead) \n Or are you trying to push me in an infinite loop ?"
 		l=[]
-		x=mx
-		step=var("step")
 		k=var("TheTag")
-		step=self.numerical_value*frac
-		ni=ceil(float(mx)/step)
-		nf=floor(float(Mx)/step)
-		x0=ni*step
-		for i in range(ni,nf+1):
-			if i != 0:
-				x=i*step
-				if self.latex_symbol == "":
-					l.append((x,"$"+latex(x)+"$"))
-				else :
-					pos=(x/self.numerical_value)*k
-					text="$"+latex(pos).replace("\mbox{TheTag}",self.latex_symbol)+"$"	# This risk to be Sage-version dependant.
-					l.append((x,text))
+		for x in MultipleBetween(frac*self.numerical_value,mx,Mx,mark_origin):
+			if self.latex_symbol == "":
+				l.append((x,"$"+latex(x)+"$"))
+			else :
+				pos=(x/self.numerical_value)*k
+				text="$"+latex(pos).replace("\mbox{TheTag}",self.latex_symbol)+"$"	# This risk to be Sage-version dependant.
+				l.append((x,text))
 		return l
 
 class SingleAxe(object):
@@ -479,6 +484,10 @@ class SingleAxe(object):
 	base : the base of the axes
 	mx : the initial value (typically negative). It is taken in units of <base>.
 	Mx : the final value (typically positive)
+
+	The axe goes from C+mx*base to C-Mx*base. A number is written each Dx*base.
+
+	self.mark_angle : the angle under which the marks are written (in degree).
 	"""
 	def __init__(self,C,base,mx,Mx):
 		self.C=C
@@ -487,36 +496,42 @@ class SingleAxe(object):
 		self.Mx=Mx
 		self.options=Options()
 		self.IsLabel=False
-		self.axes_unit=AxesUnit(self.base.length(),"")
+		self.axes_unit=AxesUnit(1,"")
 		self.Dx=1
 		self.arrows="->"
 		self.graduation=True
 		self.numbering=True
 		self.mark_origin=True
 		self.segment=Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
+		self.mark_angle=degree(base.angle()-pi/2)
 	def add_option(self,opt):
 		self.options.add_option(opt)
+	def add_label(self,dist,angle,marque):
+		self.IsLabel = True
+		self.Label = marque
+		self.DistLabel = dist
+		self.AngleLabel = angle
 	def graduation_points(self,pspict):
 		"""Return the list of points that makes the graduation of the axes"""
 		if self.graduation :
 			points_list=[]
-			for l,symbol in self.axes_unit.place_list(self.base.length()*self.mx,self.base.length()*self.Mx,self.Dx):
-				if l != 0:
-					P=self.base.fix_size(l).F
-					P.parameters.symbol="|"
-					P.psName=P.psName+pspict.name+_latinize(str(numerical_approx(l)))	# Make the point name unique.
-					if self.numbering :
-						P.put_mark(0.4/pspict.yunit,-90,symbol)	# TODO : use the size of the box as distance
+			for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,self.Dx,self.mark_origin):
+				P=(x*self.base).F
+				P.parameters.symbol="|"
+				P.psName=P.psName+pspict.name+_latinize(str(numerical_approx(x)))	# Make the point name unique.
+				if self.numbering :
+					P.put_mark(0.4/pspict.yunit,self.mark_angle,symbol)				# TODO : use the size of the box as distance
 				points_list.append(P)
 			return points_list
 		else :
 			return None
 	def bounding_box(self,pspict):
-		BB=BoundingBox()
+		BB=self.math_bounding_box(pspict)
 		for P in self.graduation_points(pspict):
 			BB.append(P,pspict)
-		BB.append(self.segment,pspict)
 		return BB
+	def math_bounding_box(self,pspict):
+		return self.segment.bounding_box(pspict)
 	def pstricks_code(self,pspict=None):
 		sDx=RemoveLastZeros(self.Dx,10)
 		self.add_option("Dx="+sDx)
@@ -526,9 +541,9 @@ class SingleAxe(object):
 		#self.BB.mx = bgx
 		c=[]
 		if self.IsLabel :
-			P = Point(self.bounding_box(pspict).Mx,0)
+			P = self.segment.F
 			P.parameters.symbol="none"
-			P.put_mark(self.DistLabelX,self.AngleLabelX,self.LabelX)
+			P.put_mark(self.DistLabel,self.AngleLabel,self.Label)
 			c.append(P.pstricks_code())
 		if self.graduation :
 			for P in self.graduation_points(pspict):
@@ -536,6 +551,7 @@ class SingleAxe(object):
 		h=AffineVector(self.segment)
 		c.append(h.pstricks_code(pspicture))
 		return "\n".join(c)
+
 class Axes(object):
 	"""
 	Describe a system of axes (two axes).
@@ -554,8 +570,11 @@ class Axes(object):
 		self.separator_name="AXES"
 		self.graduation=True
 		self.numbering=True
-		self.single_axeX=SingleAxe(self.C,Vector(1,1),0,2)
+		self.single_axeX=SingleAxe(self.C,Vector(1,0),self.BB.mx,self.BB.Mx)
 		self.single_axeX.mark_origin=False
+		self.single_axeY=SingleAxe(self.C,Vector(1,1),self.BB.my,self.BB.My)
+		self.single_axeY.mark_origin=False
+		self.single_axeY.mark_angle=180
 	def AjouteGrid(self):
 		raise DeprecationWarning,"There are no grid associated with a axe system"
 		self.IsGrid = 1
@@ -563,11 +582,13 @@ class Axes(object):
 		self.grille.add_option("subgriddiv=0")
 		self.grille.add_option("griddots=5")
 	def add_label_X(self,dist,angle,marque):
+		raise DeprecationWarning,"Use self.single_axeX.add_label instead"
 		self.IsLabelX = True
 		self.LabelX = marque
 		self.DistLabelX = dist
 		self.AngleLabelX = angle
 	def add_label_Y(self,dist,angle,marque):
+		raise DeprecationWarning,"Use self.single_axeY.add_label instead"
 		self.IsLabelY = True
 		self.LabelY = marque
 		self.DistLabelY = dist
@@ -588,9 +609,13 @@ class Axes(object):
 		raise DeprecationWarning, "This is depreciated"
 		self.AjustephyFunction(gf.f,gf.mx,gf.Mx)
 	def bounding_box(self,pspict=None):
-		return self.BB
+		BB=BoundingBox()
+		BB.append(self.single_axeX.bounding_box(pspict))
+		BB.append(self.single_axeY.bounding_box(pspict))
 	def math_bounding_box(self,pspict=None):
-		return self.bounding_box(pspict)
+		BB=BoundingBox()
+		BB.append(self.single_axeX.math_bounding_box(pspict))
+		BB.append(self.single_axeY.math_bounding_box(pspict))
 	def pstricks_code(self,pspict=None):
 		sDx=RemoveLastZeros(self.Dx,10)
 		sDy=RemoveLastZeros(self.Dy,10)
@@ -605,42 +630,10 @@ class Axes(object):
 		self.BB.mx = bgx
 		self.BB.my = bgy
 		c=[]
-		if self.IsLabelX :
-			P = Point(self.bounding_box(pspict).Mx,0)
-			P.parameters.symbol="none"
-			P.put_mark(self.DistLabelX,self.AngleLabelX,self.LabelX)
-			c.append(P.pstricks_code())
-		if self.IsLabelY :
-			P = Point(0,self.bounding_box(pspict).My)
-			P.parameters.symbol="none"
-			P.put_mark(self.DistLabelY,self.AngleLabelY,self.LabelY)
-			c.append(P.pstricks_code())
-		if self.graduation :
-			for x,symbol in self.axes_unitX.place_list(self.bounding_box(pspict).mx,self.bounding_box(pspict).Mx,self.Dx):
-				if x != 0:
-					A=Point(x,0)
-					A.parameters.symbol="|"
-					A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(x)))	# Make the point name unique.
-					if self.numbering :
-						A.put_mark(0.4/pspict.yunit,-90,symbol)	# TODO : use the size of the box as distance
-					c.append(A.pstricks_code())
-			for y,symbol in self.axes_unitY.place_list(self.bounding_box(pspict).my,self.bounding_box(pspict).My,self.Dy):
-				if y != 0:
-					A=Point(0,y)
-					A.parameters.symbol="|"
-					A.add_option("dotangle=90")
-					A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(y)))	# Make the point name unique.
-					if self.numbering :
-						A.put_mark(0.4/pspict.xunit,180,symbol)	# TODO : use the size of the box as distance instead of 0.4
-					c.append(A.pstricks_code())
-		h1=Point(self.bounding_box(pspict).mx,self.C.y)
-		h2=Point(self.bounding_box(pspict).Mx,self.C.y)
-		v1=Point(self.C.x,self.bounding_box(pspict).my)
-		v2=Point(self.C.x,self.bounding_box(pspict).My)
-		h=AffineVector(h1,h2)
-		v=AffineVector(v1,v2)
-		c.append(h.pstricks_code())
-		c.append(v.pstricks_code())
+		self.single_axeX.mx,self.single_axeX.Mx=self.BB.mx,self.BB.Mx
+		self.single_axeY.mx,self.single_axeY.Mx=self.BB.my,self.BB.My
+		c.append(self.single_axeX.pstricks_code(pspict))
+		c.append(self.single_axeY.pstricks_code(pspict))
 		return "\n".join(c)
 
 def CircleInterLigne(Cer,Ligne):
