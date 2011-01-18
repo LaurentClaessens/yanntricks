@@ -1695,8 +1695,7 @@ class BoundingBox(object):
 	def coordinates(self):
 		return self.SW().coordinates()+self.NE().coordinates()
 	def Affiche(self):
-		print "This is depreciated"
-		raise
+		raise DeprecationWarning
 		return self.coordinates()
 	def tailleX(self):
 		return self.Mx-self.mx

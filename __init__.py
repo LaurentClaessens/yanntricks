@@ -437,7 +437,10 @@ def MultipleBetween(Dx,mx,Mx,mark_origin=True):
 	nf=floor(float(Mx)/Dx)
 	l = [i*Dx for i in range(ni,nf+1)]
 	if not mark_origin :
-		l.remove(0)
+		try :
+			l.remove(0)
+		except ValueError :
+			pass
 	return l
 
 class AxesUnit(object):
@@ -575,6 +578,9 @@ class Axes(object):
 		self.single_axeY=SingleAxe(self.C,Vector(1,1),self.BB.my,self.BB.My)
 		self.single_axeY.mark_origin=False
 		self.single_axeY.mark_angle=180
+	def update(self):
+		self.single_axeX.mx,self.single_axeX.Mx=self.BB.mx,self.BB.Mx
+		self.single_axeY.mx,self.single_axeY.Mx=self.BB.my,self.BB.My
 	def AjouteGrid(self):
 		raise DeprecationWarning,"There are no grid associated with a axe system"
 		self.IsGrid = 1
@@ -593,29 +599,24 @@ class Axes(object):
 		self.LabelY = marque
 		self.DistLabelY = dist
 		self.AngleLabelY = angle
-		# Je crois que le label n'est pas encore prit en compte dans la BB.
 	def add_option(self,opt):
 		self.options.add_option(opt)
 	def no_graduation(self):
 		self.graduation=False
 	def no_numbering(self):
 		self.numbering=False
-	def AjustephyFunction(self,f,mx,Mx):
-		raise DeprecationWarning, "This is depreciated"
-		self.BB.AddphyFunction(f,mx,Mx)
 	def AjusteCircle(self,Cer):
 		self.BB.AddCircle(Cer)
-	def AjusteGraphephyFunction(self,gf):
-		raise DeprecationWarning, "This is depreciated"
-		self.AjustephyFunction(gf.f,gf.mx,gf.Mx)
 	def bounding_box(self,pspict=None):
 		BB=BoundingBox()
 		BB.append(self.single_axeX.bounding_box(pspict))
 		BB.append(self.single_axeY.bounding_box(pspict))
+		return BB
 	def math_bounding_box(self,pspict=None):
 		BB=BoundingBox()
 		BB.append(self.single_axeX.math_bounding_box(pspict))
 		BB.append(self.single_axeY.math_bounding_box(pspict))
+		return BB
 	def pstricks_code(self,pspict=None):
 		sDx=RemoveLastZeros(self.Dx,10)
 		sDy=RemoveLastZeros(self.Dy,10)
@@ -630,8 +631,7 @@ class Axes(object):
 		self.BB.mx = bgx
 		self.BB.my = bgy
 		c=[]
-		self.single_axeX.mx,self.single_axeX.Mx=self.BB.mx,self.BB.Mx
-		self.single_axeY.mx,self.single_axeY.Mx=self.BB.my,self.BB.My
+		self.update()
 		c.append(self.single_axeX.pstricks_code(pspict))
 		c.append(self.single_axeY.pstricks_code(pspict))
 		return "\n".join(c)
