@@ -507,6 +507,7 @@ class SingleAxe(object):
 		self.mark_origin=True
 		self.segment=Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
 		self.mark_angle=degree(base.angle()-pi/2)
+		print "510 Je crée un axe\n %s"%self.segment
 	def add_option(self,opt):
 		self.options.add_option(opt)
 	def add_label(self,dist,angle,marque):
@@ -523,15 +524,17 @@ class SingleAxe(object):
 				P.parameters.symbol="|"
 				P.psName=P.psName+pspict.name+_latinize(str(numerical_approx(x)))	# Make the point name unique.
 				if self.numbering :
-					P.put_mark(0.4/pspict.yunit,self.mark_angle,symbol)				# TODO : use the size of the box as distance
+					P.put_mark(0.4/pspict.yunit,self.mark_angle,symbol)		# TODO : use the size of the box as distance
 				points_list.append(P)
 			return points_list
 		else :
 			return None
 	def bounding_box(self,pspict):
+		print "532",self.segment
 		BB=self.math_bounding_box(pspict)
 		for P in self.graduation_points(pspict):
 			BB.append(P,pspict)
+		print "535",BB
 		return BB
 	def math_bounding_box(self,pspict):
 		return self.segment.bounding_box(pspict)
@@ -562,10 +565,10 @@ class Axes(object):
 	By default an orthogonal)
 	"""
 	def __init__(self,C,bb):
+		print "568 Je crée un système d'axes"
 		self.C = C						
 		self.BB = bb.copy()
 		self.options = Options()
-		self.grille = Grid(self.BB)
 		self.axes_unitY=AxesUnit(1,"")
 		self.Dx = 1
 		self.Dy = 1						# Ce sont les valeurs par défaut.
@@ -575,18 +578,13 @@ class Axes(object):
 		self.numbering=True
 		self.single_axeX=SingleAxe(self.C,Vector(1,0),self.BB.mx,self.BB.Mx)
 		self.single_axeX.mark_origin=False
-		self.single_axeY=SingleAxe(self.C,Vector(1,1),self.BB.my,self.BB.My)
+		self.single_axeY=SingleAxe(self.C,Vector(0,1),self.BB.my,self.BB.My)
 		self.single_axeY.mark_origin=False
 		self.single_axeY.mark_angle=180
+		print "584 Fini de créer le système d'axe"
 	def update(self):
 		self.single_axeX.mx,self.single_axeX.Mx=self.BB.mx,self.BB.Mx
 		self.single_axeY.mx,self.single_axeY.Mx=self.BB.my,self.BB.My
-	def AjouteGrid(self):
-		raise DeprecationWarning,"There are no grid associated with a axe system"
-		self.IsGrid = 1
-		self.grille.add_option("gridlabels=0")
-		self.grille.add_option("subgriddiv=0")
-		self.grille.add_option("griddots=5")
 	def add_label_X(self,dist,angle,marque):
 		raise DeprecationWarning,"Use self.single_axeX.add_label instead"
 		self.IsLabelX = True
@@ -608,14 +606,20 @@ class Axes(object):
 	def AjusteCircle(self,Cer):
 		self.BB.AddCircle(Cer)
 	def bounding_box(self,pspict=None):
+		self.update()
 		BB=BoundingBox()
 		BB.append(self.single_axeX.bounding_box(pspict))
 		BB.append(self.single_axeY.bounding_box(pspict))
+		print "614",BB
+		if BB.Mx==1000: 
+			raise ValueError
 		return BB
 	def math_bounding_box(self,pspict=None):
+		self.update()
 		BB=BoundingBox()
 		BB.append(self.single_axeX.math_bounding_box(pspict))
 		BB.append(self.single_axeY.math_bounding_box(pspict))
+		print "620",BB
 		return BB
 	def pstricks_code(self,pspict=None):
 		sDx=RemoveLastZeros(self.Dx,10)
@@ -933,10 +937,6 @@ class Separator(object):
 		if self.number > other.number :
 			return 1
 
-#class LabelNotFound(exception):		#(suppressed 29 sept 2010)
-#	def __init__(self,message):
-#		self.message=message
-
 class DrawElement(object):
 	# The attributes take_xxx are intended to say what we have to take into account in the element.
 	# If you put take_graph=False, this element will not be drawn, but its bounding boxes are going to be taken into account.
@@ -991,7 +991,7 @@ class pspicture(object):
 											# If you need the bounding box, use self.bounding_box()
 											# or self.math_bounding_box()
 		self.axes = Axes( Point(0,0),BoundingBox(Point(1000,1000),Point(-1000,-1000))  )
-		self.grid = Grid(self.axes.bounding_box())
+		self.grid = Grid(BoundingBox())
 		# We add the "anchors" %GRID and %AXES in order to force the axes and the grid to be written at these places.
 		#    see the functions DrawAxes and DrawGrid and the fact that they use IncrusteLigne
 
@@ -1089,13 +1089,11 @@ class pspicture(object):
 		Makes LaTeX write the value of the counter in an auxiliary file, then reads the value in that file.
 		(needs several compilations to work)
 		"""
-
 		# Make LaTeX write the value of the counter in a specific file
 		interCounterId = "counter"+self.name+self.NomPointLibre.suivant()
 		print "J'ai le ID",interCounterId
 		self.initialize_counter()
 		self.add_write_line(interCounterId,r"\arabic{%s}"%counter_name)
-
 		# Read the file and return the value
 		return self.get_Id_value(interCounterId,"counter «%s»"%counter_name,default_value)
 
@@ -1209,8 +1207,10 @@ class pspicture(object):
 		self.BB.AddPoint(tri.C)
 		self.add_latex_line("\pstTriangle["+params+",PointSymbol=none]"+tri.A.coordinates()+"{A}"+tri.B.coordinates()+"{B}"+tri.C.coordinates()+"{C}")
 	def TraceGrid(self,grille):
+		raise DeprecationWarning, "I think TraceGrid should no more be used"
 		self.IncrusteLigne(grille.code(self),2)
 	def AjusteGrid(self,grille):
+		raise DeprecationWarning, "I think AjusteGrid should no more be used"
 		grille.BB = self.BB
 	def DrawAxes(self,axes):
 		raise DeprecationWarning, "This method is depreciated"
@@ -1278,7 +1278,7 @@ class pspicture(object):
 				bb.AddBB(graphe.math_bounding_box(self))
 			except AttributeError:
 				print "Warning: it seems to me that object %s (%s) has no method math_boundig_box"%(str(graphe),type(graphe))
-				bb.add_graph(graphe,self)
+				bb.append(graphe,self)
 		return bb
 	def contenu(self):
 		"""
@@ -1302,7 +1302,7 @@ class pspicture(object):
 			graph=x.graph
 			separator_name=x.separator_name
 			try :
-				self.BB.add_graph(graph,self)
+				self.BB.append(graph,self)
 				self.add_latex_line(graph.pstricks_code(self),separator_name)
 			except AttributeError,data:
 				if not "pstricks_code" in dir(graph):

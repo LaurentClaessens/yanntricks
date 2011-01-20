@@ -794,8 +794,8 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
 		self.parameters.color=None				
 	def bounding_box(self,pspict=None):
 		bb=BoundingBox()
-		bb.add_graph(self.f1,pspict=None)
-		bb.add_graph(self.f2,pspict=None)
+		bb.append(self.f1,pspict=None)
+		bb.append(self.f2,pspict=None)
 		bb.AddY(0)
 		return bb
 	def math_bounding_box(self,pspict=None):
@@ -1734,9 +1734,13 @@ class BoundingBox(object):
 		self.AddY(bb.my)
 		self.AddY(bb.My)
 	def add_graph(self,graphe,pspict=None):
+		raise DeprecationWarning,"Use self.append instead"
 		self.AddBB(graphe.bounding_box(pspict))
 	def append(self,graphe,pspict=None):		# It seems to me that the method name "append" is more intuitive that "add_graph"
-		self.AddBB(graphe.bounding_box(pspict))
+		try :
+			self.AddBB(graphe.bounding_box(pspict))
+		except ValueError :
+			print graphe
 	def add_math_graph(self,graphe,pspict=None):
 		try :
 			self.addBB(graphe.math_bounding_box(pspict))
