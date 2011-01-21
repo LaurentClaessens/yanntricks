@@ -1203,12 +1203,14 @@ class phyFunction(object):
 		"""
 		P = Point(float(x),self(x))
 		try :
-			ca = self.derivative()(x=x) 
+			#ca = self.derivative()(x=x) 
+			ca = self.derivative()(x) 
 			angle_n=degree(atan(ca)+pi/2)
 			if self.derivative(2)(x) > 0:
 				angle_n=angle_n+180
 			P.advised_mark_angle=angle_n
 		except TypeError :		# Happens when Sage has no derivative of the function.
+			raise
 			pass
 		return P
 	def get_normal_vector(self,x):
