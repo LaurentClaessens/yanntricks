@@ -435,7 +435,7 @@ class GeometricVector(object):
 	def inverse(self):
 		return AffineVector(self.I,Point(self.I.x-self.Dx,self.I.y-self.Dy))
 	def rotation(self,angle):
-		return PolarAffneVector(self.I,self.polaires().r,degree(self.polaires().theta)+angle)
+		return PolarAffineVector(self.I,self.polaires().r,degree(self.polaires().theta)+angle)
 	def orthogonal(self):
 		return self.rotation(90)
 	def dilatation(self,coef):
@@ -1187,7 +1187,8 @@ class phyFunction(object):
 			return self
 		if n==1:
 			if self._derivative == None :
-				self._derivative = phyFunction(self.sage.derivative(x=x))
+				#self._derivative = phyFunction(self.sage.derivative(x=x))
+				self._derivative = phyFunction(self.sage.derivative(x))
 			return self._derivative
 		else:
 			return self.derivative(n-1).derivative()
