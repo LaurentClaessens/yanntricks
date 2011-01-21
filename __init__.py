@@ -367,6 +367,8 @@ class Grid(object):
 		self.border.parameters.style = "dotted"
 	def bounding_box(self,pspict=None):		# This method is for the sake of "Special cases aren't special enough to break the rules."
 		return self.BB
+	def math_bounding_box(self,pspict=None):
+		return self.bounding_box(pspict)
 	def add_option(self,opt):
 		self.options.add_option(opt)
 	def optionsTrace(self):
