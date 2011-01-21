@@ -505,9 +505,9 @@ class SingleAxe(object):
 		self.graduation=True
 		self.numbering=True
 		self.mark_origin=True
-		self.segment=Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
 		self.mark_angle=degree(base.angle()-pi/2)
-		print "510 Je crée un axe\n %s"%self.segment
+	def segment(self):
+		return Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
 	def add_option(self,opt):
 		self.options.add_option(opt)
 	def add_label(self,dist,angle,marque):
@@ -530,14 +530,12 @@ class SingleAxe(object):
 		else :
 			return None
 	def bounding_box(self,pspict):
-		print "532",self.segment
 		BB=self.math_bounding_box(pspict)
 		for P in self.graduation_points(pspict):
 			BB.append(P,pspict)
-		print "535",BB
 		return BB
 	def math_bounding_box(self,pspict):
-		return self.segment.bounding_box(pspict)
+		return self.segment().bounding_box(pspict)
 	def pstricks_code(self,pspict=None):
 		sDx=RemoveLastZeros(self.Dx,10)
 		self.add_option("Dx="+sDx)
@@ -547,14 +545,14 @@ class SingleAxe(object):
 		#self.BB.mx = bgx
 		c=[]
 		if self.IsLabel :
-			P = self.segment.F
+			P = self.segment().F
 			P.parameters.symbol="none"
 			P.put_mark(self.DistLabel,self.AngleLabel,self.Label)
 			c.append(P.pstricks_code())
 		if self.graduation :
 			for P in self.graduation_points(pspict):
 				c.append(P.pstricks_code(pspict))
-		h=AffineVector(self.segment)
+		h=AffineVector(self.segment())
 		c.append(h.pstricks_code(pspicture))
 		return "\n".join(c)
 
@@ -565,7 +563,6 @@ class Axes(object):
 	By default an orthogonal)
 	"""
 	def __init__(self,C,bb):
-		print "568 Je crée un système d'axes"
 		self.C = C						
 		self.BB = bb.copy()
 		self.options = Options()
@@ -581,7 +578,6 @@ class Axes(object):
 		self.single_axeY=SingleAxe(self.C,Vector(0,1),self.BB.my,self.BB.My)
 		self.single_axeY.mark_origin=False
 		self.single_axeY.mark_angle=180
-		print "584 Fini de créer le système d'axe"
 	def update(self):
 		self.single_axeX.mx,self.single_axeX.Mx=self.BB.mx,self.BB.Mx
 		self.single_axeY.mx,self.single_axeY.Mx=self.BB.my,self.BB.My
@@ -610,7 +606,6 @@ class Axes(object):
 		BB=BoundingBox()
 		BB.append(self.single_axeX.bounding_box(pspict))
 		BB.append(self.single_axeY.bounding_box(pspict))
-		print "614",BB
 		if BB.Mx==1000: 
 			raise ValueError
 		return BB
@@ -619,7 +614,6 @@ class Axes(object):
 		BB=BoundingBox()
 		BB.append(self.single_axeX.math_bounding_box(pspict))
 		BB.append(self.single_axeY.math_bounding_box(pspict))
-		print "620",BB
 		return BB
 	def pstricks_code(self,pspict=None):
 		sDx=RemoveLastZeros(self.Dx,10)
@@ -1220,6 +1214,7 @@ class pspicture(object):
 		epsilonX=float(self.axes.Dx)/2
 		epsilonY=float(self.axes.Dy)/2
 		self.axes.BB.enlarge_a_little(self.axes.Dx,self.axes.Dy,epsilonX,epsilonY)
+		self.axes.update()
 		self.DrawGraph(self.axes)
 	def DrawDefaultGrid(self):
 		self.grid.BB = self.math_bounding_box()
