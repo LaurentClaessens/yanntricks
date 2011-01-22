@@ -987,6 +987,8 @@ class pspicture(object):
 											# If you need the bounding box, use self.bounding_box()
 											# or self.math_bounding_box()
 		self.axes = Axes( Point(0,0),BoundingBox(Point(1000,1000),Point(-1000,-1000))  )
+		self.single_axeX=self.axes.single_axeX
+		self.single_axeY=self.axes.single_axeY
 		self.grid = Grid(BoundingBox())
 		# We add the "anchors" %GRID and %AXES in order to force the axes and the grid to be written at these places.
 		#    see the functions DrawAxes and DrawGrid and the fact that they use IncrusteLigne

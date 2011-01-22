@@ -81,7 +81,6 @@ def CircleOA(O,A):
 	center=O
 	radius=sqrt( (O.x-A.x)**2+(O.y-A.y)**2 )
 	return Circle(O,radius)
-
 def Point(x,y):
 	return GraphOfAPoint(GeometricPoint(x,y))
 def Segment(A,B):
@@ -122,6 +121,10 @@ class GeometricPoint(object):
 
 		Return a point even if outside the segment.
 		"""
+		try :
+			seg=seg.segment()		# allows to project on an axe
+		except AttributeError :
+			pass
 		if seg.vertical :
 			return Point(seg.I.x,self.y)
 		if seg.horizontal :
@@ -181,13 +184,30 @@ class GeometricPoint(object):
 	def default_associated_graph_class(self):
 		"""Return the class which is the Graph associated type"""
 		return phystricks.GraphOfAPoint				# Graph is also a method of Sage
-
 	def create_PSpoint(self):
 		"""Return the code of creating a pstgeonode. The argument is a Point of GraphOfAPoint"""
 		P = Point(self.x,self.y)
 		P.psName = self.psName
 		P.parameters.symbol="none"
 		return P.pstricks_code(None)+"\n"
+	def polar_coordinates(self):
+		"""
+		Return the polar coordinates of the point as a tuple (r,angle) where angle is given in degree.
+		"""
+		r=self.norme()
+		if self.x==0:
+			radian=pi/2
+		else :
+			radian=arctan(self.y/self.x)
+		if self.x<0:
+			if self.y>0:
+				radian=pi/2-radian
+			if self.y<=0:
+				radian=pi+radian
+		deg=degree(radian)
+		return r,deg
+	def angle(self):
+		return self.polar_coordinates()[1]
 	def coordinates(self):
 		"""
 		Return the coordinates of the point as a string.
