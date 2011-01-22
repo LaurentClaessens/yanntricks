@@ -147,9 +147,8 @@ class GeometricPoint(object):
 		if pspict:
 			A=pspict.xunit
 			B=pspict.yunit
-			theta=radian(alpha)
-			xP=l*cos(theta)/A
-			yP=l*sin(theta)/B
+			xP=l*cos(alpha)/A
+			yP=l*sin(alpha)/B
 			return self.translate(Vector(xP,yP))
 		return Point(self.x+l*cos(alpha),self.y+l*sin(alpha))
 	def value_on_line(self,line):
@@ -633,10 +632,13 @@ class Mark(object):
 		"""
 		self.graph = graph
 		self.angle = angle
-		self.text = text
 		self.dist = dist
+		self.text = text
 		self.angle = angle
 		self.automatic_place=automatic_place
+		alpha=radian(angle)
+		self.x=self.dist*cos(alpha)
+		self.y=self.dist*sin(alpha)
 	def central_point(self,pspict=None):
 		"""
 		return the central point of the mark, that is the point where the mark arrives.
@@ -648,7 +650,15 @@ class Mark(object):
 		if self.automatic_place :
 			pspict=self.automatic_place
 			dimx,dimy=pspict.get_box_size(self.text)
-			return default.translate(Vector(dimx*0.5,dimy*0.5))
+			if self.x>=0:
+				lx=dimx*0.5
+			if self.x<0:
+				lx=-dimx*0.5
+			if self.y>=0:
+				ly=dimy*0.5
+			if self.y<0:
+				ly=-dimy*0.5
+			return default.translate(Vector(lx,ly))
 		else :
 			return default
 	def bounding_box(self,pspict=None):
@@ -757,8 +767,6 @@ class GraphOfAnObject(object):
 		self.wavy = True
 		self.waviness = Waviness(self,dx,dy)
 	def put_mark(self,dist,angle,text,automatic_place=False):
-		if automatic_place:
-			print "761 je suis"
 		self.marque = True
 		self.mark = Mark(self,dist,angle,text,automatic_place)
 	def add_option(self,opt):
