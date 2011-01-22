@@ -94,10 +94,18 @@ def AffineVector(A=None,B=None):
 		return GraphOfAVector(AffineVector(A.I,A.F))
 	except AttributeError :
 		return GraphOfAVector(GeometricVector(A,B))
-def Vector(x,y):
+def Vector(*args):
 	"""
 	From the coordinates x,y, return the corresponding vector, i.e. the affine vector from (0,0) to (x,y).
+
+	You can also only give a Point
 	"""
+	try :
+		x=args[0]
+		y=args[1]
+	except IndexError :
+		x=args[0].x
+		y=args[0].y
 	return AffineVector(Point(0,0),Point(x,y))
 def Circle(center,radius):
 	return GraphOfACircle(GeometricCircle(center,radius))
@@ -674,8 +682,6 @@ class Mark(object):
 		pt2=Point(central_point.x+dimx/2,central_point.y+dimy/2)
 		bb.AddPoint(pt1)
 		bb.AddPoint(pt2)
-		#self.graph.record_add_to_bb.append(pt1)
-		#self.graph.record_add_to_bb.append(pt2)
 		return bb
 	def pstricks_code(self,pspict=None):
 		l=[]
