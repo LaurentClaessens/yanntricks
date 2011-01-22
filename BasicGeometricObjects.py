@@ -133,13 +133,24 @@ class GeometricPoint(object):
 			Rx = (self.y*seg.coefficient - seg.coefficient*seg.independant + self.x)/(seg.coefficient**2 + 1)
 			Ry = (self.y*seg.coefficient**2 + self.x*seg.coefficient + seg.independant)/(seg.coefficient**2 + 1)
 			return Point(Rx,Ry)
-	def get_polar_point(self,l,theta):
+	def get_polar_point(self,l,theta,pspict=None):
 		"""
 		Return the point located at distance l and angle theta from point self.
-
 		theta is given in degree.
+
+		If pspict is given, we compute the deformation due to the dilatation. 
+		Be carefull : in that case <dist> is given as _absolute value_ and the visual effect will not
+		be affected by dilatations.
+
 		"""
 		alpha=radian(theta)
+		if pspict:
+			A=pspict.xunit
+			B=pspict.yunit
+			theta=radian(alpha)
+			xP=l*cos(theta)/A
+			yP=l*sin(theta)/B
+			return self.translate(Vector(xP,yP))
 		return Point(self.x+l*cos(alpha),self.y+l*sin(alpha))
 	def value_on_line(self,line):
 		"""
@@ -611,37 +622,35 @@ class Waviness(object):
 			return self.obj.get_wavy_points(self.dx,self.dy)
 
 class Mark(object):
-	def __init__(self,graph,dist,angle,text):
+	def __init__(self,graph,dist,angle,text,automatic_place=False):
 		"""
 		Describe a mark (essentially a P on a point for example)
+		angle is given in degree
+
+		If automatic_place is True, then place the corner of the box at the point instead of the "central point" of the mark.
 
 		This class should not be used by the end-user.
 		"""
 		self.graph = graph
-		self.dist = dist
 		self.angle = angle
 		self.text = text
+		self.dist = dist
+		self.angle = angle
+		self.automatic_place=automatic_place
 	def central_point(self,pspict=None):
 		"""
-		return the central point of the mark, that is the point where the mark arrives
-
-		If pspict is given, we compute the deformation due to the dilatation. 
-		Be carefull : in that case <dist> is given as _absolute value_ and the visual effect will not
-		be affected by dilatations.
+		return the central point of the mark, that is the point where the mark arrives.
 
 		The central point of the mark is computed from self.graph.mark_point()
 		Thus an object that want to accept a mark has to have a method mark_point that returns the point on which the mark will be put.
 		"""
-		if pspict:
-			A=pspict.xunit
-			B=pspict.yunit
-			d=self.dist
-			theta=radian(self.angle)
-			xP=d*cos(theta)/A
-			yP=d*sin(theta)/B
-			return self.graph.mark_point().translate(AffineVector(Point(0,0),Point(xP,yP)))
-		else:
-			return self.graph.mark_point().translate(PolarAffineVector(Point(0,0),self.dist,self.angle))
+		default=self.graph.mark_point().get_polar_point(self.dist,self.angle,pspict)
+		if self.automatic_place :
+			pspict=self.automatic_place
+			dimx,dimy=pspict.get_box_size(self.text)
+			return default.translate(Vector(dimx*0.5,dimy*0.5))
+		else :
+			return default
 	def bounding_box(self,pspict=None):
 		central_point=self.central_point(pspict)
 		bb=BoundingBox(central_point,central_point)
@@ -747,9 +756,11 @@ class GraphOfAnObject(object):
 	def wave(self,dx,dy):					# dx is the wave length and dy is the amplitude
 		self.wavy = True
 		self.waviness = Waviness(self,dx,dy)
-	def put_mark(self,dist,angle,text):
+	def put_mark(self,dist,angle,text,automatic_place=False):
+		if automatic_place:
+			print "761 je suis"
 		self.marque = True
-		self.mark = Mark(self,dist,angle,text)
+		self.mark = Mark(self,dist,angle,text,automatic_place)
 	def add_option(self,opt):
 		self.options.add_option(opt)
 	def get_option(opt):
