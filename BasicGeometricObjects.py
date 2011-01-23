@@ -100,27 +100,22 @@ def Segment(A,B):
 #	def math_bounding_box(self,pspict=None):
 #		return GraphOfASegment(self.segment).math_bounding_box(pspict)
 
-def _Vector_pstricks_code(segment,pspict=None):
-	"""
-	Return the pstricks's code of a Segment when is is seen as a vector.
-	"""
-	a = segment.I.create_PSpoint() + segment.F.create_PSpoint()
-	a = a + "\\ncline["+segment.params()+"]{->}{"+segment.I.psName+"}{"+segment.F.psName+"}"
-	if segment.marque :
-		P = segment.F
-		P.parameters.symbol = "none"
-		P.put_mark(segment.mark.dist,segment.mark.angle,segment.mark.text)
-		a = a + P.pstricks_code(pspict)
-	return a
-
 def AffineVector(A=None,B=None):
 	"""
 	From points A and B, return the AFFINE vector from A to B.
 
 	A vector is nothing else than a Segment for which the pstricks_code method is changed.
 	"""
-	vect=Segment(A,B)
-	vect.pstricks_code=_Vector_pstricks_code
+	if B :		# If B is given, I suppose that we gave two points
+		vect=Segment(A,B)
+	else :
+		try :
+			vect=A.segment()
+		except AttributeError :
+			vect=A
+	vect.arrowtype="vector"
+	return vect
+
 def Vector(*args):
 	"""
 	From the coordinates x,y, return the corresponding vector, i.e. the affine vector from (0,0) to (x,y).
@@ -159,7 +154,8 @@ class GeometricPoint(object):
 		try :
 			seg=seg.segment()		# allows to project on an axe
 		except AttributeError :
-			pass
+			print "heu ..."
+			raise
 		if seg.vertical :
 			return Point(seg.I.x,self.y)
 		if seg.horizontal :
@@ -306,28 +302,30 @@ class GeometricPoint(object):
 	def __str__(self):
 		return "Point(%s,%s)"%(str(self.x),str(self.y))
 
-class GeometricVector(GeometricSegment):
-	"""
-	If two points are given to the constructor, return the vector 
-	"""
-	def __init__(self,a,b):
-		self.segment = GeometricSegment(a,b)
-		self.I = self.segment.I
-		self.F = self.segment.F
-		self.Point = Point(self.F.x-self.I.x,self.F.y-self.I.y)		# Le point qui serait le vecteur lié à (0,0).
-		self.Dx = self.F.x-self.I.x
-		self.Dy = self.F.y-self.I.y
+#class GeometricVector(GeometricSegment):
+#	"""
+#	If two points are given to the constructor, return the vector 
+#	"""
+#	def __init__(self,a,b):
+#		self.segment = GeometricSegment(a,b)
+#		self.I = self.segment.I
+#		self.F = self.segment.F
+#		self.Point = Point(self.F.x-self.I.x,self.F.y-self.I.y)		# Le point qui serait le vecteur lié à (0,0).
+#		self.Dx = self.F.x-self.I.x
+#		self.Dy = self.F.y-self.I.y
 
 
 class GeometricSegment(object):
 	def __init__(self,A,B):
 		self.I = A
 		self.F = B
-		self.vertical = 0
-		self.horizontal = 0
-		if A.x == B.x : self.vertical = 1
-		if A.y == B.y : self.horizontal = 1
-		if self.vertical == 1:
+		self.vertical = False
+		self.horizontal = False
+		if A.x == B.x :
+			self.vertical = True
+		if A.y == B.y : 
+			self.horizontal = True
+		if self.vertical :
 			self.coefficient = None
 			self.independant = None
 		else :
@@ -347,6 +345,9 @@ class GeometricSegment(object):
 		var('x,y')
 		self.equation= self.coefs[0]*x+self.coefs[1]*y+self.coefs[2] == 0
 		self.longueur = Distance(self.I,self.F)
+		self.Dx = self.F.x-self.I.x
+		self.Dy = self.F.y-self.I.y
+		self.arrowtype="semgment"
 		#self.maxima = str(self.equation[0])+"*x+"+str(self.equation[1])+"*y+"+str(self.equation[2])+"=0"
 	def phyFunction(self):
 		if self.horizontal:
@@ -394,6 +395,13 @@ class GeometricSegment(object):
 		if I and F denote the initial and final point of the segment.
 		"""
 		return self.I*(1-p) + self.F*p
+	def Point(self):
+		"""
+		Return the point X such that as free vector, 0->X == self
+
+		More precisely, if self is the segment A->B, return the point B-A
+		"""
+		return self.F-self.I
 	def milieu(self):
 		raise DeprecationWarning,"This method is depreciated. Use Segment.center() instead"
 		return self.center()
@@ -464,7 +472,7 @@ class GeometricSegment(object):
 		"""
 		return PolarSegment(self.I,self.polaires().r,degree(self.polaires().theta)+angle)
 	def polaires(self):
-		return PointToPolaire(self.Point)
+		return PointToPolaire(self.Point())
 	def norme(self):
 		raise DeprecationWarning, "The method norme on Vector is depreciated use length instead"
 	def angle(self):
@@ -1045,7 +1053,10 @@ class GraphOfASegment(GraphOfAnObject,GeometricSegment):
 		return BoundingBox(self.I,self.F)		# If you change this, maybe you have to adapt math_bounding_box
 	def math_bounding_box(self,pspict=None):
 		return self.bounding_box(pspict)
-	def pstricks_code(self,pspict=None):
+	def _segment_pstricks_code(self,pspict=None):
+		"""
+		Return the pstricks's code of a Segment when is is seen as a segment
+		"""
 		if self.wavy:
 			waviness = self.waviness
 			return Code_Pscurve(self.get_wavy_points(waviness.dx,waviness.dy),self.params())
@@ -1053,6 +1064,24 @@ class GraphOfASegment(GraphOfAnObject,GeometricSegment):
 			a =  self.I.create_PSpoint() + self.F.create_PSpoint()
 			a=a+"\n\pstLineAB[%s]{%s}{%s}"%(self.params(),self.I.psName,self.F.psName)
 			return a
+	def _Vector_pstricks_code(segment,pspict=None):
+		"""
+		Return the pstricks's code of a Segment when is is seen as a vector.
+		"""
+		print "107",segment
+		a = segment.I.create_PSpoint() + segment.F.create_PSpoint()
+		a = a + "\\ncline["+segment.params()+"]{->}{"+segment.I.psName+"}{"+segment.F.psName+"}"
+		if segment.marque :
+			P = segment.F
+			P.parameters.symbol = "none"
+			P.put_mark(segment.mark.dist,segment.mark.angle,segment.mark.text)
+			a = a + P.pstricks_code(pspict)
+		return a
+	def pstricks_code(self,pspict=None):
+		if self.arrowtype=="segment":
+			return self._segment_pstricks_code
+		if self.arrowtype=="vector":
+			return self._vector_pstricks_code
 
 class MeasureLength(GraphOfASegment):
 	"""

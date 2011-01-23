@@ -508,6 +508,8 @@ class SingleAxe(object):
 		self.numbering=True
 		self.mark_origin=True
 		self.mark_angle=degree(base.angle()-pi/2)
+		#self.vertical=base.vertical
+		#self.horizontal=base.horizontal
 	def segment(self):
 		return Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
 	def add_option(self,opt):
