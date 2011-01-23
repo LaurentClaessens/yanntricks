@@ -90,23 +90,31 @@ def PointToPolaire(P):
 		alpha = alpha +math.pi
 	return coordinatesPolaires(r,alpha)
 
-# Convention : theta is in degree while alpha is in gradient.
-def radian(theta):
-	"""Convert from degree to radian. Return a value between 0 and 2pi (not 2pi itself)"""
-	angle = theta*math.pi/180
-	while angle >= 2*pi :
-		angle=angle-2*pi
-	while angle < 0 :
-		angle=angle+2*pi
-	return angle
-def degree(alpha):
-	"""Convert from radian to degree. Return a value between 0 and 360 (not 360 itself)"""
-	angle = 180*alpha/math.pi
+def simplify_degree(angle,keep_max=False):
+	if keep_max and angle == 360:
+		return 360
 	while angle >= 360 :
 		angle=angle-360
 	while angle < 0 :
 		angle=angle+360
 	return angle
+def simplyfy_radian(angle,keep_max=False):
+	if keep_max and angle == 2*pi:
+		return 2*pi
+	while angle >= 2*pi :
+		angle=angle-2*pi
+	while angle < 0 :
+		angle=angle+2*pi
+	return angle
+# Convention : theta is in degree while alpha is in gradient.
+def radian(theta):
+	"""Convert from degree to radian. Return a value between 0 and 2pi (not 2pi itself)"""
+	angle = theta*math.pi/180
+	return simplyfy_radian(angle)
+def degree(alpha):
+	"""Convert from radian to degree. Return a value between 0 and 360 (not 360 itself)"""
+	angle = 180*alpha/math.pi
+	return simplify_degree(angle)
 
 def Distance_sq(P,Q):
 	""" return the squared distance between P and Q """

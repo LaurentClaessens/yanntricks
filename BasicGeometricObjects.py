@@ -75,6 +75,11 @@ class ListeNomsPoints(object):
 		s = str(self.donne)
 		return "".join( [chr(int(c)+97) for c in s] )
 
+def Angle(A,O,B,r=None):
+	"""
+	Return the angle AOB
+	"""
+	return GraphOfAnAngle(GeometricAngle(A,O,B,r))
 def CircleOA(O,A):
 	"""
 	From the centrer O and a point A, return the circle.
@@ -534,6 +539,22 @@ class GeometricSegment(object):
 		return self * (1/coef)
 	def __str__(self):
 		return "Segment I=%s F=%s; Direction=%s"%(str(self.I),str(self.F),str(self.direction()))
+
+class GeometricAngle(object):
+	def __init__(self,A,O,B,r):
+		self.A=A
+		self.O=O
+		self.B=B
+		self.r=r
+		angleA=A.angle()
+		angleB=B.angle()
+		self.angleI=min(angleA,angleB)
+		self.angleF=max(angleA,angleB)
+		self.circle=Circle(O,r).graph(self.angleI,self.angleF)
+	def angle(self):
+		return self.angleF-self.angleI
+	def graph(self):
+		return phystricks.GraphOfAnAngle(self)
 
 class GeometricCircle(object):
 	def __init__(self,center,radius):
@@ -1047,8 +1068,8 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 			Xradius=0.1/pspict.xunit
 			Yradius=0.1/pspict.yunit
 		except :
-			print "You should consider to give a pspict as argument. If not the boundig box of %s could be bad"%str(self)
-			raise AttributeError
+			print "You should consider to give a pspict as argument. Otherwise the boundig box of %s could be bad"%str(self)
+			raise TypeError
 		bb = BoundingBox(Point(self.x-Xradius,self.y-Yradius),Point(self.x+Xradius,self.y+Yradius))
 		for P in self.record_add_to_bb:
 			bb.AddPoint(P)
@@ -1181,6 +1202,25 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
 	def pstricks_code(self,pspict=None):
 		return "\psframe["+self.params()+"]"+self.rectangle.SW.coordinates()+self.rectangle.NE.coordinates()
 
+class GraphOfAnAngle(GraphOfAnObject,GeometricAngle):
+	def __init__(self,angle):
+		GraphOfAnObject.__init__(self,angle)
+		GeometricAngle.__init__(self,angle.A,angle.O,angle.B,angle.r)
+		self.media=0.5*(self.angleF-self.angleI)
+		self.advised_mark_angle=self.media
+	def math_bounding_box(self,pspict=None):
+		return self.bounding_box(pspict)
+	def bounding_box(self,pspict=None):
+		return self.circle.bounding_box(pspict)
+	def mark_point(self):
+		return self.circle.get_point(self.media)
+	def pstricks_code(self,pspict=None):
+		l=[]
+		if self.marque:
+			l.append(self.mark.pstricks_code(pspict))
+		l.append(self.circle.pstricks_code(pspict))
+		return "\n".join(l)
+
 class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 	"""
 	The attributes self.angleI and self.angleF are in degree since they are to be used by the end-user.
@@ -1205,12 +1245,23 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 	def math_bounding_box(self,pspict=None):
 		return self.bounding_box(pspict)
 	def bounding_box(self,pspict=None):
-		# TODO : take into account self.angleI and self.angleF.
+		a=simplify_degree(self.angleI,keep_max=True)
+		b=simplify_degree(self.angleF,keep_max=True)
+		angleI=min(a,b)
+		angleF=max(a,b)
+		pI=self.get_point(angleI)
+		pF=self.get_point(angleF)
 		bb = BoundingBox(self.center,self.center)
-		bb.AddX(self.center.x+self.radius)
-		bb.AddX(self.center.x-self.radius)
-		bb.AddY(self.center.y+self.radius)
-		bb.AddY(self.center.y-self.radius)
+		bb.append(pI,pspict)
+		bb.append(pF,pspict)
+		if angleI==0:
+			bb.AddX(self.center.x+self.radius)
+		if angleI<90 and angleF>90 :
+			bb.AddY(self.center.y+self.radius)
+		if angleI<180 and angleF>180 :
+			bb.AddX(self.center.x-self.radius)
+		if angleI<270 and angleF>270 :
+			bb.AddY(self.center.y-self.radius)
 		return bb
 	def pstricks_code(self,pspict=None):
 		if self.wavy:
