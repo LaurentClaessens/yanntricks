@@ -295,7 +295,7 @@ def Graph(X,*arg):
 			return GraphOfAParametricCurve(X,arg[0],arg[1])
 		if type(X) == Segment :
 			return GraphOfASegment(X)
-		if type(X) == Vector :
+		if type(X) == AffineVector :
 			return GraphOfAVector(X)
 		if type(X) == Circle :
 			return GraphOfACircle(X)
@@ -367,6 +367,8 @@ class Grid(object):
 		self.border.parameters.style = "dotted"
 	def bounding_box(self,pspict=None):		# This method is for the sake of "Special cases aren't special enough to break the rules."
 		return self.BB
+	def math_bounding_box(self,pspict=None):
+		return self.bounding_box(pspict)
 	def add_option(self,opt):
 		self.options.add_option(opt)
 	def optionsTrace(self):
@@ -427,6 +429,22 @@ class Grid(object):
 			a.append(element.pstricks_code(pspict))
 		return "\n".join(a)
 
+def MultipleBetween(Dx,mx,Mx,mark_origin=True):
+	"""
+	Return the list of values that are all the integer multiple of Dx between mx and Mx.
+
+	If <mark_origin> is True, the list includes 0 if applicable.
+	"""
+	ni=ceil(float(mx)/Dx)
+	nf=floor(float(Mx)/Dx)
+	l = [i*Dx for i in range(ni,nf+1)]
+	if not mark_origin :
+		try :
+			l.remove(0)
+		except ValueError :
+			pass
+	return l
+
 class AxesUnit(object):
 	def __init__(self,numerical_value,latex_symbol=""):
 		try :
@@ -437,7 +455,7 @@ class AxesUnit(object):
 		self.latex_symbol=latex_symbol
 	def symbol(self,x):
 		return latex(x)+self.latex_symbol
-	def place_list(self,mx,Mx,frac=1):
+	def place_list(self,mx,Mx,frac=1,mark_origin=True):
 		"""
 		return a tuple of 
 		1. values that are all the integer multiple of <frac>*self.numerical_value between mx and Mx
@@ -446,54 +464,110 @@ class AxesUnit(object):
 		Please give <frac> as litteral real. Recall that python evaluates 1/2 to 0. If you pass 0.5, it will be converted to 1/2 for a nice display.
 		"""
 		try :
-			frac=sage.rings.rational.Rational(frac)		# If the user enter "0.5", it is converted to 1/2
+			frac=sage.rings.rational.Rational(frac)		# If the user enters "0.5", it is converted to 1/2
 		except TypeError :
 			pass
 		if frac==0:
-			raise ValueError,"frac is zero in AxesUnit.place_list(). Maybe you are giving the fraction 1/2 instead of 0.5\n Are you trying to push me in an infinite loop ?"
+			raise ValueError,"frac is zero in AxesUnit.place_list(). Maybe you ignore that python evaluates 1/2 to 0 ? (writes literal 0.5 instead) \n Or are you trying to push me in an infinite loop ?"
 		l=[]
-		x=mx
-		step=var("step")
 		k=var("TheTag")
-		step=self.numerical_value*frac
-		ni=ceil(float(mx)/step)
-		nf=floor(float(Mx)/step)
-		x0=ni*step
-		for i in range(ni,nf+1):
-			if i != 0:
-				x=i*step
-				if self.latex_symbol == "":
-					l.append((x,"$"+latex(x)+"$"))
-				else :
-					pos=(x/self.numerical_value)*k
-					text="$"+latex(pos).replace("\mbox{TheTag}",self.latex_symbol)+"$"	# This risk to be Sage-version dependant.
-					l.append((x,text))
+		for x in MultipleBetween(frac*self.numerical_value,mx,Mx,mark_origin):
+			if self.latex_symbol == "":
+				l.append((x,"$"+latex(x)+"$"))
+			else :
+				pos=(x/self.numerical_value)*k
+				text="$"+latex(pos).replace("\mbox{TheTag}",self.latex_symbol)+"$"	# This risk to be Sage-version dependant.
+				l.append((x,text))
 		return l
-
 
 class SingleAxe(object):
 	"""
-	Describe an axe
+	Describe an axe.
+	
+	ARGUMENS
+	C : the center
+	base : the base of the axes
+	mx : the initial value (typically negative). It is taken in units of <base>.
+	Mx : the final value (typically positive)
+
+	The axe goes from C+mx*base to C-Mx*base. A number is written each Dx*base.
+
+	self.mark_angle : the angle under which the marks are written (in degree).
 	"""
-	def __init__(self,C,base):
+	def __init__(self,C,base,mx,Mx):
 		self.C=C
 		self.base=base
+		self.mx=mx
+		self.Mx=Mx
 		self.options=Options()
 		self.IsLabel=False
 		self.axes_unit=AxesUnit(1,"")
+		self.Dx=1
+		self.arrows="->"
+		self.graduation=True
+		self.numbering=True
+		self.mark_origin=True
+		self.mark_angle=degree(base.angle()-pi/2)
+	def segment(self):
+		return Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
+	def add_option(self,opt):
+		self.options.add_option(opt)
+	def add_label(self,dist,angle,marque):
+		self.IsLabel = True
+		self.Label = marque
+		self.DistLabel = dist
+		self.AngleLabel = angle
+	def graduation_points(self,pspict):
+		"""Return the list of points that makes the graduation of the axes"""
+		if self.graduation :
+			points_list=[]
+			for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,self.Dx,self.mark_origin):
+				P=(x*self.base).F
+				P.parameters.symbol="|"
+				P.psName=P.psName+pspict.name+_latinize(str(numerical_approx(x)))	# Make the point name unique.
+				if self.numbering :
+					P.put_mark(0.4/pspict.yunit,self.mark_angle,symbol)		# TODO : use the size of the box as distance
+				points_list.append(P)
+			return points_list
+		else :
+			return None
+	def bounding_box(self,pspict):
+		BB=self.math_bounding_box(pspict)
+		for P in self.graduation_points(pspict):
+			BB.append(P,pspict)
+		return BB
+	def math_bounding_box(self,pspict):
+		return self.segment().bounding_box(pspict)
+	def pstricks_code(self,pspict=None):
+		sDx=RemoveLastZeros(self.Dx,10)
+		self.add_option("Dx="+sDx)
+		#bgx = self.BB.mx
+		#if self.BB.mx == int(self.BB.mx):		# Avoid having end of axes on an integer coordinate for aesthetic reasons.
+		#	bgx = self.BB.mx + 0.01
+		#self.BB.mx = bgx
+		c=[]
+		if self.IsLabel :
+			P = self.segment().F
+			P.parameters.symbol="none"
+			P.put_mark(self.DistLabel,self.AngleLabel,self.Label)
+			c.append(P.pstricks_code())
+		if self.graduation :
+			for P in self.graduation_points(pspict):
+				c.append(P.pstricks_code(pspict))
+		h=AffineVector(self.segment())
+		c.append(h.pstricks_code(pspicture))
+		return "\n".join(c)
 
 class Axes(object):
 	"""
 	Describe a system of axes (two axes).
+
+	By default an orthogonal)
 	"""
 	def __init__(self,C,bb):
 		self.C = C						
 		self.BB = bb.copy()
 		self.options = Options()
-		self.grille = Grid(self.BB)
-		self.IsLabelX = False
-		self.IsLabelY = False
-		self.axes_unitX=AxesUnit(1,"")
 		self.axes_unitY=AxesUnit(1,"")
 		self.Dx = 1
 		self.Dy = 1						# Ce sont les valeurs par défaut.
@@ -501,41 +575,48 @@ class Axes(object):
 		self.separator_name="AXES"
 		self.graduation=True
 		self.numbering=True
-	def AjouteGrid(self):
-		raise DeprecationWarning,"There are no grid associated with a axe system"
-		self.IsGrid = 1
-		self.grille.add_option("gridlabels=0")
-		self.grille.add_option("subgriddiv=0")
-		self.grille.add_option("griddots=5")
+		self.single_axeX=SingleAxe(self.C,Vector(1,0),self.BB.mx,self.BB.Mx)
+		self.single_axeX.mark_origin=False
+		self.single_axeY=SingleAxe(self.C,Vector(0,1),self.BB.my,self.BB.My)
+		self.single_axeY.mark_origin=False
+		self.single_axeY.mark_angle=180
+	def update(self):
+		self.single_axeX.mx,self.single_axeX.Mx=self.BB.mx,self.BB.Mx
+		self.single_axeY.mx,self.single_axeY.Mx=self.BB.my,self.BB.My
 	def add_label_X(self,dist,angle,marque):
+		raise DeprecationWarning,"Use self.single_axeX.add_label instead"
 		self.IsLabelX = True
 		self.LabelX = marque
 		self.DistLabelX = dist
 		self.AngleLabelX = angle
 	def add_label_Y(self,dist,angle,marque):
+		raise DeprecationWarning,"Use self.single_axeY.add_label instead"
 		self.IsLabelY = True
 		self.LabelY = marque
 		self.DistLabelY = dist
 		self.AngleLabelY = angle
-		# Je crois que le label n'est pas encore prit en compte dans la BB.
 	def add_option(self,opt):
 		self.options.add_option(opt)
 	def no_graduation(self):
 		self.graduation=False
 	def no_numbering(self):
 		self.numbering=False
-	def AjustephyFunction(self,f,mx,Mx):
-		raise DeprecationWarning, "This is depreciated"
-		self.BB.AddphyFunction(f,mx,Mx)
 	def AjusteCircle(self,Cer):
 		self.BB.AddCircle(Cer)
-	def AjusteGraphephyFunction(self,gf):
-		raise DeprecationWarning, "This is depreciated"
-		self.AjustephyFunction(gf.f,gf.mx,gf.Mx)
 	def bounding_box(self,pspict=None):
-		return self.BB
+		self.update()
+		BB=BoundingBox()
+		BB.append(self.single_axeX.bounding_box(pspict))
+		BB.append(self.single_axeY.bounding_box(pspict))
+		if BB.Mx==1000: 
+			raise ValueError
+		return BB
 	def math_bounding_box(self,pspict=None):
-		return self.bounding_box(pspict)
+		self.update()
+		BB=BoundingBox()
+		BB.append(self.single_axeX.math_bounding_box(pspict))
+		BB.append(self.single_axeY.math_bounding_box(pspict))
+		return BB
 	def pstricks_code(self,pspict=None):
 		sDx=RemoveLastZeros(self.Dx,10)
 		sDy=RemoveLastZeros(self.Dy,10)
@@ -550,42 +631,9 @@ class Axes(object):
 		self.BB.mx = bgx
 		self.BB.my = bgy
 		c=[]
-		if self.IsLabelX :
-			P = Point(self.bounding_box(pspict).Mx,0)
-			P.parameters.symbol="none"
-			P.put_mark(self.DistLabelX,self.AngleLabelX,self.LabelX)
-			c.append(P.pstricks_code())
-		if self.IsLabelY :
-			P = Point(0,self.bounding_box(pspict).My)
-			P.parameters.symbol="none"
-			P.put_mark(self.DistLabelY,self.AngleLabelY,self.LabelY)
-			c.append(P.pstricks_code())
-		if self.graduation :
-			for x,symbol in self.axes_unitX.place_list(self.bounding_box(pspict).mx,self.bounding_box(pspict).Mx,self.Dx):
-				if x != 0:
-					A=Point(x,0)
-					A.parameters.symbol="|"
-					A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(x)))	# Make the point name unique.
-					if self.numbering :
-						A.put_mark(0.4/pspict.yunit,-90,symbol)	# TODO : use the size of the box as distance
-					c.append(A.pstricks_code())
-			for y,symbol in self.axes_unitY.place_list(self.bounding_box(pspict).my,self.bounding_box(pspict).My,self.Dy):
-				if y != 0:
-					A=Point(0,y)
-					A.parameters.symbol="|"
-					A.add_option("dotangle=90")
-					A.psName=A.psName+pspict.name+_latinize(str(numerical_approx(y)))	# Make the point name unique.
-					if self.numbering :
-						A.put_mark(0.4/pspict.xunit,180,symbol)	# TODO : use the size of the box as distance instead of 0.4
-					c.append(A.pstricks_code())
-		h1=Point(self.bounding_box(pspict).mx,self.C.y)
-		h2=Point(self.bounding_box(pspict).Mx,self.C.y)
-		v1=Point(self.C.x,self.bounding_box(pspict).my)
-		v2=Point(self.C.x,self.bounding_box(pspict).My)
-		h=Vector(h1,h2)
-		v=Vector(v1,v2)
-		c.append(h.pstricks_code())
-		c.append(v.pstricks_code())
+		self.update()
+		c.append(self.single_axeX.pstricks_code(pspict))
+		c.append(self.single_axeY.pstricks_code(pspict))
 		return "\n".join(c)
 
 def CircleInterLigne(Cer,Ligne):
@@ -885,10 +933,6 @@ class Separator(object):
 		if self.number > other.number :
 			return 1
 
-#class LabelNotFound(exception):		#(suppressed 29 sept 2010)
-#	def __init__(self,message):
-#		self.message=message
-
 class DrawElement(object):
 	# The attributes take_xxx are intended to say what we have to take into account in the element.
 	# If you put take_graph=False, this element will not be drawn, but its bounding boxes are going to be taken into account.
@@ -943,7 +987,9 @@ class pspicture(object):
 											# If you need the bounding box, use self.bounding_box()
 											# or self.math_bounding_box()
 		self.axes = Axes( Point(0,0),BoundingBox(Point(1000,1000),Point(-1000,-1000))  )
-		self.grid = Grid(self.axes.bounding_box())
+		self.single_axeX=self.axes.single_axeX
+		self.single_axeY=self.axes.single_axeY
+		self.grid = Grid(BoundingBox())
 		# We add the "anchors" %GRID and %AXES in order to force the axes and the grid to be written at these places.
 		#    see the functions DrawAxes and DrawGrid and the fact that they use IncrusteLigne
 
@@ -1041,13 +1087,11 @@ class pspicture(object):
 		Makes LaTeX write the value of the counter in an auxiliary file, then reads the value in that file.
 		(needs several compilations to work)
 		"""
-
 		# Make LaTeX write the value of the counter in a specific file
 		interCounterId = "counter"+self.name+self.NomPointLibre.suivant()
 		print "J'ai le ID",interCounterId
 		self.initialize_counter()
 		self.add_write_line(interCounterId,r"\arabic{%s}"%counter_name)
-
 		# Read the file and return the value
 		return self.get_Id_value(interCounterId,"counter «%s»"%counter_name,default_value)
 
@@ -1151,7 +1195,7 @@ class pspicture(object):
 				x=DrawElement(graph.mark,separator_name)
 				self.record_draw_graph.appen(x)
 		except AttributeError :
-			pass
+			pass				# This happens when the graph has no mark; that is most of the time.
 	def DrawGrid(self,grid):
 		raise DeprecationWarning,"This is depreciated. The grid has to be drawn with DrawGraph as everyone"
 	def TraceTriangle(self,tri,params):
@@ -1161,8 +1205,10 @@ class pspicture(object):
 		self.BB.AddPoint(tri.C)
 		self.add_latex_line("\pstTriangle["+params+",PointSymbol=none]"+tri.A.coordinates()+"{A}"+tri.B.coordinates()+"{B}"+tri.C.coordinates()+"{C}")
 	def TraceGrid(self,grille):
+		raise DeprecationWarning, "I think TraceGrid should no more be used"
 		self.IncrusteLigne(grille.code(self),2)
 	def AjusteGrid(self,grille):
+		raise DeprecationWarning, "I think AjusteGrid should no more be used"
 		grille.BB = self.BB
 	def DrawAxes(self,axes):
 		raise DeprecationWarning, "This method is depreciated"
@@ -1172,6 +1218,7 @@ class pspicture(object):
 		epsilonX=float(self.axes.Dx)/2
 		epsilonY=float(self.axes.Dy)/2
 		self.axes.BB.enlarge_a_little(self.axes.Dx,self.axes.Dy,epsilonX,epsilonY)
+		self.axes.update()
 		self.DrawGraph(self.axes)
 	def DrawDefaultGrid(self):
 		self.grid.BB = self.math_bounding_box()
@@ -1230,7 +1277,7 @@ class pspicture(object):
 				bb.AddBB(graphe.math_bounding_box(self))
 			except AttributeError:
 				print "Warning: it seems to me that object %s (%s) has no method math_boundig_box"%(str(graphe),type(graphe))
-				bb.add_graph(graphe,self)
+				bb.append(graphe,self)
 		return bb
 	def contenu(self):
 		"""
@@ -1238,7 +1285,7 @@ class pspicture(object):
 		"""
 		# Here we are supposed to be sure of the xunit, yunit, so we can compute the BB's needed for the points with marks.
 		# For the same reason, all the marks that were asked to be drawn are added now.
-		# Most of the difficulty is when the user use pspicture.dilatation_X and Y with different coefficients.
+		# Most of the difficulty is when the user use pspicture.dilatation_X and Y with different coefficients. TODO : take it into account.
 		list_to_be_drawn = [a.graph for a in self.record_draw_graph if a.take_graph]
 		for graph in list_to_be_drawn:
 			try :
@@ -1254,12 +1301,13 @@ class pspicture(object):
 			graph=x.graph
 			separator_name=x.separator_name
 			try :
-				self.BB.add_graph(graph,self)
+				self.BB.append(graph,self)
 				self.add_latex_line(graph.pstricks_code(self),separator_name)
 			except AttributeError,data:
 				if not "pstricks_code" in dir(graph):
 					print "phystricks error : object %s has no pstricks_code method"%(str(graph))
 					raise 
+				raise
 		for sortie in globals_vars.list_exits:
 			if globals_vars.__getattribute__(sortie+"_exit"):
 				print "I've to make an exit : %s"%sortie
