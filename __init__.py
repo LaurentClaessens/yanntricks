@@ -532,7 +532,7 @@ class SingleAxe(object):
 				points_list.append(P)
 			return points_list
 		else :
-			return None
+			return []
 	def bounding_box(self,pspict):
 		BB=self.math_bounding_box(pspict)
 		for P in self.graduation_points(pspict):
@@ -600,9 +600,11 @@ class Axes(object):
 	def add_option(self,opt):
 		self.options.add_option(opt)
 	def no_graduation(self):
-		self.graduation=False
+		self.single_axeX.graduation=False
+		self.single_axeY.graduation=False
 	def no_numbering(self):
-		self.numbering=False
+		self.single_axeX.numbering=False
+		self.single_axeY.numbering=False
 	def AjusteCircle(self,Cer):
 		self.BB.AddCircle(Cer)
 	def bounding_box(self,pspict=None):

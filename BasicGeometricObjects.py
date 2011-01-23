@@ -30,6 +30,7 @@ This module also contains some specific "constructors" for some classes, like Po
 """
 
 import math
+import types
 from sage.all import *
 from SmallComputations import *
 import phystricks
@@ -99,6 +100,18 @@ def Segment(A,B):
 #		return GraphOfASegment(self.segment).bounding_box(pspict)
 #	def math_bounding_box(self,pspict=None):
 #		return GraphOfASegment(self.segment).math_bounding_box(pspict)
+def _vector_pstricks_code(segment,pspict=None):
+	"""
+	Return the pstricks's code of a Segment when is is seen as a vector.
+	"""
+	a = segment.I.create_PSpoint() + segment.F.create_PSpoint()
+	a = a + "\\ncline["+segment.params()+"]{->}{"+segment.I.psName+"}{"+segment.F.psName+"}"
+	if segment.marque :
+		P = segment.F
+		P.parameters.symbol = "none"
+		P.put_mark(segment.mark.dist,segment.mark.angle,segment.mark.text)
+		a = a + P.pstricks_code(pspict)
+	return a
 
 def AffineVector(A=None,B=None):
 	"""
@@ -113,7 +126,10 @@ def AffineVector(A=None,B=None):
 			vect=A.segment()
 		except AttributeError :
 			vect=A
-	vect.arrowtype="vector"
+	# the following is thanks to the python's french usenet group
+	#https://groups.google.com/group/fr.comp.lang.python/browse_thread/thread/5b19cfac661df251?hl=fr#
+	#http://users.rcn.com/python/download/Descriptor.htm
+	vect.pstricks_code = types.MethodType(_vector_pstricks_code, vect, Segment)
 	return vect
 
 def Vector(*args):
@@ -154,8 +170,7 @@ class GeometricPoint(object):
 		try :
 			seg=seg.segment()		# allows to project on an axe
 		except AttributeError :
-			print "heu ..."
-			raise
+			pass
 		if seg.vertical :
 			return Point(seg.I.x,self.y)
 		if seg.horizontal :
@@ -190,8 +205,12 @@ class GeometricPoint(object):
 		"""
 		x,y=var('x,y')
 		return line.equation.lhs()(x=self.x,y=self.y)
-	def translate(self,v):
+	def translate(self,a,b=None):
 		"""Do a translation of the point with the vector v"""
+		if b==None :
+			v=a
+		else :
+			v=Vector(a,b)
 		return self+v
 	def lie(self,p):
 		print "This method is depreciated. Use self.origin instead"
@@ -276,7 +295,6 @@ class GeometricPoint(object):
 		return phystricks.GraphOfAPoint(self)
 	def copy(self):
 		return Point(self.x,self.y)
-	# Surcharger quelque opérateurs
 	def __add__(self,v):
 		"""
 		Addition of a point with a vector is the parallel translation, while addition of a point with an other point is simply
@@ -290,8 +308,7 @@ class GeometricPoint(object):
 				dx = v.x
 				dy = v.y
 			except AttributeError :
-				print "You seem to add myself with something which is not a Point neither a Vector. Sorry, but I'm going to crash."
-				raise
+				raise TypeError, "You seem to add myself with something which is not a Point neither a Vector. Sorry, but I'm going to crash."
 		return Point(self.x+dx,self.y+dy)
 	def __sub__(self,v):
 		return self+(-v)
@@ -313,7 +330,6 @@ class GeometricPoint(object):
 #		self.Point = Point(self.F.x-self.I.x,self.F.y-self.I.y)		# Le point qui serait le vecteur lié à (0,0).
 #		self.Dx = self.F.x-self.I.x
 #		self.Dy = self.F.y-self.I.y
-
 
 class GeometricSegment(object):
 	def __init__(self,A,B):
@@ -347,7 +363,6 @@ class GeometricSegment(object):
 		self.longueur = Distance(self.I,self.F)
 		self.Dx = self.F.x-self.I.x
 		self.Dy = self.F.y-self.I.y
-		self.arrowtype="segment"
 		#self.maxima = str(self.equation[0])+"*x+"+str(self.equation[1])+"*y+"+str(self.equation[2])+"=0"
 	def phyFunction(self):
 		if self.horizontal:
@@ -402,6 +417,11 @@ class GeometricSegment(object):
 		More precisely, if self is the segment A->B, return the point B-A
 		"""
 		return self.F-self.I
+	def projection(self,segment):
+		"""
+		Return the projection of self on the given segment
+		"""
+		return Segment(self.I.projection(segment),self.F.projection(segment))
 	def milieu(self):
 		raise DeprecationWarning,"This method is depreciated. Use Segment.center() instead"
 		return self.center()
@@ -677,6 +697,8 @@ class Mark(object):
 		angle is given in degree
 
 		If automatic_place is True, then place the corner of the box at the point instead of the "central point" of the mark.
+		automatic_place is intended to be a tuple of (pspict,anchor)
+		where pspict is the pspicture in which we are working and <anchor> is one of "corner","N","S","W","E". By default, "corner" is taken.
 
 		This class should not be used by the end-user.
 		"""
@@ -698,17 +720,31 @@ class Mark(object):
 		"""
 		default=self.graph.mark_point().get_polar_point(self.dist,self.angle,pspict)
 		if self.automatic_place :
-			pspict=self.automatic_place
+			try :
+				pspict=self.automatic_place[0]
+				position=self.automatic_place[1]
+			except IndexError,TypeError :
+				pspict=self.automatic_place
+				position="corner"
 			dimx,dimy=pspict.get_box_size(self.text)
-			if self.x>=0:
-				lx=dimx*0.5
-			if self.x<0:
-				lx=-dimx*0.5
-			if self.y>=0:
-				ly=dimy*0.5
-			if self.y<0:
-				ly=-dimy*0.5
-			return default.translate(Vector(lx,ly))
+			if position=="corner":
+				if self.x>=0:
+					lx=dimx*0.5
+				if self.x<0:
+					lx=-dimx*0.5
+				if self.y>=0:
+					ly=dimy*0.5
+				if self.y<0:
+					ly=-dimy*0.5
+				return default.translate(lx,ly)
+			if position=="N":
+				return default.translate(0,-dimy*0.5)
+			if position=="S":
+				return default.translate(0,dimy*0.5)
+			if position=="W":
+				return default.translate(dimx*0.5,0)
+			if position=="E":
+				return default.translate(-dimx*0.5,0)
 		else :
 			return default
 	def bounding_box(self,pspict=None):
@@ -1053,7 +1089,7 @@ class GraphOfASegment(GraphOfAnObject,GeometricSegment):
 		return BoundingBox(self.I,self.F)		# If you change this, maybe you have to adapt math_bounding_box
 	def math_bounding_box(self,pspict=None):
 		return self.bounding_box(pspict)
-	def _segment_pstricks_code(self,pspict=None):
+	def pstricks_code(self,pspict=None):
 		"""
 		Return the pstricks's code of a Segment when is is seen as a segment
 		"""
@@ -1064,24 +1100,6 @@ class GraphOfASegment(GraphOfAnObject,GeometricSegment):
 			a =  self.I.create_PSpoint() + self.F.create_PSpoint()
 			a=a+"\n\pstLineAB[%s]{%s}{%s}"%(self.params(),self.I.psName,self.F.psName)
 			return a
-	def _vector_pstricks_code(self,pspict=None):
-		"""
-		Return the pstricks's code of a Segment when is is seen as a vector.
-		"""
-		a = self.I.create_PSpoint() + self.F.create_PSpoint()
-		a = a + "\\ncline["+self.params()+"]{->}{"+self.I.psName+"}{"+self.F.psName+"}"
-		if self.marque :
-			P = self.F
-			P.parameters.symbol = "none"
-			P.put_mark(self.mark.dist,self.mark.angle,self.mark.text)
-			a = a + P.pstricks_code(pspict)
-		return a
-	def pstricks_code(self,pspict=None):
-		if self.arrowtype=="segment":
-			return self._segment_pstricks_code(pspict)
-		if self.arrowtype=="vector":
-			return self._vector_pstricks_code(pspict)
-		raise TypeError,"Something wrong"
 
 class MeasureLength(GraphOfASegment):
 	"""
