@@ -459,11 +459,12 @@ class GeometricCircle(object):
 	def __str__(self):
 		return "Circle, center=%s, radius=%s"%(self.center.__str__(),str(self.radius))
 
-class GeometricVector(object):
+class GeometricVector(GeometricSegment):
 	"""
 	If two points are given to the constructor, return the vector 
 	"""
 	def __init__(self,a,b):
+		GeometricSegment.__init__()<++>
 		self.segment = GeometricSegment(a,b)
 		self.I = self.segment.I
 		self.F = self.segment.F
@@ -1049,9 +1050,17 @@ class MeasureLength(GraphOfASegment):
 
 	The segment (and then the graph associated with the mark) is the parallel one,
 	not the segment given in argument.
+
+	EXAMPLE
+	seg=Segment(a,b)
+	m=MeasureLength(seg,0.2)
+	m.put_mark(0.3,90,"$l$")
 	"""
 	def __init__(self,seg,dist=0.1):
-		self.segment=seg
+		try :
+			self.segment=seg.segment
+		except AttributeError :
+			self.segment=seg
 		self.dist=dist
 		self.delta=seg.get_normal_vector().fix_size(self.dist)
 		self.mseg=seg.translate(self.delta)
