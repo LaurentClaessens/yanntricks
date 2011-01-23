@@ -347,7 +347,7 @@ class GeometricSegment(object):
 		self.longueur = Distance(self.I,self.F)
 		self.Dx = self.F.x-self.I.x
 		self.Dy = self.F.y-self.I.y
-		self.arrowtype="semgment"
+		self.arrowtype="segment"
 		#self.maxima = str(self.equation[0])+"*x+"+str(self.equation[1])+"*y+"+str(self.equation[2])+"=0"
 	def phyFunction(self):
 		if self.horizontal:
@@ -1064,24 +1064,24 @@ class GraphOfASegment(GraphOfAnObject,GeometricSegment):
 			a =  self.I.create_PSpoint() + self.F.create_PSpoint()
 			a=a+"\n\pstLineAB[%s]{%s}{%s}"%(self.params(),self.I.psName,self.F.psName)
 			return a
-	def _Vector_pstricks_code(segment,pspict=None):
+	def _vector_pstricks_code(self,pspict=None):
 		"""
 		Return the pstricks's code of a Segment when is is seen as a vector.
 		"""
-		print "107",segment
-		a = segment.I.create_PSpoint() + segment.F.create_PSpoint()
-		a = a + "\\ncline["+segment.params()+"]{->}{"+segment.I.psName+"}{"+segment.F.psName+"}"
-		if segment.marque :
-			P = segment.F
+		a = self.I.create_PSpoint() + self.F.create_PSpoint()
+		a = a + "\\ncline["+self.params()+"]{->}{"+self.I.psName+"}{"+self.F.psName+"}"
+		if self.marque :
+			P = self.F
 			P.parameters.symbol = "none"
-			P.put_mark(segment.mark.dist,segment.mark.angle,segment.mark.text)
+			P.put_mark(self.mark.dist,self.mark.angle,self.mark.text)
 			a = a + P.pstricks_code(pspict)
 		return a
 	def pstricks_code(self,pspict=None):
 		if self.arrowtype=="segment":
-			return self._segment_pstricks_code
+			return self._segment_pstricks_code(pspict)
 		if self.arrowtype=="vector":
-			return self._vector_pstricks_code
+			return self._vector_pstricks_code(pspict)
+		raise TypeError,"Something wrong"
 
 class MeasureLength(GraphOfASegment):
 	"""
@@ -1600,7 +1600,7 @@ class ParametricCurve(object):
 		except :
 			print "Something got wrong with the computation of the second derivative. I return the default normal vector"
 			return N
-		if N.F.value_on_line(tangent.segment) * second.F.value_on_line(tangent.segment) > 0:
+		if N.F.value_on_line(tangent) * second.F.value_on_line(tangent) > 0:
 			v=N
 		else :
 				v=-N
