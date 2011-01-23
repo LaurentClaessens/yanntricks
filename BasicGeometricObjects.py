@@ -85,15 +85,42 @@ def Point(x,y):
 	return GraphOfAPoint(GeometricPoint(x,y))
 def Segment(A,B):
 	return GraphOfASegment(GeometricSegment(A,B))
+
+#class GraphOfAVector(GraphOfAnObject,GeometricVector):
+#	def __init__(self,vect):
+#		GraphOfAnObject.__init__(self,vect)
+#		GeometricVector.__init__(self,vect.I,vect.F)
+#		self.vector = self.obj
+#		self.I.psName = self.vector.I.psName
+#		self.F.psName = self.vector.F.psName
+#	def mark_point(self):
+#		return self.F
+#	def bounding_box(self,pspict=None):
+#		return GraphOfASegment(self.segment).bounding_box(pspict)
+#	def math_bounding_box(self,pspict=None):
+#		return GraphOfASegment(self.segment).math_bounding_box(pspict)
+
+def _Vector_pstricks_code(segment,pspict=None):
+	"""
+	Return the pstricks's code of a Segment when is is seen as a vector.
+	"""
+	a = segment.I.create_PSpoint() + segment.F.create_PSpoint()
+	a = a + "\\ncline["+segment.params()+"]{->}{"+segment.I.psName+"}{"+segment.F.psName+"}"
+	if segment.marque :
+		P = segment.F
+		P.parameters.symbol = "none"
+		P.put_mark(segment.mark.dist,segment.mark.angle,segment.mark.text)
+		a = a + P.pstricks_code(pspict)
+	return a
+
 def AffineVector(A=None,B=None):
 	"""
 	From points A and B, return the AFFINE vector from A to B.
-	It also accepts a segment as argument
+
+	A vector is nothing else than a Segment for which the pstricks_code method is changed.
 	"""
-	try :
-		return GraphOfAVector(AffineVector(A.I,A.F))
-	except AttributeError :
-		return GraphOfAVector(GeometricVector(A,B))
+	vect=Segment(A,B)
+	vect.pstricks_code=_Vector_pstricks_code
 def Vector(*args):
 	"""
 	From the coordinates x,y, return the corresponding vector, i.e. the affine vector from (0,0) to (x,y).
@@ -279,6 +306,19 @@ class GeometricPoint(object):
 	def __str__(self):
 		return "Point(%s,%s)"%(str(self.x),str(self.y))
 
+class GeometricVector(GeometricSegment):
+	"""
+	If two points are given to the constructor, return the vector 
+	"""
+	def __init__(self,a,b):
+		self.segment = GeometricSegment(a,b)
+		self.I = self.segment.I
+		self.F = self.segment.F
+		self.Point = Point(self.F.x-self.I.x,self.F.y-self.I.y)		# Le point qui serait le vecteur lié à (0,0).
+		self.Dx = self.F.x-self.I.x
+		self.Dy = self.F.y-self.I.y
+
+
 class GeometricSegment(object):
 	def __init__(self,A,B):
 		self.I = A
@@ -370,14 +410,20 @@ class GeometricSegment(object):
 		else :
 			P = Point(-self.coefficient,1)
 			return P.Vector().normalize().origin(self.center())
+	def orthogonal(self):
+		"""
+		return the segment with a rotation of 90 degree. The new segment is still attached to the same point.
+
+		Not to be confused with self.get_normal_vector
+		"""
+		return self.rotation(90)
 	def norme(self):
-		print "The method norme of Segment is depreciated. Use length instead."
-		return Distance(self.I,self.F)
+		raise DeprecationWarning, "The method norme of Segment is depreciated. Use length instead."
 	def length(self):
-		return Distance(self.I,self.F)
+		return self.polaires().r
 	def dilatation(self,coef):
 		""" return a Segment which is dilated by the coefficient coef """
-		return self.fix_size(self.length()*coef)
+		return self*coef
 	def add_size(self,lI,lF):
 		"""
 		Return a new Segment with extra length lI at the initial side and lF at the final side. 
@@ -394,20 +440,72 @@ class GeometricSegment(object):
 		F = vF.fix_size(l/2).F
 		return Segment(I,F)
 	def Affiche(self):
+		raise DeprecationWarning,"use print instead"
 		return str(self.equation[0])+" x + "+str(self.equation[1])+" y + "+str(self.equation[2])
 	def Rotation(self,angle):
+		raise DeprecationWarning,"Use rotation instead (without capital R)"
 		x = self.I.x+self.longueur*math.cos(angle)
 		y = self.I.y+self.longueur*math.sin(angle)
 		return Segment(self.I,Point(x,y))
 	def translate(self,vecteur):
 		return Segment(self.I.translate(vecteur),self.F.translate(vecteur))
+	def inverse(self):
+		"""
+		Return the affine vector -self, bu attached to the same point.
+
+		If self is the segment  A-->B, it return the segment A-->A+(B-A)
+		"""
+		return Segment(self.I,Point(self.I.x-self.Dx,self.I.y-self.Dy))
+	def rotation(self,angle):
+		"""
+		Return the segment attached to the same point but with a rotation of angle
+
+		angle is given in radian.
+		"""
+		return PolarSegment(self.I,self.polaires().r,degree(self.polaires().theta)+angle)
+	def polaires(self):
+		return PointToPolaire(self.Point)
+	def norme(self):
+		raise DeprecationWarning, "The method norme on Vector is depreciated use length instead"
+	def angle(self):
+		"""return the angle of the vector (radian)"""
+		return self.polaires().theta
+	def origin(self,P):
+		"""
+		return a vector (in affine space) whose origin is P.
+		"""
+		return AffineVector(P,Point(P.x+self.Dx,P.y+self.Dy))
+	def lie(self,p):
+		raise DeprecationWarning, "use self.origin instead"
+	def direction(self):
+		d=self.F-self.I
+		return d
+	def fix_size(self,l):
+		L=self.length()
+		if L == 0:
+			print "fix_size problem: this vector has a norm equal to zero"
+			return self
+		return self.dilatation(l/self.length())
+	def add_size(self,l):
+		""" return a Vector with added length on its extremity """
+		return self*((self.length()+l) / self.length())	
+	def normalize(self,l=1):
+		return self.fix_size(l)
 	def graph(self):
 		return phystricks.GraphOfASegment(self)
 	def default_associated_graph_class(self):
 		"""Return the class which is the Graph associated type"""
 		return phystricks.GraphOfASegment
+	def __mul__(self,coef):
+		return Segment(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
+	def __rmul__(self,coef):
+		return self*coef
+	def __neg__(self):
+		return self*(-1)
+	def __div__(self,coef):
+		return self * (1/coef)
 	def __str__(self):
-		return "Segment. I=%s, F=%s"%(str(self.I),str(self.F))
+		return "Segment I=%s F=%s; Direction=%s"%(str(self.I),str(self.F),str(self.direction()))
 
 class GeometricCircle(object):
 	def __init__(self,center,radius):
@@ -458,71 +556,6 @@ class GeometricCircle(object):
 		return phystricks.GraphOfACircle(self)
 	def __str__(self):
 		return "Circle, center=%s, radius=%s"%(self.center.__str__(),str(self.radius))
-
-class GeometricVector(GeometricSegment):
-	"""
-	If two points are given to the constructor, return the vector 
-	"""
-	def __init__(self,a,b):
-		GeometricSegment.__init__()<++>
-		self.segment = GeometricSegment(a,b)
-		self.I = self.segment.I
-		self.F = self.segment.F
-		self.Point = Point(self.F.x-self.I.x,self.F.y-self.I.y)		# Le point qui serait le vecteur lié à (0,0).
-		self.Dx = self.F.x-self.I.x
-		self.Dy = self.F.y-self.I.y
-	def inverse(self):
-		return AffineVector(self.I,Point(self.I.x-self.Dx,self.I.y-self.Dy))
-	def rotation(self,angle):
-		return PolarAffineVector(self.I,self.polaires().r,degree(self.polaires().theta)+angle)
-	def orthogonal(self):
-		return self.rotation(90)
-	def dilatation(self,coef):
-		return self*coef
-	def polaires(self):
-		return PointToPolaire(self.Point)
-	def norme(self):
-		print "The method norme on Vector is depreciated use length instead"
-		raise
-	def length(self):
-		return self.polaires().r
-	def angle(self):
-		"""return the angle of the vector (radian)"""
-		return self.polaires().theta
-	def origin(self,P):
-		"""
-		return a vector (in affine space) whose origin is P.
-		"""
-		return AffineVector(P,Point(P.x+self.Dx,P.y+self.Dy))
-	def lie(self,p):
-		print "use self.origin instead"
-		raise AttributeError
-	def direction(self):
-		d=self.F-self.I
-		return d
-	def fix_size(self,l):
-		L=self.length()
-		if L == 0:
-			print "fix_size problem: this vector has a norm equal to zero"
-			return self
-		return self.dilatation(l/self.length())
-	def add_size(self,l):
-		""" return a Vector with added length on its extremity """
-		return self*((self.length()+l) / self.length())	
-	def normalize(self,l=1):
-		return self.fix_size(l)
-	def default_associated_graph_class(self):
-		return phystricks.GraphOfAVector
-	def __mul__(self,coef):
-		return AffineVector(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
-	def __rmul__(self,coef):
-		return self*coef
-	def __neg__(self):
-		return self*(-1)
-	def __div__(self,coef):
-		return self * (1/coef)
-	def __str__(self):
-		return "AffineVector I=%s F=%s; Direction=%s"%(str(self.I),str(self.F),str(self.direction()))
 
 class GeometricRectangle(object):
 	"""
@@ -1020,29 +1053,6 @@ class GraphOfASegment(GraphOfAnObject,GeometricSegment):
 			a =  self.I.create_PSpoint() + self.F.create_PSpoint()
 			a=a+"\n\pstLineAB[%s]{%s}{%s}"%(self.params(),self.I.psName,self.F.psName)
 			return a
-
-class GraphOfAVector(GraphOfAnObject,GeometricVector):
-	def __init__(self,vect):
-		GraphOfAnObject.__init__(self,vect)
-		GeometricVector.__init__(self,vect.I,vect.F)
-		self.vector = self.obj
-		self.I.psName = self.vector.I.psName
-		self.F.psName = self.vector.F.psName
-	def mark_point(self):
-		return self.F
-	def bounding_box(self,pspict=None):
-		return GraphOfASegment(self.segment).bounding_box(pspict)
-	def math_bounding_box(self,pspict=None):
-		return GraphOfASegment(self.segment).math_bounding_box(pspict)
-	def pstricks_code(self,pspict=None):
-		a = self.segment.I.create_PSpoint() + self.segment.F.create_PSpoint()
-		a = a + "\\ncline["+self.params()+"]{->}{"+self.segment.I.psName+"}{"+self.segment.F.psName+"}"
-		if self.marque :
-			P = self.F
-			P.parameters.symbol = "none"
-			P.put_mark(self.mark.dist,self.mark.angle,self.mark.text)
-			a = a + P.pstricks_code(pspict)
-		return a
 
 class MeasureLength(GraphOfASegment):
 	"""
@@ -1716,12 +1726,12 @@ class Nuage_de_Points(object):
 	def ajoute_point(self,p):
 		self.listePoints.append(p)
 
-def PolarAffineVector(P,r,theta):
+def PolarSegment(P,r,theta):
 	"""
-	returns a vector on the base point P (class Point) of length r angle theta (degree)
+	returns a segment on the base point P (class Point) of length r angle theta (degree)
 	"""
 	alpha = radian(theta)
-	return AffineVector(P, Point(P.x+r*math.cos(alpha),P.y+r*math.sin(alpha)) )
+	return Segment(P, Point(P.x+r*math.cos(alpha),P.y+r*math.sin(alpha)) )
 
 class BoundingBox(object):
 	def __init__(self,dSW=GeometricPoint(0,0),dNE=GeometricPoint(0,0)):
