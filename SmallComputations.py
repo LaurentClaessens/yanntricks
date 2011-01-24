@@ -57,18 +57,20 @@ def enlarge_a_little_low(x,m,epsilon):
 	else : 
 		return MultipleLower(x,m)-epsilon
 
-
-
 #class coordinatesPolaires(object):
 class PolarCoordinates(object):
 	def __init__(self,r,value_degree=None,value_radian=None):
 		self.r = r
 		if value_degree == None :
-			self.value_degree=degree(value_radian)
+			value_degree=degree(value_radian)
 		if radian == None :
-			self.value_radian=radian(value_degree)
+			value_radian=radian(value_degree)
 		self.degree=value_degree
 		self.radian=value_radian
+		if self.degree==None or self.radian==None:
+			raise ValueError,"Something wrong"
+	def __str__(self):
+		return "PolarCoordinates, r=%s,degree=%s,radian=%s"%(str(self.r),str(self.degree),str(self.radian))
 
 def PointToPolaire(P):
 	"""
@@ -90,7 +92,7 @@ def PointToPolaire(P):
 		alpha = alpha + math.pi
 	if (P.x < 0) and (P.y < 0 ) :
 		alpha = alpha +math.pi
-	return PolarCoordinates(r,value_gradian=alpha)
+	return PolarCoordinates(r,value_radian=alpha)
 
 def simplify_degree(angle,keep_max=False):
 	if keep_max and angle == 360:

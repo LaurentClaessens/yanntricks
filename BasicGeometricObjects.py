@@ -509,7 +509,6 @@ class GeometricSegment(object):
 		raise DeprecationWarning, "The method norme on Vector is depreciated use length instead"
 	def angle(self):
 		"""return the angle of the vector (degree)"""
-		print "512 C'est bien cela"
 		return self.polaires().degree
 	def origin(self,P):
 		"""
@@ -586,7 +585,9 @@ class GeometricCircle(object):
 			return curve.graph(a,b)
 	def get_point(self,theta):
 		"""
-		Return a point at angle <theta> on the circle. The angle is given in degree (as all the angles that are user intended)
+		Return a point at angle <theta> on the circle. 
+		
+		The angle is given in degree.
 		"""
 		#P = Point(self.center.x+self.radius*math.cos(radian(theta)), self.center.y+self.radius*math.sin(radian(theta)) )
 		return self.parametric_curve().get_point(radian(theta))
@@ -597,6 +598,11 @@ class GeometricCircle(object):
 	def get_tangent_vector(self,theta):
 		return PolarPoint(1,theta+90).orignin(self.get_point(theta))
 	def get_normal_vector(self,theta):
+		"""
+		Return a normal vector at angle <theta>
+
+		The angle is in degree
+		"""
 		return PolarPoint(1,theta).origin(self.get_point(theta))
 	# Donne les x et y min et max du cercle entre deux angles.
 	# Here, angleI and angleF are given in degree while parametric_plot uses radian.
@@ -753,9 +759,9 @@ class Mark(object):
 		default=self.graph.mark_point().get_polar_point(self.dist,self.angle,pspict)
 		if self.automatic_place :
 			try :
-				pspict=self.automatic_place[0]
 				position=self.automatic_place[1]
-			except IndexError,TypeError :
+				pspict=self.automatic_place[0]
+			except TypeError :
 				pspict=self.automatic_place
 				position="corner"
 			dimx,dimy=pspict.get_box_size(self.text)
@@ -1383,7 +1389,6 @@ class phyFunction(object):
 				angle_n=angle_n+180
 			P.advised_mark_angle=angle_n
 		except TypeError :		# Happens when Sage has no derivative of the function.
-			raise
 			pass
 		return P
 	def get_normal_vector(self,x):
@@ -1645,12 +1650,16 @@ class ParametricCurve(object):
 		The so build angle is somewhat "optimal" for a visual point of view. The attribute self.get_point(llam).advised_mark_angle is given in degree.
 
 		The advised angle is given in degree.
+
+		The optional boolean argument <advised> serves to avoid infinite loops because we use get_point in get_normal_vector.
 		"""
 		P = Point(self.f1(llam),self.f2(llam))
 		if advised :
 			try :
 				P.advised_mark_angle=self.get_normal_vector(llam).angle()
-				print "1652", P.advised_mark_angle
+				#P.trux_normal=self.get_normal_vector(llam)
+				#P.trux_tangent=self.get_tangent_vector(llam)							# For debug purpose
+				#P.trux_tangent_orthogonal=AffineVector(self.get_tangent_vector(llam).orthogonal())		
 			except :
 				print "It seems that something got wrong in the computation of something. Return 0 as angle."
 				P.advised_mark_angle=0
@@ -1672,8 +1681,9 @@ class ParametricCurve(object):
 
 		If you want the second derivative vector, use self.get_derivative(2). This will not produce a normal vector in general.
 		"""
+		anchor=self.get_point(llam,advised=False)
 		tangent=self.get_tangent_vector(llam)
-		N = tangent.orthogonal()
+		N = AffineVector(tangent.orthogonal())
 		# The delicate part is to decide if we want to return N or -N. We select the angle which is on the same side of the curve
 		#											than the second derivative.
 		# Let S be the second derivative vector and f(x,y)=0 be the equation of the tangent. We select N if f(N) has the same sign as f(S) and -N if
@@ -1684,10 +1694,10 @@ class ParametricCurve(object):
 			print "Something got wrong with the computation of the second derivative. I return the default normal vector"
 			return N
 		if N.F.value_on_line(tangent) * second.F.value_on_line(tangent) > 0:
-			v=N
+			v=-N
 		else :
-				v=-N
-		return v
+				v=N
+		return AffineVector(v.origin(anchor))
 	def get_second_derivative_vector(self,llam,advised=False):
 		r"""
 		return the second derivative vector normalised to 1.
