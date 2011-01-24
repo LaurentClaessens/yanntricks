@@ -58,19 +58,21 @@ def enlarge_a_little_low(x,m,epsilon):
 		return MultipleLower(x,m)-epsilon
 
 
-def PolarPoint(r,theta):
-	return Point(r*math.cos(radian(theta)),r*math.sin(radian(theta)))
 
-class coordinatesPolaires(object):
-	def __init__(self,r,theta):
+#class coordinatesPolaires(object):
+class PolarCoordinates(object):
+	def __init__(self,r,value_degree=None,value_radian=None):
 		self.r = r
-		self.theta = theta
+		if value_degree == None :
+			self.value_degree=degree(value_radian)
+		if radian == None :
+			self.value_radian=radian(value_degree)
+		self.degree=value_degree
+		self.radian=value_radian
 
 def PointToPolaire(P):
 	"""
 	Return the polar coordinates of a point.
-
-	The polar coordinates are given in radian
 	"""
 	r = P.norme()
 	if P.x == 0:
@@ -88,7 +90,7 @@ def PointToPolaire(P):
 		alpha = alpha + math.pi
 	if (P.x < 0) and (P.y < 0 ) :
 		alpha = alpha +math.pi
-	return coordinatesPolaires(r,alpha)
+	return PolarCoordinates(r,value_gradian=alpha)
 
 def simplify_degree(angle,keep_max=False):
 	if keep_max and angle == 360:

@@ -89,6 +89,8 @@ def CircleOA(O,A):
 	return Circle(O,radius)
 def Point(x,y):
 	return GraphOfAPoint(GeometricPoint(x,y))
+def PolarPoint(r,theta):
+	return Point(r*math.cos(radian(theta)),r*math.sin(radian(theta)))
 def Segment(A,B):
 	return GraphOfASegment(GeometricSegment(A,B))
 
@@ -272,6 +274,11 @@ class GeometricPoint(object):
 		deg=degree(radian)
 		return r,deg
 	def angle(self):
+		"""
+		Return the angle of the segment from (0,0) and self
+
+		Return the result in degree
+		"""
 		return self.polar_coordinates()[1]
 	def coordinates(self):
 		"""
@@ -495,14 +502,15 @@ class GeometricSegment(object):
 
 		angle is given in radian.
 		"""
-		return PolarSegment(self.I,self.polaires().r,degree(self.polaires().theta)+angle)
+		return PolarSegment(self.I,self.polaires().r,self.polaires().degree+angle)
 	def polaires(self):
 		return PointToPolaire(self.Point())
 	def norme(self):
 		raise DeprecationWarning, "The method norme on Vector is depreciated use length instead"
 	def angle(self):
-		"""return the angle of the vector (radian)"""
-		return self.polaires().theta
+		"""return the angle of the vector (degree)"""
+		print "512 C'est bien cela"
+		return self.polaires().degree
 	def origin(self,P):
 		"""
 		return a vector (in affine space) whose origin is P.
@@ -565,6 +573,8 @@ class GeometricCircle(object):
 		Return the parametric curve associated to the circle.
 
 		If optional arguments <a> and <b> are given, return the corresponding graph between the values a and b of the angle.
+
+		The parameter of the curve is the angle in radian.
 		"""
 		var('x')
 		f1 = phyFunction(self.center.x+self.radius*cos(x))
@@ -578,15 +588,16 @@ class GeometricCircle(object):
 		"""
 		Return a point at angle <theta> on the circle. The angle is given in degree (as all the angles that are user intended)
 		"""
-		return Point(self.center.x+self.radius*math.cos(radian(theta)), self.center.y+self.radius*math.sin(radian(theta)) )
+		#P = Point(self.center.x+self.radius*math.cos(radian(theta)), self.center.y+self.radius*math.sin(radian(theta)) )
+		return self.parametric_curve().get_point(radian(theta))
 	# Donne le vecteur normal de norme 1 au cercle au point d'angle theta
 	def VectorTangent(self,theta):
 		raise DeprecationWarning,"Usge get_tangent_vector instead"
 		return PolarPoint(1,theta+90).lie(self.get_point(theta))
 	def get_tangent_vector(self,theta):
-		return PolarPoint(1,theta+90).lie(self.get_point(theta))
+		return PolarPoint(1,theta+90).orignin(self.get_point(theta))
 	def get_normal_vector(self,theta):
-		return PolarPoint(1,theta).lie(self.get_point(theta))
+		return PolarPoint(1,theta).origin(self.get_point(theta))
 	# Donne les x et y min et max du cercle entre deux angles.
 	# Here, angleI and angleF are given in degree while parametric_plot uses radian.
 	def get_minmax_data(self,angleI,angleF):
@@ -1632,11 +1643,14 @@ class ParametricCurve(object):
 		If you want to put a mark on the point P (obtained by get_point), you should consider to write
 		P.put_mark(r,P.advised_mark_angle,text)
 		The so build angle is somewhat "optimal" for a visual point of view. The attribute self.get_point(llam).advised_mark_angle is given in degree.
+
+		The advised angle is given in degree.
 		"""
 		P = Point(self.f1(llam),self.f2(llam))
 		if advised :
 			try :
 				P.advised_mark_angle=self.get_normal_vector(llam).angle()
+				print "1652", P.advised_mark_angle
 			except :
 				print "It seems that something got wrong in the computation of something. Return 0 as angle."
 				P.advised_mark_angle=0
