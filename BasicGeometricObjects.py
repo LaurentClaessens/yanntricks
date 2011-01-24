@@ -271,8 +271,8 @@ class GeometricPoint(object):
 				radian=pi/2-radian
 			if self.y<=0:
 				radian=pi+radian
-		deg=degree(radian)
-		return r,deg
+		angle=AngleMeasure(value_radian=radian)
+		return r,angle
 	def angle(self):
 		"""
 		Return the angle of the segment from (0,0) and self
@@ -509,7 +509,7 @@ class GeometricSegment(object):
 		raise DeprecationWarning, "The method norme on Vector is depreciated use length instead"
 	def angle(self):
 		"""return the angle of the vector (degree)"""
-		return self.polaires().degree
+		return self.polaires().measure
 	def origin(self,P):
 		"""
 		return a vector (in affine space) whose origin is P.
@@ -547,22 +547,6 @@ class GeometricSegment(object):
 	def __str__(self):
 		return "Segment I=%s F=%s; Direction=%s"%(str(self.I),str(self.F),str(self.direction()))
 
-class GeometricAngle(object):
-	def __init__(self,A,O,B,r):
-		self.A=A
-		self.O=O
-		self.B=B
-		self.r=r
-		angleA=A.angle()
-		angleB=B.angle()
-		self.angleI=min(angleA,angleB)
-		self.angleF=max(angleA,angleB)
-		self.circle=Circle(O,r).graph(self.angleI,self.angleF)
-	def angle(self):
-		return self.angleF-self.angleI
-	def graph(self):
-		return phystricks.GraphOfAnAngle(self)
-
 class GeometricCircle(object):
 	def __init__(self,center,radius):
 		self.center = center
@@ -589,9 +573,7 @@ class GeometricCircle(object):
 		
 		The angle is given in degree.
 		"""
-		#P = Point(self.center.x+self.radius*math.cos(radian(theta)), self.center.y+self.radius*math.sin(radian(theta)) )
-		return self.parametric_curve().get_point(radian(theta))
-	# Donne le vecteur normal de norme 1 au cercle au point d'angle theta
+		return self.parametric_curve().get_point(radian(theta,number=True))
 	def VectorTangent(self,theta):
 		raise DeprecationWarning,"Usge get_tangent_vector instead"
 		return PolarPoint(1,theta+90).lie(self.get_point(theta))
@@ -618,8 +600,14 @@ class GeometricCircle(object):
 		return self.get_minmax_data(angleI,angleF)['ymax']
 	def ymin(self,angleI,angleF):
 		return self.get_minmax_data(angleI,angleF)['ymin']
-	def graph(self):
-		return phystricks.GraphOfACircle(self)
+	def graph(self,angleI,angleF):
+		"""
+		Return a graph of the circle between the two angles given in degree
+		"""
+		C=GraphOfACircle(self.circle)
+		C.angleI=angleI
+		C.angleF=angleF
+		return C
 	def __str__(self):
 		return "Circle, center=%s, radius=%s"%(self.center.__str__(),str(self.radius))
 
@@ -747,8 +735,12 @@ class Mark(object):
 		self.angle = angle
 		self.automatic_place=automatic_place
 		alpha=radian(angle)
-		self.x=self.dist*cos(alpha)
-		self.y=self.dist*sin(alpha)
+		if isinstance(alpha,AngleMeasure):
+			self.x=self.dist*cos(alpha.radian)
+			self.y=self.dist*sin(alpha.radian)
+		else :
+			self.x=self.dist*cos(alpha)
+			self.y=self.dist*sin(alpha)
 	def central_point(self,pspict=None):
 		"""
 		return the central point of the mark, that is the point where the mark arrives.
@@ -1219,23 +1211,45 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
 	def pstricks_code(self,pspict=None):
 		return "\psframe["+self.params()+"]"+self.rectangle.SW.coordinates()+self.rectangle.NE.coordinates()
 
+
+class GeometricAngle(object):
+	def __init__(self,A,O,B,r=None):
+		self.A=A
+		self.O=O
+		self.B=B
+		if r==None:
+			r=0.2*Segment(A,O).length()
+		self.r=r
+		self.angleA=Segment(O,A).angle()
+		self.angleB=Segment(O,B).angle()
+		self.angleI=min(self.angleA,self.angleB)
+		self.angleF=max(self.angleA,self.angleB)
+		self.media=self.angleF-0.5*self.measure()
+	def circle(self):
+		return Circle(self.O,self.r).graph(self.angleI,self.angleF)
+	def measure(self):
+		return AngleMeasure(value_degree=self.angleF.degree-self.angleI.degree)
+	def graph(self):
+		return phystricks.GraphOfAnAngle(self)
+
 class GraphOfAnAngle(GraphOfAnObject,GeometricAngle):
 	def __init__(self,angle):
 		GraphOfAnObject.__init__(self,angle)
 		GeometricAngle.__init__(self,angle.A,angle.O,angle.B,angle.r)
-		self.media=0.5*(self.angleF-self.angleI)
-		self.advised_mark_angle=self.media
+		self.advised_mark_angle=self.media.degree
 	def math_bounding_box(self,pspict=None):
 		return self.bounding_box(pspict)
 	def bounding_box(self,pspict=None):
-		return self.circle.bounding_box(pspict)
+		return self.circle().bounding_box(pspict)
 	def mark_point(self):
-		return self.circle.get_point(self.media)
+		return self.circle().get_point(self.media)
 	def pstricks_code(self,pspict=None):
+		circle=self.circle()
+		circle.parameters=self.parameters
 		l=[]
 		if self.marque:
 			l.append(self.mark.pstricks_code(pspict))
-		l.append(self.circle.pstricks_code(pspict))
+		l.append(circle.pstricks_code(pspict))
 		return "\n".join(l)
 
 class GraphOfACircle(GraphOfAnObject,GeometricCircle):
@@ -1247,23 +1261,15 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 		GeometricCircle.__init__(self,circle.center,circle.radius)
 		self.circle = self.obj
 		self.angleI = 0
-		self.angleF = 360		# By default, the circle is drawn between the angles 0 and 2pi.
+		self.angleF = 360		# By default, the circle is drawn between the angles 0 and 360.
 	def copy(self):
 		"""Return a copy of the object as geometrical object: the style and drawing parameters are not copied."""
 		return Circle(self.center,self.radius)
-	def graph(self,angleI,angleF):
-		"""
-		Return a graph of the circle between the two angles given in degree
-		"""
-		C=GraphOfACircle(self.circle)
-		C.angleI=angleI
-		C.angleF=angleF
-		return C
 	def math_bounding_box(self,pspict=None):
 		return self.bounding_box(pspict)
 	def bounding_box(self,pspict=None):
-		a=simplify_degree(self.angleI,keep_max=True)
-		b=simplify_degree(self.angleF,keep_max=True)
+		a=simplify_degree(self.angleI,keep_max=True,number=True)
+		b=simplify_degree(self.angleF,keep_max=True,number=True)
 		angleI=min(a,b)
 		angleF=max(a,b)
 		pI=self.get_point(angleI)
@@ -1283,8 +1289,8 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 	def pstricks_code(self,pspict=None):
 		if self.wavy:
 			waviness = self.waviness
-			alphaI = radian(self.angleI)
-			alphaF = radian(self.angleF)
+			alphaI = radian(self.angleI,number=True)
+			alphaF = radian(self.angleF,number=True)
 			if self.angleF==360:		# Because the function radian simplifies modulo 2pi.
 				alphaF=2*pi
 			curve = self.parametric_curve()
@@ -1296,7 +1302,9 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 			G.wave(waviness.dx,waviness.dy)
 			return G.pstricks_code()
 		else:
-			if self.angleI == 0 and self.angleF == 360 :
+			angleI=self.angleI.degree
+			angleF=self.angleF.degree
+			if angleI == 0 and angleF == 360 :
 				PsA = Point(self.center.x-self.radius,self.center.y)		
 				a = PsA.create_PSpoint()
 				a = a + self.center.create_PSpoint()
@@ -1307,8 +1315,8 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 				# La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
 				#self.add_latex_line("\pscircle["+params+"]("+Cer.center.psName+"){"+str(Cer.radius)+"}")
 			else :
-				PsA = self.get_point(self.angleI)
-				PsB = self.get_point(self.angleF)
+				PsA = self.get_point(angleI)
+				PsB = self.get_point(angleF)
 				a = PsA.create_PSpoint() + PsB.create_PSpoint() + self.center.create_PSpoint()
 				a = a+"\pstArcOAB[%s]{%s}{%s}{%s}"%(self.params(),self.center.psName,PsA.psName,PsB.psName)
 				return a
@@ -1653,13 +1661,12 @@ class ParametricCurve(object):
 
 		The optional boolean argument <advised> serves to avoid infinite loops because we use get_point in get_normal_vector.
 		"""
+		if isinstance(llam,AngleMeasure):
+			llam=llam.radian
 		P = Point(self.f1(llam),self.f2(llam))
 		if advised :
 			try :
 				P.advised_mark_angle=self.get_normal_vector(llam).angle()
-				#P.trux_normal=self.get_normal_vector(llam)
-				#P.trux_tangent=self.get_tangent_vector(llam)							# For debug purpose
-				#P.trux_tangent_orthogonal=AffineVector(self.get_tangent_vector(llam).orthogonal())		
 			except :
 				print "It seems that something got wrong in the computation of something. Return 0 as angle."
 				P.advised_mark_angle=0

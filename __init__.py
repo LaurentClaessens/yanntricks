@@ -507,7 +507,7 @@ class SingleAxe(object):
 		self.graduation=True
 		self.numbering=True
 		self.mark_origin=True
-		self.mark_angle=degree(base.angle()-pi/2)
+		self.mark_angle=degree(base.angle().radian-pi/2)
 		#self.vertical=base.vertical
 		#self.horizontal=base.horizontal
 	def segment(self):

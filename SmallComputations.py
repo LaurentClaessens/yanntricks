@@ -57,18 +57,50 @@ def enlarge_a_little_low(x,m,epsilon):
 	else : 
 		return MultipleLower(x,m)-epsilon
 
-#class coordinatesPolaires(object):
-class PolarCoordinates(object):
-	def __init__(self,r,value_degree=None,value_radian=None):
-		self.r = r
+class AngleMeasure(object):
+	"""
+	sage: x=AngleMeasure(value_radian=pi/2)
+	sage: x()
+	28.647889756541161*pi
+	sage: numerical_approx(x())
+	90.0000000000000
+	"""
+	def __init__(self,value_degree=None,value_radian=None):
 		if value_degree == None :
 			value_degree=degree(value_radian)
-		if radian == None :
+		if value_radian == None :
 			value_radian=radian(value_degree)
 		self.degree=value_degree
 		self.radian=value_radian
 		if self.degree==None or self.radian==None:
 			raise ValueError,"Something wrong"
+	def __mul__(self,coef):
+		return AngleMeasure(value_radian=coef*self.radian)
+	def __rmul__(self,coef):
+		return self*coef
+	def __sub__(self,other):
+		return AngleMeasure(value_radian=self.radian-other.radian)
+	def __call__(self):
+		return self.degree
+	def __div__(self,coef):
+		return AngleMeasure(value_radian=self.radian/coef)
+	def __cmp__(self,other):
+		if isinstance(other,AngleMeasure):
+			if self.degree > other.degree :
+				return 1
+			if self.degree < other.degree :
+				return 1
+			if self.degree == other.degree :
+				return 0
+	def __str__(self):
+		return "AngleMeasure, degree=%s,radian=%s"%(str(numerical_approx(self.degree)),str(self.radian))
+
+class PolarCoordinates(object):
+	def __init__(self,r,value_degree=None,value_radian=None):
+		self.r = r
+		self.measure=AngleMeasure(value_degree,value_radian)
+		self.degree=self.measure.degree
+		self.radian=self.measure.radian
 	def __str__(self):
 		return "PolarCoordinates, r=%s,degree=%s,radian=%s"%(str(self.r),str(self.degree),str(self.radian))
 
@@ -94,31 +126,58 @@ def PointToPolaire(P):
 		alpha = alpha +math.pi
 	return PolarCoordinates(r,value_radian=alpha)
 
-def simplify_degree(angle,keep_max=False):
-	if keep_max and angle == 360:
+def simplify_degree(angle,keep_max=False,number=False):
+	if isinstance(angle,AngleMeasure) :
+		x=angle.degree
+		gotMeasure=True
+	else :
+		x=angle
+		gotMeasure=False
+	if keep_max and x == 360:
 		return 360
-	while angle >= 360 :
-		angle=angle-360
-	while angle < 0 :
-		angle=angle+360
-	return angle
-def simplyfy_radian(angle,keep_max=False):
-	if keep_max and angle == 2*pi:
+	while x >= 360 :
+		x=x-360
+	while x < 0 :
+		x=x+360
+	if gotMeasure and number==False :
+		return AngleMeasure(value_degree=x)
+	else :
+		return x
+
+def simplify_radian(angle,keep_max=False,number=False):
+	if isinstance(angle,AngleMeasure) :
+		x=angle.radian
+		gotMeasure=True
+	else :
+		x=angle
+		gotMeasure=False
+	if keep_max and x == 2*pi:
 		return 2*pi
-	while angle >= 2*pi :
-		angle=angle-2*pi
-	while angle < 0 :
-		angle=angle+2*pi
-	return angle
+	if isinstance(x,AngleMeasure):
+		raise TypeError,"Something wrong"
+	while x >= 2*pi :
+		x=x-2*pi
+	while x < 0 :
+		x=x+2*pi
+	if gotMeasure and number==False :
+		return AngleMeasure(value_radian=x)
+	else :
+		return x
+	
 # Convention : theta is in degree while alpha is in gradient.
-def radian(theta):
+def radian(theta,number=False):
 	"""Convert from degree to radian. Return a value between 0 and 2pi (not 2pi itself)"""
-	angle = theta*math.pi/180
-	return simplyfy_radian(angle)
-def degree(alpha):
+	if isinstance(theta,AngleMeasure):
+		return simplify_radian(theta,number=number)
+	else :
+		return simplify_radian(theta*math.pi/180)
+
+def degree(alpha,number=False):
 	"""Convert from radian to degree. Return a value between 0 and 360 (not 360 itself)"""
-	angle = 180*alpha/math.pi
-	return simplify_degree(angle)
+	if isinstance(alpha,AngleMeasure):
+		return simplify_degree(alpha,numbre=number)
+	else :
+		return simplify_degree(180*alpha/math.pi)
 
 def Distance_sq(P,Q):
 	""" return the squared distance between P and Q """
