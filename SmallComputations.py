@@ -126,58 +126,44 @@ def PointToPolaire(P):
 		alpha = alpha +math.pi
 	return PolarCoordinates(r,value_radian=alpha)
 
-def simplify_degree(angle,keep_max=False,number=False):
-	if isinstance(angle,AngleMeasure) :
-		x=angle.degree
-		gotMeasure=True
-	else :
-		x=angle
-		gotMeasure=False
-	if keep_max and x == 360:
-		return 360
-	while x >= 360 :
-		x=x-360
-	while x < 0 :
-		x=x+360
-	if gotMeasure and number==False :
-		return AngleMeasure(value_degree=x)
-	else :
-		return x
+class SimplifyAngles(object):
+	def __init__(self,max_value):
+		self.max_value=max_value
+	def simplify(angle,keep_max=False,number=False)
+		if isinstance(angle,AngleMeasure) :
+			x=angle.degree
+			gotMeasure=True
+		else :
+			x=angle
+			gotMeasure=False
+		if keep_max and x == max_value:
+			return max_value
+		while x >= max_value :
+			x=x-max_value
+		while x < 0 :
+			x=x+max_value
+		if gotMeasure and number==False :
+			return AngleMeasure(value_degree=x)
+		else :
+			return x
 
-def simplify_radian(angle,keep_max=False,number=False):
-	if isinstance(angle,AngleMeasure) :
-		x=angle.radian
-		gotMeasure=True
-	else :
-		x=angle
-		gotMeasure=False
-	if keep_max and x == 2*pi:
-		return 2*pi
-	if isinstance(x,AngleMeasure):
-		raise TypeError,"Something wrong"
-	while x >= 2*pi :
-		x=x-2*pi
-	while x < 0 :
-		x=x+2*pi
-	if gotMeasure and number==False :
-		return AngleMeasure(value_radian=x)
-	else :
-		return x
-	
-# Convention : theta is in degree while alpha is in gradient.
-def radian(theta,number=False):
-	"""Convert from degree to radian. Return a value between 0 and 2pi (not 2pi itself)"""
-	if isinstance(theta,AngleMeasure):
-		return simplify_radian(theta,number=number)
-	else :
-		return simplify_radian(theta*math.pi/180)
+class ConversionAngles(object):
+	def __init__(self,factor):
+		self.factor=factor
+	def conversion(theta,number=False,keep_max=False,converting=True):
+		if isinstance(theta,AngleMeasure):
+			return simplify_radian(theta,number=number,keep_max=keep_max)
+		else :
+			if converting :
+				return simplify_radian(theta*factor,keep_max=keep_max)
+			else :
+				return simplify_radian(theta,keep_max=keep_max)
 
-def degree(alpha,number=False):
-	"""Convert from radian to degree. Return a value between 0 and 360 (not 360 itself)"""
-	if isinstance(alpha,AngleMeasure):
-		return simplify_degree(alpha,numbre=number)
-	else :
-		return simplify_degree(180*alpha/math.pi)
+simplify_degree=SimplifyAngles(360).simplify
+simplify_radian=SimplifyAngles(2*pi).simplify
+
+degree=ConversionAngles(180.0/math.pi).conversion
+radian=ConversionAngles(math.pi/180).conversion
 
 def Distance_sq(P,Q):
 	""" return the squared distance between P and Q """
@@ -186,3 +172,23 @@ def Distance_sq(P,Q):
 def Distance(P,Q):
 	""" return the distance between P and Q """
 	return math.sqrt(Distance_sq(P,Q))
+
+# Convention : theta is in degree while alpha is in gradient.
+#def radian(theta,number=False,converting=True,keep_max=False):
+	#"""
+	#Convert from degree to radian. Return a value between 0 and 2pi (not 2pi itself)
+	#"""
+	#if isinstance(theta,AngleMeasure):
+		#return simplify_radian(theta,number=number,keep_max=keep_max)
+	#else :
+		#if converting :
+			#return simplify_radian(theta*math.pi/180,keep_max=keep_max)
+		#else :
+			#return simplify_radian(theta,keep_max=keep_max)
+#def degree(alpha,number=False,converting=True,keep_max=False):
+	#"""Convert from radian to degree. Return a value between 0 and 360 (not 360 itself)"""
+	#if isinstance(alpha,AngleMeasure):
+		#return simplify_degree(alpha,numbre=number,keep_max=keep_max)
+	#else :
+		#return simplify_degree(180*alpha/math.pi)
+

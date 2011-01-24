@@ -1260,8 +1260,8 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 		GraphOfAnObject.__init__(self,circle)
 		GeometricCircle.__init__(self,circle.center,circle.radius)
 		self.circle = self.obj
-		self.angleI = 0
-		self.angleF = 360		# By default, the circle is drawn between the angles 0 and 360.
+		self.angleI = AngleMeasure(value_degree=0)
+		self.angleF = AngleMeasure(value_degree=360)
 	def copy(self):
 		"""Return a copy of the object as geometrical object: the style and drawing parameters are not copied."""
 		return Circle(self.center,self.radius)
@@ -1302,8 +1302,8 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
 			G.wave(waviness.dx,waviness.dy)
 			return G.pstricks_code()
 		else:
-			angleI=self.angleI.degree
-			angleF=self.angleF.degree
+			angleI=degree(self.angleI,number=True,converting=False)
+			angleF=degree(self.angleF,number=True,converting=False)
 			if angleI == 0 and angleF == 360 :
 				PsA = Point(self.center.x-self.radius,self.center.y)		
 				a = PsA.create_PSpoint()
@@ -1935,8 +1935,9 @@ class BoundingBox(object):
 	def append(self,graphe,pspict=None):		# It seems to me that the method name "append" is more intuitive that "add_graph"
 		try :
 			self.AddBB(graphe.bounding_box(pspict))
-		except ValueError :
-			print graphe
+		except (ValueError,AttributeError),msg :
+			print "Something got wrong with %s"%graphe
+			print msg
 	def add_math_graph(self,graphe,pspict=None):
 		try :
 			self.addBB(graphe.math_bounding_box(pspict))
