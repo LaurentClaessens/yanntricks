@@ -506,27 +506,6 @@ class GeometricSegment(object):
 		raise DeprecationWarning, "The method norme of Segment is depreciated. Use length instead."
 	def length(self):
 		return self.polaires().r
-	def dilatation(self,coef):
-		""" return a Segment which is dilated by the coefficient coef """
-		return self*coef
-	def add_size(self,lI,lF):
-		"""
-		Return a new Segment with extra length lI at the initial side and lF at the final side. 
-		"""
-		vI = AffineVector(self.center(),self.I)
-		vF = AffineVector(self.center(),self.F)
-		I = vI.add_size(lI).F
-		F = vF.add_size(lF).F
-		return Segment(I,F)
-	def fix_size(self,l):
-		vI = AffineVector(self.center(),self.I)
-		vF = AffineVector(self.center(),self.F)
-		I = vI.fix_size(l/2).F
-		F = vF.fix_size(l/2).F
-		return Segment(I,F)
-	def Affiche(self):
-		raise DeprecationWarning,"use print instead"
-		return str(self.equation[0])+" x + "+str(self.equation[1])+" y + "+str(self.equation[2])
 	def Rotation(self,angle):
 		raise DeprecationWarning,"Use rotation instead (without capital R)"
 		x = self.I.x+self.longueur*math.cos(angle)
@@ -536,11 +515,11 @@ class GeometricSegment(object):
 		return Segment(self.I.translate(vecteur),self.F.translate(vecteur))
 	def inverse(self):
 		"""
-		Return the affine vector -self, bu attached to the same point.
+		Return the segment BA instead of AB.
 
-		If self is the segment  A-->B, it return the segment A-->A+(B-A)
+		Not to be confused with (-self). The latter is a rotation of 180 degree of self.
 		"""
-		return Segment(self.I,Point(self.I.x-self.Dx,self.I.y-self.Dy))
+		return Segment(self.F,self.I)
 	def rotation(self,angle):
 		"""
 		Return the segment attached to the same point but with a rotation of angle
@@ -550,8 +529,6 @@ class GeometricSegment(object):
 		return PolarSegment(self.I,self.polaires().r,self.polaires().degree+angle)
 	def polaires(self):
 		return PointToPolaire(self.Point())
-	def norme(self):
-		raise DeprecationWarning, "The method norme on Vector is depreciated use length instead"
 	def angle(self):
 		"""return the angle of the vector (degree)"""
 		return self.polaires().measure
@@ -565,15 +542,49 @@ class GeometricSegment(object):
 	def direction(self):
 		d=self.F-self.I
 		return d
+	def add_size_extemity(self,l):
+		"""
+		Add a length <l> at the extremity of the segment. Return a new object.
+		"""
+		L=self.length()
+		coef=(l+L)/L
+		return coef*self
+	#def fix_size(self,l):
+	#	vI = AffineVector(self.center(),self.I)
+	#	vF = AffineVector(self.center(),self.F)
+	#	I = vI.fix_size(l/2).F
+	#	F = vF.fix_size(l/2).F
+	#	return Segment(I,F)
 	def fix_size(self,l):
 		L=self.length()
 		if L == 0:
 			print "fix_size problem: this vector has a norm equal to zero"
 			return self
 		return self.dilatation(l/self.length())
-	def add_size(self,l):
-		""" return a Vector with added length on its extremity """
-		return self*((self.length()+l) / self.length())	
+	def add_size(self,lI,lF):
+		"""
+		Return a new Segment with extra length lI at the initial side and lF at the final side. 
+		"""
+		F=self.add_size_extemity(lF).F
+		I=self.inverse().add_size_extemity(lI).F
+		return Segment(I,F)
+	# I hope the following method was not used at too many places.
+	#def add_size(self,l):
+	#	""" return a Vector with added length on its extremity """
+	#	return self*((self.length()+l) / self.length())	
+	def dilatation(self,coef):
+		"""
+		Return a Segment which is dilated by the coefficient coef 
+
+		This add the same length at both extremities. If you want to add some length to one
+		of the extremities, use
+		self.add_size
+		or
+		l*self
+		with a scalar l.
+		"""
+		x=0.5*self.length()*(coef-1)
+		return self.add_size(x,x)
 	def normalize(self,l=1):
 		return self.fix_size(l)
 	def graph(self):
@@ -581,6 +592,9 @@ class GeometricSegment(object):
 	def default_associated_graph_class(self):
 		"""Return the class which is the Graph associated type"""
 		return phystricks.GraphOfASegment
+	def Affiche(self):
+		raise DeprecationWarning,"use print instead"
+		return str(self.equation[0])+" x + "+str(self.equation[1])+" y + "+str(self.equation[2])
 	def __mul__(self,coef):
 		return Segment(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
 	def __rmul__(self,coef):
@@ -596,6 +610,7 @@ class GeometricCircle(object):
 	def __init__(self,center,radius):
 		self.center = center
 		self.radius = radius
+		self.diameter = 2*self.radius
 	def parametric_curve(self,a=None,b=None):
 		"""
 		Return the parametric curve associated to the circle.
@@ -623,7 +638,7 @@ class GeometricCircle(object):
 		raise DeprecationWarning,"Usge get_tangent_vector instead"
 		return PolarPoint(1,theta+90).lie(self.get_point(theta))
 	def get_tangent_vector(self,theta):
-		return PolarPoint(1,theta+90).orignin(self.get_point(theta))
+		return PolarPoint(1,theta+90).origin(self.get_point(theta))
 	def get_normal_vector(self,theta):
 		"""
 		Return a normal vector at angle <theta>
@@ -1409,10 +1424,18 @@ class phyFunction(object):
 		ca = self.derivative()(x) 
 		return Point(-ca,1).normalize().origin(self.get_point(x))		
 	def get_tangent_vector(self,x,advised=False):
-		"""return a tangent vector at the point (x,f(x))"""
+		"""
+		return a tangent vector at the point (x,f(x))
+		"""
 		ca = self.derivative()(x)
 		return Point(1,ca).normalize().origin(self.get_point(x,advised))
 	def get_tangent_segment(self,x):
+		"""
+		Return a tangent segment at point (x,f(x)).
+		
+		The difference with self.get_tangent_vector is that self.get_tangent_segment returns a segment that will
+		be symmetric. The point (x,f(x)) is the center of self.get_tangent_segment.
+		"""
 		v=self.get_tangent_vector(x)
 		mv=-v
 		return Segment(mv.F,v.F)
@@ -1673,7 +1696,7 @@ class ParametricCurve(object):
 			try :
 				P.advised_mark_angle=self.get_normal_vector(llam).angle()
 			except :
-				print "It seems that something got wrong in the computation of something. Return 0 as angle."
+				print "It seems that something got wrong somewhere in the computation of the advised mark angle. Return 0 as angle."
 				P.advised_mark_angle=0
 		return P
 	def get_tangent_vector(self,llam,advised=False):
