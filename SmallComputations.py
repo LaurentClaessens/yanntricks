@@ -57,6 +57,11 @@ def enlarge_a_little_low(x,m,epsilon):
 	else : 
 		return MultipleLower(x,m)-epsilon
 
+def DegreeAngleMeasure(x):
+	return AngleMeasure(value_degree=x)
+def RadianAngleMeasure(x):
+	return AngleMeasure(value_radian=x)
+
 class AngleMeasure(object):
 	"""
 	sage: x=AngleMeasure(value_radian=pi/2)
@@ -126,44 +131,89 @@ def PointToPolaire(P):
 		alpha = alpha +math.pi
 	return PolarCoordinates(r,value_radian=alpha)
 
-class SimplifyAngles(object):
-	def __init__(self,max_value):
+class ConversionAngles(object):
+	def __init__(self,conversion_factor,max_value,exit_attribute=None,create_function=None):
+		self.conversion_factor=conversion_factor
 		self.max_value=max_value
-	def simplify(angle,keep_max=False,number=False)
+		self.exit_attribute=exit_attribute
+		self.create_function=create_function
+	def simplify(self,angle,keep_max=False,number=False):
+		"""
+		Simplify the angles modulo the maximum. 
+
+		If what is given is a numbre, return a number. If what is given is a AngleMeasure, return a new AngleMeasure
+	
+		EXAMPLE:
+		sage:from phystricks import *
+		sage:simplify_degree=ConversionAngles(180.0/pi,360).simplify
+		sage:simplify_degree(400)
+		40
+
+		If <keep_max> is True, maximal values are kept:
+		sage: simplify_degree(400,keep_max=True)
+		40
+		sage: simplify_degree(360,keep_max=True)
+		360
+
+		if <number> is True, return a number even is a AngleMeasure is given.
+		"""
 		if isinstance(angle,AngleMeasure) :
-			x=angle.degree
+			x=angle.__getattribute__(self.exit_attribute)
 			gotMeasure=True
 		else :
 			x=angle
 			gotMeasure=False
-		if keep_max and x == max_value:
-			return max_value
-		while x >= max_value :
-			x=x-max_value
+		if keep_max and x == self.max_value:
+			if gotMeasure and number==False:
+				return angle
+			else :
+				return self.max_value
+		while x >= self.max_value :
+			x=x-self.max_value
 		while x < 0 :
-			x=x+max_value
+			x=x+self.max_value
 		if gotMeasure and number==False :
-			return AngleMeasure(value_degree=x)
+			return self.create_function(x)
 		else :
 			return x
+	def conversion(self,theta,number=False,keep_max=False,converting=True):
+		"""
+		Makes the conversion and simplify.
 
-class ConversionAngles(object):
-	def __init__(self,factor):
-		self.factor=factor
-	def conversion(theta,number=False,keep_max=False,converting=True):
+		The arguments <number> and <keep_max> are the same as the ones in SimplifyAngles.simplify.
+
+		If <converting> is False, make no conversion.
+
+		sage: from phystricks import *                         
+		sage: degree=ConversionAngles(180.0/math.pi,360).conversion
+		sage: degree(7)                         
+		-126*pi + 401.070456591576
+		sage: numerical_approx(degree(7))
+		5.22978223926231
+		sage: degree(120,converting=False)
+		120
+
+		Using converting=False,number=True is a way to ensure something to be a number instead of a AngleMeasure
+		"""
 		if isinstance(theta,AngleMeasure):
-			return simplify_radian(theta,number=number,keep_max=keep_max)
+			angle = self.simplify(theta,keep_max=keep_max)
+			if number:
+				 return angle.__getattribute__(self.exit_attribute)
+			else :
+				return angle
 		else :
 			if converting :
-				return simplify_radian(theta*factor,keep_max=keep_max)
+				return self.simplify(self.conversion_factor*theta,keep_max=keep_max)
 			else :
-				return simplify_radian(theta,keep_max=keep_max)
+				return self.simplify(theta,keep_max=keep_max)
 
-simplify_degree=SimplifyAngles(360).simplify
-simplify_radian=SimplifyAngles(2*pi).simplify
+DegreeConversions=ConversionAngles(180.0/math.pi,360,exit_attribute="degree",create_function=DegreeAngleMeasure)
+RadianConversions=ConversionAngles(math.pi/180,2*pi,exit_attribute="radian",create_function=RadianAngleMeasure)
 
-degree=ConversionAngles(180.0/math.pi).conversion
-radian=ConversionAngles(math.pi/180).conversion
+simplify_degree=DegreeConversions.simplify
+simplify_radian=RadianConversions.simplify
+degree=DegreeConversions.conversion
+radian=RadianConversions.conversion
 
 def Distance_sq(P,Q):
 	""" return the squared distance between P and Q """

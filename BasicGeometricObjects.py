@@ -157,6 +157,51 @@ def Circle(center,radius):
 def Rectangle(NW,SE):
 	return GraphOfARectangle(GeometricRectangle(NW,SE))
 
+class GraphOfAnObject(object):
+	""" This class is supposed to be used to create other "GraphOfA..." by inheritance. It is a superclass. """
+	# self.record_add_to_bb is a list of points to be added to the bounding box.
+	# Typically, when a point has a mark, one can only know the size of the box at the end of the picture 
+	#(because of xunit, yunit that change when using dilatation)
+	# Thus if one wants to draw the bounding box, it has to be done at the end.
+	def __init__(self,obj):
+		self.obj = obj
+		self.parameters = Parameters()
+		self.wavy = False
+		self.waviness = None
+		self.options = Options()
+		self.marque = False
+		self.draw_bounding_box=False
+		self.add_option("linecolor=black")
+		self.add_option("linestyle=solid")
+		self.record_add_to_bb=[]		 
+		self.separator_name="DEFAULT"
+	def wave(self,dx,dy):					# dx is the wave length and dy is the amplitude
+		self.wavy = True
+		self.waviness = Waviness(self,dx,dy)
+	def put_mark(self,dist,angle,text,automatic_place=False):
+		self.marque = True
+		self.mark = Mark(self,dist,angle,text,automatic_place)
+	def add_option(self,opt):
+		self.options.add_option(opt)
+	def get_option(opt):
+		return self.options.DicoOptions[opt]
+	def remove_option(opt):
+		self.options.remove_option(opt)
+	def merge_options(self,graph):
+		"""
+		takes an other object GraphOfA... and merges the options as explained in the documentation
+		of the class Options. That merge takes into account the attributes "color", "style", wavy
+		"""
+		self.parameters = graph.parameters
+		self.options.merge_options(graph.options)
+		self.wavy = graph.wavy
+		self.waviness = graph.waviness
+	def conclude_params(self):
+		self.parameters.add_to_options(self.options)
+	def params(self):
+		self.conclude_params()
+		return self.options.code()
+
 class GeometricPoint(object):
 	"""
 	This is a point. Each point comes with a name given by a class attribute.
@@ -189,14 +234,14 @@ class GeometricPoint(object):
 	def get_polar_point(self,l,theta,pspict=None):
 		"""
 		Return the point located at distance l and angle theta from point self.
-		theta is given in degree.
+		theta is given in degree or AngleMeasure.
 
 		If pspict is given, we compute the deformation due to the dilatation. 
 		Be carefull : in that case <dist> is given as _absolute value_ and the visual effect will not
 		be affected by dilatations.
 
 		"""
-		alpha=radian(theta)
+		alpha=radian(theta,number=True)
 		if pspict:
 			A=pspict.xunit
 			B=pspict.yunit
@@ -611,6 +656,77 @@ class GeometricCircle(object):
 	def __str__(self):
 		return "Circle, center=%s, radius=%s"%(self.center.__str__(),str(self.radius))
 
+
+class GraphOfACircle(GraphOfAnObject,GeometricCircle):
+	"""
+	The attributes self.angleI and self.angleF are in degree since they are to be used by the end-user.
+	"""
+	def __init__(self,circle):
+		GraphOfAnObject.__init__(self,circle)
+		GeometricCircle.__init__(self,circle.center,circle.radius)
+		self.circle = self.obj
+		self.angleI = AngleMeasure(value_degree=0)
+		self.angleF = AngleMeasure(value_degree=360)
+	def copy(self):
+		"""Return a copy of the object as geometrical object: the style and drawing parameters are not copied."""
+		return Circle(self.center,self.radius)
+	def math_bounding_box(self,pspict=None):
+		return self.bounding_box(pspict)
+	def bounding_box(self,pspict=None):
+		a=simplify_degree(self.angleI,keep_max=True,number=True)
+		b=simplify_degree(self.angleF,keep_max=True,number=True)
+		angleI=min(a,b)
+		angleF=max(a,b)
+		pI=self.get_point(angleI)
+		pF=self.get_point(angleF)
+		bb = BoundingBox(self.center,self.center)
+		bb.append(pI,pspict)
+		bb.append(pF,pspict)
+		if angleI==0:
+			bb.AddX(self.center.x+self.radius)
+		if angleI<90 and angleF>90 :
+			bb.AddY(self.center.y+self.radius)
+		if angleI<180 and angleF>180 :
+			bb.AddX(self.center.x-self.radius)
+		if angleI<270 and angleF>270 :
+			bb.AddY(self.center.y-self.radius)
+		return bb
+	def pstricks_code(self,pspict=None):
+		if self.wavy:
+			waviness = self.waviness
+			alphaI = radian(self.angleI,number=True,keep_max=True)
+			alphaF = radian(self.angleF,number=True,keep_max=True)
+			if self.angleF==360:		# Because the function radian simplifies modulo 2pi.
+				alphaF=2*pi
+			curve = self.parametric_curve()
+			G = phystricks.GraphOfAParametricCurve(curve,alphaI,alphaF)
+			G.add_option(self.params())
+			# The two following lines are a pity. If I add some properties, I have to change by hand...
+			G.parameters.style = self.parameters.style
+			G.parameters.color = self.color
+			G.wave(waviness.dx,waviness.dy)
+			return G.pstricks_code()
+		else:
+			angleI=degree(self.angleI,number=True,converting=False,keep_max=True)
+			angleF=degree(self.angleF,number=True,converting=False,keep_max=True)
+			if angleI == 0 and angleF == 360 :
+				PsA = Point(self.center.x-self.radius,self.center.y)		
+				a = PsA.create_PSpoint()
+				a = a + self.center.create_PSpoint()
+				a = a + "\pstCircleOA["+self.params()+"]{"+self.center.psName+"}{"+PsA.psName+"}"
+				return a
+				# Some remarks :
+				# Besoin d'un point sur le cercle pour le tracer avec \pstCircleOA,"")
+				# La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
+				#self.add_latex_line("\pscircle["+params+"]("+Cer.center.psName+"){"+str(Cer.radius)+"}")
+			else :
+				PsA = self.get_point(angleI)
+				PsB = self.get_point(angleF)
+				a = PsA.create_PSpoint() + PsB.create_PSpoint() + self.center.create_PSpoint()
+				a = a+"\pstArcOAB[%s]{%s}{%s}{%s}"%(self.params(),self.center.psName,PsA.psName,PsB.psName)
+				return a
+
+
 class GeometricRectangle(object):
 	"""
 	The four points of the square are designated by NW,NE,SW and SE.
@@ -720,7 +836,7 @@ class Mark(object):
 	def __init__(self,graph,dist,angle,text,automatic_place=False):
 		"""
 		Describe a mark (essentially a P on a point for example)
-		angle is given in degree
+		angle is given in degree or AngleMeasure
 
 		If automatic_place is True, then place the corner of the box at the point instead of the "central point" of the mark.
 		automatic_place is intended to be a tuple of (pspict,anchor)
@@ -796,8 +912,8 @@ class Mark(object):
 		central_point=self.central_point(pspict)
 		#TODO : Use create_PSpoint instead of \pstGeonode.
 		l.append("\pstGeonode[]"+central_point.coordinates()+"{"+central_point.psName+"}")
-		R = RealField(round(log(10,2)*7))
-		angle=R(self.angle)		# pstricks does not accept too long number.
+		#R = RealField(round(log(10,2)*7))
+		#angle=R(self.angle)		# pstricks does not accept too long number.
 		l.append(r"\rput(%s){\rput(%s;%s){%s}}"%(central_point.psName,"0",0,str(self.text)))
 		return "\n".join(l)
 
@@ -859,50 +975,6 @@ class Parameters(object):
 		if self._hatched:
 			self.hatch.add_to_options(opt)
 
-class GraphOfAnObject(object):
-	""" This class is supposed to be used to create other "GraphOfA..." by inheritance. It is a superclass. """
-	# self.record_add_to_bb is a list of points to be added to the bounding box.
-	# Typically, when a point has a mark, one can only know the size of the box at the end of the picture 
-	#(because of xunit, yunit that change when using dilatation)
-	# Thus if one wants to draw the bounding box, it has to be done at the end.
-	def __init__(self,obj):
-		self.obj = obj
-		self.parameters = Parameters()
-		self.wavy = False
-		self.waviness = None
-		self.options = Options()
-		self.marque = False
-		self.draw_bounding_box=False
-		self.add_option("linecolor=black")
-		self.add_option("linestyle=solid")
-		self.record_add_to_bb=[]		 
-		self.separator_name="DEFAULT"
-	def wave(self,dx,dy):					# dx is the wave length and dy is the amplitude
-		self.wavy = True
-		self.waviness = Waviness(self,dx,dy)
-	def put_mark(self,dist,angle,text,automatic_place=False):
-		self.marque = True
-		self.mark = Mark(self,dist,angle,text,automatic_place)
-	def add_option(self,opt):
-		self.options.add_option(opt)
-	def get_option(opt):
-		return self.options.DicoOptions[opt]
-	def remove_option(opt):
-		self.options.remove_option(opt)
-	def merge_options(self,graph):
-		"""
-		takes an other object GraphOfA... and merges the options as explained in the documentation
-		of the class Options. That merge takes into account the attributes "color", "style", wavy
-		"""
-		self.parameters = graph.parameters
-		self.options.merge_options(graph.options)
-		self.wavy = graph.wavy
-		self.waviness = graph.waviness
-	def conclude_params(self):
-		self.parameters.add_to_options(self.options)
-	def params(self):
-		self.conclude_params()
-		return self.options.code()
 
 def EnsurephyFunction(f):
 	if "sage" in dir(f):		# This tests in the same time if the type if phyFunction or GraphOfAphyFunction
@@ -1252,74 +1324,7 @@ class GraphOfAnAngle(GraphOfAnObject,GeometricAngle):
 		l.append(circle.pstricks_code(pspict))
 		return "\n".join(l)
 
-class GraphOfACircle(GraphOfAnObject,GeometricCircle):
-	"""
-	The attributes self.angleI and self.angleF are in degree since they are to be used by the end-user.
-	"""
-	def __init__(self,circle):
-		GraphOfAnObject.__init__(self,circle)
-		GeometricCircle.__init__(self,circle.center,circle.radius)
-		self.circle = self.obj
-		self.angleI = AngleMeasure(value_degree=0)
-		self.angleF = AngleMeasure(value_degree=360)
-	def copy(self):
-		"""Return a copy of the object as geometrical object: the style and drawing parameters are not copied."""
-		return Circle(self.center,self.radius)
-	def math_bounding_box(self,pspict=None):
-		return self.bounding_box(pspict)
-	def bounding_box(self,pspict=None):
-		a=simplify_degree(self.angleI,keep_max=True,number=True)
-		b=simplify_degree(self.angleF,keep_max=True,number=True)
-		angleI=min(a,b)
-		angleF=max(a,b)
-		pI=self.get_point(angleI)
-		pF=self.get_point(angleF)
-		bb = BoundingBox(self.center,self.center)
-		bb.append(pI,pspict)
-		bb.append(pF,pspict)
-		if angleI==0:
-			bb.AddX(self.center.x+self.radius)
-		if angleI<90 and angleF>90 :
-			bb.AddY(self.center.y+self.radius)
-		if angleI<180 and angleF>180 :
-			bb.AddX(self.center.x-self.radius)
-		if angleI<270 and angleF>270 :
-			bb.AddY(self.center.y-self.radius)
-		return bb
-	def pstricks_code(self,pspict=None):
-		if self.wavy:
-			waviness = self.waviness
-			alphaI = radian(self.angleI,number=True)
-			alphaF = radian(self.angleF,number=True)
-			if self.angleF==360:		# Because the function radian simplifies modulo 2pi.
-				alphaF=2*pi
-			curve = self.parametric_curve()
-			G = phystricks.GraphOfAParametricCurve(curve,alphaI,alphaF)
-			G.add_option(self.params())
-			# The two following lines are a pity. If I add some properties, I have to change by hand...
-			G.parameters.style = self.parameters.style
-			G.parameters.color = self.color
-			G.wave(waviness.dx,waviness.dy)
-			return G.pstricks_code()
-		else:
-			angleI=degree(self.angleI,number=True,converting=False)
-			angleF=degree(self.angleF,number=True,converting=False)
-			if angleI == 0 and angleF == 360 :
-				PsA = Point(self.center.x-self.radius,self.center.y)		
-				a = PsA.create_PSpoint()
-				a = a + self.center.create_PSpoint()
-				a = a + "\pstCircleOA["+self.params()+"]{"+self.center.psName+"}{"+PsA.psName+"}"
-				return a
-				# Some remarks :
-				# Besoin d'un point sur le cercle pour le tracer avec \pstCircleOA,"")
-				# La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
-				#self.add_latex_line("\pscircle["+params+"]("+Cer.center.psName+"){"+str(Cer.radius)+"}")
-			else :
-				PsA = self.get_point(angleI)
-				PsB = self.get_point(angleF)
-				a = PsA.create_PSpoint() + PsB.create_PSpoint() + self.center.create_PSpoint()
-				a = a+"\pstArcOAB[%s]{%s}{%s}{%s}"%(self.params(),self.center.psName,PsA.psName,PsB.psName)
-				return a
+
 class phyFunction(object):
 	"""
 	Represent a function.
