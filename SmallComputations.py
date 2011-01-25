@@ -69,8 +69,16 @@ class AngleMeasure(object):
 	28.647889756541161*pi
 	sage: numerical_approx(x())
 	90.0000000000000
+
+
+	in that case, y has to be a new instance of AngleMeasure :
+	x=AngleMeasure(value_degree=180)
+	y=AngleMeasure(x)
 	"""
 	def __init__(self,value_degree=None,value_radian=None):
+		if isinstance(value_degree,AngleMeasure):
+			return AngleMeasure(value_degree=value_degree.degree)
+
 		if value_degree == None :
 			value_degree=degree(value_radian)
 		if value_radian == None :

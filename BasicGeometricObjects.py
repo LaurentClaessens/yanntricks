@@ -483,7 +483,9 @@ class GeometricSegment(object):
 		raise DeprecationWarning,"This method is depreciated. Use Segment.center() instead"
 		return self.center()
 	def center(self):
-		return self.proportion(0.5)
+		P = self.proportion(0.5)
+		P.advised_mark_angle=self.angle().degree+90
+		return P
 	def AffineVector(self):
 		return AffineVector(self.I,self.F)
 	def get_normal_vector(self):
@@ -1201,7 +1203,9 @@ class GraphOfASegment(GraphOfAnObject,GeometricSegment):
 		self.I = self.seg.I
 		self.F = self.seg.F
 	def mark_point(self):
-		return self.F
+		P=self.F.copy()
+		P.advised_mark_angle=self.angle()
+		return P
 	def bounding_box(self,pspict=None):
 		return BoundingBox(self.I,self.F)		# If you change this, maybe you have to adapt math_bounding_box
 	def math_bounding_box(self,pspict=None):
@@ -1320,16 +1324,29 @@ class GeometricAngle(object):
 		return phystricks.GraphOfAnAngle(self)
 
 class GraphOfAnAngle(GraphOfAnObject,GeometricAngle):
+	"""
+	self.mark_angle is the angle at which self.mark_point will be placed. By default it is at the middle. 
+		If you want to change it, use
+		self.set_mark_angle(x).
+		It will set the mark_angle to x AND the advised_mark angle too.
+	"""
 	def __init__(self,angle):
 		GraphOfAnObject.__init__(self,angle)
 		GeometricAngle.__init__(self,angle.A,angle.O,angle.B,angle.r)
 		self.advised_mark_angle=self.media.degree
+		self.mark_angle=self.media
+	def set_mark_angle(self,theta):
+		"""
+		theta is degree or AngleMeasure
+		"""
+		self.mark_angle=AngleMeasure(theta)
+		self.advised_mark_angle=degree(theta,number=True,converting=False)
 	def math_bounding_box(self,pspict=None):
 		return self.bounding_box(pspict)
 	def bounding_box(self,pspict=None):
 		return self.circle().bounding_box(pspict)
 	def mark_point(self):
-		return self.circle().get_point(self.media)
+		return self.circle().get_point(self.mark_angle)
 	def pstricks_code(self,pspict=None):
 		circle=self.circle()
 		circle.parameters=self.parameters
