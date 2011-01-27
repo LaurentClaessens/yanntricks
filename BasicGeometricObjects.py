@@ -373,6 +373,8 @@ class GeometricPoint(object):
 		return Point(-self.x,-self.y)
 	def __mul__(self,r):
 		return Point(r*self.x,r*self.y)
+	def __rmul__(self,r):
+		return self.__mul__(r)
 	def __str__(self):
 		return "Point(%s,%s)"%(str(self.x),str(self.y))
 
