@@ -117,26 +117,41 @@ class PolarCoordinates(object):
 	def __str__(self):
 		return "PolarCoordinates, r=%s,degree=%s,radian=%s"%(str(self.r),str(self.degree),str(self.radian))
 
-def PointToPolaire(P):
+def PointToPolaire(P=None,x=None,y=None):
 	"""
 	Return the polar coordinates of a point.
+
+	If you give a point as argument, numerical approximations are returned (because the coordinated of a point is automatically numerically approximed)
+	If you explicitelly provides x and y, exact values are returned.
+
+	sage: from phystricks import *     
+	sage: print PointToPolaire(x=1,y=1)
+	PolarCoordinates, r=sqrt(2),degree=14.323944878270581*pi,radian=1/4*pi	# Exact : pi/4
+	sage: print PointToPolaire(Point(1,1))
+	PolarCoordinates, r=1.41421356237,degree=45.0,radian=0.785398163397	# Approximation : 0.785...
 	"""
-	r = P.norme()
-	if P.x == 0:
-		if P.y > 0:
-			alpha = math.pi/2
-		if P.y < 0:
-			alpha = -math.pi/2
-		if P.y == 0 : 			# Convention : l'angle pour le point (0,0) est 0.
+	if P:
+		x=P.x
+		y=P.y
+	r = sqrt(x**2+y**2)
+	if x == 0:
+		if y > 0:
+			alpha = pi/2
+		if y < 0:
+			alpha = pi/2
+		if y == 0 : 			# Convention : the angle for point (0,0) is 0.
+			print "phystricks Warning. You are trying to convert into polar coordinates the point (0,0). I'm returning 0 as angle."
 			alpha = 0
 	else :
-		alpha = math.atan(P.y/P.x)
-	if (P.x < 0) and (P.y == 0) :
-		alpha = math.pi
-	if (P.x < 0) and (P.y > 0) :
-		alpha = alpha + math.pi
-	if (P.x < 0) and (P.y < 0 ) :
-		alpha = alpha +math.pi
+		alpha = atan(y/x)
+	if not P :
+		alpha=alpha.simplify_trig()
+	if (x < 0) and (y == 0) :
+		alpha = pi
+	if (x < 0) and (y > 0) :
+		alpha = alpha + pi
+	if (x < 0) and (y < 0 ) :
+		alpha = alpha +pi
 	return PolarCoordinates(r,value_radian=alpha)
 
 class ConversionAngles(object):
