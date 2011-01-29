@@ -493,6 +493,9 @@ class SingleAxe(object):
 	The axe goes from C+mx*base to C-Mx*base. A number is written each Dx*base.
 
 	self.mark_angle : the angle under which the marks are written (in degree).
+
+	A mark is put at each integer multiple of self.axes_unit. The latter is by default the length of the vector <base>.
+	If an user-defined axes_unit is given, the length of <base> is "forgotten"
 	"""
 	def __init__(self,C,base,mx,Mx):
 		self.C=C
@@ -501,7 +504,7 @@ class SingleAxe(object):
 		self.Mx=Mx
 		self.options=Options()
 		self.IsLabel=False
-		self.axes_unit=AxesUnit(1,"")
+		self.axes_unit=AxesUnit(self.base.length(),"")
 		self.Dx=1
 		self.arrows="->"
 		self.graduation=True
@@ -520,7 +523,11 @@ class SingleAxe(object):
 		self.DistLabel = dist
 		self.AngleLabel = angle
 	def graduation_points(self,pspict):
-		"""Return the list of points that makes the graduation of the axes"""
+		"""
+		Return the list of points that makes the graduation of the axes
+
+		By defaut, it is one at each multiple of self.base. If an user-defined axes_unit is given, then self.base is modified.
+		"""
 		if self.graduation :
 			points_list=[]
 			for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,self.Dx,self.mark_origin):
@@ -570,7 +577,6 @@ class Axes(object):
 		self.C = C						
 		self.BB = bb.copy()
 		self.options = Options()
-		self.axes_unitY=AxesUnit(1,"")
 		self.Dx = 1
 		self.Dy = 1						# Ce sont les valeurs par défaut.
 		self.arrows = "->"
@@ -579,9 +585,13 @@ class Axes(object):
 		self.numbering=True
 		self.single_axeX=SingleAxe(self.C,Vector(1,0),self.BB.mx,self.BB.Mx)
 		self.single_axeX.mark_origin=False
+		self.single_axeX.axes_unit=AxesUnit(1,"")
 		self.single_axeY=SingleAxe(self.C,Vector(0,1),self.BB.my,self.BB.My)
 		self.single_axeY.mark_origin=False
+		self.single_axeY.axes_unit=AxesUnit(1,"")
 		self.single_axeY.mark_angle=180
+		self.single_axeX.Dx=self.Dx
+		self.single_axeY.Dx=self.Dy
 	def update(self):
 		self.single_axeX.mx,self.single_axeX.Mx=self.BB.mx,self.BB.Mx
 		self.single_axeY.mx,self.single_axeY.Mx=self.BB.my,self.BB.My

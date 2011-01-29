@@ -107,6 +107,7 @@ def Segment(A,B):
 #		return GraphOfASegment(self.segment).bounding_box(pspict)
 #	def math_bounding_box(self,pspict=None):
 #		return GraphOfASegment(self.segment).math_bounding_box(pspict)
+
 def _vector_pstricks_code(segment,pspict=None):
 	"""
 	Return the pstricks's code of a Segment when is is seen as a vector.
@@ -136,7 +137,8 @@ def AffineVector(A=None,B=None):
 	# the following is thanks to the python's french usenet group
 	#https://groups.google.com/group/fr.comp.lang.python/browse_thread/thread/5b19cfac661df251?hl=fr#
 	#http://users.rcn.com/python/download/Descriptor.htm
-	vect.pstricks_code = types.MethodType(_vector_pstricks_code, vect, Segment)
+	#vect.pstricks_code = types.MethodType(_vector_pstricks_code, vect, Segment)
+	vect.arrow_type="vector"
 	return vect
 
 def Vector(*args):
@@ -391,7 +393,7 @@ class GeometricPoint(object):
 #		self.Dy = self.F.y-self.I.y
 
 class GeometricSegment(object):
-	def __init__(self,A,B):
+	def __init__(self,A,B,arrow_type="segment"):
 		self.I = A
 		self.F = B
 		self.vertical = False
@@ -422,6 +424,7 @@ class GeometricSegment(object):
 		self.longueur = Distance(self.I,self.F)
 		self.Dx = self.F.x-self.I.x
 		self.Dy = self.F.y-self.I.y
+		self.arrow_type=arrow_type
 		#self.maxima = str(self.equation[0])+"*x+"+str(self.equation[1])+"*y+"+str(self.equation[2])+"=0"
 	def phyFunction(self):
 		if self.horizontal:
@@ -476,11 +479,6 @@ class GeometricSegment(object):
 		More precisely, if self is the segment A->B, return the point B-A
 		"""
 		return self.F-self.I
-	def projection(self,segment):
-		"""
-		Return the projection of self on the given segment
-		"""
-		return Segment(self.I.projection(segment),self.F.projection(segment))
 	def milieu(self):
 		raise DeprecationWarning,"This method is depreciated. Use Segment.center() instead"
 		return self.center()
@@ -488,6 +486,8 @@ class GeometricSegment(object):
 		P = self.proportion(0.5)
 		P.advised_mark_angle=self.angle().degree+90
 		return P
+	def length(self):
+		return self.polaires().r
 	def AffineVector(self):
 		return AffineVector(self.I,self.F)
 	def get_normal_vector(self):
@@ -499,38 +499,6 @@ class GeometricSegment(object):
 		else :
 			P = Point(-self.coefficient,1)
 			return P.Vector().normalize().origin(self.center())
-	def orthogonal(self):
-		"""
-		return the segment with a rotation of 90 degree. The new segment is still attached to the same point.
-
-		Not to be confused with self.get_normal_vector
-		"""
-		return self.rotation(90)
-	def norme(self):
-		raise DeprecationWarning, "The method norme of Segment is depreciated. Use length instead."
-	def length(self):
-		return self.polaires().r
-	def Rotation(self,angle):
-		raise DeprecationWarning,"Use rotation instead (without capital R)"
-		x = self.I.x+self.longueur*math.cos(angle)
-		y = self.I.y+self.longueur*math.sin(angle)
-		return Segment(self.I,Point(x,y))
-	def translate(self,vecteur):
-		return Segment(self.I.translate(vecteur),self.F.translate(vecteur))
-	def inverse(self):
-		"""
-		Return the segment BA instead of AB.
-
-		Not to be confused with (-self). The latter is a rotation of 180 degree of self.
-		"""
-		return Segment(self.F,self.I)
-	def rotation(self,angle):
-		"""
-		Return the segment attached to the same point but with a rotation of angle
-
-		angle is given in radian.
-		"""
-		return PolarSegment(self.I,self.polaires().r,self.polaires().degree+angle)
 	def polaires(self):
 		return PointToPolaire(self.Point())
 	def angle(self):
@@ -541,41 +509,68 @@ class GeometricSegment(object):
 		return a vector (in affine space) whose origin is P.
 		"""
 		return AffineVector(P,Point(P.x+self.Dx,P.y+self.Dy))
-	def lie(self,p):
-		raise DeprecationWarning, "use self.origin instead"
 	def direction(self):
 		d=self.F-self.I
 		return d
+	def return_deformations(self,segment):
+		segment.arrow_type=self.arrow_type
+		return segment
+	def projection(self,segment):
+		"""
+		Return the projection of self on the given segment
+		"""
+		v= Segment(self.I.projection(segment),self.F.projection(segment))
+		return self.return_deformations(v)
+	def orthogonal(self):
+		"""
+		return the segment with a rotation of 90 degree. The new segment is still attached to the same point.
+
+		Not to be confused with self.get_normal_vector
+		"""
+		v = self.rotation(90)
+		return self.return_deformations(v)
+	def translate(self,vecteur):
+		v = Segment(self.I.translate(vecteur),self.F.translate(vecteur))
+		return self.return_deformations(v)
+	def inverse(self):
+		"""
+		Return the segment BA instead of AB.
+
+		Not to be confused with (-self). The latter is a rotation of 180 degree of self.
+		"""
+		v = Segment(self.F,self.I)
+		return self.return_deformations(v)
+	def rotation(self,angle):
+		"""
+		Return the segment attached to the same point but with a rotation of angle
+
+		angle is given in radian.
+		"""
+		v = PolarSegment(self.I,self.polaires().r,self.polaires().degree+angle)
+		return self.return_deformations(v)
 	def add_size_extemity(self,l):
 		"""
 		Add a length <l> at the extremity of the segment. Return a new object.
 		"""
 		L=self.length()
 		coef=(l+L)/L
-		return coef*self
-	#def fix_size(self,l):
-	#	vI = AffineVector(self.center(),self.I)
-	#	vF = AffineVector(self.center(),self.F)
-	#	I = vI.fix_size(l/2).F
-	#	F = vF.fix_size(l/2).F
-	#	return Segment(I,F)
+		v = coef*self
+		return self.return_deformations(v)
 	def fix_size(self,l):
 		L=self.length()
 		if L == 0:
 			print "fix_size problem: this vector has a norm equal to zero"
 			return self
-		return self.dilatation(l/self.length())
+		v = self.dilatation(l/self.length())
+		return self.return_deformations(v)
 	def add_size(self,lI,lF):
 		"""
 		Return a new Segment with extra length lI at the initial side and lF at the final side. 
 		"""
 		F=self.add_size_extemity(lF).F
 		I=self.inverse().add_size_extemity(lI).F
-		return Segment(I,F)
-	# I hope the following method was not used at too many places.
-	#def add_size(self,l):
-	#	""" return a Vector with added length on its extremity """
-	#	return self*((self.length()+l) / self.length())	
+		v = Segment(I,F)
+		return self.return_deformations(v)
 	def dilatation(self,coef):
 		"""
 		Return a Segment which is dilated by the coefficient coef 
@@ -588,9 +583,11 @@ class GeometricSegment(object):
 		with a scalar l.
 		"""
 		x=0.5*self.length()*(coef-1)
-		return self.add_size(x,x)
+		v = self.add_size(x,x)
+		return self.return_deformations(v)
 	def normalize(self,l=1):
-		return self.fix_size(l)
+		v = self.fix_size(l)
+		return self.return_deformations(v)
 	def graph(self):
 		return phystricks.GraphOfASegment(self)
 	def default_associated_graph_class(self):
@@ -1216,13 +1213,18 @@ class GraphOfASegment(GraphOfAnObject,GeometricSegment):
 		"""
 		Return the pstricks's code of a Segment when is is seen as a segment
 		"""
-		if self.wavy:
-			waviness = self.waviness
-			return Code_Pscurve(self.get_wavy_points(waviness.dx,waviness.dy),self.params())
-		else:
-			a =  self.I.create_PSpoint() + self.F.create_PSpoint()
-			a=a+"\n\pstLineAB[%s]{%s}{%s}"%(self.params(),self.I.psName,self.F.psName)
-			return a
+		if self.arrow_type=="vector":
+			return _vector_pstricks_code(self,pspict)
+		if self.arrow_type=="segment":
+			if self.wavy:
+				waviness = self.waviness
+				return Code_Pscurve(self.get_wavy_points(waviness.dx,waviness.dy),self.params())
+			else:
+				a =  self.I.create_PSpoint() + self.F.create_PSpoint()
+				a=a+"\n\pstLineAB[%s]{%s}{%s}"%(self.params(),self.I.psName,self.F.psName)
+				return a
+
+
 
 class MeasureLength(GraphOfASegment):
 	"""
