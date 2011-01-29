@@ -586,8 +586,18 @@ class GeometricSegment(object):
 		v = self.add_size(x,x)
 		return self.return_deformations(v)
 	def normalize(self,l=1):
-		v = self.fix_size(l)
-		return self.return_deformations(v)
+		"""
+		If self.arrow_type is "segment", it normalize the segment to <l> by dilating in both extemities
+
+		If self.arrow_type is "vector", it normalize the vector to <l> but keeps the origin.
+		"""
+		if self.arrow_type=="segment":
+			v = self.fix_size(l)
+			return self.return_deformations(v)
+		if self.arrow_type=="vector":
+			v = l*self/self.length()
+			v.arrow_type="vector"
+			return v
 	def graph(self):
 		return phystricks.GraphOfASegment(self)
 	def default_associated_graph_class(self):
@@ -646,7 +656,9 @@ class GeometricCircle(object):
 
 		The angle is in degree
 		"""
-		return PolarPoint(1,theta).origin(self.get_point(theta))
+		v = PolarPoint(1,theta).origin(self.get_point(theta))
+		v.arrow_type="vector"
+		return v
 	# Donne les x et y min et max du cercle entre deux angles.
 	# Here, angleI and angleF are given in degree while parametric_plot uses radian.
 	def get_minmax_data(self,angleI,angleF):
@@ -1674,9 +1686,9 @@ class ParametricCurve(object):
 			self.f2 = f2
 		else : 
 			self.f2 = phyFunction(f2)
-	# Le truc difficile avec le pstricks est que la syntaxe est  "f1(t) | f2(t)" avec t comme variable.
-	#  C'est cela qui demande d'utiliser repr et la syntaxe f(x=t).
 	def pstricks(self,pspict=None):
+		# The difficult point with pstrics is that the syntax is "f1(t) | f2(t)" with the variable t.
+		#   In order to produce that, we use the Sage's function repr and the syntax f(x=t)
 		var('t')
 		return "%s | %s "%(SubstitutionMathPsTricks(repr(self.f1.sage(x=t)).replace("pi","3.1415")),  SubstitutionMathPsTricks(repr(self.f2.sage(x=t)).replace("pi","3.1415")) )
 	def tangent_angle(self,llam):
