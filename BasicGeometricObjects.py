@@ -940,8 +940,6 @@ class Mark(object):
 		central_point=self.central_point(pspict)
 		#TODO : Use create_PSpoint instead of \pstGeonode.
 		l.append("\pstGeonode[]"+central_point.coordinates()+"{"+central_point.psName+"}")
-		#R = RealField(round(log(10,2)*7))
-		#angle=R(self.angle)		# pstricks does not accept too long number.
 		l.append(r"\rput(%s){\rput(%s;%s){%s}}"%(central_point.psName,"0",0,str(self.text)))
 		return "\n".join(l)
 

@@ -535,11 +535,10 @@ class SingleAxe(object):
 				P.parameters.symbol="|"
 				bar_angle=SR(self.mark_angle+90).n(digits=7)	# pstricks does not accept too large numbers
 				P.add_option("dotangle=%s"%str(bar_angle))
-				print "537", P.options.code()
-				print "538", P.pstricks_code(pspict)
 				P.psName=P.psName+pspict.name+_latinize(str(numerical_approx(x)))	# Make the point name unique.
 				if self.numbering :
-					P.put_mark(0.4/pspict.yunit,self.mark_angle,symbol)		# TODO : use the size of the box as distance
+					P.put_mark(0.4,self.mark_angle,symbol)		# TODO : use the size of the box as distance
+											# I do not understand why I don't have to multiply 0.4 by xunit or yunit
 				points_list.append(P)
 			return points_list
 		else :
