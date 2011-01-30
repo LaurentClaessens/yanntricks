@@ -533,6 +533,10 @@ class SingleAxe(object):
 			for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,self.Dx,self.mark_origin):
 				P=(x*self.base).F
 				P.parameters.symbol="|"
+				bar_angle=SR(self.mark_angle+90).n(digits=7)	# pstricks does not accept too large numbers
+				P.add_option("dotangle=%s"%str(bar_angle))
+				print "537", P.options.code()
+				print "538", P.pstricks_code(pspict)
 				P.psName=P.psName+pspict.name+_latinize(str(numerical_approx(x)))	# Make the point name unique.
 				if self.numbering :
 					P.put_mark(0.4/pspict.yunit,self.mark_angle,symbol)		# TODO : use the size of the box as distance
