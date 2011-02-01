@@ -210,8 +210,10 @@ class GeometricPoint(object):
 	"""
 	NomPointLibre = ListeNomsPoints()
 	def __init__(self,x,y):
-		self.x = float(x)
-		self.y = float(y)
+		#self.x = float(x)
+		#self.y = float(y)
+		self.x=SR(x)
+		self.y=SR(y)
 		self.psName = GeometricPoint.NomPointLibre.suivant()
 	def projection(self,seg):
 		"""
