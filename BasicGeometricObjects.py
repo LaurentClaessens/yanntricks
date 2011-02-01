@@ -210,8 +210,6 @@ class GeometricPoint(object):
 	"""
 	NomPointLibre = ListeNomsPoints()
 	def __init__(self,x,y):
-		if type(x) == str : print "Attention : x est du type str"
-		if type(y) == str : print "Attention : y est du type str"
 		self.x = float(x)
 		self.y = float(y)
 		self.psName = GeometricPoint.NomPointLibre.suivant()
