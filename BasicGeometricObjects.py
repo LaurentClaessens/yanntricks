@@ -327,7 +327,7 @@ class GeometricPoint(object):
 		Return the result in degree
 		"""
 		return self.polar_coordinates()[1]
-	def coordinates(self):
+	def coordinates(self,numerical=False):
 		"""
 		Return the coordinates of the point as a string.
 
@@ -338,9 +338,13 @@ class GeometricPoint(object):
 		>>>print P.coordinates()
 		(1,3)
 		"""
-		x = self.x
-		y = self.y
-		# Ces petites précautions pour éviter d'avoir des 0.125547e-6, parce que pstricks n'aime pas cette notation.
+		if numerical :
+			x=numerical_approx(self.x)
+			y=numerical_approx(self.y)
+		else :
+			x = self.x
+			y = self.y
+		# This precaution in order to avoid something like 0.125547e-6 because pstricks doesn't like that notation.
 		if abs(x) < 0.0001 :
 			x=0
 		if abs(y) < 0.0001 :
@@ -939,7 +943,7 @@ class Mark(object):
 		l=[]
 		central_point=self.central_point(pspict)
 		#TODO : Use create_PSpoint instead of \pstGeonode.
-		l.append("\pstGeonode[]"+central_point.coordinates()+"{"+central_point.psName+"}")
+		l.append("\pstGeonode[]"+central_point.coordinates(numerical=True)+"{"+central_point.psName+"}")
 		l.append(r"\rput(%s){\rput(%s;%s){%s}}"%(central_point.psName,"0",0,str(self.text)))
 		return "\n".join(l)
 
@@ -1188,7 +1192,7 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 		l=[]
 		if self.marque:
 			l.append(self.mark.pstricks_code(pspict))
-		l.append("\pstGeonode["+self.params()+"]"+self.coordinates()+"{"+self.psName+"}")
+		l.append("\pstGeonode["+self.params()+"]"+self.coordinates(numerical=True)+"{"+self.psName+"}")
 		return "\n".join(l)
 
 def Code_Pscurve(listePoints,params):
