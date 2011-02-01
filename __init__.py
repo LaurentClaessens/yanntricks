@@ -772,12 +772,15 @@ class figure(object):
 		""" dilatations or contract that picture in both directions with the same coefficient """
 		self.dilatation_X(fact)
 		self.dilatation_Y(fact)
-	def new_subfigure(self,caption,name):
+	def new_subfigure(self,caption,name=None):
 		"""
 		Create a subfigure in the figure and return it.
 
 		The end-user should use this instead of append_subfigure
 		"""
+		if name==None:
+			number=len(self.record_subfigure)
+			name="sub"+_latinize(str(number))
 		ssfig=subfigure(caption,self.name+"ss"+name)
 		ssfig.mother=self
 		self._append_subfigure(ssfig)
@@ -789,10 +792,12 @@ class figure(object):
 			ssFig.name=self.name+suffixe
 		#ssFig.pspicture.name=self.name+"pspict"+suffixe	(no more useful 15 oct 2010)
 		print r"See also the subfigure \ref{%s}"%ssFig.name
-	def new_pspicture(self,name,pspict=None):
+	def new_pspicture(self,name=None,pspict=None):
+		if name==None:
+			number=len(self.record_pspicture)
+			name="sub"+_latinize(str(number))
 		if pspict==None:
 			pspict=pspicture("FIG"+self.name+"PICT"+name)
-		#pspict.mother=self
 		self._add_pspicture(pspict)
 		return pspict
 	def _add_pspicture(self,pspict):
@@ -848,7 +853,10 @@ class subfigure(object):
 		self.mother=None
 	def add_latex_line(self,ligne,separator_name):
 		self.mother.add_latex_line(ligne,separator_name)
-	def new_pspicture(self,name):
+	def new_pspicture(self,name=None):
+		if name==None:
+			number=len(self.record_pspicture)
+			name="sub"+_latinize(str(number))
 		pspict=pspicture("FIG"+self.name+"PICT"+name)
 		pspict.mother=self
 		self._add_pspicture(pspict)
