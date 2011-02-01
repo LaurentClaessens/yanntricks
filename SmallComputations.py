@@ -138,7 +138,7 @@ def PointToPolaire(P=None,x=None,y=None):
 		if y > 0:
 			alpha = pi/2
 		if y < 0:
-			alpha = pi/2
+			alpha = 3*pi/2
 		if y == 0 : 			# Convention : the angle for point (0,0) is 0.
 			print "phystricks Warning. You are trying to convert into polar coordinates the point (0,0). I'm returning 0 as angle."
 			alpha = 0

@@ -1325,8 +1325,8 @@ class GeometricAngle(object):
 		if r==None:
 			r=0.2*Segment(A,O).length()
 		self.r=r
-		self.angleA=Segment(O,A).angle()
-		self.angleB=Segment(O,B).angle()
+		self.angleA=AffineVector(O,A).angle()
+		self.angleB=AffineVector(O,B).angle()
 		self.angleI=min(self.angleA,self.angleB)
 		self.angleF=max(self.angleA,self.angleB)
 		self.media=self.angleF-0.5*self.measure()
