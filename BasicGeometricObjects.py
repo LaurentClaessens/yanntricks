@@ -1445,7 +1445,6 @@ class phyFunction(object):
 		"""
 		P = Point(float(x),self(x))
 		try :
-			#ca = self.derivative()(x=x) 
 			ca = self.derivative()(x) 
 			angle_n=degree(atan(ca)+pi/2)
 			if self.derivative(2)(x) > 0:
@@ -2036,6 +2035,8 @@ class BoundingBox(object):
 		return rect.pstricks_code(pspict)
 	def bounding_box(self,pspict=None):
 		return self
+	def math_bounding_box(self,pspict=None):
+		return self.bounding_box(pspict)
 	def copy(self):
 		return BoundingBox(self.SW(),self.NE())
 	def __str__(self):
