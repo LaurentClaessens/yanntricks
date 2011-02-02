@@ -1204,7 +1204,7 @@ def Code_Pscurve(listePoints,params):
 	l = []
 	l.append("\pscurve["+params+"]")
 	for p in listePoints :
-		l.append(p.coordinates())
+		l.append(p.coordinates(numerical=True))
 	ligne = "".join(l)
 	return ligne
 
@@ -1318,7 +1318,7 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
 	def math_bounding_box(self,pspicture=1):
 		return self.bounding_box(pspicture)
 	def pstricks_code(self,pspict=None):
-		return "\psframe["+self.params()+"]"+self.rectangle.SW.coordinates()+self.rectangle.NE.coordinates()
+		return "\psframe["+self.params()+"]"+self.rectangle.SW.coordinates(numerical=True)+self.rectangle.NE.coordinates(numerical=True)
 
 
 class GeometricAngle(object):

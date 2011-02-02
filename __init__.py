@@ -1228,7 +1228,7 @@ class pspicture(object):
 		self.BB.AddPoint(tri.A)
 		self.BB.AddPoint(tri.B)
 		self.BB.AddPoint(tri.C)
-		self.add_latex_line("\pstTriangle["+params+",PointSymbol=none]"+tri.A.coordinates()+"{A}"+tri.B.coordinates()+"{B}"+tri.C.coordinates()+"{C}")
+		self.add_latex_line("\pstTriangle["+params+",PointSymbol=none]"+tri.A.coordinates(numerical=True)+"{A}"+tri.B.coordinates(numerical=True)+"{B}"+tri.C.coordinates(numerical=True)+"{C}")
 	def TraceGrid(self,grille):
 		raise DeprecationWarning, "I think TraceGrid should no more be used"
 		self.IncrusteLigne(grille.code(self),2)
@@ -1283,7 +1283,7 @@ class pspicture(object):
 		add_latex_line_entete(self)
 		self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+",LabelSep="+str(self.LabelSep)+"}","BEFORE PSPICTURE")
 		self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}\n","BEFORE PSPICTURE")
-		self.add_latex_line("\\begin{pspicture}%s%s\n"%(self.bounding_box(self).SW().coordinates(),self.bounding_box(self).NE().coordinates()),"BEGIN PSPICTURE")
+		self.add_latex_line("\\begin{pspicture}%s%s\n"%(self.bounding_box(self).SW().coordinates(numerical=True),self.bounding_box(self).NE().coordinates(numerical=True)),"BEGIN PSPICTURE")
 		self.add_latex_line("\end{pspicture}\n","AFTER PSPICTURE")
 		self.add_latex_line(self.pstricks_code,"OTHER STUFF")
 		return DicoSeparatorToCode(self.separator_dico)
