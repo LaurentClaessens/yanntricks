@@ -925,6 +925,13 @@ class Mark(object):
 				return default.translate(-dimx*0.5,0)
 		else :
 			return default
+	def math_bounding_box(self,pspict=None):
+		"""
+		Return the mathematics bounding box of its base object.
+
+		A mark has non own math_bounding_box because we do not want the axes to fit even the marques.
+		"""
+		return self.graph.math_bounding_box(pspict)
 	def bounding_box(self,pspict=None):
 		central_point=self.central_point(pspict)
 		bb=BoundingBox(central_point,central_point)
