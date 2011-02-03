@@ -1218,9 +1218,9 @@ class pspicture(object):
 		try :
 			if graph.marque:
 				x=DrawElement(graph.mark,separator_name)
-				self.record_draw_graph.appen(x)
-		except AttributeError :
-			pass				# This happens when the graph has no mark; that is most of the time.
+				self.record_draw_graph.append(x)
+		except AttributeError,msg :
+			print msg			# This happens when the graph has no mark; that is most of the time.
 	def DrawGrid(self,grid):
 		raise DeprecationWarning,"This is depreciated. The grid has to be drawn with DrawGraph as everyone"
 	def TraceTriangle(self,tri,params):
