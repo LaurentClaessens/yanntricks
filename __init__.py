@@ -26,13 +26,12 @@ The documentation is available at
 
 #from __future__ import division
 from sage.all import *
-#import numpy               # I do not remember why I used that.
 import codecs
 import math, sys
-from BasicGeometricObjects import *
-from MathComputations import *
-from SmallComputations import *
-import MathConstructions
+from phystricks.BasicGeometricObjects import *
+from phystricks.SmallComputations import *
+#import numpy               # I do not remember why I used that.
+#import MathConstructions
 
 def RemoveLastZeros(x,n):
     """
@@ -209,6 +208,7 @@ class CalculPolynome(object):
             if rep <> "":
                 l.append(int(rep))
         return Polynome(l)
+
 
 def SubGridArray(mx,Mx,Dx,num_subX):
     """ Provides the values between mx and Mx such that there are num_subX-1 numbers between two integer separated by Dx """
@@ -642,11 +642,9 @@ def Intersection(f,g):
     sage: fun=phyFunction(x**2-5*x+6)
     sage: droite=phyFunction(2)
     sage: pts = Intersection(fun,droite)
-    sage: for P in pts:
-    ....:     print P
-    ....:     
-    Point (4.0,2.0)
-    Point (1.0,2.0)
+    sage: for P in pts:print P
+    Point(4,2)
+    Point(1,2)
     """
     var('x,y')
     pts=[]

@@ -32,8 +32,9 @@ This module also contains some specific "constructors" for some classes, like Po
 import math
 import types
 from sage.all import *
-from SmallComputations import *
 import phystricks
+from phystricks.SmallComputations import *
+import doctest
 
 
 def SubstitutionMathPsTricks(fx):
@@ -334,8 +335,8 @@ class GeometricPoint(object):
         When one coordinate if very small (lower than 0.0001), it is rounded to zero in order to avoid string like "0.2335e-6" in the pstricks code.
 
         Example : 
-        >>>P=Point(1,3)
-        >>>print P.coordinates()
+        sage: P=Point(1,3)
+        sage: print P.coordinates()
         (1,3)
         """
         if numerical :
@@ -1683,8 +1684,8 @@ class ImplicitCurve(object):
 
     EXAMPLES:
     sage: f(x,y)=x**2+1/x
-    sage: ImplicitCurve(f(x,y)==2)
-    sage: ImplicitCurve(x+y==2)   
+    sage: F=ImplicitCurve(f(x,y)==2)
+    sage: G=ImplicitCurve(x+y==2)   
 
     NOTES:
     This is heavily inspired from the sage's implicit_plot function.
@@ -1707,19 +1708,19 @@ class ImplicitCurve(object):
         return phystricks.GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
     def __str__(self):
         """
-            Return string representation of this implicit curve.
+        Return string representation of this implicit curve.
 
         EXAMPLE:
         sage: f(x,y)=x**2+1/x
         sage: print ImplicitCurve(f(x,y)==2)
-        Implicit curve of equation x^2 + 1/x == 2
-        sage: print ImplicitCurve(x+y==2)   
-        Implicit curve of equation x + y == 2
+        Implicit curve of equation x^2 + 1/x - 2 == 0
+        sage: print ImplicitCurve(x+y==7)   
+        Implicit curve of equation x + y - 7 == 0
         """
-        return "Implicit curve of equation %s"%repr(self.f)
+        return "Implicit curve of equation %s == 0"%repr(self.f)
 
 class GraphOfAnImplicitCurve(GraphOfAnObject,ImplicitCurve):
-    """
+    r"""
     Describe the graph of an implicit curve.
 
     INPUT:
@@ -1732,13 +1733,15 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,ImplicitCurve):
     in each direction of the grid.  
     
     EXAMPLES:
+    sage: var('x,y')
+    (x, y)
     sage: implicit_curve=ImplicitCurve(x**2+x==3)
-    sage: GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2))
+    sage: F=GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2)).pstricks_code()
 
     NOTES:
     This is heavily inspired from the sage's implicit_plot function.
     """
-    def __init__(self,implicit_curve,xrange,yrange,plot_points=100):
+    def __init__(self,implicit_curve,xrange,yrange,plot_points=300):
         GraphOfAnObject.__init__(self,implicit_curve)
         ImplicitCurve.__init__(self,implicit_curve.f)
         self.implicit_curve=implicit_curve
@@ -1750,33 +1753,10 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,ImplicitCurve):
         self.parameters.color="blue"
     @lazy_attribute
     def _get_minmax_data(self):
-        """
-            Return a dictionary whose keys give the xmin, xmax, ymin, and ymax
-            data for this graphic.
-
-        The result could be quite dependent on the number of points taken.
-
-        EXAMPLES
-        sage: var('x,y')
-        sage: F=ImplicitCurve(x**2+y**2==sqrt(2)).graph((x,-5,5),(y,-4,4))
-        sage: F.plot_points=10
-        sage: F.get_minmax_data()
-        {'xmin': 5, 'ymin': 4, 'ymax': -4, 'xmax': -5}
-        sage: F.plot_points=300
-        sage: F.get_minmax_data()
-        {'xmin': -1.2207357859531669, 'ymin': -1.2173913043478279, 'ymax': 1.2173913043478231, 'xmax': 1.2207357859531864}
-
-        NOTE:
-        Build the xy_data_array as in Sage's contour_plot
-
-        TODO: It has to be replaced by something better using matplotlib
-            See also
-            http://ask.sagemath.org/question/359/get_minmax_data-on-implicit_plot
-        """
         from sage.plot.misc import setup_for_eval_on_grid
         f=self.implicit_curve.f
 
-            g, ranges = setup_for_eval_on_grid([f], [self.xrange, self.yrange], self.plot_points)
+        g, ranges = setup_for_eval_on_grid([f], [self.xrange, self.yrange], self.plot_points)
         g = g[0]
         xrange,yrange=[r[:2] for r in ranges]
     
@@ -1795,6 +1775,30 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,ImplicitCurve):
                     ymax=max(ymax,pt[1])
         return {'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax}
     def get_minmax_data(self,dict=True):
+        """
+        Return a dictionary whose keys give the xmin, xmax, ymin, and ymax
+        data for this graphic.
+
+        Since the results come from the lazy_attribute function _get_minmax_data, changing the number of points
+        between two call will not change the result.
+
+        EXAMPLES
+        sage: var('x,y')
+        (x, y)
+        sage: F=ImplicitCurve(x**2+y**2==sqrt(2)).graph((x,-5,5),(y,-4,4),plot_points=300)
+        sage: F.get_minmax_data()
+        {'xmin': -1.1872909698996552, 'ymin': -1.1906354515050186, 'ymax': 1.1906354515050137, 'xmax': 1.1872909698996748}
+        sage: F.plot_points=10
+        sage: F.get_minmax_data()
+        {'xmin': -1.1872909698996552, 'ymin': -1.1906354515050186, 'ymax': 1.1906354515050137, 'xmax': 1.1872909698996748}
+
+        NOTE:
+        Build the xy_data_array as in Sage's contour_plot
+
+        TODO: It has to be replaced by something better using matplotlib
+            See also
+            http://ask.sagemath.org/question/359/get_minmax_data-on-implicit_plot
+        """
         minmax=self._get_minmax_data
         if dict:
             return minmax
@@ -1824,28 +1828,16 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,ImplicitCurve):
         EXAMPLES:
         sage: var('x,y')
         (x, y)
-        sage:   f=x**2-y**2
-        sage: for i in range(-5,5):
-            ....:G=ImplicitCurve(f==i).graph((x,-3,3),(y,-3,3),plot_points=200)
-            ....:print G.pstricks_code()
-            ....: 
-        \psplotImp[linestyle=solid,linecolor=blue,algebraic](-1.86381909548,-2.94924623116)(1.86381909548,2.94924623116){x^2 - y^2 + 5}
-        \psplotImp[linestyle=solid,linecolor=blue,algebraic](-2.25577889447,-3.03969849246)(2.25577889447,3.03969849246){x^2 - y^2 + 4}
-        \psplotImp[linestyle=solid,linecolor=blue,algebraic](-2.43668341709,-3.00954773869)(2.43668341709,3.00954773869){x^2 - y^2 + 3}
-        \psplotImp[linestyle=solid,linecolor=blue,algebraic](-2.67788944724,-3.03969849246)(2.67788944724,3.03969849246){x^2 - y^2 + 2}
-        \psplotImp[linestyle=solid,linecolor=blue,algebraic](-2.79849246231,-2.97939698492)(2.79849246231,2.97939698492){x^2 - y^2 + 1}
-        \psplotImp[linestyle=solid,linecolor=blue,algebraic](-3.1,-3.1)(3.1,3.1){x^2 - y^2}
-        \psplotImp[linestyle=solid,linecolor=blue,algebraic](-2.97939698492,-2.79849246231)(2.97939698492,2.79849246231){x^2 - y^2 - 1}
-        \psplotImp[linestyle=solid,linecolor=blue,algebraic](-3.03969849246,-2.67788944724)(3.03969849246,2.67788944724){x^2 - y^2 - 2}
-        \psplotImp[linestyle=solid,linecolor=blue,algebraic](-3.00954773869,-2.43668341709)(3.00954773869,2.43668341709){x^2 - y^2 - 3}
-        \psplotImp[linestyle=solid,linecolor=blue,algebraic](-3.03969849246,-2.25577889447)(3.03969849246,2.25577889447){x^2 - y^2 - 4}
+        sage: f=x^2-y^2
+        sage: G=ImplicitCurve(f==-5).graph((x,-3,3),(y,-3,3),plot_points=200)
+        sage: print G.pstricks_code()
+        \psplotImp[linestyle=solid,linecolor=blue,algebraic](-3,-3)(3,3){x^2 - y^2 + 5}
 
         NOTE:
         See the documentation
         http://www.ctan.org/tex-archive/graphics/pstricks/contrib/pst-func/
         """
         return "\psplotImp[%s,algebraic](%s,%s)(%s,%s){%s}" %(self.params(),str(self.xrange[1]),str(self.yrange[1]), str(self.xrange[2]),str(self.yrange[2]),repr(self.f))
-        #return "\psplotImp[%s,algebraic](%s,%s)(%s,%s){%s}" %(self.params(),str(self.xmin()-0.1),str(self.ymin()-0.1), str(self.xmax()+0.1),str(self.ymax()+0.1),repr(self.f))
 
 class ParametricCurve(object):
     """
