@@ -246,39 +246,6 @@ class Triangle(object):
 		self.B = B
 		self.C = C
 
-class GraphOfAParametricCurve(GraphOfAnObject,ParametricCurve):
-	def __init__(self,curve,llamI,llamF):
-		GraphOfAnObject.__init__(self,curve)
-		ParametricCurve.__init__(self,curve.f1,curve.f2)
-		self.curve = self.obj			# It is strange that this line does not raise a crash.
-		self.llamI = llamI
-		self.llamF = llamF
-		self.parameters.color = "blue"
-		self.plotstyle = "curve"
-		self.plotpoints = "1000"
-	def params(self):
-		self.conclude_params()
-		self.add_option("plotpoints=%s"%str(self.plotpoints))
-		self.add_option("plotstyle=%s"%str(self.plotstyle))
-		return self.options.code()
-	def bounding_box(self,pspict=None):
-		xmin=self.xmin(self.llamI,self.llamF)
-		xmax=self.xmax(self.llamI,self.llamF)
-		ymin=self.ymin(self.llamI,self.llamF)
-		ymax=self.ymax(self.llamI,self.llamF)
-		bb = BoundingBox( Point(xmin,ymin),Point(xmax,ymax)  )
-		return bb
-	def math_bounding_box(self,pspict=None):
-		return self.bounding_box(pspict)
-	def pstricks_code(self,pspict=None):
-		if self.wavy :
-			waviness = self.waviness
-			return Code_Pscurve( self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy) ,self.params())
-		else:
-			initial = numerical_approx(self.llamI)		# Avoid the string "pi" in the pstricks code.
-			final = numerical_approx(self.llamF)
-			return "\parametricplot[%s]{%s}{%s}{%s}" %(self.params(),str(initial),str(final),self.curve.pstricks())
-
 def Graph(X,*arg):
 	"""This function is supposed to be only used by the end user."""
 	print "The function Graph should not be used"
@@ -1174,16 +1141,10 @@ class pspicture(object):
 		if not obj:
 			obj=self
 		self.record_bounding_box.append(obj)
-	# Ici, typiquement, symbol sera "*" et params sera vide.
-	def DrawPoint(self,P,symbol,params):
-		print "This method is depreciated"
-		raise AttributeError
-		return self._DrawPoint(self,P,symbol,params)
-
-	def TraceNuage_de_Points(self,nuage,symbol,params):
-		self.add_latex_line("% ---------Nuage de point--------")
-		for P in nuage.listePoints :
-			self.DrawPoint(P,symbol,params)
+	#def TraceNuage_de_Points(self,nuage,symbol,params):
+	#	self.add_latex_line("% ---------Nuage de point--------")
+	#	for P in nuage.listePoints :
+	#		self.DrawPoint(P,symbol,params)
 
 	def MarqueAngle(self,A,B,C,label,params):
 		self.add_latex_line("\pstMarkAngle["+params+"]{"+A.psName+"}{"+B.psName+"}{"+C.psName+"}{"+label+"}")
@@ -1301,7 +1262,7 @@ class pspicture(object):
 			try :
 				bb.AddBB(graphe.math_bounding_box(self))
 			except AttributeError:
-				print "Warning: it seems to me that object %s (%s) has no method math_boundig_box"%(str(graphe),type(graphe))
+				print "Warning: it seems to me that object <%s> (type :%s) has no method math_boundig_box"%(str(graphe),type(graphe))
 				bb.append(graphe,self)
 		return bb
 	def contenu(self):

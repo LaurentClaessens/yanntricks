@@ -1696,7 +1696,7 @@ class ImplicitCurve(object):
 			if f.operator() != operator.eq:
 				raise ValueError, "input to implicit plot must be function or equation"
 			self.f = f.lhs() - f.rhs()			# At this point self.f is the expression to be equated to zero.
-	def graph(self,xrange,yrange):
+	def graph(self,xrange,yrange,plot_points=100):
 		"""
 		Return the graph corresponding to the implicit curve.
 
@@ -1704,7 +1704,7 @@ class ImplicitCurve(object):
 		- ``xrange`` - the X-range on which the curve will be plotted.
 		- ``yrange`` - the Y-range on which the curve will be plotted.
 		"""
-		return phystricks.GraphOfAnImplicitCurve(self,xrange,yrange)
+		return phystricks.GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
 	def __str__(self):
 		"""
         	Return string representation of this implicit curve.
@@ -1716,9 +1716,9 @@ class ImplicitCurve(object):
 		sage: print ImplicitCurve(x+y==2)   
 		Implicit curve of equation x + y == 2
 		"""
-		return "Implicit curve of equation %s"%repr(self.equation)
+		return "Implicit curve of equation %s"%repr(self.f)
 
-class GraphOfAnImplicitCurve(object):
+class GraphOfAnImplicitCurve(GraphOfAnObject,ImplicitCurve):
 	"""
 	Describe the graph of an implicit curve.
 
@@ -1735,16 +1735,21 @@ class GraphOfAnImplicitCurve(object):
 	sage: implicit_curve=ImplicitCurve(x**2+x==3)
 	sage: GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2))
 
-
 	NOTES:
 	This is heavily inspired from the sage's implicit_plot function.
 	"""
 	def __init__(self,implicit_curve,xrange,yrange,plot_points=100):
+		GraphOfAnObject.__init__(self,implicit_curve)
+		ImplicitCurve.__init__(self,implicit_curve.f)
 		self.implicit_curve=implicit_curve
+		self.implicit_plot=implicit_plot(self.f,xrange,yrange)
 		self.xrange=xrange
 		self.yrange=yrange
 		self.plot_points=plot_points
-	def get_minmax_data(self):
+
+		self.parameters.color="blue"
+	@lazy_attribute
+	def _get_minmax_data(self):
 		"""
         	Return a dictionary whose keys give the xmin, xmax, ymin, and ymax
         	data for this graphic.
@@ -1763,11 +1768,15 @@ class GraphOfAnImplicitCurve(object):
 
 		NOTE:
 		Build the xy_data_array as in Sage's contour_plot
+
+		TODO: It has to be replaced by something better using matplotlib
+			See also
+			http://ask.sagemath.org/question/359/get_minmax_data-on-implicit_plot
 		"""
 		from sage.plot.misc import setup_for_eval_on_grid
 		f=self.implicit_curve.f
 
-    		g, ranges = setup_for_eval_on_grid([f], [self.xrange, self.yrange], self.plot_points)
+	    	g, ranges = setup_for_eval_on_grid([f], [self.xrange, self.yrange], self.plot_points)
 		g = g[0]
 		xrange,yrange=[r[:2] for r in ranges]
     
@@ -1779,18 +1788,43 @@ class GraphOfAnImplicitCurve(object):
 		ymax=self.yrange[1]
 		for horizontal in xy_data_array :
 			for pt in horizontal:
-				if abs(pt[2])<0.1:
+				if abs(pt[2])<0.01:
 					xmin=min(xmin,pt[0])
 					xmax=max(xmax,pt[0])
 					ymin=min(ymin,pt[1])
 					ymax=max(ymax,pt[1])
-
+		return {'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax}
+	def get_minmax_data(self,dict=True):
+		minmax=self._get_minmax_data
 		if dict:
-			return {'xmin':xmin, 'xmax':xmax,
-			'ymin':ymin, 'ymax':ymax}
+			return minmax
 		else:
-			return xmin, xmax, ymin, ymax
+			xmin=minmax['xmin']
+			xmax=minmax['xmax']
+			ymin=minmax['ymin']
+			ymax=minmax['ymax']
+			return xmin,xmax,ymin,ymax
+	def xmin(self):
+		return self.get_minmax_data()['xmin']
+	def xmax(self):
+		return self.get_minmax_data()['xmax']
+	def ymin(self):
+		return self.get_minmax_data()['ymin']
+	def ymax(self):
+		return self.get_minmax_data()['ymax']
+	def bounding_box(self,pspict=None):
+		bb = BoundingBox( Point(self.xmin(),self.ymin()),Point(self.xmax(),self.ymax())  )
+		return bb
+	def math_bounding_box(self,pspict=None):
+		return self.bounding_box(pspict)
+	def pstricks_code(self,pspict=None):
+		r"""
+		Return the pstrick code of the implicit curve.
 
+		See the documentation
+		http://www.ctan.org/tex-archive/graphics/pstricks/contrib/pst-func/
+		"""
+		return "\psplotImp[%s](%s,%s)(%s,%s){%s}" %(self.params(),str(self.xrange[1]),str(self.xrange[2]), str(self.yrange[1]),str(self.yrange[2]),repr(self.f))
 
 class ParametricCurve(object):
 	"""
@@ -1963,9 +1997,6 @@ class ParametricCurve(object):
 			Dll = dl/v
 			grand = Mll
 			petit = ll
-			#print "RECHERCHE d'un DÉBUT"
-			#print "grand", grand
-			#print "petit", petit
 			if abs(self.arc_length(ll,ll+Dll)) > dl :
 				grand = ll+Dll
 				while abs(self.arc_length(ll,petit)) > dl :
@@ -2032,11 +2063,46 @@ class ParametricCurve(object):
 		a.append("y(t)=%s"%repr(self.f2.sage(x=t)))
 		return "\n".join(a)
 
-class Nuage_de_Points(object):
-	def __init__(self):
-		self.listePoints = []
-	def ajoute_point(self,p):
-		self.listePoints.append(p)
+class GraphOfAParametricCurve(GraphOfAnObject,ParametricCurve):
+	def __init__(self,curve,llamI,llamF):
+		GraphOfAnObject.__init__(self,curve)
+		ParametricCurve.__init__(self,curve.f1,curve.f2)
+		self.curve = self.obj			# It is strange that this line does not raise a crash.
+		self.llamI = llamI
+		self.llamF = llamF
+		self.parameters.color = "blue"
+		self.plotstyle = "curve"
+		self.plotpoints = "1000"
+	def params(self):
+		self.conclude_params()
+		self.add_option("plotpoints=%s"%str(self.plotpoints))
+		self.add_option("plotstyle=%s"%str(self.plotstyle))
+		return self.options.code()
+	def bounding_box(self,pspict=None):
+		xmin=self.xmin(self.llamI,self.llamF)
+		xmax=self.xmax(self.llamI,self.llamF)
+		ymin=self.ymin(self.llamI,self.llamF)
+		ymax=self.ymax(self.llamI,self.llamF)
+		bb = BoundingBox( Point(xmin,ymin),Point(xmax,ymax)  )
+		return bb
+	def math_bounding_box(self,pspict=None):
+		return self.bounding_box(pspict)
+	def pstricks_code(self,pspict=None):
+		if self.wavy :
+			waviness = self.waviness
+			return Code_Pscurve( self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy) ,self.params())
+		else:
+			initial = numerical_approx(self.llamI)		# Avoid the string "pi" in the pstricks code.
+			final = numerical_approx(self.llamF)
+			return "\parametricplot[%s]{%s}{%s}{%s}" %(self.params(),str(initial),str(final),self.curve.pstricks())
+
+
+
+#class Nuage_de_Points(object):
+#	def __init__(self):
+#		self.listePoints = []
+#	def ajoute_point(self,p):
+#		self.listePoints.append(p)
 
 def PolarSegment(P,r,theta):
 	"""
