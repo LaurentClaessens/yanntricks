@@ -1674,6 +1674,124 @@ def PolarCurve(fr,ftheta=None):
 		f2=fr(x=x)*sin(ftheta(x=x))
 	return ParametricCurve(f1,f2)
 
+class ImplicitCurve(object):
+	"""
+	Describe a curve given by an implicit equation.
+
+	INPUT:
+	- ``f`` -- a function of two variables or equation in two variables
+
+	EXAMPLES:
+	sage: f(x,y)=x**2+1/x
+	sage: ImplicitCurve(f(x,y)==2)
+	sage: ImplicitCurve(x+y==2)   
+
+	NOTES:
+	This is heavily inspired from the sage's implicit_plot function.
+	"""
+	def __init__(self,f):
+		self.f=f
+		from sage.symbolic.expression import is_SymbolicEquation
+		if is_SymbolicEquation(f):
+			if f.operator() != operator.eq:
+				raise ValueError, "input to implicit plot must be function or equation"
+			self.f = f.lhs() - f.rhs()			# At this point self.f is the expression to be equated to zero.
+	def graph(self,xrange,yrange):
+		"""
+		Return the graph corresponding to the implicit curve.
+
+		INPUT:
+		- ``xrange`` - the X-range on which the curve will be plotted.
+		- ``yrange`` - the Y-range on which the curve will be plotted.
+		"""
+		return phystricks.GraphOfAnImplicitCurve(self,xrange,yrange)
+	def __str__(self):
+		"""
+        	Return string representation of this implicit curve.
+
+		EXAMPLE:
+		sage: f(x,y)=x**2+1/x
+		sage: print ImplicitCurve(f(x,y)==2)
+		Implicit curve of equation x^2 + 1/x == 2
+		sage: print ImplicitCurve(x+y==2)   
+		Implicit curve of equation x + y == 2
+		"""
+		return "Implicit curve of equation %s"%repr(self.equation)
+
+class GraphOfAnImplicitCurve(object):
+	"""
+	Describe the graph of an implicit curve.
+
+	INPUT:
+	- ``implicit_curve`` - the implicit curve to be considered
+	- ``xrange``,``yrange`` - the range on which we want to plot
+	
+
+	OPTIONAL INPUT:
+	- ``plot_points``  -- integer (default: 100); number of points to plot
+	in each direction of the grid.  
+	
+	EXAMPLES:
+	sage: implicit_curve=ImplicitCurve(x**2+x==3)
+	sage: GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2))
+
+
+	NOTES:
+	This is heavily inspired from the sage's implicit_plot function.
+	"""
+	def __init__(self,implicit_curve,xrange,yrange,plot_points=100):
+		self.implicit_curve=implicit_curve
+		self.xrange=xrange
+		self.yrange=yrange
+		self.plot_points=plot_points
+	def get_minmax_data(self):
+		"""
+        	Return a dictionary whose keys give the xmin, xmax, ymin, and ymax
+        	data for this graphic.
+
+		The result could be quite dependent on the number of points taken.
+
+		EXAMPLES
+		sage: var('x,y')
+		sage: F=ImplicitCurve(x**2+y**2==sqrt(2)).graph((x,-5,5),(y,-4,4))
+		sage: F.plot_points=10
+		sage: F.get_minmax_data()
+		{'xmin': 5, 'ymin': 4, 'ymax': -4, 'xmax': -5}
+		sage: F.plot_points=300
+		sage: F.get_minmax_data()
+		{'xmin': -1.2207357859531669, 'ymin': -1.2173913043478279, 'ymax': 1.2173913043478231, 'xmax': 1.2207357859531864}
+
+		NOTE:
+		Build the xy_data_array as in Sage's contour_plot
+		"""
+		from sage.plot.misc import setup_for_eval_on_grid
+		f=self.implicit_curve.f
+
+    		g, ranges = setup_for_eval_on_grid([f], [self.xrange, self.yrange], self.plot_points)
+		g = g[0]
+		xrange,yrange=[r[:2] for r in ranges]
+    
+		xy_data_array = [[(x,y,g(x, y)) for x in xsrange(*ranges[0], include_endpoint=True)]
+						for y in xsrange(*ranges[1], include_endpoint=True)]
+		xmin=self.xrange[2]
+		ymin=self.yrange[2]
+		xmax=self.xrange[1]
+		ymax=self.yrange[1]
+		for horizontal in xy_data_array :
+			for pt in horizontal:
+				if abs(pt[2])<0.1:
+					xmin=min(xmin,pt[0])
+					xmax=max(xmax,pt[0])
+					ymin=min(ymin,pt[1])
+					ymax=max(ymax,pt[1])
+
+		if dict:
+			return {'xmin':xmin, 'xmax':xmax,
+			'ymin':ymin, 'ymax':ymax}
+		else:
+			return xmin, xmax, ymin, ymax
+
+
 class ParametricCurve(object):
 	"""
 	This class describes a parametric curve.
@@ -1810,7 +1928,6 @@ class ParametricCurve(object):
 		center=Point(Ox,Oy)
 		return CircleOA(center,P)
 	def get_minmax_data(self,deb,fin):
-		#return parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) ).get_minmax_data()
 		return parametric_plot( (self.f1,self.f2), (deb,fin) ).get_minmax_data()
 	def xmax(self,deb,fin):
 		return self.get_minmax_data(deb,fin)['xmax']
@@ -1860,9 +1977,7 @@ class ParametricCurve(object):
 			ell = (petit+grand)/2
 			while abs(self.arc_length( ll, ell )-dl) > prop_precision:
 				if prop_precision == 0:
-					print "prop_precision is zero. Something sucks. You probably want to launch me in an infinite loop."
-					print "dl=",dl
-					raise ValueError
+					raise ValueError,"prop_precision is zero. Something sucks. You probably want to launch me in an infinite loop. dl=%s"%str(dl)
 				ell = (grand+petit)/2
 				if self.arc_length(ll,ell) > dl :
 					grand = ell
@@ -1909,7 +2024,6 @@ class ParametricCurve(object):
 		return phystricks.GraphOfAParametricCurve(self,mx,Mx)
 	def __call__(self,llam,approx=False):
 		return self.get_point(llam,approx)
-		#return Point(self.f1(llam,approx),self.f2(llam,approx))
 	def __str__(self):
 		var('t')
 		a=[]
