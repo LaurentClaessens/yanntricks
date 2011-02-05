@@ -1821,10 +1821,31 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,ImplicitCurve):
 		r"""
 		Return the pstrick code of the implicit curve.
 
+		EXAMPLES:
+		sage: var('x,y')
+		(x, y)
+		sage:   f=x**2-y**2
+		sage: for i in range(-5,5):
+			....:G=ImplicitCurve(f==i).graph((x,-3,3),(y,-3,3),plot_points=200)
+			....:print G.pstricks_code()
+			....: 
+		\psplotImp[linestyle=solid,linecolor=blue,algebraic](-1.86381909548,-2.94924623116)(1.86381909548,2.94924623116){x^2 - y^2 + 5}
+		\psplotImp[linestyle=solid,linecolor=blue,algebraic](-2.25577889447,-3.03969849246)(2.25577889447,3.03969849246){x^2 - y^2 + 4}
+		\psplotImp[linestyle=solid,linecolor=blue,algebraic](-2.43668341709,-3.00954773869)(2.43668341709,3.00954773869){x^2 - y^2 + 3}
+		\psplotImp[linestyle=solid,linecolor=blue,algebraic](-2.67788944724,-3.03969849246)(2.67788944724,3.03969849246){x^2 - y^2 + 2}
+		\psplotImp[linestyle=solid,linecolor=blue,algebraic](-2.79849246231,-2.97939698492)(2.79849246231,2.97939698492){x^2 - y^2 + 1}
+		\psplotImp[linestyle=solid,linecolor=blue,algebraic](-3.1,-3.1)(3.1,3.1){x^2 - y^2}
+		\psplotImp[linestyle=solid,linecolor=blue,algebraic](-2.97939698492,-2.79849246231)(2.97939698492,2.79849246231){x^2 - y^2 - 1}
+		\psplotImp[linestyle=solid,linecolor=blue,algebraic](-3.03969849246,-2.67788944724)(3.03969849246,2.67788944724){x^2 - y^2 - 2}
+		\psplotImp[linestyle=solid,linecolor=blue,algebraic](-3.00954773869,-2.43668341709)(3.00954773869,2.43668341709){x^2 - y^2 - 3}
+		\psplotImp[linestyle=solid,linecolor=blue,algebraic](-3.03969849246,-2.25577889447)(3.03969849246,2.25577889447){x^2 - y^2 - 4}
+
+		NOTE:
 		See the documentation
 		http://www.ctan.org/tex-archive/graphics/pstricks/contrib/pst-func/
 		"""
-		return "\psplotImp[%s](%s,%s)(%s,%s){%s}" %(self.params(),str(self.xrange[1]),str(self.xrange[2]), str(self.yrange[1]),str(self.yrange[2]),repr(self.f))
+		return "\psplotImp[%s,algebraic](%s,%s)(%s,%s){%s}" %(self.params(),str(self.xrange[1]),str(self.yrange[1]), str(self.xrange[2]),str(self.yrange[2]),repr(self.f))
+		#return "\psplotImp[%s,algebraic](%s,%s)(%s,%s){%s}" %(self.params(),str(self.xmin()-0.1),str(self.ymin()-0.1), str(self.xmax()+0.1),str(self.ymax()+0.1),repr(self.f))
 
 class ParametricCurve(object):
 	"""
