@@ -1817,6 +1817,25 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,ImplicitCurve):
     def ymax(self):
         return self.get_minmax_data()['ymax']
     def bounding_box(self,pspict=None):
+        """
+        Return the bounding box of the implicit curve.
+
+        This is NOT the bounding box got that one could expect
+        using Sage's plotting system
+        implicit_plot(f,xrange,yrange).get_minmax_data()
+
+        Instead the bounding box returned here only contains the points that
+        are actually plotted. In the following example, we know that the ymax
+        has to be half the sqrt of the radius (and not the 5 given in yrange).
+
+        EXAMPES:    
+        sage: var('x,y')
+        (x, y)
+        sage: f=x**2+2*y**2
+        sage: G=ImplicitCurve(f==sqrt(2)).graph((x,-5,5),(y,-5,5),plot_points=200)
+        sage: print G.bounding_box()
+        (-1.1809045226130657,-0.82914572864321645),(1.180904522613065,0.82914572864321567)
+        """
         bb = BoundingBox( Point(self.xmin(),self.ymin()),Point(self.xmax(),self.ymax())  )
         return bb
     def math_bounding_box(self,pspict=None):
