@@ -1203,18 +1203,292 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
         l.append("\pstGeonode["+self.params()+"]"+self.coordinates(numerical=True)+"{"+self.psName+"}")
         return "\n".join(l)
 
+class InterpolationCurve(GraphOfAnObject):
+    """
+    determine an interpolation curve from a list of points.
+
+    INPUT:
+    - ``points_list`` - a list of points that have to be joined.
+    OPTIONAL INPUT:
+    - ``context_object`` -  the object that is going to use the InterpolationCurve's pstricks_code.
+                            ImplicitCurve and wavy curves are using InterpolationCurve as "backend"
+                            for the pstricks_code.
+                            Here we use the context_object in order to take this one into account
+                            when determining the parameters (color, ...).
+                            See self.pstricks_code()
+
+    EXAMPLES:
+    This example is valid, but will not plot the expected line (this is a feature of \pscurve)
+    sage: F=InterpolationCurve([Point(0,0),Point(1,1)])
+
+    If you want to plot the small segment, you have to add a point in the center:
+    sage: F=InterpolationCurve([Point(0,0),Point(0.5,0.5),Point(1,1)])
+
+    sage: C=Circle(Point(0,0),1)
+    sage: G=InterpolationCurve([C.get_point(2*pi/i) for i in range(1,100)])
+
+    InterpolationCurve is used in order to produce implicit plot and wavy functions.
+
+    """
+
+    def __init__(self,points_list,context_object=None):
+        GraphOfAnObject.__init__(self,self)
+        self.parameters.color="brown"
+        self.points_list=points_list
+        self.context_object=context_object
+        if self.context_object is None:
+            self.contex_object=self
+    def get_minmax_data(self):
+        """
+        Return a dictionary whose keys give the xmin, xmax, ymin, and ymax
+        data for this graphic.
+
+        EXAMPLES:
+        sage: C=Circle(Point(0,0),1)
+        sage: n=400
+        sage: InterpolationCurve([C.get_point(i*SR(360)/n) for i in range(n)]).get_minmax_data()
+        {'xmin': -1.00000000000000, 'ymin': -1.00000000000000, 'ymax': 1.00000000000000, 'xmax': 1.00000000000000}
+        """
+        xmin=min([P.x for P in self.points_list])
+        xmax=max([P.x for P in self.points_list])
+        ymin=min([P.y for P in self.points_list])
+        ymax=max([P.y for P in self.points_list])
+        if dict:
+            return {'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax}
+        else:
+            return xmin,xmax,ymin,ymax
+    def xmin(self):
+        return self.get_minmax_data()['xmin']
+    def xmax(self):
+        return self.get_minmax_data()['xmax']
+    def ymin(self):
+        return self.get_minmax_data()['ymin']
+    def ymax(self):
+        return self.get_minmax_data()['ymax']
+    def bounding_box(self,pspict=None):
+        """
+        Return the bounding box of the interpolation curve
+
+        EXAMPLES:    
+        sage: print InterpolationCurve([Point(0,0),Point(1,1)]).bounding_box()
+        (0,0),(1,1)
+        sage: C=Circle(Point(0,0),1)
+        sage: n=400
+        sage: print InterpolationCurve([C.get_point(i*SR(360)/n) for i in range(n)]).bounding_box()
+        (-1.00000000000000,-1.00000000000000),(1.00000000000000,1.00000000000000)
+
+        NOTE:
+        Since the bounding box is computed from the give points while the curve is an interpolation,
+        this bounding box is incorrect to the extend that \pscurve does not remains in the convex hull
+        of the given points.
+
+        EXAMPLE:
+        sage: F=InterpolationCurve([Point(-1,1),Point(1,1),Point(1,-1),Point(-1,-1)])
+        sage: print F.bounding_box()
+        (-1,-1),(1,1)
+        """
+        bb = BoundingBox( Point(self.xmin(),self.ymin()),Point(self.xmax(),self.ymax())  )
+        return bb
+    def math_bounding_box(self,pspict=None):
+        """
+        return the bounding box corresponding to the curve without decorations.
+
+        See InterpolationCurve.bounding_box()
+        """
+        return self.bounding_box(pspict)
+    def pstricks_code(self,pspict=None):
+        """
+        return the pstricks code of the interpolation curve trough the given points
+
+        EXAMPLES:
+
+        sage: C=Circle(Point(0,0),1)
+        sage: F=InterpolationCurve([Point(0,0),Point(1,1)])
+        sage: print F.pstricks_code()
+        \pscurve[linestyle=solid,linecolor=brown](0,0)(1.00000000000000,1.00000000000000)
+        sage: H=InterpolationCurve([Point(-1,1),Point(1,1),Point(1,-1),Point(-1,-1)])
+        sage: print H.pstricks_code()
+        \pscurve[linestyle=solid,linecolor=brown](-1.00000000000000,1.00000000000000)(1.00000000000000,1.00000000000000)(1.00000000000000,-1.00000000000000)(-1.00000000000000,-1.00000000000000)
+        """
+        l = []
+        l.append("\pscurve["+self.context_object.params()+"]")
+        for p in self.points_list:
+            l.append(p.coordinates(numerical=True))
+        return "".join(l)
+        
+    def __str__(self):
+        """
+        Return a string representation
+
+        EXAMPLES:
+        sage: print InterpolationCurve([Point(0,0),Point(1,1)])
+        InterpolationCurve with points ['Point(0,0)', 'Point(1,1)']
+        """
+        return "InterpolationCurve with points %s"%(str([str(P) for P in self.points_list]))
+
+class ImplicitCurve(object):
+    """
+    Describe a curve given by an implicit equation.
+
+    INPUT:
+    - ``f`` -- a function of two variables or equation in two variables
+
+    EXAMPLES:
+    sage: f(x,y)=x**2+1/x
+    sage: F=ImplicitCurve(f(x,y)==2)
+    sage: G=ImplicitCurve(x+y==2)   
+
+    NOTES:
+    This is heavily inspired from the sage's implicit_plot function.
+    """
+    def __init__(self,f):
+        self.f=f
+        from sage.symbolic.expression import is_SymbolicEquation
+        if is_SymbolicEquation(f):
+            if f.operator() != operator.eq:
+                raise ValueError, "input to implicit plot must be function or equation"
+            self.f = f.lhs() - f.rhs()          # At this point self.f is the expression to be equated to zero.
+    def graph(self,xrange,yrange,plot_points=100):
+        """
+        Return the graph corresponding to the implicit curve.
+
+        INPUT:
+        - ``xrange`` - the X-range on which the curve will be plotted.
+        - ``yrange`` - the Y-range on which the curve will be plotted.
+        """
+        return phystricks.GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
+    def __str__(self):
+        """
+        Return string representation of this implicit curve.
+
+        EXAMPLE:
+        sage: f(x,y)=x**2+1/x
+        sage: print ImplicitCurve(f(x,y)==2)
+        Implicit curve of equation x^2 + 1/x - 2 == 0
+        sage: print ImplicitCurve(x+y==7)   
+        Implicit curve of equation x + y - 7 == 0
+        """
+        return "Implicit curve of equation %s == 0"%repr(self.f)
+
+class GraphOfAnImplicitCurve(GraphOfAnObject,ImplicitCurve):
+    r"""
+    Describe the graph of an implicit curve.
+
+    INPUT:
+    - ``implicit_curve`` - the implicit curve to be considered
+    - ``xrange``,``yrange`` - the range on which we want to plot
+    
+
+    OPTIONAL INPUT:
+    - ``plot_points``  -- integer (default: 100); number of points to plot
+    in each direction of the grid.  
+    
+    EXAMPLES:
+    sage: var('x,y')
+    (x, y)
+    sage: implicit_curve=ImplicitCurve(x**2+x==3)
+    sage: F=GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2)).pstricks_code()
+
+    NOTES:
+    the get_minmax_data is contributed by the Sage's community here :
+    http://ask.sagemath.org/question/359/get_minmax_data-on-implicit_plot
+    (thanks to DSM)
+    """
+    def __init__(self,implicit_curve,xrange,yrange,plot_points=300):
+        GraphOfAnObject.__init__(self,implicit_curve)
+        ImplicitCurve.__init__(self,implicit_curve.f)
+        self.implicit_curve=implicit_curve
+        self.implicit_plot=implicit_plot(self.f,xrange,yrange)
+        self.xrange=xrange
+        self.yrange=yrange
+        self.plot_points=plot_points
+        self.points_list=get_points_from_implicit_plot(self.implicit_plot)
+        self.parameters.color="blue"
+    def get_minmax_data(self,dict=True):
+        """
+        Return a dictionary whose keys give the xmin, xmax, ymin, and ymax
+        data for this graphic.
+
+        Since the results come from the lazy_attribute function _get_minmax_data, changing the number of points
+        between two call will not change the result.
+
+        EXAMPLES
+        sage: var('x,y')
+        (x, y)
+        sage: F=ImplicitCurve(x**2+y**2==sqrt(2)).graph((x,-5,5),(y,-4,4),plot_points=300)
+        sage: F.get_minmax_data()
+        {'xmin': -1.1872909698996552, 'ymin': -1.1906354515050186, 'ymax': 1.1906354515050137, 'xmax': 1.1872909698996748}
+        sage: F.plot_points=10
+        sage: F.get_minmax_data()
+        {'xmin': -1.1872909698996552, 'ymin': -1.1906354515050186, 'ymax': 1.1906354515050137, 'xmax': 1.1872909698996748}
+        """
+        tot_points=[]
+        for path in self.points_list:
+            tot_points.extend(path)
+        xx=[P.x for P in tot_points]
+        yy=[P.y for P in tot_points]
+        xmin=min(xx)
+        xmax=max(xx)
+        ymin=min(yy)
+        ymax=max(yy)
+        if dict:
+            return {'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax}
+        else:
+            return xmin,xmax,ymin,ymax
+    def xmin(self):
+        return self.get_minmax_data()['xmin']
+    def xmax(self):
+        return self.get_minmax_data()['xmax']
+    def ymin(self):
+        return self.get_minmax_data()['ymin']
+    def ymax(self):
+        return self.get_minmax_data()['ymax']
+    def bounding_box(self,pspict=None):
+        """
+        Return the bounding box of the implicit curve.
+
+        This is NOT the bounding box got that one could expect
+        using Sage's plotting system
+        implicit_plot(f,xrange,yrange).get_minmax_data()
+
+        Instead the bounding box returned here only contains the points that
+        are actually plotted. In the following example, we know that the ymax
+        has to be half the sqrt of the radius (and not the 5 given in yrange).
+
+        EXAMPLES:    
+        sage: var('x,y')
+        (x, y)
+        sage: f=x**2+2*y**2
+        sage: G=ImplicitCurve(f==sqrt(2)).graph((x,-5,5),(y,-5,5),plot_points=200)
+        sage: print G.bounding_box()
+        (-1.1809045226130657,-0.82914572864321645),(1.180904522613065,0.82914572864321567)
+        """
+        bb = BoundingBox( Point(self.xmin(),self.ymin()),Point(self.xmax(),self.ymax())  )
+        return bb
+    def math_bounding_box(self,pspict=None):
+        return self.bounding_box(pspict)
+    def pstricks_code(self,pspict=None):
+        r"""
+        Return the pstrick code of the implicit curve.
+        """
+        code=[]
+        for path in self.points_list:
+            curve=InterpolationCurve(path,context_object=self)
+            code.append(curve.pstricks_code(pspict))
+        return "\n".join(code)
+
 def Code_Pscurve(listePoints,params):
     """
     From a list of points and parameters, gives the code of the corresponding pscurve.
-
-    TODO : create something like a class InterpolationCurve.
     """
+    raise DeprecationWarning,"Use InterpolationCurve instead"
     l = []
     l.append("\pscurve["+params+"]")
     for p in listePoints :
         l.append(p.coordinates(numerical=True))
     ligne = "".join(l)
     return ligne
+
 
 class GraphOfASegment(GraphOfAnObject,GeometricSegment):
     def __init__(self,seg):
@@ -1675,188 +1949,62 @@ def PolarCurve(fr,ftheta=None):
         f2=fr(x=x)*sin(ftheta(x=x))
     return ParametricCurve(f1,f2)
 
-class ImplicitCurve(object):
+def get_paths_from_plot(p):
     """
-    Describe a curve given by an implicit equation.
+    return the path (in the sense of matplotlib) contained in the plot object p
 
     INPUT:
-    - ``f`` -- a function of two variables or equation in two variables
+    - ``p`` - a plot object
 
-    EXAMPLES:
-    sage: f(x,y)=x**2+1/x
-    sage: F=ImplicitCurve(f(x,y)==2)
-    sage: G=ImplicitCurve(x+y==2)   
-
-    NOTES:
-    This is heavily inspired from the sage's implicit_plot function.
-    """
-    def __init__(self,f):
-        self.f=f
-        from sage.symbolic.expression import is_SymbolicEquation
-        if is_SymbolicEquation(f):
-            if f.operator() != operator.eq:
-                raise ValueError, "input to implicit plot must be function or equation"
-            self.f = f.lhs() - f.rhs()          # At this point self.f is the expression to be equated to zero.
-    def graph(self,xrange,yrange,plot_points=100):
-        """
-        Return the graph corresponding to the implicit curve.
-
-        INPUT:
-        - ``xrange`` - the X-range on which the curve will be plotted.
-        - ``yrange`` - the Y-range on which the curve will be plotted.
-        """
-        return phystricks.GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
-    def __str__(self):
-        """
-        Return string representation of this implicit curve.
-
-        EXAMPLE:
-        sage: f(x,y)=x**2+1/x
-        sage: print ImplicitCurve(f(x,y)==2)
-        Implicit curve of equation x^2 + 1/x - 2 == 0
-        sage: print ImplicitCurve(x+y==7)   
-        Implicit curve of equation x + y - 7 == 0
-        """
-        return "Implicit curve of equation %s == 0"%repr(self.f)
-
-class GraphOfAnImplicitCurve(GraphOfAnObject,ImplicitCurve):
-    r"""
-    Describe the graph of an implicit curve.
-
-    INPUT:
-    - ``implicit_curve`` - the implicit curve to be considered
-    - ``xrange``,``yrange`` - the range on which we want to plot
-    
-
-    OPTIONAL INPUT:
-    - ``plot_points``  -- integer (default: 100); number of points to plot
-    in each direction of the grid.  
-    
     EXAMPLES:
     sage: var('x,y')
-    (x, y)
-    sage: implicit_curve=ImplicitCurve(x**2+x==3)
-    sage: F=GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2)).pstricks_code()
+    ('x, y')
+    sage: F=implicit_plot(x**2+y**2==2,(x,-5,5),(y,-5,5))
+    sage: get_paths_from_plot(F)
 
-    NOTES:
-    This is heavily inspired from the sage's implicit_plot function.
+    NOTE:
+    The first version of the function is due to the DSM here:
+    http://ask.sagemath.org/question/359/get_minmax_data-on-implicit_plot
     """
-    def __init__(self,implicit_curve,xrange,yrange,plot_points=300):
-        GraphOfAnObject.__init__(self,implicit_curve)
-        ImplicitCurve.__init__(self,implicit_curve.f)
-        self.implicit_curve=implicit_curve
-        self.implicit_plot=implicit_plot(self.f,xrange,yrange)
-        self.xrange=xrange
-        self.yrange=yrange
-        self.plot_points=plot_points
+    import matplotlib.path
+    m = p.matplotlib()
+    sp = m.get_children()[1]
+    for c in sp.get_children():
+        # not sure if I need to test for both or not? don't understand
+        # matplotlib internals well enough to know if every Line2D
+        # will be in some LineCollection and so this is pure duplication (probably)
+        if isinstance(c, matplotlib.lines.Line2D):
+            yield c.get_path()
+        elif isinstance(c, matplotlib.collections.LineCollection):
+            for path in c.get_paths():
+                yield path
 
-        self.parameters.color="blue"
-    @lazy_attribute
-    def _get_minmax_data(self):
-        from sage.plot.misc import setup_for_eval_on_grid
-        f=self.implicit_curve.f
+def get_points_from_implicit_plot(p):
+    """
+    Return a list of list of points from an implicit plot.
 
-        g, ranges = setup_for_eval_on_grid([f], [self.xrange, self.yrange], self.plot_points)
-        g = g[0]
-        xrange,yrange=[r[:2] for r in ranges]
-    
-        xy_data_array = [[(x,y,g(x, y)) for x in xsrange(*ranges[0], include_endpoint=True)]
-                        for y in xsrange(*ranges[1], include_endpoint=True)]
-        xmin=self.xrange[2]
-        ymin=self.yrange[2]
-        xmax=self.xrange[1]
-        ymax=self.yrange[1]
-        for horizontal in xy_data_array :
-            for pt in horizontal:
-                if abs(pt[2])<0.01:
-                    xmin=min(xmin,pt[0])
-                    xmax=max(xmax,pt[0])
-                    ymin=min(ymin,pt[1])
-                    ymax=max(ymax,pt[1])
-        return {'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax}
-    def get_minmax_data(self,dict=True):
-        """
-        Return a dictionary whose keys give the xmin, xmax, ymin, and ymax
-        data for this graphic.
+    Each list correspond to a path.
 
-        Since the results come from the lazy_attribute function _get_minmax_data, changing the number of points
-        between two call will not change the result.
+    INPUT:
+    - ``p`` an implicit plot
+    OUTPUT:
+    The list of points that build the plot.
 
-        EXAMPLES
-        sage: var('x,y')
-        (x, y)
-        sage: F=ImplicitCurve(x**2+y**2==sqrt(2)).graph((x,-5,5),(y,-4,4),plot_points=300)
-        sage: F.get_minmax_data()
-        {'xmin': -1.1872909698996552, 'ymin': -1.1906354515050186, 'ymax': 1.1906354515050137, 'xmax': 1.1872909698996748}
-        sage: F.plot_points=10
-        sage: F.get_minmax_data()
-        {'xmin': -1.1872909698996552, 'ymin': -1.1906354515050186, 'ymax': 1.1906354515050137, 'xmax': 1.1872909698996748}
-
-        NOTE:
-        Build the xy_data_array as in Sage's contour_plot
-
-        TODO: It has to be replaced by something better using matplotlib
-            See also
-            http://ask.sagemath.org/question/359/get_minmax_data-on-implicit_plot
-        """
-        minmax=self._get_minmax_data
-        if dict:
-            return minmax
-        else:
-            xmin=minmax['xmin']
-            xmax=minmax['xmax']
-            ymin=minmax['ymin']
-            ymax=minmax['ymax']
-            return xmin,xmax,ymin,ymax
-    def xmin(self):
-        return self.get_minmax_data()['xmin']
-    def xmax(self):
-        return self.get_minmax_data()['xmax']
-    def ymin(self):
-        return self.get_minmax_data()['ymin']
-    def ymax(self):
-        return self.get_minmax_data()['ymax']
-    def bounding_box(self,pspict=None):
-        """
-        Return the bounding box of the implicit curve.
-
-        This is NOT the bounding box got that one could expect
-        using Sage's plotting system
-        implicit_plot(f,xrange,yrange).get_minmax_data()
-
-        Instead the bounding box returned here only contains the points that
-        are actually plotted. In the following example, we know that the ymax
-        has to be half the sqrt of the radius (and not the 5 given in yrange).
-
-        EXAMPES:    
-        sage: var('x,y')
-        (x, y)
-        sage: f=x**2+2*y**2
-        sage: G=ImplicitCurve(f==sqrt(2)).graph((x,-5,5),(y,-5,5),plot_points=200)
-        sage: print G.bounding_box()
-        (-1.1809045226130657,-0.82914572864321645),(1.180904522613065,0.82914572864321567)
-        """
-        bb = BoundingBox( Point(self.xmin(),self.ymin()),Point(self.xmax(),self.ymax())  )
-        return bb
-    def math_bounding_box(self,pspict=None):
-        return self.bounding_box(pspict)
-    def pstricks_code(self,pspict=None):
-        r"""
-        Return the pstrick code of the implicit curve.
-
-        EXAMPLES:
-        sage: var('x,y')
-        (x, y)
-        sage: f=x^2-y^2
-        sage: G=ImplicitCurve(f==-5).graph((x,-3,3),(y,-3,3),plot_points=200)
-        sage: print G.pstricks_code()
-        \psplotImp[linestyle=solid,linecolor=blue,algebraic](-3,-3)(3,3){x^2 - y^2 + 5}
-
-        NOTE:
-        See the documentation
-        http://www.ctan.org/tex-archive/graphics/pstricks/contrib/pst-func/
-        """
-        return "\psplotImp[%s,algebraic](%s,%s)(%s,%s){%s}" %(self.params(),str(self.xrange[1]),str(self.yrange[1]), str(self.xrange[2]),str(self.yrange[2]),repr(self.f))
+    EXAMPLES:
+    The length of the list can be quite long:
+    sage: var('x,y')
+    ('x, y')
+    sage: F=implicit_plot(x**2+y**2==2,(x,-5,5),(y,-5,5))
+    sage: len(get_points_from_implicit_plot(F))
+    LLL
+    """
+    l=[]
+    for path in get_paths_from_plot(p):
+        pp=[]
+        for vertice in path.vertices:
+            pp.append(Point(vertice[0],vertice[1]))
+        l.append(pp)
+    return l
 
 class ParametricCurve(object):
     """
