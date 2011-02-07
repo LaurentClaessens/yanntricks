@@ -1311,7 +1311,11 @@ class InterpolationCurve(GraphOfAnObject):
         \pscurve[linestyle=solid,linecolor=brown](-1.00000000000000,1.00000000000000)(1.00000000000000,1.00000000000000)(1.00000000000000,-1.00000000000000)(-1.00000000000000,-1.00000000000000)
         """
         l = []
-        l.append("\pscurve["+self.context_object.params()+"]")
+        try:
+            params=self.context_object.params()
+        except AttributeError :
+            params=self.params()
+        l.append("\pscurve["+params+"]")
         for p in self.points_list:
             l.append(p.coordinates(numerical=True))
         return "".join(l)
@@ -1326,20 +1330,59 @@ class InterpolationCurve(GraphOfAnObject):
         """
         return "InterpolationCurve with points %s"%(str([str(P) for P in self.points_list]))
 
-class ImplicitCurve(object):
+def ImplicitCurve(f,xrange,yrange,plot_points=100):
+    """
+    return the implicit curve given by equation f on the range xrange x yrange
+
+    This is a constructor for the class GraphOfAnImplicitCurve
+    INPUT:
+    - ``f`` -- a function of two variables or equation in two variables
+
+    - ``xrange,yrange`` - the range on which we want to compute the implicit curve.
+    
+    OPTIONAL INPUT:
+    - ``plot_points`` - (defautl : 100) the number of points that will be calculated in each direction. 
+
+    The resulting bounding box will not be in general xrange x yrange. 
+    EXAMPLES:
+    We know that the curve x^2+y^2=2 is a circle of radius sqrt(2). Thus even if you ask a range of size 5, 
+    you will only get the bounding box of size sqrt(2)
+    sage: var('x,y')
+    (x, y)
+    sage: f(x,y)=x**2+y**2
+    sage: F=ImplicitCurve(f==2,(x,-5,5),(y,-5,5))
+    sage: print F.bounding_box()
+    (-1.41342281879,-1.41342281879),(1.41342281879,1.41342281879)
+
+    But the following will be empty :
+    sage: G=ImplicitCurve(f==2,(x,-1,1),(y,-1,1))
+    sage: print G.paths
+    []
+
+    If you give very low value of plot_points, you get incorrect results :
+    sage: H=ImplicitCurve(f==2,(x,-2,2),(y,-2,2),plot_points=3)
+    sage: print H.bounding_box()
+    (-1.41411295429,-1.41411295429),(1.41411295429,1.41411295429)
+
+    Using Sage's implicit_curve and matplotlib, a list of points "contained" in the curve is created. The bounding_box is 
+    calculated from that list. The pstricsk code generated will be an interpolation curve passing trough all these points.
+    On the examples I tested, using pstricks's function \psplotImp returns lower quality result.
+    """
+    return GeometricImplicitCurve(f).graph(xrange,yrange,plot_points=100)
+
+class GeometricImplicitCurve(object):
     """
     Describe a curve given by an implicit equation.
 
     INPUT:
     - ``f`` -- a function of two variables or equation in two variables
 
+    End users should not use this class but use the constrcutor ImplicitCurve.
+
     EXAMPLES:
     sage: f(x,y)=x**2+1/x
-    sage: F=ImplicitCurve(f(x,y)==2)
-    sage: G=ImplicitCurve(x+y==2)   
-
-    NOTES:
-    This is heavily inspired from the sage's implicit_plot function.
+    sage: F=GeometricImplicitCurve(f(x,y)==2)
+    sage: G=GeometricImplicitCurve(x+y==2)   
     """
     def __init__(self,f):
         self.f=f
@@ -1363,14 +1406,14 @@ class ImplicitCurve(object):
 
         EXAMPLE:
         sage: f(x,y)=x**2+1/x
-        sage: print ImplicitCurve(f(x,y)==2)
+        sage: print GeometricImplicitCurve(f(x,y)==2)
         Implicit curve of equation x^2 + 1/x - 2 == 0
-        sage: print ImplicitCurve(x+y==7)   
+        sage: print GeometricImplicitCurve(x+y==7)   
         Implicit curve of equation x + y - 7 == 0
         """
         return "Implicit curve of equation %s == 0"%repr(self.f)
 
-class GraphOfAnImplicitCurve(GraphOfAnObject,ImplicitCurve):
+class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
     r"""
     Describe the graph of an implicit curve.
 
@@ -1382,11 +1425,16 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,ImplicitCurve):
     OPTIONAL INPUT:
     - ``plot_points``  -- integer (default: 100); number of points to plot
     in each direction of the grid.  
+
+    ATTRIBUTES:
+    - ``self.path`` this is a list of lists of points. Each list correspond to a path
+                    in the sense of matplotlib. Notice that here the points are given as
+                    instances of Point; not as list [x,y] as matplotlib does.
     
     EXAMPLES:
     sage: var('x,y')
     (x, y)
-    sage: implicit_curve=ImplicitCurve(x**2+x==3)
+    sage: implicit_curve=GeometricImplicitCurve(x**2+x==3)
     sage: F=GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2)).pstricks_code()
 
     NOTES:
@@ -1396,13 +1444,13 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,ImplicitCurve):
     """
     def __init__(self,implicit_curve,xrange,yrange,plot_points=300):
         GraphOfAnObject.__init__(self,implicit_curve)
-        ImplicitCurve.__init__(self,implicit_curve.f)
+        GeometricImplicitCurve.__init__(self,implicit_curve.f)
         self.implicit_curve=implicit_curve
         self.implicit_plot=implicit_plot(self.f,xrange,yrange)
         self.xrange=xrange
         self.yrange=yrange
         self.plot_points=plot_points
-        self.points_list=get_points_from_implicit_plot(self.implicit_plot)
+        self.paths=get_paths_from_implicit_plot(self.implicit_plot)
         self.parameters.color="blue"
     def get_minmax_data(self,dict=True):
         """
@@ -1415,15 +1463,15 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,ImplicitCurve):
         EXAMPLES
         sage: var('x,y')
         (x, y)
-        sage: F=ImplicitCurve(x**2+y**2==sqrt(2)).graph((x,-5,5),(y,-4,4),plot_points=300)
+        sage: F=ImplicitCurve(x**2+y**2==sqrt(2),(x,-5,5),(y,-4,4),plot_points=300)
         sage: F.get_minmax_data()
-        {'xmin': -1.1872909698996552, 'ymin': -1.1906354515050186, 'ymax': 1.1906354515050137, 'xmax': 1.1872909698996748}
+        {'xmin': -1.18858977066, 'ymin': -1.18845247289, 'ymax': 1.18845247289, 'xmax': 1.18858977066}
         sage: F.plot_points=10
         sage: F.get_minmax_data()
-        {'xmin': -1.1872909698996552, 'ymin': -1.1906354515050186, 'ymax': 1.1906354515050137, 'xmax': 1.1872909698996748}
+        {'xmin': -1.18858977066, 'ymin': -1.18845247289, 'ymax': 1.18845247289, 'xmax': 1.18858977066}
         """
         tot_points=[]
-        for path in self.points_list:
+        for path in self.paths :
             tot_points.extend(path)
         xx=[P.x for P in tot_points]
         yy=[P.y for P in tot_points]
@@ -1459,9 +1507,9 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,ImplicitCurve):
         sage: var('x,y')
         (x, y)
         sage: f=x**2+2*y**2
-        sage: G=ImplicitCurve(f==sqrt(2)).graph((x,-5,5),(y,-5,5),plot_points=200)
+        sage: G=ImplicitCurve(f==sqrt(2),(x,-5,5),(y,-5,5),plot_points=200)
         sage: print G.bounding_box()
-        (-1.1809045226130657,-0.82914572864321645),(1.180904522613065,0.82914572864321567)
+        (-1.18795591533,-0.840500197448),(1.18795591533,0.840500197448)
         """
         bb = BoundingBox( Point(self.xmin(),self.ymin()),Point(self.xmax(),self.ymax())  )
         return bb
@@ -1472,7 +1520,7 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,ImplicitCurve):
         Return the pstrick code of the implicit curve.
         """
         code=[]
-        for path in self.points_list:
+        for path in self.paths:
             curve=InterpolationCurve(path,context_object=self)
             code.append(curve.pstricks_code(pspict))
         return "\n".join(code)
@@ -1514,7 +1562,8 @@ class GraphOfASegment(GraphOfAnObject,GeometricSegment):
         if self.arrow_type=="segment":
             if self.wavy:
                 waviness = self.waviness
-                return Code_Pscurve(self.get_wavy_points(waviness.dx,waviness.dy),self.params())
+                curve=InterpolationCurve(self.get_wavy_points(waviness.dx,waviness.dy),context_object=self)
+                return curve.pstricks_code()
             else:
                 a =  self.I.create_PSpoint() + self.F.create_PSpoint()
                 a=a+"\n\pstLineAB[%s]{%s}{%s}"%(self.params(),self.I.psName,self.F.psName)
@@ -1917,7 +1966,8 @@ class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
         if self.wavy :          
             waviness = self.waviness
             #self.TracephyFunctionOndule(self.f,waviness.mx,waviness.Mx,waviness.dx,waviness.dy,self.params())
-            a.append(Code_Pscurve( self.get_wavy_points(waviness.mx,waviness.Mx,waviness.dx,waviness.dy),self.params()))
+            curve=InterpolationCurve( self.get_wavy_points(waviness.mx,waviness.Mx,waviness.dx,waviness.dy),context_object=self)
+            a.append(curve.pstricks_code())
         else :
             # The use of numerical_approx is intended to avoid strings like "2*pi" in the final pstricks code.
             deb = numerical_approx(self.mx) 
@@ -1951,16 +2001,22 @@ def PolarCurve(fr,ftheta=None):
 
 def get_paths_from_plot(p):
     """
-    return the path (in the sense of matplotlib) contained in the plot object p
+    return the paths (in the sense of matplotlib) contained in the plot object p.
+
+    The paths here are paths in the sense of matplotlib; the elements are vertices.
+    Not to be confused with get_paths_from_implicit_plot in which the basic elements
+    are points.
 
     INPUT:
     - ``p`` - a plot object
 
     EXAMPLES:
     sage: var('x,y')
-    ('x, y')
+    (x, y)
     sage: F=implicit_plot(x**2+y**2==2,(x,-5,5),(y,-5,5))
-    sage: get_paths_from_plot(F)
+    sage: g=get_paths_from_plot(F)
+    sage: print type(g[0])
+    <class 'matplotlib.path.Path'>
 
     NOTE:
     The first version of the function is due to the DSM here:
@@ -1969,17 +2025,19 @@ def get_paths_from_plot(p):
     import matplotlib.path
     m = p.matplotlib()
     sp = m.get_children()[1]
+    ll=[]
     for c in sp.get_children():
         # not sure if I need to test for both or not? don't understand
         # matplotlib internals well enough to know if every Line2D
         # will be in some LineCollection and so this is pure duplication (probably)
         if isinstance(c, matplotlib.lines.Line2D):
-            yield c.get_path()
+            ll.append(c.get_path())
         elif isinstance(c, matplotlib.collections.LineCollection):
             for path in c.get_paths():
-                yield path
+                ll.append(path)
+    return ll
 
-def get_points_from_implicit_plot(p):
+def get_paths_from_implicit_plot(p):
     """
     Return a list of list of points from an implicit plot.
 
@@ -1988,15 +2046,27 @@ def get_points_from_implicit_plot(p):
     INPUT:
     - ``p`` an implicit plot
     OUTPUT:
-    The list of points that build the plot.
+    A list of lists of points. Each list corresponds to a path (see matplotlib), but the components
+    are converted into points in the sens of phystricks (instead of matplotlib's vertices)
 
     EXAMPLES:
     The length of the list can be quite long:
+
     sage: var('x,y')
-    ('x, y')
+    (x, y)
     sage: F=implicit_plot(x**2+y**2==2,(x,-5,5),(y,-5,5))
-    sage: len(get_points_from_implicit_plot(F))
-    LLL
+    sage: len(get_paths_from_implicit_plot(F)[0])
+    169
+
+    When you have more than one connected component, you see it :
+    sage: F=implicit_plot(x**2-y**2==2,(x,-5,5),(y,-5,5))
+    sage: paths=get_paths_from_implicit_plot(F)
+    sage: len(paths)
+    4
+    sage: type(paths[0][1])
+    <class 'BasicGeometricObjects.GraphOfAPoint'>
+    sage: print paths[1][3]
+    Point(4.87405534614,-4.6644295302)
     """
     l=[]
     for path in get_paths_from_plot(p):
@@ -2270,7 +2340,8 @@ class GraphOfAParametricCurve(GraphOfAnObject,ParametricCurve):
     def pstricks_code(self,pspict=None):
         if self.wavy :
             waviness = self.waviness
-            return Code_Pscurve( self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy) ,self.params())
+            curve=InterpolationCurve(self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy),context_object=self)
+            return curve.pstricks_code()
         else:
             initial = numerical_approx(self.llamI)      # Avoid the string "pi" in the pstricks code.
             final = numerical_approx(self.llamF)

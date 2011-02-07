@@ -1062,13 +1062,13 @@ class pspicture(object):
         try :
             f=open(self.interWriteFile)
         except IOError :
-            print "Warning : the auxiliary file seems not to exist. Compile your LaTeX file."
+            print "Warning: the auxiliary file seems not to exist. Compile your LaTeX file."
             return default_value
         text = f.read().replace('\n','').split(":")
         try:
             return text[text.index(Id)+1]           
         except ValueError :
-            print "Warning : the auxiliary file does not contain the id «%s». Compile your LaTeX file."%Id
+            print "Warning: the auxiliary file does not contain the id «%s». Compile your LaTeX file."%Id
             return default_value
     def get_counter_value(self,counter_name,default_value=0):
         """
@@ -1101,10 +1101,29 @@ class pspicture(object):
         return dimenPT/30           # 30 is the conversion factor : 1pt=(1/3)mm
     def get_box_size(self,tex_expression):
         """
-        tex_expression is a valid LaTeX expression. Return the size of the corresponding box in cm
+        return as 2-uple the dimensions of a LaTeX box containing an expression.
 
+        INPUT:
+        - ``tex_expression`` - a valid LaTeX expression.
+
+        OUTPUT:
+        - ``width,height`` - the dimensions of the box in centimeter.
+
+        EXAMPLE:
+        Type the following  in a script :
+        text = "$A_i=\int_a^bf_i$"
+        dimx,dimy=pspict.get_box_size(text)
+    	print "The dimensions of the LaTeX text %s is (%s,%s)"%(text,str(dimx),str(dimy))
+
+        After having LaTeX-compiled the document containing the pspicture, a second
+        execution of the script should print :
+        The dimensions of the LaTeX text $A_i=\int_a^bf_i$ is (1.66653833333,0.46667)   
+
+        NOTE:
         As far as the problem is concerned from a LaTeX point of view, it was discussed here:
         http://groups.google.fr/group/fr.comp.text.tex/browse_thread/thread/8431f21588b81530?hl=fr
+
+        This functionality creates an intermediate file.
         """
         height = self.get_box_dimension(tex_expression,"totalheightof")
         width = self.get_box_dimension(tex_expression,"widthof")
