@@ -274,14 +274,26 @@ class GeometricPoint(object):
         return AffineVector(p,Point(p.x+self.x,p.y+self.y))
     def Vector(self):
         return AffineVector(Point(0,0),self)
-    def norme(self):
-        return Segment(Point(0,0),self).longueur
+    def norm(self):
+        """
+        Return the norm of the segment between (0,0) and self.
+
+        This is the radial component in polar coordinates.
+
+        EXAMPES:
+        sage: Point(1,1).norm()
+        sqrt(2)
+        sage: Point(-pi,sqrt(2)).norm()
+        sqrt(pi^2 + 2)
+        """
+        return Segment(Point(0,0),self).length()
+
     # La méthode normalize voit le point comme un vecteur partant de zéro, et en donne le vecteur de taille 1
     def normalize(self,l=None):
         """
         Return a vector of norm <l>. If <l> is not given, take 1.
         """
-        unit = self*(1/self.norme())
+        unit = self*(1/self.norm())
         if l :
             return unit*l
         return unit
@@ -309,7 +321,7 @@ class GeometricPoint(object):
         """
         Return the polar coordinates of the point as a tuple (r,angle) where angle is given in degree.
         """
-        r=self.norme()
+        r=self.norm()
         if self.x==0:
             radian=pi/2
         else :
@@ -537,6 +549,36 @@ class GeometricSegment(object):
     def translate(self,vecteur):
         v = Segment(self.I.translate(vecteur),self.F.translate(vecteur))
         return self.return_deformations(v)
+    def fix_origin(self,a,b=None):
+        """
+        Return the segment fixed at P. This is the translation of self by P-self.
+
+        The point P can be given by its coordinates
+        Typically it is used in the framework of affine vector.
+
+        INPUT:
+        - ``P`` - The point on which we want to "attach" the new segment.
+
+        OUTPUT:
+        A new segment (or vector) with initial point at P
+
+        EXAMPLES:
+        sage: v=AffineVector( Point(1,1),Point(2,2) )
+        sage: w=v.fix_origin(3,5)
+        sage: w.I.coordinates(),w.F.coordinates()
+        ('(3,5)', '(4,6)')
+
+        sage: P=Point(-1,-pi)
+        sage: u=w.fix_origin(P)
+        sage: u.I.coordinates(),u.F.coordinates()
+        ('(-1,-pi)', '(0,-pi + 1)')
+        """
+        if b:
+            P=Point(a,b)
+        else:
+            P=a
+        v=self.translate(P-self.I)
+        return self.return_deformations(v)
     def inverse(self):
         """
         Return the segment BA instead of AB.
@@ -612,7 +654,8 @@ class GeometricSegment(object):
         raise DeprecationWarning,"use print instead"
         return str(self.equation[0])+" x + "+str(self.equation[1])+" y + "+str(self.equation[2])
     def __mul__(self,coef):
-        return Segment(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
+        v = Segment(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
+        return self.return_deformations(v)
     def __rmul__(self,coef):
         return self*coef
     def __neg__(self):
