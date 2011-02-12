@@ -287,7 +287,11 @@ class GeometricPoint(object):
         sqrt(pi^2 + 2)
         """
         return Segment(Point(0,0),self).length()
-
+    def length(self):
+        """
+        The same as self.norm()
+        """
+        return self.norm()
     # La méthode normalize voit le point comme un vecteur partant de zéro, et en donne le vecteur de taille 1
     def normalize(self,l=None):
         """
