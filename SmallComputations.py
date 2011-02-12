@@ -70,15 +70,15 @@ class AngleMeasure(object):
     sage: numerical_approx(x())
     90.0000000000000
 
-
     in that case, y has to be a new instance of AngleMeasure :
     x=AngleMeasure(value_degree=180)
     y=AngleMeasure(x)
     """
+    # TODO : take into account the following thread:
+    # http://ask.sagemath.org/question/332/add-a-personnal-coercion-rule
     def __init__(self,value_degree=None,value_radian=None):
         if isinstance(value_degree,AngleMeasure):
             return AngleMeasure(value_degree=value_degree.degree)
-
         if value_degree == None :
             value_degree=degree(value_radian)
         if value_radian == None :
@@ -93,6 +93,16 @@ class AngleMeasure(object):
         return self*coef
     def __sub__(self,other):
         return AngleMeasure(value_radian=self.radian-other.radian)
+    def __add__(self,other):
+        """
+        return the sum of two angles
+
+        EXAMPLES:
+        a=AngleMeasure(value_degree=45)+AngleMeasure(value_radian=pi/3)
+        a.degree
+        115
+        """
+        return AngleMeasure(value_radian=self.radian+other.radian)
     def __call__(self):
         return self.degree
     def __div__(self,coef):
@@ -230,8 +240,8 @@ class ConversionAngles(object):
             else :
                 return self.simplify(theta,keep_max=keep_max)
 
-DegreeConversions=ConversionAngles(180.0/math.pi,360,exit_attribute="degree",create_function=DegreeAngleMeasure)
-RadianConversions=ConversionAngles(math.pi/180,2*pi,exit_attribute="radian",create_function=RadianAngleMeasure)
+DegreeConversions=ConversionAngles(SR(180)/pi,360,exit_attribute="degree",create_function=DegreeAngleMeasure)
+RadianConversions=ConversionAngles(pi/180,2*pi,exit_attribute="radian",create_function=RadianAngleMeasure)
 
 simplify_degree=DegreeConversions.simplify
 simplify_radian=RadianConversions.simplify
