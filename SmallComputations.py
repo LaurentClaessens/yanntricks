@@ -66,19 +66,19 @@ class AngleMeasure(object):
     """
     sage: x=AngleMeasure(value_radian=pi/2)
     sage: x()
-    28.647889756541161*pi
-    sage: numerical_approx(x())
-    90.0000000000000
+    90
 
     in that case, y has to be a new instance of AngleMeasure :
-    x=AngleMeasure(value_degree=180)
-    y=AngleMeasure(x)
+    sage: x=AngleMeasure(value_degree=180)
+    sage: y=AngleMeasure(x)
+    sage: y.degree
+    180
     """
     # TODO : take into account the following thread:
     # http://ask.sagemath.org/question/332/add-a-personnal-coercion-rule
     def __init__(self,value_degree=None,value_radian=None):
         if isinstance(value_degree,AngleMeasure):
-            return AngleMeasure(value_degree=value_degree.degree)
+            value_degree=value_degree.degree
         if value_degree == None :
             value_degree=degree(value_radian)
         if value_radian == None :
@@ -98,9 +98,14 @@ class AngleMeasure(object):
         return the sum of two angles
 
         EXAMPLES:
-        a=AngleMeasure(value_degree=45)+AngleMeasure(value_radian=pi/3)
-        a.degree
-        115
+        sage: a=AngleMeasure(value_degree=45)
+        sage: b=AngleMeasure(value_radian=pi/3)
+        sage: a.degree,a.radian
+        (45, 1/4*pi)
+        sage: b.degree,b.radian
+        (60, 1/3*pi)
+        sage: (a+b).degree,(a+b).radian
+        (105, 7/12*pi)
         """
         return AngleMeasure(value_radian=self.radian+other.radian)
     def __call__(self):
@@ -136,9 +141,9 @@ def PointToPolaire(P=None,x=None,y=None):
 
     sage: from phystricks import *     
     sage: print PointToPolaire(x=1,y=1)
-    PolarCoordinates, r=sqrt(2),degree=14.323944878270581*pi,radian=1/4*pi  # Exact : pi/4
+    PolarCoordinates, r=sqrt(2),degree=45,radian=1/4*pi
     sage: print PointToPolaire(Point(1,1))
-    PolarCoordinates, r=1.41421356237,degree=45.0,radian=0.785398163397 # Approximation : 0.785...
+    PolarCoordinates, r=sqrt(2),degree=45,radian=1/4*pi
     """
     if P:
         x=P.x
@@ -165,6 +170,14 @@ def PointToPolaire(P=None,x=None,y=None):
     return PolarCoordinates(r,value_radian=alpha)
 
 class ConversionAngles(object):
+    """
+    Simplify and convert angle units.
+
+    This class serves to factorise conversion degree -> radian and radian -> degree
+    INPUT:
+    - ``conversion_factor`` - the conversion factor from the considered unit to the other (radian->degree or the contrary)
+    - ``max_value`` - the maximal value (360 or 2*pi)
+    """
     def __init__(self,conversion_factor,max_value,exit_attribute=None,create_function=None):
         self.conversion_factor=conversion_factor
         self.max_value=max_value
@@ -177,14 +190,13 @@ class ConversionAngles(object):
         If what is given is a numbre, return a number. If what is given is a AngleMeasure, return a new AngleMeasure
     
         EXAMPLE:
-        sage:from phystricks import *
-        sage:simplify_degree=ConversionAngles(180.0/pi,360).simplify
-        sage:simplify_degree(400)
+        sage: simplify_degree=ConversionAngles(180/pi,360).simplify
+        sage: simplify_degree(400)
         40
 
         If <keep_max> is True, maximal values are kept:
-        sage: simplify_degree(400,keep_max=True)
-        40
+        sage: simplify_degree(500,keep_max=True)
+        140
         sage: simplify_degree(360,keep_max=True)
         360
 
@@ -213,16 +225,24 @@ class ConversionAngles(object):
         """
         Makes the conversion and simplify.
 
-        The arguments <number> and <keep_max> are the same as the ones in SimplifyAngles.simplify.
+        INPUT:
+        - ``theta`` - the angle to be converted
+        - ``number`` - (default =False) If true, return a numerical approximation
+        - ``keep_max`` - (defaut False) If true, does not convert the max value into the minimal value. 
+                                        Typically, leaves 2*pi as 2*pi instead of returning 0.
+        - ``converting`` - (defaut = True) If False, make no conversion.
 
-        If <converting> is False, make no conversion.
+        EXAMPLES:
 
-        sage: from phystricks import *                         
-        sage: degree=ConversionAngles(180.0/math.pi,360).conversion
-        sage: degree(7)                         
-        -126*pi + 401.070456591576
+        For converting 7 radian into degree, make the following.
+        sage: degree=ConversionAngles(180/pi,360).conversion
+        sage: degree(7)     
+        1260/pi - 360
+
+        Notice that the result is an exact value.
+
         sage: numerical_approx(degree(7))
-        5.22978223926231
+        41.0704565915763
         sage: degree(120,converting=False)
         120
 

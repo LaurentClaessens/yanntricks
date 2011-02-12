@@ -443,6 +443,10 @@ class GeometricSegment(object):
         self.Dy = self.F.y-self.I.y
         self.arrow_type=arrow_type
         #self.maxima = str(self.equation[0])+"*x+"+str(self.equation[1])+"*y+"+str(self.equation[2])+"=0"
+    @lazy_attribute
+    def advised_mark_angle(self):
+        x = self.angle()+AngleMeasure(value_degree=90)
+        return x
     def phyFunction(self):
         if self.horizontal:
             # The trick to define a constant function is explained here:
@@ -519,7 +523,24 @@ class GeometricSegment(object):
     def polaires(self):
         return PointToPolaire(self.Point())
     def angle(self):
-        """return the angle of the vector (degree)"""
+        """
+        return the angle of the segment.
+
+        This is the angle between the segment and the horizontal axe.
+
+        EXAMPLES:
+        sage: S=Segment(Point(1,1),Point(2,2))
+        sage: type(S.angle())
+        <class 'phystricks.SmallComputations.AngleMeasure'>
+        sage: S.angle().degree
+        45
+        sage: S.angle().radian
+        1/4*pi
+
+        sage: v=AffineVector(Point(2,3),Point(2-4/sqrt(3),-1))
+        sage: v.angle().radian.simplify_trig()
+        4/3*pi
+        """
         return self.polaires().measure
     def origin(self,P):
         """
@@ -1580,7 +1601,6 @@ def Code_Pscurve(listePoints,params):
     ligne = "".join(l)
     return ligne
 
-
 class GraphOfASegment(GraphOfAnObject,GeometricSegment):
     def __init__(self,seg):
         GraphOfAnObject.__init__(self,seg)
@@ -1589,8 +1609,28 @@ class GraphOfASegment(GraphOfAnObject,GeometricSegment):
         self.I = self.seg.I
         self.F = self.seg.F
     def mark_point(self):
-        P=self.F.copy()
-        P.advised_mark_angle=self.angle()
+        """
+        return the point on which a mark has to be placed if we use the method put_mark.
+
+        If we have a segment, the mark is at center while if it is a vector the mark
+        has to be placed on the extremity.
+        EXAMPLES:
+        sage: v=Vector(1,1)
+        sage: v.mark_point().coordinates()
+        '(1,1)'
+        sage: v.advised_mark_angle.radian
+        3/4*pi
+
+        sage: S=Segment(Point(1,2),Point(3,5))
+        sage: S.mark_point().coordinates()
+        '(2.0,3.5)'
+        sage: S.advised_mark_angle.radian
+        1/2*pi + arctan(3/2)
+        """
+        if self.arrow_type == "vector" :
+            P=self.F.copy()
+        else :
+            P=self.center()
         return P
     def bounding_box(self,pspict=None):
         return BoundingBox(self.I,self.F)       # If you change this, maybe you have to adapt math_bounding_box

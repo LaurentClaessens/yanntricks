@@ -1113,7 +1113,7 @@ class pspicture(object):
         Type the following  in a script :
         text = "$A_i=\int_a^bf_i$"
         dimx,dimy=pspict.get_box_size(text)
-    	print "The dimensions of the LaTeX text %s is (%s,%s)"%(text,str(dimx),str(dimy))
+        print "The dimensions of the LaTeX text %s is (%s,%s)"%(text,str(dimx),str(dimy))
 
         After having LaTeX-compiled the document containing the pspicture, a second
         execution of the script should print :
