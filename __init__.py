@@ -20,8 +20,6 @@
 
 """
 A collection of tools for building LaTeX-pstricks figures with python.
-
-The documentation is available at
 """
 
 #from __future__ import division
@@ -35,17 +33,38 @@ from phystricks.SmallComputations import *
 
 def RemoveLastZeros(x,n):
     """
-    Take a number <x>, cuts to <n> decimals and then remove the last zeros. 
+    Cut the number x to n decimals and then remove the last zeros.
 
     If there remain no decimals, also remove the dot.
+    We only cut a given number of decimals; if the integer part has more digits, we keep them.
+    
+    The output is a string, not a number.
+
+    INPUT:
+    - ``x`` - a number
+    - ``n`` - the number of decimals we want to keep.
+
+    OUTPUT:
+    A string.
 
     Example:
-    RemoveLastZeros(1.000,4) returns the string "1"
-    RemoveLastZeros(3/4,1) returns the string "0.7"
-    RemoveLastZeros(3/4,3) returns the string "0.75"
-    RemoveLastZeros(3/4,4) returns the string "0.75"
+    sage: RemoveLastZeros(1.000,4) 
+    '1'
+    sage: RemoveLastZeros(3/4,1)
+    '0.7'
+    sage: RemoveLastZeros(3/4,3)
+    '0.75'
+    sage: RemoveLastZeros(3/4,4)
+    '0.75'
+    sage: RemoveLastZeros(pi,4)
+    '3.1415'
+    sage: RemoveLastZeros(130*e,2)
+    '353.37'
+
+    NOTE :
+    Part of the algorithm comes from
+    http://www.java2s.com/Code/Python/Development/StringformatFivedigitsafterdecimalinfloat.htm
     """
-    #http://www.java2s.com/Code/Python/Development/StringformatFivedigitsafterdecimalinfloat.htm
     s="%.15f"%x
     t=s[:s.find(".")+n+1]
     k=len(t)-1
@@ -88,10 +107,27 @@ def _latinize(word):
 sysargvzero = sys.argv[0][:]
 def newwriteName():
     r"""
-    This function provides the name of the \newwrite that will be used all long the script. We cannot use one different \newwrite for each counter because
-    LaTeX is limited in the number of available \newwrite.
+    This function provides the name of the \newwrite that will be used all long the script.
+
+    Basically, that provides the name of the intermediate file that will
+    be used by LaTeX for writing the box's sizes (and other counters).
 
     See the attribute pspict.newwriteDone and the method pspict.get_counter_value
+    
+    NOTE:
+    We cannot use one different \newwrite for each counter because
+    LaTeX is limited in the number of available \newwrite.
+
+    Since we want two different scripts to use two different intermediates files, 
+    the name of the \newwrite will be created on the basis of the script name,
+    that is sys.argv[0]
+
+    The idea is that for a LaTeX document containing 100 figures, 
+    these will be created from the same script. If not, you'll get 100 different \newwrite
+    and crash your LaTeX compilation.
+
+    OUTPUT:
+    A string containing "writeOf"+something_based_on_the_script_name
     """
     return "writeOf"+_latinize(sysargvzero)
 def counterName():
