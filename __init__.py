@@ -76,6 +76,28 @@ def RemoveLastZeros(x,n):
     return u
 
 def _latinize(word):
+    """
+    return a "latinized" version of a string.
+
+    From a string, return something that can be used as point name, file name. 
+    In particular, remove the special characters, put everything in lowercase,
+    and turn the numbers into letters.
+
+    This function is used in order to turn the script name into a
+    string that can be a filename for the LaTeX's intermediate file.
+
+    INPUT:
+    - ``word`` - string
+
+    OUTPUT:
+    string
+    
+    EXAMPLES:
+    sage: phystricks._latinize("/home/MyName/.sage/my_script11.py")
+    'homeMyNameDsagemyscriptOODpy'
+    sage: phystricks._latinize("/home/MyName/.sage/my_script13.py")
+    'homeMyNameDsagemyscriptOThDpy'
+    """
     latin = ""
     for s in word:
         if s.lower() in "abcdefghijklmnopqrstuvwxyz" :
@@ -132,12 +154,16 @@ def newwriteName():
     return "writeOf"+_latinize(sysargvzero)
 def counterName():
     r"""
-    This function provides the name of the counter. This has the same use of newwriteName, for the same reason of limitation.
+    This function provides the name of the counter. 
+    
+    This has the same use of newwriteName, for the same reason of limitation.
     """
     return "counterOf"+_latinize(sysargvzero)
 def newlengthName():
     r"""
-    This function provides the name of the length. This has the same use of newwriteName, for the same reason of limitation.
+    This function provides the name of the length.
+    
+    This has the same use of newwriteName, for the same reason of limitation.
     """
     return "lengthOf"+_latinize(sysargvzero)
 

@@ -1847,7 +1847,6 @@ class phyFunction(object):
             return self
         if n==1:
             if self._derivative == None :
-                #self._derivative = phyFunction(self.sage.derivative(x=x))
                 self._derivative = phyFunction(self.sage.derivative(x))
             return self._derivative
         else:
@@ -2004,8 +2003,8 @@ class phyFunction(object):
         if not Mx :
             Mx=self.Mx
         return SurfaceUnderFunction(self,mx,Mx)
-    def __call__(self,xe,approx=True):
-        if approx :
+    def __call__(self,xe,numerical=True):
+        if numerical :
             return numerical_approx(self.sageFast(xe))
         else :
             return self.sage(x=xe)

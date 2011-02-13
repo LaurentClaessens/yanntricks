@@ -68,11 +68,17 @@ class AngleMeasure(object):
     sage: x()
     90
 
-    in that case, y has to be a new instance of AngleMeasure :
-    sage: x=AngleMeasure(value_degree=180)
-    sage: y=AngleMeasure(x)
-    sage: y.degree
+    Conversions are exact:
+    sage: a=AngleMeasure(value_degree=30)
+    sage: cos(a.radian)
+    1/2*sqrt(3)
+
+    You can create a new angle from an old one:
+    sage: a=AngleMeasure(value_degree=180)
+    sage: b=AngleMeasure(a)
+    sage: b.degree
     180
+
     """
     # TODO : take into account the following thread:
     # http://ask.sagemath.org/question/332/add-a-personnal-coercion-rule
