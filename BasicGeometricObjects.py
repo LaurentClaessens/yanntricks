@@ -711,13 +711,14 @@ class GeometricCircle(object):
             return curve
         else :
             return curve.graph(a,b)
-    def get_point(self,theta):
+    def get_point(self,theta,advised=True,numerical=False):
         """
-        Return a point at angle <theta> on the circle. 
+        Return a point at angle <theta> (degree) on the circle. 
         
-        The angle is given in degree.
+        INPUT:
+        - ``theta`` - the angle given in degree
         """
-        return self.parametric_curve().get_point(radian(theta,number=True))
+        return self.parametric_curve().get_point(radian(theta,numerical=numerical),advised=advised)
     def VectorTangent(self,theta):
         raise DeprecationWarning,"Usge get_tangent_vector instead"
         return PolarPoint(1,theta+90).lie(self.get_point(theta))
@@ -826,7 +827,6 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
                 a = PsA.create_PSpoint() + PsB.create_PSpoint() + self.center.create_PSpoint()
                 a = a+"\pstArcOAB[%s]{%s}{%s}{%s}"%(self.params(),self.center.psName,PsA.psName,PsB.psName)
                 return a
-
 
 class GeometricRectangle(object):
     """
@@ -1823,8 +1823,7 @@ class phyFunction(object):
             self._derivative = None
             self.equation=y==self.sage
     def eval(self,xe):
-        print "This method is depreciated. Use the syntax f(x) instead of f.eval(x)"
-        raise AttributeError
+        raise AttributeError,"Use the syntax f(x) instead of f.eval(x)"
         return numerical_approx(self.sageFast(xe))
     def inverse(self,y):
         """ returns a list of values x such that f(x)=y """
@@ -1839,12 +1838,28 @@ class phyFunction(object):
         return self.PointsNiveau(0)
     def derivative(self,n=1):
         """
-        return the derivative of the function. The result is of type phyFunction 
+        return the derivative of the function. 
 
         If the optional argument n is given, provides higher derivative. If n=0, return self.
+        The result is of type phyFunction even if self is the graph.
+
+        INPUT:
+        - ``n`` (default = 1) the order of derivative. If n=0, return self.
+
+        EXAMPLES:
+        sage: f=phyFunction(x**2)
+        sage: print f.derivative()
+        2*x
+        sage: print f.derivative()(3)
+        6
+        sage: print [g.derivative(i) for i in range(0,5)]
+        [sin(x), cos(x), -sin(x), -cos(x), sin(x)]
         """
         if n==0 :
-            return self
+            try :
+                return self.f
+            except AttributeError :     # Happens when self is a phyFunction instead of GraphOfAphyFunction
+                return self
         if n==1:
             if self._derivative == None :
                 self._derivative = phyFunction(self.sage.derivative(x))
@@ -1874,11 +1889,11 @@ class phyFunction(object):
         """ return a normalized normal vector to the graph of the function at x """
         ca = self.derivative()(x) 
         return Point(-ca,1).normalize().origin(self.get_point(x))       
-    def get_tangent_vector(self,x,advised=False):
+    def get_tangent_vector(self,x,advised=False,numerical=False):
         """
         return a tangent vector at the point (x,f(x))
         """
-        ca = self.derivative()(x)
+        ca = self.derivative()(x,numerical=numerical)
         return Point(1,ca).normalize().origin(self.get_point(x,advised))
     def get_tangent_segment(self,x):
         """
@@ -1890,9 +1905,22 @@ class phyFunction(object):
         v=self.get_tangent_vector(x)
         mv=-v
         return Segment(mv.F,v.F)
-    def tangent(self,x0):
+    def tangent_phyFunction(self,x0):
         """
         Return the tangent at the given point as a phyFunction
+
+        INPUT:
+        - ``x0`` - a number
+
+        OUTPUT:
+        a phyFunction that represents the tangent.
+
+        EXAMPLE:
+        sage: g=phyFunction(cos(x))
+        sage: print g.tangent_phyFunction(pi/2)
+        1/2*pi-x
+        sage: g.tangent_phyFunction(pi/2)(1)
+        1/2*pi-1
         """
         var('x')
         ca=self.derivative()(x0)
@@ -2003,7 +2031,7 @@ class phyFunction(object):
         if not Mx :
             Mx=self.Mx
         return SurfaceUnderFunction(self,mx,Mx)
-    def __call__(self,xe,numerical=True):
+    def __call__(self,xe,numerical=False):
         if numerical :
             return numerical_approx(self.sageFast(xe))
         else :
@@ -2222,8 +2250,11 @@ class ParametricCurve(object):
             llam=llam.radian
         P = Point(self.f1(llam),self.f2(llam))
         if advised :
+            print "2253",self
+            print "2254",llam
             try :
                 P.advised_mark_angle=self.get_normal_vector(llam).angle()
+                print "2257 fini de calculer la marque angle"
             except :
                 print "It seems that something got wrong somewhere in the computation of the advised mark angle. Return 0 as angle."
                 P.advised_mark_angle=0
