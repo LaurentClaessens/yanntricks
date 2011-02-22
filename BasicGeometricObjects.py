@@ -265,7 +265,7 @@ class GeometricPoint(object):
         return Point(self.x+l*cos(alpha),self.y+l*sin(alpha))
     def value_on_line(self,line):
         """
-        If f(x,y)=0 is the equation if <line>, return the number f(self.x,self.y).
+        If f(x,y)=0 is the equation of <line>, return the number f(self.x,self.y).
 
         <line> has to have an attribute line.equation
         """
@@ -429,39 +429,64 @@ class GeometricSegment(object):
         self.F = B
         self.arrow_type=arrow_type
 
-        self.vertical = False
-        self.horizontal = False
-        if A.x == B.x :
-            self.vertical = True
-        if A.y == B.y : 
-            self.horizontal = True
+    @lazy_attribute
+    def Dx(self):
+        return self.F.x-self.I.x
+
+    @lazy_attribute
+    def Dy(self):
+        return self.F.y-self.I.y
+
+    @lazy_attribute
+    def vertical(self):
+        vert = False
+        if self.I.x == self.F.x :
+            vert = True
+        return vert
+
+    @lazy_attribute
+    def horizontal(self):
+        horiz = False
+        if self.I.y == self.F.y :
+            horiz = True
+        return horiz
+
+    @lazy_attribute
+    def equation(self):
+        """
+        return the equation of the line
+
+        EXAMPLES:
+        sage: Segment(Point(0,0),Point(1,1)).equation
+        x - y == 0
+        sage: Segment(Point(1,0),Point(0,1)).equation
+        x + y - 1 == 0
+        """
         if self.vertical :
-            self.coefficient = None
-            self.independant = None
-        else :
-            self.coefficient = (self.F.y-self.I.y)/(self.F.x-self.I.x)
-            self.independant = (self.F.x*self.I.y-self.F.y*self.I.x)/(self.F.x-self.I.x)
-            
-        if self.vertical :
-            self.coefs = [1,0,-A.x]
+            self.coefs = [1,0,-self.I.x]
         if self.horizontal :
-            self.coefs = [0,1,-A.y]
+            self.coefs = [0,1,-self.I.y]
         if not (self.vertical or self.horizontal) :
-            """
-            self.coefs is a list [a,b,c] which corresponds to the Cartesian equation
-            ax+by+c=0
-            """
-            self.coefs = [1,-(A.x-B.x)/(A.y-B.y),-(A.y*B.x-A.x*B.y)/(A.y-B.y)]
+            self.coefs = [1,-self.Dy/self.Dx,-(self.I.y*self.F.x-self.I.x*self.F.y)/(self.I.y-self.F.y)]
         var('x,y')
-        self.equation= self.coefs[0]*x+self.coefs[1]*y+self.coefs[2] == 0
-        self.longueur = Distance(self.I,self.F)
-        self.Dx = self.F.x-self.I.x
-        self.Dy = self.F.y-self.I.y
-        #self.maxima = str(self.equation[0])+"*x+"+str(self.equation[1])+"*y+"+str(self.equation[2])+"=0"
+        return self.coefs[0]*x+self.coefs[1]*y+self.coefs[2] == 0
+
+    @lazy_attribute
+    def length(self):
+        """
+        return the length of the segment
+
+        EXAMPLES:
+        sage: Segment(Point(1,1),Point(2,2)).length
+        sqrt(2)
+        """
+        return Distance(self.I,self.F)
+
     @lazy_attribute
     def advised_mark_angle(self):
         x = self.angle()+AngleMeasure(value_degree=90)
         return x
+
     def phyFunction(self):
         if self.horizontal:
             # The trick to define a constant function is explained here:
@@ -473,13 +498,13 @@ class GeometricSegment(object):
             parms = [self.coefficient,(A.y*B.x-A.x*B.y)/(A.x-B.x)]
             var('x')
             return phyFunction( self.coefficient*x+self.independant )
+
     def sage_equation(self):
+        raise DeprecationWarning, "use self.equation instead"
         """
         returns the Cartesian equation of the line as a instance of the sage's class
         sage.symbolic.expression.Expression
         """
-        print "Should not be used. Use self.equation instead"
-        raise
         var('x,y')
         return self.equation[0]*x+self.equation[1]*y+self.equation[2] == 0
     def get_regular_points(self,dx):
@@ -522,8 +547,8 @@ class GeometricSegment(object):
         P = self.proportion(0.5)
         P.advised_mark_angle=self.angle().degree+90
         return P
-    def length(self):
-        return self.polaires().r
+
+
     def AffineVector(self):
         return AffineVector(self.I,self.F)
     def get_normal_vector(self):
@@ -580,7 +605,9 @@ class GeometricSegment(object):
 
         Not to be confused with self.get_normal_vector
         """
-        v = self.rotation(90)
+        new_Dx=-self.Dy
+        new_Dy=self.Dx
+        v=Segment(self.I,Point(self.I.x+new_Dx,self.I.y+new_Dy))
         return self.return_deformations(v)
     def translate(self,vecteur):
         v = Segment(self.I.translate(vecteur),self.F.translate(vecteur))
@@ -716,7 +743,6 @@ class GeometricCircle(object):
         The parameter of the curve is the angle in radian.
         """
         if self._parametric_curve is None :
-            print "707 je produit une courbe"
             var('x')
             f1 = phyFunction(self.center.x+self.radius*cos(x))
             f2 = phyFunction(self.center.y+self.radius*sin(x))
@@ -2304,7 +2330,7 @@ class ParametricCurve(object):
         if advised :
             try :
                 P.advised_mark_angle=self.get_normal_vector(llam).angle()
-            except :
+            except TypeError :
                 print "It seems that something got wrong somewhere in the computation of the advised mark angle. Return 0 as angle."
                 P.advised_mark_angle=0
         return P

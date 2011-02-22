@@ -314,7 +314,7 @@ def Distance_sq(P,Q):
 
 def Distance(P,Q):
     """ return the distance between P and Q """
-    return math.sqrt(Distance_sq(P,Q))
+    return sqrt(Distance_sq(P,Q))
 
 # Convention : theta is in degree while alpha is in gradient.
 #def radian(theta,number=False,converting=True,keep_max=False):
