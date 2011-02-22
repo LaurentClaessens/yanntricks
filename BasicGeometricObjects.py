@@ -695,6 +695,7 @@ class GeometricCircle(object):
         self.center = center
         self.radius = radius
         self.diameter = 2*self.radius
+        self._parametric_curve=None
     def parametric_curve(self,a=None,b=None):
         """
         Return the parametric curve associated to the circle.
@@ -703,10 +704,12 @@ class GeometricCircle(object):
 
         The parameter of the curve is the angle in radian.
         """
-        var('x')
-        f1 = phyFunction(self.center.x+self.radius*cos(x))
-        f2 = phyFunction(self.center.y+self.radius*sin(x))
-        curve = ParametricCurve(f1,f2)
+        if self._parametric_curve is None :
+            var('x')
+            f1 = phyFunction(self.center.x+self.radius*cos(x))
+            f2 = phyFunction(self.center.y+self.radius*sin(x))
+            self._parametric_curve = ParametricCurve(f1,f2)
+        curve=self._parametric_curve
         if a == None :
             return curve
         else :
@@ -2201,6 +2204,8 @@ class ParametricCurve(object):
     The graph of curve with the parameter going from a to b is got by
         curve.graph(a,b)
     """
+    # The derivatives of the parametric curves are stored in the
+    # dictionary attribute self._derivative_dict
     def __init__(self,f1,f2):
         if type(f1) is phyFunction : 
             self.f1 = f1
@@ -2210,6 +2215,7 @@ class ParametricCurve(object):
             self.f2 = f2
         else : 
             self.f2 = phyFunction(f2)
+        self._derivative_dict={0:self}
     def pstricks(self,pspict=None):
         # The difficult point with pstrics is that the syntax is "f1(t) | f2(t)" with the variable t.
         #   In order to produce that, we use the Sage's function repr and the syntax f(x=t)
@@ -2225,14 +2231,35 @@ class ParametricCurve(object):
         """
         Return the parametric curve given by the derivative. (f1,f2) -> (f1',f2').
 
-        If the optional parameter n is given, give higher order derivatives. If n=0, return itself.
+        If the optional parameter n is given, give higher order derivatives. If n=0, return self.
+
+        EXAMPLES:
+        
+        sage: var('x')
+        x
+        sage: f1=phyFunction(cos(2*x))
+        sage: f2=phyFunction(x*exp(2*x))
+        sage: F=ParametricCurve(f1,f2)
+        sage: print F.derivative()
+        The parametric curve given by
+        x(t)=-2*sin(2*t)
+        y(t)=2*t*e^(2*t) + e^(2*t)
+        sage: print F.derivative(3)
+        The parametric curve given by
+        x(t)=8*sin(2*t)
+        y(t)=8*t*e^(2*t) + 12*e^(2*t)
         """
-        if n==0:
-            return self
+        try :
+            return self._derivative_dict[n]
+        except KeyError :
+            pass
         if n==1:
-            return ParametricCurve(self.f1.derivative(),self.f2.derivative())
+            print "2254 je calcule la dérivée de %s"%str(self.f1)
+            print self._derivative_dict
+            self._derivative_dict[1] = ParametricCurve(self.f1.derivative(),self.f2.derivative())
         else:
-            return self.derivative(n-1).derivative()
+            self._derivative_dict[n] = self.derivative(n-1).derivative()
+        return self._derivative_dict[n]
     def get_point(self,llam,advised=True):
         """
         Return the point on the curve for the value llam of the parameter.
@@ -2250,9 +2277,9 @@ class ParametricCurve(object):
             llam=llam.radian
         P = Point(self.f1(llam),self.f2(llam))
         if advised :
-            print "2253",self
-            print "2254",llam
             try :
+                print self
+                print llam
                 P.advised_mark_angle=self.get_normal_vector(llam).angle()
                 print "2257 fini de calculer la marque angle"
             except :
@@ -2263,10 +2290,24 @@ class ParametricCurve(object):
         """
         returns the tangent vector to the curve for the value of the parameter given by llam.
            The vector is normed to 1.
+
+        INPUT:
+        - ``llam`` - the value of the parameter on which we want the tangent
+        - ``advised`` - (default = False) if True, the initial point is returned with its
+                                            advised_mark_angle. This takes quite a long time
+                                            of computation (and creates infinite loops if used
+                                            in some circumstances)
+
+        EXAMPLES:
+        sage: F=ParametricCurve(x,x**2)
+        sage: print F.get_tangent_vector(0)
+        Segment I=Point(0,0) F=Point(1,0); Direction=Point(1,0)
+        sage: print F.get_tangent_vector(1)
+        Segment I=Point(1,1) F=Point(1/5*sqrt(5) + 1,2/5*sqrt(5) + 1); Direction=Point(1/5*sqrt(5),2/5*sqrt(5))
         """
-        initial = self.get_point(llam,advised)
+        initial = self.get_point(llam,advised)     
         return AffineVector( initial,Point(initial.x+self.derivative().f1(llam),initial.y+self.derivative().f2(llam)) ).normalize()
-    def get_normal_vector(self,llam,advised=False):
+    def get_normal_vector(self,llam,advised=False,normalize=True):
         """
         Return the outside normal vector to the curve for the value llam of the parameter.
            The vector is normed to 1.
@@ -2277,14 +2318,18 @@ class ParametricCurve(object):
         If you want the second derivative vector, use self.get_derivative(2). This will not produce a normal vector in general.
         """
         anchor=self.get_point(llam,advised=False)
+        print "2281 anchor trouvée"
         tangent=self.get_tangent_vector(llam)
+        print "2283 tangente trouvée"
         N = AffineVector(tangent.orthogonal())
+        print "2285 orthogonal trouvée"
         # The delicate part is to decide if we want to return N or -N. We select the angle which is on the same side of the curve
         #                                           than the second derivative.
         # Let S be the second derivative vector and f(x,y)=0 be the equation of the tangent. We select N if f(N) has the same sign as f(S) and -N if
         #                                               f(-N) has the same sign as f(S).
         try :
             second=self.get_second_derivative_vector(llam)
+            print "2288 fini de prendre la seconde dérivée"
         except :
             print "Something got wrong with the computation of the second derivative. I return the default normal vector"
             return N
@@ -2293,15 +2338,43 @@ class ParametricCurve(object):
         else :
                 v=N
         return AffineVector(v.origin(anchor))
-    def get_second_derivative_vector(self,llam,advised=False):
+    def get_second_derivative_vector(self,llam,advised=False,normalize=True):
         r"""
         return the second derivative vector normalised to 1.
 
-        Note : if the parametrization is not normal, this is not orthogonal to the tangent. If you want a normal vector, use self.get_normal_vector
+        INPUT:
+        - ``llam`` - the value of the parameter on which we want the second derivative
+        - ``advised`` - (default=False) If True, the initial point is given with
+                                            an advised_mark_angle
+        - ``normalize`` - (defautl=True) If True, provides a vector normalized to 1.
+                                            if False, the norm is not guaranteed and depend on the 
+                                            parametrization.
+
+        EXAMPLES:
+        sage: F=ParametricCurve(x,x**3)
+
+        Normalizing a null vector result in a crash :
+
+        sage: print F.get_second_derivative_vector(0,normalize=True)
+        sage: print F.get_second_derivative_vector(0,normalize=False)
+        sage: print F.get_second_derivative_vector(1)
+
+        Note : if the parametrization is not normal, this is not orthogonal to the tangent.
+        If you want a normal vector, use self.get_normal_vector
         """
+        print "2304 Commence à chercher le point initial"
         initial=self.get_point(llam,advised)
+        print "2304 point initial trouvé. je cherche la première dérivée"
         c=self.get_derivative(llam,2)
-        return c.Vector().origin(initial).normalize()
+        print "2308 Première dérivée trouvée"
+        if normalize :
+            try:
+                return c.Vector().origin(initial).normalize()
+            except ZeroDivisionError :
+                print "I cannot normalize a vector of size zero"
+                return c.Vector().origin(initial)
+        else :
+            return c.Vector().origin(initial)
     def get_derivative(self,llam,order=1):
         """
         Return the derivative of the curve. If the curve is f(t), return f'(t) or f''(t) or higher derivatives.

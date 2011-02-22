@@ -227,16 +227,19 @@ class ConversionAngles(object):
             return self.create_function(x)
         else :
             return x
-    def conversion(self,theta,number=False,keep_max=False,converting=True):
+    def conversion(self,theta,number=False,keep_max=False,converting=True,numerical=False):
         """
         Makes the conversion and simplify.
 
         INPUT:
         - ``theta`` - the angle to be converted
-        - ``number`` - (default =False) If true, return a numerical approximation
+        - ``number`` - (default =False) If true, return a number. Not to be confused with <numerical>
         - ``keep_max`` - (defaut False) If true, does not convert the max value into the minimal value. 
                                         Typically, leaves 2*pi as 2*pi instead of returning 0.
         - ``converting`` - (defaut = True) If False, make no conversion.
+        - ``numerical`` - (default = False) boolean. If True, return a numerical approximation. 
+                                            If <numerical>=True, then <number> is automatically
+                                            switched to True.
 
         EXAMPLES:
 
@@ -244,6 +247,7 @@ class ConversionAngles(object):
         sage: degree=ConversionAngles(180/pi,360).conversion
         sage: degree(7)     
         1260/pi - 360
+        sage: degree(7,numerical=True)
 
         Notice that the result is an exact value.
 
@@ -254,10 +258,16 @@ class ConversionAngles(object):
 
         Using converting=False,number=True is a way to ensure something to be a number instead of a AngleMeasure
         """
+        if numerical:
+            number=True
         if isinstance(theta,AngleMeasure):
             angle = self.simplify(theta,keep_max=keep_max)
             if number:
-                 return angle.__getattribute__(self.exit_attribute)
+                 x = angle.__getattribute__(self.exit_attribute)
+                 if numerical:
+                     return numerical_approx(x)
+                 else:
+                     return x
             else :
                 return angle
         else :
