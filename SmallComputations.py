@@ -189,12 +189,28 @@ class ConversionAngles(object):
         self.max_value=max_value
         self.exit_attribute=exit_attribute
         self.create_function=create_function
-    def simplify(self,angle,keep_max=False,number=False):
+    def simplify(self,angle,keep_max=False,number=False,numerical=False):
         """
         Simplify the angles modulo the maximum. 
 
-        If what is given is a numbre, return a number. If what is given is a AngleMeasure, return a new AngleMeasure
+        If what is given is a number, return a number. If what is given is a AngleMeasure, return a new AngleMeasure
     
+        INPUT:
+        - ``angle`` - an angle that can be an instance of AngleMeasure or a number.
+                        if it is a number, the simplify modulo self.max_value
+                        if it is a AngleMeasure, then first extract the value of the angle
+                            using self.exit_attribute
+        - ``keep_max`` - (defautl=False) If True, does not simplify the angle with max value.
+                                            Typically, keeps 2*pi as 2*pi. 
+                                            This is used in order to keep track of the difference
+                                            between 0 and 2*pi in the context of drawing an full circle.
+        - ``number`` - (default=False) If True, return a number even is a AngleMeasure is given.
+        - ``numerical`` - (default=False) If True, return numerical_approx of the result
+
+        NOTE:
+        number=True allow exit like pi/2 while numerical will return 1.57079632679490.
+
+
         EXAMPLE:
         sage: simplify_degree=ConversionAngles(180/pi,360).simplify
         sage: simplify_degree(400)
@@ -206,8 +222,9 @@ class ConversionAngles(object):
         sage: simplify_degree(360,keep_max=True)
         360
 
-        if <number> is True, return a number even is a AngleMeasure is given.
         """
+        if numerical:
+            number=True
         if isinstance(angle,AngleMeasure) :
             x=angle.__getattribute__(self.exit_attribute)
             gotMeasure=True
@@ -218,7 +235,10 @@ class ConversionAngles(object):
             if gotMeasure and number==False:
                 return angle
             else :
-                return self.max_value
+                if numerical:
+                    return numerical_approx(self.max_value)
+                else:
+                    return self.max_value
         while x >= self.max_value :
             x=x-self.max_value
         while x < 0 :
@@ -226,7 +246,10 @@ class ConversionAngles(object):
         if gotMeasure and number==False :
             return self.create_function(x)
         else :
-            return x
+            if numerical:
+                return numerical_approx(x)
+            else:
+                return x
     def conversion(self,theta,number=False,keep_max=False,converting=True,numerical=False):
         """
         Makes the conversion and simplify.
@@ -247,10 +270,11 @@ class ConversionAngles(object):
         sage: degree=ConversionAngles(180/pi,360).conversion
         sage: degree(7)     
         1260/pi - 360
+
+        Notice that the result is an exact value. If you want a numerical approximation,
+
         sage: degree(7,numerical=True)
-
-        Notice that the result is an exact value.
-
+        41.0704565915763
         sage: numerical_approx(degree(7))
         41.0704565915763
         sage: degree(120,converting=False)
@@ -272,9 +296,9 @@ class ConversionAngles(object):
                 return angle
         else :
             if converting :
-                return self.simplify(self.conversion_factor*theta,keep_max=keep_max)
+                return self.simplify(self.conversion_factor*theta,keep_max=keep_max,numerical=numerical)
             else :
-                return self.simplify(theta,keep_max=keep_max)
+                return self.simplify(theta,keep_max=keep_max,numerical=numerical)
 
 DegreeConversions=ConversionAngles(SR(180)/pi,360,exit_attribute="degree",create_function=DegreeAngleMeasure)
 RadianConversions=ConversionAngles(pi/180,2*pi,exit_attribute="radian",create_function=RadianAngleMeasure)

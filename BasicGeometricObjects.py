@@ -91,7 +91,18 @@ def CircleOA(O,A):
 def Point(x,y):
     return GraphOfAPoint(GeometricPoint(x,y))
 def PolarPoint(r,theta):
-    return Point(r*math.cos(radian(theta)),r*math.sin(radian(theta)))
+    """
+    return the point at polar coordinates (r,theta)
+
+    INPUT:
+    - ``r`` - the distance from origine
+    - ``theta`` - the angle
+
+    EXAMPLES:
+    sage: print PolarPoint(2,45)
+    Point(sqrt(2),sqrt(2))
+    """
+    return Point(r*cos(radian(theta)),r*sin(radian(theta)))
 def Segment(A,B):
     return GraphOfASegment(GeometricSegment(A,B))
 
@@ -416,6 +427,8 @@ class GeometricSegment(object):
     def __init__(self,A,B,arrow_type="segment"):
         self.I = A
         self.F = B
+        self.arrow_type=arrow_type
+
         self.vertical = False
         self.horizontal = False
         if A.x == B.x :
@@ -444,7 +457,6 @@ class GeometricSegment(object):
         self.longueur = Distance(self.I,self.F)
         self.Dx = self.F.x-self.I.x
         self.Dy = self.F.y-self.I.y
-        self.arrow_type=arrow_type
         #self.maxima = str(self.equation[0])+"*x+"+str(self.equation[1])+"*y+"+str(self.equation[2])+"=0"
     @lazy_attribute
     def advised_mark_angle(self):
@@ -704,6 +716,7 @@ class GeometricCircle(object):
         The parameter of the curve is the angle in radian.
         """
         if self._parametric_curve is None :
+            print "707 je produit une courbe"
             var('x')
             f1 = phyFunction(self.center.x+self.radius*cos(x))
             f2 = phyFunction(self.center.y+self.radius*sin(x))
@@ -721,21 +734,27 @@ class GeometricCircle(object):
         - ``theta`` - the angle given in degree
         """
         return self.parametric_curve().get_point(radian(theta,numerical=numerical),advised=advised)
-    def VectorTangent(self,theta):
-        raise DeprecationWarning,"Usge get_tangent_vector instead"
-        return PolarPoint(1,theta+90).lie(self.get_point(theta))
     def get_tangent_vector(self,theta):
-        return PolarPoint(1,theta+90).origin(self.get_point(theta))
+        return PolarPoint(1,theta+90).origin(self.get_point(theta,advised=False))
     def get_normal_vector(self,theta):
         """
         Return a normal vector at angle <theta>
 
-        The angle is in degree
+        The angle is in degree, or AngleMeasure.
+
+        INPUT:
+        - ``theta`` - an angle
+        OUTPU:
+        a vector
+
+        EXAMPLES:
+        sage: C=Circle(Point(0,0),2)
+        sage: print C.get_normal_vector(45)
+        Segment I=Point(sqrt(2),sqrt(2)) F=Point(3/2*sqrt(2),3/2*sqrt(2)); Direction=Point(1/2*sqrt(2),1/2*sqrt(2))
         """
-        v = PolarPoint(1,theta).origin(self.get_point(theta))
+        v = PolarPoint(1,theta).origin(self.get_point(theta,advised=False))
         v.arrow_type="vector"
         return v
-    # Donne les x et y min et max du cercle entre deux angles.
     # Here, angleI and angleF are given in degree while parametric_plot uses radian.
     def get_minmax_data(self,angleI,angleF):
         deb = radian(angleI)
@@ -1320,7 +1339,7 @@ class InterpolationCurve(GraphOfAnObject):
         sage: C=Circle(Point(0,0),1)
         sage: n=400
         sage: InterpolationCurve([C.get_point(i*SR(360)/n,advised=False) for i in range(n)]).get_minmax_data()
-        {'xmin': -1.00000000000000, 'ymin': -1.00000000000000, 'ymax': 1.00000000000000, 'xmax': 1.00000000000000}
+        {'xmin': -1, 'ymin': -1, 'ymax': 1, 'xmax': 1}
         """
         xmin=min([P.x for P in self.points_list])
         xmax=max([P.x for P in self.points_list])
@@ -1348,7 +1367,7 @@ class InterpolationCurve(GraphOfAnObject):
         sage: C=Circle(Point(0,0),1)
         sage: n=400
         sage: print InterpolationCurve([C.get_point(i*SR(360)/n,advised=False) for i in range(n)]).bounding_box()
-        (-1.00000000000000,-1.00000000000000),(1.00000000000000,1.00000000000000)
+        (-1,-1),(1,1)
 
         NOTE:
         Since the bounding box is computed from the give points while the curve is an interpolation,
@@ -1857,8 +1876,9 @@ class phyFunction(object):
         2*x
         sage: print f.derivative()(3)
         6
+        sage: g(x)=cos(x)
         sage: print [g.derivative(i) for i in range(0,5)]
-        [sin(x), cos(x), -sin(x), -cos(x), sin(x)]
+        [x |--> cos(x), x |--> -sin(x), x |--> -cos(x), x |--> sin(x), x |--> cos(x)]
         """
         if n==0 :
             try :
@@ -1928,9 +1948,9 @@ class phyFunction(object):
         EXAMPLE:
         sage: g=phyFunction(cos(x))
         sage: print g.tangent_phyFunction(pi/2)
-        1/2*pi-x
+        1/2*pi - x
         sage: g.tangent_phyFunction(pi/2)(1)
-        1/2*pi-1
+        1/2*pi - 1
         """
         var('x')
         ca=self.derivative()(x0)
@@ -2354,8 +2374,14 @@ class ParametricCurve(object):
         Normalizing a null vector result in a crash :
 
         sage: print F.get_second_derivative_vector(0,normalize=True)
+        phystricks Warning. You are trying to convert into polar coordinates the point (0,0). I'm returning 0 as angle.
+        I cannot normalize a vector of size zero
+        Segment I=Point(0,0) F=Point(0,0); Direction=Point(0,0)
+
         sage: print F.get_second_derivative_vector(0,normalize=False)
+        Segment I=Point(0,0) F=Point(0,0); Direction=Point(0,0)
         sage: print F.get_second_derivative_vector(1)
+        Segment I=Point(1,1) F=Point(1,2); Direction=Point(0,1)
 
         Note : if the parametrization is not normal, this is not orthogonal to the tangent.
         If you want a normal vector, use self.get_normal_vector
