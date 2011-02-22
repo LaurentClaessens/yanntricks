@@ -2261,8 +2261,6 @@ class ParametricCurve(object):
         except KeyError :
             pass
         if n==1:
-            print "2254 je calcule la dérivée de %s"%str(self.f1)
-            print self._derivative_dict
             self._derivative_dict[1] = ParametricCurve(self.f1.derivative(),self.f2.derivative())
         else:
             self._derivative_dict[n] = self.derivative(n-1).derivative()
@@ -2285,10 +2283,7 @@ class ParametricCurve(object):
         P = Point(self.f1(llam),self.f2(llam))
         if advised :
             try :
-                print self
-                print llam
                 P.advised_mark_angle=self.get_normal_vector(llam).angle()
-                print "2257 fini de calculer la marque angle"
             except :
                 print "It seems that something got wrong somewhere in the computation of the advised mark angle. Return 0 as angle."
                 P.advised_mark_angle=0
