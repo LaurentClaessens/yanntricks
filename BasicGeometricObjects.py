@@ -1116,8 +1116,8 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
         GraphOfAnObject.__init__(self,self)
         self.f1=EnsurephyFunction(f1).graph(mx,Mx)
         self.f2=EnsurephyFunction(f2).graph(mx,Mx)
-        self.vertical_left=Segment(self.f1.get_point(mx),self.f2.get_point(mx))
-        self.vertical_right=Segment(self.f1.get_point(Mx),self.f2.get_point(Mx))
+        self.vertical_left=Segment(self.f1.get_point(mx,advised=False),self.f2.get_point(mx,advised=False))
+        self.vertical_right=Segment(self.f1.get_point(Mx,advised=False),self.f2.get_point(Mx,advised=False))
         self.f1.parameters.style="none"
         self.f2.parameters.style="none"
         self.vertical_left.parameters.style="none"
@@ -1869,7 +1869,7 @@ class phyFunction(object):
             return self._derivative
         else:
             return self.derivative(n-1).derivative()
-    def get_point(self,x,advised=False):        
+    def get_point(self,x,advised=True):        
         """
         Return a point on the graph of the function with the given x, i.e. it return the point (x,f(x)).
 
@@ -1879,14 +1879,15 @@ class phyFunction(object):
         P.mark(radius,P.advised_mark_angle,"$P$")
         """
         P = Point(float(x),self(x))
-        try :
-            ca = self.derivative()(x) 
-            angle_n=degree(atan(ca)+pi/2)
-            if self.derivative(2)(x) > 0:
-                angle_n=angle_n+180
-            P.advised_mark_angle=angle_n
-        except TypeError :      # Happens when Sage has no derivative of the function.
-            pass
+        if advised :
+            try :
+                ca = self.derivative()(x) 
+                angle_n=degree(atan(ca)+pi/2)
+                if self.derivative(2)(x) > 0:
+                    angle_n=angle_n+180
+                P.advised_mark_angle=angle_n
+            except TypeError :      # Happens when Sage has no derivative of the function.
+                pass
         return P
     def get_normal_vector(self,x):
         """ return a normalized normal vector to the graph of the function at x """
