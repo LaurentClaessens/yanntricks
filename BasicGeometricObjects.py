@@ -268,8 +268,7 @@ class GeometricPoint(object):
             v=Vector(a,b)
         return self+v
     def lie(self,p):
-        print "This method is depreciated. Use self.origin instead"
-        raise AttributeError
+        raise DeprecationWarning, "Use self.origin instead"
     def origin(self,p):
         return AffineVector(p,Point(p.x+self.x,p.y+self.y))
     def Vector(self):
@@ -2326,18 +2325,14 @@ class ParametricCurve(object):
         If you want the second derivative vector, use self.get_derivative(2). This will not produce a normal vector in general.
         """
         anchor=self.get_point(llam,advised=False)
-        print "2281 anchor trouvée"
         tangent=self.get_tangent_vector(llam)
-        print "2283 tangente trouvée"
         N = AffineVector(tangent.orthogonal())
-        print "2285 orthogonal trouvée"
         # The delicate part is to decide if we want to return N or -N. We select the angle which is on the same side of the curve
         #                                           than the second derivative.
         # Let S be the second derivative vector and f(x,y)=0 be the equation of the tangent. We select N if f(N) has the same sign as f(S) and -N if
         #                                               f(-N) has the same sign as f(S).
         try :
             second=self.get_second_derivative_vector(llam)
-            print "2288 fini de prendre la seconde dérivée"
         except :
             print "Something got wrong with the computation of the second derivative. I return the default normal vector"
             return N
@@ -2370,11 +2365,8 @@ class ParametricCurve(object):
         Note : if the parametrization is not normal, this is not orthogonal to the tangent.
         If you want a normal vector, use self.get_normal_vector
         """
-        print "2304 Commence à chercher le point initial"
         initial=self.get_point(llam,advised)
-        print "2304 point initial trouvé. je cherche la première dérivée"
         c=self.get_derivative(llam,2)
-        print "2308 Première dérivée trouvée"
         if normalize :
             try:
                 return c.Vector().origin(initial).normalize()
