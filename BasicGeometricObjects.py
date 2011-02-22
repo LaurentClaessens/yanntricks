@@ -1296,8 +1296,11 @@ class InterpolationCurve(GraphOfAnObject):
     sage: F=InterpolationCurve([Point(0,0),Point(0.5,0.5),Point(1,1)])
 
     sage: C=Circle(Point(0,0),1)
-    sage: G=InterpolationCurve([C.get_point(2*pi/i) for i in range(1,100)])
+    sage: G=InterpolationCurve([C.get_point(2*pi/i,advised=False) for i in range(1,100)])
 
+    Notice in the lase example the use of advised=False in order to speed up the computation.
+
+    NOTE:
     InterpolationCurve is used in order to produce implicit plot and wavy functions.
 
     """
@@ -1317,7 +1320,7 @@ class InterpolationCurve(GraphOfAnObject):
         EXAMPLES:
         sage: C=Circle(Point(0,0),1)
         sage: n=400
-        sage: InterpolationCurve([C.get_point(i*SR(360)/n) for i in range(n)]).get_minmax_data()
+        sage: InterpolationCurve([C.get_point(i*SR(360)/n,advised=False) for i in range(n)]).get_minmax_data()
         {'xmin': -1.00000000000000, 'ymin': -1.00000000000000, 'ymax': 1.00000000000000, 'xmax': 1.00000000000000}
         """
         xmin=min([P.x for P in self.points_list])
@@ -1345,7 +1348,7 @@ class InterpolationCurve(GraphOfAnObject):
         (0,0),(1,1)
         sage: C=Circle(Point(0,0),1)
         sage: n=400
-        sage: print InterpolationCurve([C.get_point(i*SR(360)/n) for i in range(n)]).bounding_box()
+        sage: print InterpolationCurve([C.get_point(i*SR(360)/n,advised=False) for i in range(n)]).bounding_box()
         (-1.00000000000000,-1.00000000000000),(1.00000000000000,1.00000000000000)
 
         NOTE:
@@ -1877,6 +1880,10 @@ class phyFunction(object):
         visually this is usually the best place to put a mark. Typically you use this as
         P=f.get_point(3)
         P.mark(radius,P.advised_mark_angle,"$P$")
+
+        NOTE:
+        If you don't plan to put a mark on the point, you are invited to use advised=False
+        in order to speed up the computations.
         """
         P = Point(float(x),self(x))
         if advised :
