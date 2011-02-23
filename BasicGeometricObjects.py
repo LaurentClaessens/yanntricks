@@ -1892,7 +1892,6 @@ class phyFunction(object):
                     self.sageFast = self.sage(x)
 
             except AttributeError:          # Happens when the function is given by a number like f=0  F=phyFunction(f)
-                print "1858",fun,type(fun)
                 self.sage = SR(fun)
                 self.sageFast = self.sage._fast_float_(x)
             self.string = repr(self.sage)
@@ -2455,10 +2454,9 @@ class ParametricCurve(object):
         EXAMPLES:
         sage: F=ParametricCurve(x,x**3)
 
-        Normalizing a null vector result in a crash :
+        Normalizing a null vector produces a warning:
 
         sage: print F.get_second_derivative_vector(0,normalize=True)
-        phystricks Warning. You are trying to convert into polar coordinates the point (0,0). I'm returning 0 as angle.
         I cannot normalize a vector of size zero
         Segment I=Point(0,0) F=Point(0,0); Direction=Point(0,0)
 
