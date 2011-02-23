@@ -27,7 +27,6 @@ The return values of the functions here are instances of classical classes, not 
 
 import math
 from sage.all import *
-from phystricks import *
 
 
 def MultipleLower(x,m):
@@ -335,13 +334,14 @@ def inner_product(v,w):
     from (0,0).
 
     EXAMPLES:
-    sage: v=phystricks.Vector(1,3)
-    sage: w=phystricks.Vector(-5,7)
+    sage: from phystricks import *
+    sage: v=Vector(1,3)
+    sage: w=Vector(-5,7)
     sage: inner_product(v,w)
     16
 
-    sage: v=phystricks.AffineVector(Point(1,1),Point(2,2))
-    sage: w=phystricks.AffineVector(Point(-2,5),Point(-1,4))
+    sage: v=AffineVector(Point(1,1),Point(2,2))
+    sage: w=AffineVector(Point(-2,5),Point(-1,4))
     sage: inner_product(v,w)
     0
     """

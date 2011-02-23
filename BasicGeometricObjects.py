@@ -296,7 +296,7 @@ class GeometricPoint(object):
 
         This is the radial component in polar coordinates.
 
-        EXAMPES:
+        EXAMPLES:
         sage: Point(1,1).norm()
         sqrt(2)
         sage: Point(-pi,sqrt(2)).norm()
@@ -306,6 +306,11 @@ class GeometricPoint(object):
     def length(self):
         """
         The same as self.norm()
+
+        EXAMPLES:
+        sage: P=Point(1,1)
+        sage: P.length()
+        sqrt(2)
         """
         return self.norm()
     # La méthode normalize voit le point comme un vecteur partant de zéro, et en donne le vecteur de taille 1
@@ -444,6 +449,27 @@ class GeometricSegment(object):
         return self.F.y-self.I.y
 
     @lazy_attribute
+    def coefficient(self):
+        """
+        return the angular coefficient of line.
+        
+        Notice that the result does not depend on the order
+        of the points.
+
+        OUTPUT:
+        a number
+
+        EXAMPLES:
+        sage: Segment(Point(0,0),Point(1,1)).coefficient
+        1
+        sage: Segment(Point(1,1),Point(0,0)).coefficient
+        1
+        sage: Segment(Point(1,2),Point(-1,8)).coefficient
+        -3
+        """
+        return SR(self.Dy)/self.Dx
+
+    @lazy_attribute
     def vertical(self):
         vert = False
         if self.I.x == self.F.x :
@@ -485,6 +511,7 @@ class GeometricSegment(object):
         EXAMPLES:
         sage: Segment(Point(1,1),Point(2,2)).length
         sqrt(2)
+
         """
         return Distance(self.I,self.F)
 
@@ -510,7 +537,7 @@ class GeometricSegment(object):
         Notice that it does not return the last point of the segment, unless the length is a multiple of dx.
            this is why we add by hand the last point in GetWavyPoint
         """
-        n = floor(self.longueur/dx)
+        n = floor(self.length/dx)
         return [self.proportion(float(i)/n) for i in range(0,n)]
     def get_wavy_points(self,dx,dy):
         """
@@ -549,11 +576,21 @@ class GeometricSegment(object):
     def get_normal_vector(self):
         """
         returns a normalized normal vector at the center of the segment
+
+        OUTPUT:
+        A vector
+
+        EXAMPLES:
+        sage: v= Segment(Point(0,0),Point(2,0)).get_normal_vector()
+        sage: print v
+        Segment I=Point(1.0,0) F=Point(1.0,-1); Direction=Point(0.0,-1)
+        sage: v.length()
+        1
         """
         if self.vertical :
             return Point(-1,0).Vector().origin(self.center())
         else :
-            P = Point(-self.coefficient,1)
+            P = Point(self.coefficient,-1)
             return P.Vector().normalize().origin(self.center())
     def polaires(self):
         return PointToPolaire(self.Point())
@@ -1843,7 +1880,7 @@ class phyFunction(object):
     Represent a function.
     """
     def __init__(self,fun):
-        if type(fun) is phyFunction :
+        if isinstance(fun,phyFunction) :        # It allows fun to be a graph of a function.
             phyFunction.__init__(self,fun.sage)
         else :
             var('x,y')
@@ -1855,6 +1892,7 @@ class phyFunction(object):
                     self.sageFast = self.sage(x)
 
             except AttributeError:          # Happens when the function is given by a number like f=0  F=phyFunction(f)
+                print "1858",fun,type(fun)
                 self.sage = SR(fun)
                 self.sageFast = self.sage._fast_float_(x)
             self.string = repr(self.sage)
@@ -1936,10 +1974,29 @@ class phyFunction(object):
             except TypeError :      # Happens when Sage has no derivative of the function.
                 pass
         return P
-    def get_normal_vector(self,x):
-        """ return a normalized normal vector to the graph of the function at x """
-        ca = self.derivative()(x) 
-        return Point(-ca,1).normalize().origin(self.get_point(x))       
+    def get_normal_vector(self,xx):
+        """ 
+        return a normalized normal vector to the graph of the function at xx
+
+        The direction of the vector is outside
+
+        INPUT:
+        - ``x`` - a number, the position at which we want the normal vector
+
+        OUTPUT:
+        a vector
+
+        EXAMPLES:
+        sage: var('x')
+        x
+        sage: f=phyFunction(x**2)
+        sage: print f.get_normal_vector(0)
+        Segment I=Point(0,0) F=Point(0,-1); Direction=Point(0,-1)
+        """
+        #ca = self.derivative()(x) 
+        #return Point(-ca,1).normalize().origin(self.get_point(x))       
+        F=ParametricCurve(x,self)
+        return F.get_normal_vector(xx)
     def get_tangent_vector(self,x,advised=False,numerical=False):
         """
         return a tangent vector at the point (x,f(x))
@@ -2357,25 +2414,31 @@ class ParametricCurve(object):
 
         An other way to produce normal vector is to use
         self.get_tangent_vector(llam).orthogonal()
+        However the latter does not guarantee to produce an outside pointing vector.
 
         If you want the second derivative vector, use self.get_derivative(2). This will not produce a normal vector in general.
+
+        EXAMPLES:
+        sage: F=ParametricCurve(sin(x),x**2)
+        sage: print F.get_normal_vector(0)
+        Segment I=Point(0,0) F=Point(0,-1); Direction=Point(0,-1)
         """
         anchor=self.get_point(llam,advised=False)
         tangent=self.get_tangent_vector(llam)
         N = AffineVector(tangent.orthogonal())
         # The delicate part is to decide if we want to return N or -N. We select the angle which is on the same side of the curve
         #                                           than the second derivative.
-        # Let S be the second derivative vector and f(x,y)=0 be the equation of the tangent. We select N if f(N) has the same sign as f(S) and -N if
-        #                                               f(-N) has the same sign as f(S).
+        # If v is the second derivative, either N or -N has positive inner product with v. We select the one with
+        # negative inner product since the second derivative vector is inner.
         try :
             second=self.get_second_derivative_vector(llam)
         except :
             print "Something got wrong with the computation of the second derivative. I return the default normal vector"
             return N
-        if N.F.value_on_line(tangent) * second.F.value_on_line(tangent) > 0:
+        if inner_product(N,second) >= 0:
             v=-N
         else :
-                v=N
+            v=N
         return AffineVector(v.origin(anchor))
     def get_second_derivative_vector(self,llam,advised=False,normalize=True):
         r"""
