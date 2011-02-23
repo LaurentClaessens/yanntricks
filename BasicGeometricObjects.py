@@ -229,9 +229,15 @@ class GeometricPoint(object):
         self.psName = GeometricPoint.NomPointLibre.suivant()
     def projection(self,seg):
         """
-        Return the projection of the point on the line of the given segment.
+        Return the projection of the point on the given segment.
 
-        Return a point even if outside the segment.
+        INPUT:
+        - ``seg`` - a segment
+
+        OUTPUT:
+        a point
+
+        Return a point even if the projections happens to lies outside the segment.
         """
         try :
             seg=seg.segment()       # allows to project on an axe
@@ -499,14 +505,6 @@ class GeometricSegment(object):
             var('x')
             return phyFunction( self.coefficient*x+self.independant )
 
-    def sage_equation(self):
-        raise DeprecationWarning, "use self.equation instead"
-        """
-        returns the Cartesian equation of the line as a instance of the sage's class
-        sage.symbolic.expression.Expression
-        """
-        var('x,y')
-        return self.equation[0]*x+self.equation[1]*y+self.equation[2] == 0
     def get_regular_points(self,dx):
         """
         Notice that it does not return the last point of the segment, unless the length is a multiple of dx.
@@ -540,14 +538,11 @@ class GeometricSegment(object):
         More precisely, if self is the segment A->B, return the point B-A
         """
         return self.F-self.I
-    def milieu(self):
-        raise DeprecationWarning,"This method is depreciated. Use Segment.center() instead"
-        return self.center()
+
     def center(self):
         P = self.proportion(0.5)
         P.advised_mark_angle=self.angle().degree+90
         return P
-
 
     def AffineVector(self):
         return AffineVector(self.I,self.F)

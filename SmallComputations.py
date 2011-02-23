@@ -27,6 +27,7 @@ The return values of the functions here are instances of classical classes, not 
 
 import math
 from sage.all import *
+from phystricks import *
 
 
 def MultipleLower(x,m):
@@ -315,6 +316,44 @@ def Distance_sq(P,Q):
 def Distance(P,Q):
     """ return the distance between P and Q """
     return sqrt(Distance_sq(P,Q))
+
+def inner_product(v,w):
+    """
+    Return the inner product of vectors v and w
+
+
+    INPUT:
+    - ``v,w`` - two vectors or points
+
+    OUTPUT:
+    a number
+
+    If the vectors are not based at (0,0), make first 
+    the translation and return the inner product.
+
+    If a point is passed, it is considered as the vector
+    from (0,0).
+
+    EXAMPLES:
+    sage: v=phystricks.Vector(1,3)
+    sage: w=phystricks.Vector(-5,7)
+    sage: inner_product(v,w)
+    16
+
+    sage: v=phystricks.AffineVector(Point(1,1),Point(2,2))
+    sage: w=phystricks.AffineVector(Point(-2,5),Point(-1,4))
+    sage: inner_product(v,w)
+    0
+    """
+    try:
+        a=v.Point()
+    except AttributeError:
+        a=v
+    try:
+        b=w.Point()
+    except AttributeError:
+        b=w
+    return a.x*b.x+a.y*b.y
 
 # Convention : theta is in degree while alpha is in gradient.
 #def radian(theta,number=False,converting=True,keep_max=False):
