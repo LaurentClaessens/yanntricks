@@ -66,13 +66,12 @@ class ListeNomsPoints(object):
     """
     This class serves to give a psname to my points. 
 
-    TODO : use a real iterator.
+    TODO: use a real iterator.
     """
     def __init__(self):
         self.donne = 1000
     def suivant(self):
         self.donne = self.donne + 1
-        #a = ["AutoPt"]
         s = str(self.donne)
         return "".join( [chr(int(c)+97) for c in s] )
 
@@ -2139,6 +2138,22 @@ class phyFunction(object):
             Mx=self.Mx
         return SurfaceUnderFunction(self,mx,Mx)
     def __call__(self,xe,numerical=False):
+        """
+        return the value of the function at given point
+
+        INPUT:
+        - ``xe`` - a number. The point at which we want to evaluate the function
+        - ``numerical`` (boolean, default=False) If True, return a numerical_approximation
+
+        EXAMPLES:
+        sage: var('x')
+        x
+        sage: f=phyFunction(cos(x))
+        sage: f(1)
+        cos(1)
+        sage: f(1,numerical=True)
+        0.540302305868140
+        """
         if numerical :
             return numerical_approx(self.sageFast(xe))
         else :
