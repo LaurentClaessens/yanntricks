@@ -1,3 +1,5 @@
+from phystricks import *
+
 """
 
 This file contains a unit test for ImplicitCurve.
