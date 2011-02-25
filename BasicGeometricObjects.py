@@ -271,8 +271,8 @@ class GeometricPoint(object):
         if seg.horizontal :
             return Point(self.x,seg.I.y)
         else :
-            Rx = (self.y*seg.coefficient - seg.coefficient*seg.independant + self.x)/(seg.coefficient**2 + 1)
-            Ry = (self.y*seg.coefficient**2 + self.x*seg.coefficient + seg.independant)/(seg.coefficient**2 + 1)
+            Rx = (self.y*seg.slope - seg.slope*seg.independent + self.x)/(seg.slope**2 + 1)
+            Ry = (self.y*seg.slope**2 + self.x*seg.slope + seg.independent)/(seg.slope**2 + 1)
             return Point(Rx,Ry)
     def get_polar_point(self,l,theta,pspict=None):
         """
@@ -459,28 +459,53 @@ class GeometricSegment(object):
         return self.F.y-self.I.y
 
     @lazy_attribute
-    def coefficient(self):
+    def slope(self):        # It was before names "coefficient"
         """
         return the angular coefficient of line.
-        
+
+        This is the coefficient a in the equation
+        y = ax + b
+
         Notice that the result does not depend on the order
+
+        This is not the same as the coefficient a in self.equation
+        ax + by + c == 0
+        
         of the points.
 
         OUTPUT:
         a number
 
         EXAMPLES:
-        sage: Segment(Point(0,0),Point(1,1)).coefficient
+        sage: Segment(Point(0,0),Point(1,1)).slope
         1
-        sage: Segment(Point(1,1),Point(0,0)).coefficient
+        sage: Segment(Point(1,1),Point(0,0)).slope
         1
-        sage: Segment(Point(1,2),Point(-1,8)).coefficient
+        sage: Segment(Point(1,2),Point(-1,8)).slope
         -3
 
         NOTE:
         If the line is vertical, raise a ZeroDivisionError
         """
         return SR(self.Dy)/self.Dx
+
+    @lazy_attribute
+    def independent(self):
+        """
+        return the b in the equation
+        y = ax + b
+
+        If the line is vertical, raise an ZeroDivisionError
+
+        EXAMPLES:
+        sage: s = Segment(Point(0,3),Point(6,-1))
+        sage: s.independent
+        3
+
+        sage: Segment(Point(1,2),Point(-1,1)).independent
+        3/2
+        """
+        return self.I.y-self.I.x*(self.slope)
 
     @lazy_attribute
     def vertical(self):
@@ -499,7 +524,8 @@ class GeometricSegment(object):
     @lazy_attribute
     def equation(self):
         """
-        return the equation of the line
+        return the equation of the line under the form
+        x + by + c = 0
 
         EXAMPLES:
         sage: Segment(Point(0,0),Point(1,1)).equation
@@ -512,10 +538,10 @@ class GeometricSegment(object):
         if self.horizontal :
             self.coefs = [0,1,-self.I.y]
         if not (self.vertical or self.horizontal) :
-            self.coefs = [1,-self.Dy/self.Dx,-(self.I.y*self.F.x-self.I.x*self.F.y)/(self.I.y-self.F.y)]
+            self.coefs = [1,-1/self.slope,self.independent/self.slope]
         var('x,y')
         return self.coefs[0]*x+self.coefs[1]*y+self.coefs[2] == 0
-
+ 
     @lazy_attribute
     def length(self):
         """
@@ -546,9 +572,9 @@ class GeometricSegment(object):
             fi = SR(A.y).function(x)
             return phyFunction(fi)
         if not (self.vertical or self.horizontal) :
-            parms = [self.coefficient,(A.y*B.x-A.x*B.y)/(A.x-B.x)]
+            parms = [self.slope,(A.y*B.x-A.x*B.y)/(A.x-B.x)]
             var('x')
-            return phyFunction( self.coefficient*x+self.independant )
+            return phyFunction( self.slope*x+self.independent )
 
     def get_regular_points(self,dx):
         """
@@ -608,7 +634,7 @@ class GeometricSegment(object):
         if self.vertical :
             return Point(-1,0).Vector().origin(self.center())
         else :
-            P = Point(self.coefficient,-1)
+            P = Point(self.slope,-1)
             return P.Vector().normalize().origin(self.center())
     def polaires(self):
         return PointToPolaire(self.Point())
