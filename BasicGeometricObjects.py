@@ -62,18 +62,39 @@ def SubstitutionMathPsTricks(fx):
         a = a.replace(s[0],s[1])
     return a
 
-class ListeNomsPoints(object):
-    """
-    This class serves to give a psname to my points. 
+#class ListeNomsPoints(object):
+#    """
+#    This class serves to give a psname to my points. 
+#
+#    TODO: use a real iterator.
+#    """
+#    def __init__(self):
+#        self.donne = 1000
+#    def suivant(self):
+#        self.donne = self.donne + 1
+#        s = str(self.donne)
+#        return "".join( [chr(int(c)+97) for c in s] )
 
-    TODO: use a real iterator.
+def PointsNameList():
     """
-    def __init__(self):
-        self.donne = 1000
-    def suivant(self):
-        self.donne = self.donne + 1
-        s = str(self.donne)
-        return "".join( [chr(int(c)+97) for c in s] )
+    Furnish a list of points name.
+
+    This is the generator of the sequence of strings 
+    "aaa", "aab", ..., "aaz","aaA", ..., "aaZ","aba" etc.
+
+    EXAMPLES:
+    sage: x=PointsNameList()
+    sage: x.next()
+    aaaa
+    sage: x.next()
+    aaab
+    """
+    alphabet=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+    for i in alphabet:
+        for j in alphabet:
+            for k in alphabet:
+                for l in alphabet:
+                    yield i+j+k+l
 
 def Angle(A,O,B,r=None):
     """
@@ -219,13 +240,16 @@ class GeometricPoint(object):
     """
     This is a point. Each point comes with a name given by a class attribute.
     """
-    NomPointLibre = ListeNomsPoints()
+    NomPointLibre = PointsNameList()
+    
     def __init__(self,x,y):
-        #self.x = float(x)
-        #self.y = float(y)
         self.x=SR(x)
         self.y=SR(y)
-        self.psName = GeometricPoint.NomPointLibre.suivant()
+    
+    @lazy_attribute
+    def psName(self):
+        return GeometricPoint.NomPointLibre.next()
+
     def projection(self,seg):
         """
         Return the projection of the point on the given segment.
@@ -519,6 +543,11 @@ class GeometricSegment(object):
         x = self.angle()+AngleMeasure(value_degree=90)
         return x
 
+    def copy(self):
+        v=Segment(self.I,self.F)
+        v.arrow_type=self.arrow_type
+        return v
+
     def phyFunction(self):
         if self.horizontal:
             # The trick to define a constant function is explained here:
@@ -582,7 +611,7 @@ class GeometricSegment(object):
         EXAMPLES:
         sage: v= Segment(Point(0,0),Point(2,0)).get_normal_vector()
         sage: print v
-        Segment I=Point(1.0,0) F=Point(1.0,-1); Direction=Point(0.0,-1)
+        vector I=Point(1.0,0) F=Point(1.0,-1)
         sage: v.length()
         1
         """
@@ -701,7 +730,7 @@ class GeometricSegment(object):
         L=self.length()
         if L == 0:
             print "fix_size problem: this vector has a norm equal to zero"
-            return self
+            return self.copy()
         v = self.dilatation(l/self.length())
         return self.return_deformations(v)
     def add_size(self,lI,lF):
@@ -728,17 +757,47 @@ class GeometricSegment(object):
         return self.return_deformations(v)
     def normalize(self,l=1):
         """
-        If self.arrow_type is "segment", it normalize the segment to <l> by dilating in both extemities
+        If self.arrow_type is "segment", it normalize the segment to <l> by dilating in both extremities
 
         If self.arrow_type is "vector", it normalize the vector to <l> but keeps the origin.
+
+        NOTES:
+        * If self is of length zero, return a copy of self.
+        * If not length is given, normalize to 1.
+        * If the given new length is negative, 
+            if self is a vector, change the sense
+            if self is a segment, consider the absolute value
+
+        INPUT:
+        - ``l`` - (default=1) a number, the new length
+
+        OUTPUT:
+        A segment or a vector
+
+        EXAMPLES:
+        sage: s=Segment(Point(0,0),Point(1,0))
+        sage: print s.normalize(2)
+        segment I=Point(-0.5,0) F=Point(1.5,0)
+        sage: print s.normalize(-1)
+        segment I=Point(0,0) F=Point(1,0)
+
+        sage: v=AffineVector(Point(1,1),Point(2,1))
+        sage: print v.normalize(2)
+        vector I=Point(1,1) F=Point(3,1)
+        sage: print v.normalize(-1)
+        vector I=Point(2,1) F=Point(1,1)
         """
         if self.arrow_type=="segment":
+            if l<0 : 
+                l=-l
             v = self.fix_size(l)
-            return self.return_deformations(v)
         if self.arrow_type=="vector":
-            v = l*self/self.length()
+            L=self.length()
+            if L==0:
+                return self.copy()
+            v = l*self/L
             v.arrow_type="vector"
-            return v
+        return self.return_deformations(v)
     def graph(self):
         return phystricks.GraphOfASegment(self)
     def default_associated_graph_class(self):
@@ -748,6 +807,33 @@ class GeometricSegment(object):
         raise DeprecationWarning,"use print instead"
         return str(self.equation[0])+" x + "+str(self.equation[1])+" y + "+str(self.equation[2])
     def __mul__(self,coef):
+        """
+        multiply the segment by a coefficient.
+
+        INPUT:
+        - ``coef`` - the multiplying coefficient
+
+        OUTPUT:
+        A new segment or vector.
+
+        EXAMPLES:
+        sage: v=Vector(1,1)
+        sage: print 2*v
+        vector I=Point(0,0) F=Point(2,2)
+        sage: print -2*v
+        vector I=Point(1,1) F=Point(-1,-1)
+        sage: s=Segment(Point(1,1),Point(2,2))
+        sage: print 3*s
+        segment I=Point(1,1) F=Point(4,4)
+
+        The initial point stays the same (this is not the same behaviour as in self.normalize !)
+        If the coefficient is negative :
+            if self is a vector : change the sense of the vector
+            if self is a segment : don't care about the sign of coeff
+        """
+        if self.arrow_type=="segment":
+            if coef<=0:
+                coef=-coef
         v = Segment(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
         return self.return_deformations(v)
     def __rmul__(self,coef):
@@ -757,7 +843,10 @@ class GeometricSegment(object):
     def __div__(self,coef):
         return self * (1/coef)
     def __str__(self):
-        return "Segment I=%s F=%s; Direction=%s"%(str(self.I),str(self.F),str(self.direction()))
+        if self.arrow_type=="segment":
+            return "segment I=%s F=%s"%(str(self.I),str(self.F))
+        if self.arrow_type=="vector":
+            return "vector I=%s F=%s"%(str(self.I),str(self.F))
 
 class GeometricCircle(object):
     def __init__(self,center,radius):
@@ -807,7 +896,7 @@ class GeometricCircle(object):
         EXAMPLES:
         sage: C=Circle(Point(0,0),2)
         sage: print C.get_normal_vector(45)
-        Segment I=Point(sqrt(2),sqrt(2)) F=Point(3/2*sqrt(2),3/2*sqrt(2)); Direction=Point(1/2*sqrt(2),1/2*sqrt(2))
+        Segment I=Point(sqrt(2),sqrt(2)) F=Point(3/2*sqrt(2),3/2*sqrt(2))
         """
         v = PolarPoint(1,theta).origin(self.get_point(theta,advised=False))
         v.arrow_type="vector"
@@ -1989,7 +2078,7 @@ class phyFunction(object):
         x
         sage: f=phyFunction(x**2)
         sage: print f.get_normal_vector(0)
-        Segment I=Point(0,0) F=Point(0,-1); Direction=Point(0,-1)
+        segment I=Point(0,0) F=Point(0,-1)
         """
         #ca = self.derivative()(x) 
         #return Point(-ca,1).normalize().origin(self.get_point(x))       
@@ -2415,9 +2504,9 @@ class ParametricCurve(object):
         EXAMPLES:
         sage: F=ParametricCurve(x,x**2)
         sage: print F.get_tangent_vector(0)
-        Segment I=Point(0,0) F=Point(1,0); Direction=Point(1,0)
+        vector I=Point(0,0) F=Point(1,0)
         sage: print F.get_tangent_vector(1)
-        Segment I=Point(1,1) F=Point(1/5*sqrt(5) + 1,2/5*sqrt(5) + 1); Direction=Point(1/5*sqrt(5),2/5*sqrt(5))
+        vector I=Point(1,1) F=Point(1/5*sqrt(5) + 1,2/5*sqrt(5) + 1)
         """
         initial = self.get_point(llam,advised)     
         return AffineVector( initial,Point(initial.x+self.derivative().f1(llam),initial.y+self.derivative().f2(llam)) ).normalize()
@@ -2435,7 +2524,7 @@ class ParametricCurve(object):
         EXAMPLES:
         sage: F=ParametricCurve(sin(x),x**2)
         sage: print F.get_normal_vector(0)
-        Segment I=Point(0,0) F=Point(0,-1); Direction=Point(0,-1)
+        vector I=Point(0,0) F=Point(0,-1)
         """
         anchor=self.get_point(llam,advised=False)
         tangent=self.get_tangent_vector(llam)
@@ -2473,12 +2562,12 @@ class ParametricCurve(object):
 
         sage: print F.get_second_derivative_vector(0,normalize=True)
         I cannot normalize a vector of size zero
-        Segment I=Point(0,0) F=Point(0,0); Direction=Point(0,0)
+        vector I=Point(0,0) F=Point(0,0)
 
         sage: print F.get_second_derivative_vector(0,normalize=False)
-        Segment I=Point(0,0) F=Point(0,0); Direction=Point(0,0)
+        vector I=Point(0,0) F=Point(0,0)
         sage: print F.get_second_derivative_vector(1)
-        Segment I=Point(1,1) F=Point(1,2); Direction=Point(0,1)
+        vector I=Point(1,1) F=Point(1,2)
 
         Note : if the parametrization is not normal, this is not orthogonal to the tangent.
         If you want a normal vector, use self.get_normal_vector

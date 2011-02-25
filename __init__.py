@@ -1002,7 +1002,7 @@ class pspicture(object):
     self.contenu_pstricks() is the whole code including the x/yunit
     self.contenu_eps() contains the line to be added in order to include the eps file
     """
-    NomPointLibre = ListeNomsPoints()
+    NomPointLibre = PointsNameList()
 
     def __init__(self,name="CAN_BE_A_PROBLEM_IF_TRY_TO_PRODUCE_EPS_OR_PDF"):
         r"""
@@ -1021,7 +1021,7 @@ class pspicture(object):
         self.specific_needs = ""    # See the class PspictureToOtherOutputs
         self.newwriteDone = False
         self.interWriteFile = newwriteName()+".pstricks.aux"
-        self.NomPointLibre = ListeNomsPoints()
+        self.NomPointLibre = PointsNameList()
         self.record_marks=[]
         self.record_bounding_box=[]
         self.record_draw_graph=[]
@@ -1140,7 +1140,7 @@ class pspicture(object):
         (needs several compilations to work)
         """
         # Make LaTeX write the value of the counter in a specific file
-        interCounterId = "counter"+self.name+self.NomPointLibre.suivant()
+        interCounterId = "counter"+self.name+self.NomPointLibre.next()
         print "J'ai le ID",interCounterId
         self.initialize_counter()
         self.add_write_line(interCounterId,r"\arabic{%s}"%counter_name)
@@ -1154,7 +1154,7 @@ class pspicture(object):
         dimension_name is a valid LaTeX macro that can be applied to a LaTeX expression and that return a number. Like
         widthof, depthof, heightof, totalheightof
         """
-        interId = dimension_name+self.name+self.NomPointLibre.suivant()
+        interId = dimension_name+self.name+self.NomPointLibre.next()
         self.initialize_newlength()
         self.add_latex_line(r"\setlength{\%s}{\%s{%s}}"%(newlengthName(),dimension_name,tex_expression),"WRITE_AND_LABEL")
         self.add_write_line(interId,r"\the\%s"%newlengthName())
