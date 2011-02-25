@@ -85,9 +85,9 @@ def PointsNameList():
     EXAMPLES:
     sage: x=PointsNameList()
     sage: x.next()
-    aaaa
+    'aaaa'
     sage: x.next()
-    aaab
+    'aaab'
     """
     alphabet=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
     for i in alphabet:
@@ -263,7 +263,7 @@ class GeometricPoint(object):
         Return a point even if the projections happens to lies outside the segment.
         """
         try :
-            seg=seg.segment()       # allows to project on an axe
+            seg=seg.segment()       # allows to project onto an axe
         except AttributeError :
             pass
         if seg.vertical :
@@ -282,7 +282,6 @@ class GeometricPoint(object):
         If pspict is given, we compute the deformation due to the dilatation. 
         Be carefull : in that case <dist> is given as _absolute value_ and the visual effect will not
         be affected by dilatations.
-
         """
         alpha=radian(theta,number=True)
         if pspict:
@@ -445,18 +444,6 @@ class GeometricPoint(object):
     def __str__(self):
         return "Point(%s,%s)"%(str(self.x),str(self.y))
 
-#class GeometricVector(GeometricSegment):
-#   """
-#   If two points are given to the constructor, return the vector 
-#   """
-#   def __init__(self,a,b):
-#       self.segment = GeometricSegment(a,b)
-#       self.I = self.segment.I
-#       self.F = self.segment.F
-#       self.Point = Point(self.F.x-self.I.x,self.F.y-self.I.y)     # Le point qui serait le vecteur lié à (0,0).
-#       self.Dx = self.F.x-self.I.x
-#       self.Dy = self.F.y-self.I.y
-
 class GeometricSegment(object):
     def __init__(self,A,B,arrow_type="segment"):
         self.I = A
@@ -489,6 +476,9 @@ class GeometricSegment(object):
         1
         sage: Segment(Point(1,2),Point(-1,8)).coefficient
         -3
+
+        NOTE:
+        If the line is vertical, raise a ZeroDivisionError
         """
         return SR(self.Dy)/self.Dx
 
@@ -781,11 +771,11 @@ class GeometricSegment(object):
         sage: print s.normalize(-1)
         segment I=Point(0,0) F=Point(1,0)
 
-        sage: v=AffineVector(Point(1,1),Point(2,1))
+        sage: v=AffineVector(Point(1,1),Point(3,1))
         sage: print v.normalize(2)
         vector I=Point(1,1) F=Point(3,1)
         sage: print v.normalize(-1)
-        vector I=Point(2,1) F=Point(1,1)
+        vector I=Point(1,1) F=Point(0,1)
         """
         if self.arrow_type=="segment":
             if l<0 : 
@@ -821,7 +811,8 @@ class GeometricSegment(object):
         sage: print 2*v
         vector I=Point(0,0) F=Point(2,2)
         sage: print -2*v
-        vector I=Point(1,1) F=Point(-1,-1)
+        vector I=Point(0,0) F=Point(-2,-2)
+
         sage: s=Segment(Point(1,1),Point(2,2))
         sage: print 3*s
         segment I=Point(1,1) F=Point(4,4)
@@ -896,7 +887,7 @@ class GeometricCircle(object):
         EXAMPLES:
         sage: C=Circle(Point(0,0),2)
         sage: print C.get_normal_vector(45)
-        Segment I=Point(sqrt(2),sqrt(2)) F=Point(3/2*sqrt(2),3/2*sqrt(2))
+        vector I=Point(sqrt(2),sqrt(2)) F=Point(3/2*sqrt(2),3/2*sqrt(2))
         """
         v = PolarPoint(1,theta).origin(self.get_point(theta,advised=False))
         v.arrow_type="vector"
@@ -2078,7 +2069,7 @@ class phyFunction(object):
         x
         sage: f=phyFunction(x**2)
         sage: print f.get_normal_vector(0)
-        segment I=Point(0,0) F=Point(0,-1)
+        vector I=Point(0,0) F=Point(0,-1)
         """
         #ca = self.derivative()(x) 
         #return Point(-ca,1).normalize().origin(self.get_point(x))       
@@ -2561,7 +2552,6 @@ class ParametricCurve(object):
         Normalizing a null vector produces a warning:
 
         sage: print F.get_second_derivative_vector(0,normalize=True)
-        I cannot normalize a vector of size zero
         vector I=Point(0,0) F=Point(0,0)
 
         sage: print F.get_second_derivative_vector(0,normalize=False)
