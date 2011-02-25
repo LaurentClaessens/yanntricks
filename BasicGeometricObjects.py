@@ -672,8 +672,29 @@ class GeometricSegment(object):
     def projection(self,segment):
         """
         Return the projection of self on the given segment
+
+        It also works with vectors
+
+        INPUT:
+        - ``segment`` - the line on which we want to project
+
+        EXAMPLES:
+        sage: l = Segment(Point(0,0),Point(0,1))
+        sage: v = AffineVector(Point(-1,1),Point(-2,3))
+        sage: print v.equation
+        x + 1/2*y + 1/2 == 0
+        sage: print v.projection(l)
+        vector I=Point(0,1) F=Point(0,3)
+        sage: print l.projection(v)
+        segment I=Point(-2/5,-1/5) F=Point(-4/5,3/5)
+
+        
+        sage: l = Segment(Point(0,0),Point(1,2))
+        sage: s = Segment(Point(-2,1),Point(-3,4))
+        sage: print s.projection(l)
+        segment I=Point(0,0) F=Point(1,2)
         """
-        v= Segment(self.I.projection(segment),self.F.projection(segment))
+        v = Segment(self.I.projection(segment),self.F.projection(segment))
         return self.return_deformations(v)
     def orthogonal(self):
         """
