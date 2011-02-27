@@ -124,15 +124,15 @@ def _latinize(word):
             latin = latin+"D"
     return latin
 
-def remove_point_name(s):
+def unify_point_name(s):
     """
-    Interpet s as the pstricks code of something and return a chain with
-    all the points names changed to "XXX".
+    Internet s as the pstricks code of something and return a chain with
+    all the points names changed to "Xaaaa", "Xaaab" etc.
 
-    Practically, it changes the stringls like "{abcd}" to "{XXXX}"
+    Practically, it changes the stringls like "{abcd}" to "{Xaaaa}"
 
-    This serves to build stronger doctests.
-
+    This serves to build stronger doctests by providing strings in which
+    we are sure that the names of the points are the first in the list.
 
     INPUT:
     - ``s`` - a string
@@ -141,13 +141,54 @@ def remove_point_name(s):
     string
 
     EXAMPLES:
+    In the following example, the points name in the segment
+    begin by "aaad" due to the definition of P.
+    (due to complex implementation, the names of the points are 
+    more or less imprevisible and can change)
+
+    sage: P=Point(3,4)
     sage: S = Segment(Point(1,1),Point(2,2))
-    sage: print remove_point_name(S.pstricks_code())
+    sage: print S.pstricks_code()
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){aaad}
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](2.00000000000000,2.00000000000000){aaae}
+    <BLANKLINE>
+    \pstLineAB[linestyle=solid,linecolor=black]{aaad}{aaae}
 
+    However, using the function unify_point_name, the returned string begins with "Xaaaa" :
+    sage: print unify_point_name(S.pstricks_code())
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaaa}
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](2.00000000000000,2.00000000000000){Xaaab}
+    <BLANKLINE>
+    \pstLineAB[linestyle=solid,linecolor=black]{Xaaaa}{Xaaab}
 
+    Notice that the presence of "X" is necessary in order to avoid
+    conflicts when one of the points original name is one of the new points name as in
+
+    sage: s="{xxxx}{aaaa}{yyyy}"
+    sage: print unify_point_name(s)
+    {Xaaaa}{Xaaab}{Xaaac}
+
+    Without the additional X, 
+    1. the first "xxxx" would be changed to "aaaa"
+    2. when changing "aaaa" into "aaab", the first one
+            would be changed too.
     """
     import re
-    return re.sub("{[a-zA-Z]{4,4}}","{XXXX}",s)
+
+    point_pattern=re.compile("({[a-zA-Z]{4,4}})")
+    match = point_pattern.findall(s)
+
+    rematch=[]
+    for m in match:
+        if m not in rematch:
+            rematch.append(m)
+
+    names=PointsNameList()
+    for m in rematch:
+        name=names.next()
+        s=s.replace(m,"{X%s}"%name)
+
+    return s
 
 
 sysargvzero = sys.argv[0][:]

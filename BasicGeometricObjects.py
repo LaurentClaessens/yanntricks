@@ -89,6 +89,8 @@ def PointsNameList():
     sage: x.next()
     'aaab'
     """
+    # The fact that this function return 4 character strings is hard-coded here 
+    #   and that 4 is hard-coded in the function unify_point_name
     alphabet=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
     for i in alphabet:
         for j in alphabet:
