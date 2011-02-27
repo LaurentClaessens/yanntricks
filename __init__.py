@@ -28,8 +28,6 @@ import codecs
 import math, sys
 from phystricks.BasicGeometricObjects import *
 from phystricks.SmallComputations import *
-#import numpy               # I do not remember why I used that.
-#import MathConstructions
 
 def RemoveLastZeros(x,n):
     """
@@ -125,6 +123,32 @@ def _latinize(word):
         if s==".":
             latin = latin+"D"
     return latin
+
+def remove_point_name(s):
+    """
+    Interpet s as the pstricks code of something and return a chain with
+    all the points names changed to "XXX".
+
+    Practically, it changes the stringls like "{abcd}" to "{XXXX}"
+
+    This serves to build stronger doctests.
+
+
+    INPUT:
+    - ``s`` - a string
+
+    OUTPUT:
+    string
+
+    EXAMPLES:
+    sage: S = Segment(Point(1,1),Point(2,2))
+    sage: print remove_point_name(S.pstricks_code())
+
+
+    """
+    import re
+    return re.sub("{[a-zA-Z]{4,4}}","{XXXX}",s)
+
 
 sysargvzero = sys.argv[0][:]
 def newwriteName():
