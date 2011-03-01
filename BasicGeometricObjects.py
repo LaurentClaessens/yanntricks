@@ -128,19 +128,43 @@ def PolarPoint(r,theta):
 def Segment(A,B):
     return GraphOfASegment(GeometricSegment(A,B))
 
-#class GraphOfAVector(GraphOfAnObject,GeometricVector):
-#   def __init__(self,vect):
-#       GraphOfAnObject.__init__(self,vect)
-#       GeometricVector.__init__(self,vect.I,vect.F)
-#       self.vector = self.obj
-#       self.I.psName = self.vector.I.psName
-#       self.F.psName = self.vector.F.psName
-#   def mark_point(self):
-#       return self.F
-#   def bounding_box(self,pspict=None):
-#       return GraphOfASegment(self.segment).bounding_box(pspict)
-#   def math_bounding_box(self,pspict=None):
-#       return GraphOfASegment(self.segment).math_bounding_box(pspict)
+def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
+    """
+    return a vector field that is drawn on the points given in the list
+
+    INPUT:
+    - ``f`` - a tupe of function
+    - ``xvalues`` - a tuple (x,mx,Mx,n) where mx and Mx are the min and max values of x and
+                    n is the number of values to be used on that interval.
+    - ``draw_points`` - a list of points on which the vector field has to be drawn.
+                        If draw_point is given, xvalues and yvalues are not taken into account
+
+    OUTPUT:
+    the graphe vector field.
+
+    EXAMPLES:
+    sage: x,y=var('x,y')
+    sage: F=VectorField(x*y,cos(x)+y)
+    sage: F.divergence()
+    y + 1
+
+    If you want an automatic Cartesian grid of points, use xvalues and yvalues :
+
+    sage: F=VectorField(exp(x+y),x**2+y**2,xvalues=(x,-1,1,3),yvalues=(y,-5,5,6))
+    sage: len(F.draw_points)
+    18
+    sage: print F.draw_points[5]
+    Point(-1.0,5.0)
+
+    If you want a personal list of points, use draw_points :
+
+    sage: F=VectorField(exp(x+y),x**2+y**2, draw_points=[Point(1,1),Point(5,-23)] )
+    sage: print F.draw_points[0]
+    Point(1,1)    
+    sage: print F.draw_points[1]
+    Point(5,-23)
+    """
+    return GeometricVectorField(fx,fy).graph(xvalues,yvalues,draw_points)
 
 def _vector_pstricks_code(segment,pspict=None):
     """
@@ -192,6 +216,8 @@ def Circle(center,radius):
     return GraphOfACircle(GeometricCircle(center,radius))
 def Rectangle(NW,SE):
     return GraphOfARectangle(GeometricRectangle(NW,SE))
+
+
 
 class GraphOfAnObject(object):
     """ This class is supposed to be used to create other "GraphOfA..." by inheritance. It is a superclass. """
@@ -1866,7 +1892,164 @@ class GraphOfASegment(GraphOfAnObject,GeometricSegment):
                 a=a+"\n\pstLineAB[%s]{%s}{%s}"%(self.params(),self.I.psName,self.F.psName)
                 return a
 
+class GeometricVectorField(object):
+    """
+    Describe a vector field
 
+    INPUT:
+    - ``f`` - a tupe of function
+
+    EXAMPLES:
+    sage: x,y=var('x,y')
+    sage: f1=phyFunction(x**2)
+    sage: F = GeometricVectorField( f1,cos(x*y) )
+    sage: print F(3,pi/3)
+    vector I=Point(3,1/3*pi) F=Point(12,1/3*pi - 1)
+    """
+    def __init__(self,fx,fy):
+        g=[fx,fy]
+        for i in [0,1]:
+            if isinstance(g[i],phyFunction):
+                g[i]=g[i].sage
+        self.fx=g[0]
+        self.fy=g[1]
+        self.vector_field=self
+    def divergence(self):
+        """
+        return the divergence of the vector field
+
+        OUTPUT:
+        a two-variable function
+
+        EXAMPLES:
+        sage: x,y=var('x,y')
+        sage: F = GeometricVectorField( x , y )
+        sage: F.divergence()
+        2
+
+        The divergence of the gravitational field is zero:
+
+        sage: G=GeometricVectorField(x/(x**2+y**2),y/(x**2+y**2))
+        sage: G.divergence().simplify_full()
+        0
+
+        The divergence is a funciton:
+        sage: a,b=var('a,b')
+        sage: H=GeometricVectorField( x**2,y**3 )
+        sage: H.divergence()(x=a,y=b)
+        3*b^2 + 2*a
+        """
+        x,y=var('x,y')
+        divergence=self.fx.diff(x)(x=x,y=y)+self.fy.diff(y)(x=x,y=y)
+        return divergence
+    def graph(self,xvalues=None,yvalues=None,draw_points=[]):
+        """
+        return a graph of self with the given points
+
+        INPUT:
+        - ``xvalues`` - tuple (x,mx,My,n) interval and number of points with respect to X
+        - ``yvalues`` - tuple (y,my,My,n) interval and number of points with respect to Y
+        - ``draw_points`` - (defaulf : empty list) a list of points
+
+        If xvalues is given, then yvalues has to be given.
+
+        OUTPUT:
+        object GraphOfAVectorField
+        
+        EXAMPLES:
+        sage: x,y=var('x,y')
+        sage: F=VectorField(x,y).graph(xvalues=(x,-2,2,3),yvalues=(y,-10,10,3),draw_points=[Point(100,100)])
+        sage: print F.draw_points[0]
+        Point(100,100)
+        """
+        if draw_points is None:
+            draw_points=[]
+        if xvalues:
+            import numpy
+            mx=xvalues[1]
+            Mx=xvalues[2]
+            nx=xvalues[3]
+            my=yvalues[1]
+            My=yvalues[2]
+            ny=yvalues[3]
+            pos_x=numpy.linspace(mx,Mx,nx)
+            pos_y=numpy.linspace(my,My,ny)
+            draw_points.extend( [Point(x,y) for x in pos_x for y in pos_y] )
+        return GraphOfAVectorField(self,draw_points)
+    def __call__(self,a,b=None):
+        """
+        return the affine vector at point (a,b)
+
+        INPUT:
+        - ``a,b`` - numbers
+
+        OUTPUT:
+        an affine vector based on (a,b)
+
+        EXAMPLES:
+        sage: x,y=var('x,y')
+        sage: F=VectorField(x**2,y**3)
+        sage: print F(1,2)
+        vector I=Point(1,2) F=Point(2,10)
+
+        sage: P=Point(3,4)
+        sage: print F(P)
+        vector I=Point(3,4) F=Point(12,68)
+
+        """
+        if b is not None :
+            P=Point(a,b)
+        else :
+            P=a
+        vx=self.fx(x=P.x,y=P.y)
+        vy=self.fy(x=P.x,y=P.y)
+        return AffineVector(P,Point(P.x+vx,P.y+vy))
+
+class GraphOfAVectorField(GraphOfAnObject,GeometricVectorField):
+    """
+    the graph object of a vector field
+
+    INPUT:
+    - ``F`` - a vector field
+    - ``draw_point`` - the list of points on which it has to be drawn
+
+    Typically, in order to construct such an object we use the function
+    VectorField
+    and then the method 
+    GeometricVectorField.graph
+
+    See the function VectorField and GeometricVectorField.graph for documentation.
+    """
+    def __init__(self,F,draw_points):
+        GraphOfAnObject.__init__(self,F)
+        GeometricVectorField.__init__(self,F.fx,F.fy)
+        self.vector_field=F
+        self.F=self.vector_field
+        self.draw_points=draw_points
+
+    @lazy_attribute
+    def draw_vectors(self):
+        """
+        the list of vectors to be drawn
+        """
+        l=[]
+        for P in self.draw_points:
+            l.append(self.F(P))
+        return l
+
+    def bounding_box(self,pspict=None):
+        bb = BoundingBox()
+        for v in self.draw_vectors:
+            bb.append(v,pspict)
+    def pstricks_code(self,pspict=None):
+        return "bonjour"
+        code=[]
+        for v in self.draw_vectors:
+            print "oui"
+            #v.parameters=self.parameters
+            #print "2048",v.pstricks_code(pspict)
+            #code.append(v.pstricks_code(pspict))
+        return "\n".join(code)
 
 class MeasureLength(GraphOfASegment):
     """
@@ -2016,7 +2199,11 @@ class phyFunction(object):
                 self.sage = fun
                 try :
                     self.sageFast = self.sage._fast_float_(x)
-                except NotImplementedError,TypeError :      # Happens when the derivative of the function is not implemented in Sage
+                # Happens when the derivative of the function is not implemented in Sage
+                # Also happens when there is a free variable,
+                # as an example
+                # F=GraphOfAVectorField(x,y)
+                except (NotImplementedError,TypeError,ValueError) :    
                     self.sageFast = self.sage(x)
 
             except AttributeError:          # Happens when the function is given by a number like f=0  F=phyFunction(f)
@@ -2077,6 +2264,21 @@ class phyFunction(object):
             return self._derivative
         else:
             return self.derivative(n-1).derivative()
+    #def diff(self,v):
+    #    """
+    #    make the same as Sage's diff.
+    #
+    #    The aim is to be able to differentiate with respect to x and y a function of two variables.
+
+    #    EXAMPLES:
+    #    sage: x,y=var('x,y')
+    #    sage: f=phyFunction(x*y)
+    #    sage: print f.diff(x)
+    #    y
+    #    sage: print f.diff(y)
+    #    x
+    #    """
+    #    return phyFunction(self.sage.diff(v))
     def get_point(self,x,advised=True):        
         """
         Return a point on the graph of the function with the given x, i.e. it return the point (x,f(x)).
@@ -2295,6 +2497,8 @@ class phyFunction(object):
         except TypeError :
             f=phyFunction(self.sage * other.sage)
         return f
+    def __add__(self,other):
+        return phyFunction(self.sage+other.sage)
     def __str__(self):
         return str(self.sage)
 
