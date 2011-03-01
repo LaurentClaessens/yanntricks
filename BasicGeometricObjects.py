@@ -946,6 +946,36 @@ class GeometricCircle(object):
         - ``theta`` - the angle given in degree
         """
         return self.parametric_curve().get_point(radian(theta,numerical=numerical),advised=advised)
+    def get_regular_points(self,mx,Mx,l,advised=True):
+        """
+        return regularly spaced points on the circle
+
+        INPUT:
+        - ``mx`` - initial angle (degree)
+        - ``Mx`` - final angle (degree)
+        - ``l`` - distance between two points (arc length)
+        - ``advised`` - (default=True) if True, compute an advised mark angle for each point
+                                        this is CPU-intensive
+
+
+        OUTPUT:
+        a list of points
+
+        EXAMPLES:
+        sage: C=Circle(Point(0,0),2)
+        sage: pts=C.get_regular_points(0,90,1)
+        sage: [str(p) for p in pts]
+        ['Point(2,0)', 'Point(2*cos(1/2),2*sin(1/2))', 'Point(2*cos(1),2*sin(1))', 'Point(2*cos(3/2),2*sin(3/2))']
+
+        """
+        Dtheta=(180/pi)*(l/self.radius)
+        if Dtheta==0:
+            raise ValueError,"Dtheta is zero"
+        pts=[]
+        import numpy
+        theta=numpy.arange(mx,Mx,step=Dtheta)
+        return [self.get_point(t,advised) for t in theta]
+
     def get_tangent_vector(self,theta):
         return PolarPoint(1,theta+90).origin(self.get_point(theta,advised=False))
     def get_normal_vector(self,theta):
@@ -1964,7 +1994,7 @@ class GeometricVectorField(object):
         """
         if draw_points is None:
             draw_points=[]
-        if xvalues:
+        if xvalues is not None:
             import numpy
             mx=xvalues[1]
             Mx=xvalues[2]
@@ -1974,7 +2004,9 @@ class GeometricVectorField(object):
             ny=yvalues[3]
             pos_x=numpy.linspace(mx,Mx,nx)
             pos_y=numpy.linspace(my,My,ny)
-            draw_points.extend( [Point(x,y) for x in pos_x for y in pos_y] )
+            for xx in pos_x:
+                for yy in pos_y:
+                    draw_points.append(Point(xx,yy))
         return GraphOfAVectorField(self,draw_points)
     def __call__(self,a,b=None):
         """
@@ -2036,19 +2068,18 @@ class GraphOfAVectorField(GraphOfAnObject,GeometricVectorField):
         for P in self.draw_points:
             l.append(self.F(P))
         return l
-
+    def math_bounding_box(self,pspict):
+        return self.bounding_box(pspict)
     def bounding_box(self,pspict=None):
         bb = BoundingBox()
         for v in self.draw_vectors:
             bb.append(v,pspict)
+        return bb
     def pstricks_code(self,pspict=None):
-        return "bonjour"
         code=[]
         for v in self.draw_vectors:
-            print "oui"
-            #v.parameters=self.parameters
-            #print "2048",v.pstricks_code(pspict)
-            #code.append(v.pstricks_code(pspict))
+            v.parameters=self.parameters
+            code.append(v.pstricks_code(pspict))
         return "\n".join(code)
 
 class MeasureLength(GraphOfASegment):
