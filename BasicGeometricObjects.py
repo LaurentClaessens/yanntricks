@@ -1382,6 +1382,9 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
     If nothing is said, the functions are not drawn at all.
     You can also try to control the option linestyle (use add_option).
     """
+
+    #TODO: change this class into a function which returns a SurfaceBetweenParametricCurves instead.
+
     # linestyle=none in self.add_option corresponds to the fact that we do not want to draw the curve.
     # No default color are given; the reason is  that we want to be able  to control the color of each element separately. 
     def __init__(self,f1,f2,mx,Mx):
@@ -1430,6 +1433,102 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
         if self.vertical_right.parameters.style != "none" :
             a.append(self.vertical_right.pstricks_code())
         return "\n".join(a)
+
+
+class SurfaceBetweenParametricCurves(GraphOfAnObject):
+    """
+    Represents a surface between two parametric curves.
+
+    INPUT:
+    - ``curve1,curve2`` - two parametric curves
+
+    Optional :
+    - ``mx1,Mx1`` - initial and final values of the parameter for the first curve
+    - ``mx2,Mx2`` - initial and final values of the parameter for the first curve
+        If these parameters are not given, consider the values of mx and Mx of curve1 and curve2
+        (if the latter are graphs)
+    - ``reverse1`` - (default=False) if True, reverse the sense of curve1 
+    - ``reverse2`` - (default=True) if True, reverse the sense of curve1 
+        Let us suppose that curve1 goes from A1 to B1 and curve2 from A2 to B2
+        If we do not reverse the sense of anything, the result will be
+        the surface delimited by
+
+        curve1 :        A1 -> B1
+        up_segment :    B1 -> B2
+        curve2 :        A2 -> B2
+        low_segment     A2 -> A1
+        
+        This is wrong since the last point of each line is not the first
+        point of the next line.
+
+        For that reason, the second curve is, by default, reversed in order to get
+        curve1 :            A1 -> B1
+        up_segment :        B1 -> B2
+        curve2 (reversed)   B2 -> A2
+        low_segment         A2 -> A1
+
+    OUTPUT:
+    An object ready to be draw
+
+    NOTE:
+    If the two curves make intersections, the result could be messy.
+    """
+    def __init__(self,curve1,curve2,mx1=None,Mx1=None,mx2=None,Mx2=None,reverse1=False,reverse2=True):
+        GraphOfAnObject.__init__(self,self)
+        self.mx1=mx1
+        self.mx2=mx2
+        self.Mx1=Mx1
+        self.Mx2=Mx2
+        self.reverse1=reverse1
+        self.reverse2=reverse2
+
+        if mx1 is None :
+            self.mx1=curve1.llamI
+            self.Mx1=curve1.llamF
+        if mx2 is None :
+            self.mx2=curve2.llamI
+            self.Mx2=curve2.llamF
+
+        self.curve1=curve1
+        self.curve2=curve2
+        self.low_segment=Segment(self.curve2.get_point(self.mx2,advised=False),self.curve1.get_point(self.mx1,advised=False))
+        self.up_segment=Segment(self.curve1.get_point(self.Mx1,advised=False),self.curve2.get_point(self.Mx2,advised=False))
+
+        self.add_option("fillstyle=vlines,linestyle=none")  
+        self.parameters.color=None              
+    def bounding_box(self,pspict=None):
+        bb=BoundingBox()
+        bb.append(self.curve1,pspict=None)
+        bb.append(self.curve2,pspict=None)
+        return bb
+    def math_bounding_box(self,pspict=None):
+        return self.bounding_box(pspict)
+    def pstricks_code(self,pspict=None):
+        if self.parameters.color :      # Here we give a default color
+            self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
+        a=[]
+        
+        c1=self.curve1
+        c2=self.curve2
+        if self.reverse1:
+            c1=c1.reverse()
+        if self.reverse2:
+            c2=c2.reverse()
+
+        custom=CustomSurface(c1,self.up_segment,c2,self.low_segment)
+        a.append(custom.pstricks_code())
+
+        if self.curve1.parameters.style != "none":
+            a.append(self.curve1.pstricks_code())
+        if self.curve2.parameters.style != "none":
+            a.append(self.curve2.pstricks_code())
+        if self.low_segment.parameters.style != "none" :
+            a.append(self.low_segment.pstricks_code())
+        if self.up_segment.parameters.style != "none" :
+            a.append(self.up_segment.pstricks_code())
+        return "\n".join(a)
+
+
 
 class SurfaceUnderFunction(SurfaceBetweenFunctions):
     """
@@ -2152,10 +2251,13 @@ class MeasureLength(GraphOfASegment):
     The segment (and then the graph associated with the mark) is the parallel one,
     not the segment given in argument.
 
-    EXAMPLE
-    seg=Segment(a,b)
-    m=MeasureLength(seg,0.2)
-    m.put_mark(0.3,90,"$l$")
+    EXAMPLES:
+    sage: O=Point(0,0)
+    sage: A=Point(1,0)
+    sage: measureOA=MeasureLength(Segment(O,A),0.1)
+    sage: measureOA.put_mark(0.3,-90,"$a$")
+    sage: print measureOA.mark.central_point()
+    Point(0.5,-0.400000000000000)
     """
     def __init__(self,seg,dist=0.1):
         try :
@@ -3062,6 +3164,24 @@ class GraphOfAParametricCurve(GraphOfAnObject,ParametricCurve):
         self.add_option("plotpoints=%s"%str(self.plotpoints))
         self.add_option("plotstyle=%s"%str(self.plotstyle))
         return self.options.code()
+    def reverse(self):
+        """
+        return the curve in the inverse sense but on the same interval
+
+        EXAMPLE:
+        sage: x=var('x')
+        sage: curve=ParametricCurve(cos(x),sin(x)).graph(0,2*pi).reverse()
+        sage: print curve
+        The parametric curve given by
+        x(t)=cos(2*pi - t)
+        y(t)=sin(2*pi - t)
+        """
+        x=var('x')
+        a=self.llamI
+        b=self.llamF
+        f1=self.f1.sage(x=b-(x-a))
+        f2=self.f2.sage(x=b-(x-a))
+        return ParametricCurve(f1,f2).graph(a,b)
     def bounding_box(self,pspict=None):
         xmin=self.xmin(self.llamI,self.llamF)
         xmax=self.xmax(self.llamI,self.llamF)
