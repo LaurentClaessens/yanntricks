@@ -133,7 +133,9 @@ def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
     return a vector field that is drawn on the points given in the list
 
     INPUT:
-    - ``f`` - a tupe of function
+    - ``fx,fy`` - two functions
+
+    OPTIONAL :
     - ``xvalues`` - a tuple (x,mx,Mx,n) where mx and Mx are the min and max values of x and
                     n is the number of values to be used on that interval.
     - ``draw_points`` - a list of points on which the vector field has to be drawn.
@@ -156,6 +158,14 @@ def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
     sage: print F.draw_points[5]
     Point(-1.0,5.0)
 
+    The same can be obtained using the following syntax (see the function GeometricVectorField.graph) :
+
+    sage: F=VectorField(exp(x+y),x**2+y**2).graph(xvalues=(x,-1,1,3),yvalues=(y,-5,5,6))
+    sage: len(F.draw_points)
+    18
+    sage: print F.draw_points[5]
+    Point(-1.0,5.0)
+
     If you want a personal list of points, use draw_points :
 
     sage: F=VectorField(exp(x+y),x**2+y**2, draw_points=[Point(1,1),Point(5,-23)] )
@@ -164,6 +174,8 @@ def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
     sage: print F.draw_points[1]
     Point(5,-23)
     """
+    if xvalues is None and yvalues is None and draw_points is None :
+        return GeometricVectorField(fx,fy)
     return GeometricVectorField(fx,fy).graph(xvalues,yvalues,draw_points)
 
 def _vector_pstricks_code(segment,pspict=None):
@@ -1972,7 +1984,7 @@ class GeometricVectorField(object):
         x,y=var('x,y')
         divergence=self.fx.diff(x)(x=x,y=y)+self.fy.diff(y)(x=x,y=y)
         return divergence
-    def graph(self,xvalues=None,yvalues=None,draw_points=[]):
+    def graph(self,xvalues=None,yvalues=None,draw_points=None):
         """
         return a graph of self with the given points
 
@@ -1991,6 +2003,8 @@ class GeometricVectorField(object):
         sage: F=VectorField(x,y).graph(xvalues=(x,-2,2,3),yvalues=(y,-10,10,3),draw_points=[Point(100,100)])
         sage: print F.draw_points[0]
         Point(100,100)
+        sage: print len(F.draw_points)
+        10
         """
         if draw_points is None:
             draw_points=[]
@@ -2007,7 +2021,7 @@ class GeometricVectorField(object):
             for xx in pos_x:
                 for yy in pos_y:
                     draw_points.append(Point(xx,yy))
-        return GraphOfAVectorField(self,draw_points)
+        return GraphOfAVectorField(self,draw_points=draw_points)
     def __call__(self,a,b=None):
         """
         return the affine vector at point (a,b)
@@ -2065,9 +2079,58 @@ class GraphOfAVectorField(GraphOfAnObject,GeometricVectorField):
         the list of vectors to be drawn
         """
         l=[]
-        for P in self.draw_points:
-            l.append(self.F(P))
+        return  [self(P) for P in self.draw_points] 
+
+    @lazy_attribute
+    def pos_x(self):
+        """
+        return the list of x positions on which there is a drawn vector
+
+        The list is sorted
+
+        NOTE:
+        If self was created using the optional argument draw_points,
+        then the set of points on which there is a vector
+        is not equal to the product
+        self.pos_x times self.pos_y
+        
+        EXAMPLES:
+        The two lists created in the following example are the same :
+        sage: x,y=var('x,y')
+        sage: F=VectorField(x,y).graph(xvalues=(x,1,2,3),yvalues=(y,-2,2,3))
+        sage: [ P.coordinates() for P in F.draw_points ]
+        ['(1.0,-2.0)', '(1.0,0)', '(1.0,2.0)', '(1.5,-2.0)', '(1.5,0)', '(1.5,2.0)', '(2.0,-2.0)', '(2.0,0)', '(2.0,2.0)']
+        sage: [ (x,y) for x in F.pos_x for y in F.pos_y ]
+        [(1.0, -2.0), (1.0, 0.0), (1.0, 2.0), (1.5, -2.0), (1.5, 0.0), (1.5, 2.0), (2.0, -2.0), (2.0, 0.0), (2.0, 2.0)]
+
+
+        But in the following, the list is not the list of points :
+        sage: G=VectorField(x,y).graph(draw_points=[Point(1,2),Point(3,4)])
+        sage: [ (x,y) for x in G.pos_x for y in G.pos_y ]
+        [(1, 2), (1, 4), (3, 2), (3, 4)]
+
+        """
+        l = []
+        for P in self.draw_points :
+            if P.x not in l:
+                l.append(P.x)
+        l.sort()
         return l
+
+    @lazy_attribute
+    def pos_y(self):
+        """
+        return the list of y positions on which there is a drawn vector
+
+        See pos_x
+        """
+        l = []
+        for P in self.draw_points :
+            if P.y not in l:
+                l.append(P.y)
+        l.sort()
+        return l
+
     def math_bounding_box(self,pspict):
         return self.bounding_box(pspict)
     def bounding_box(self,pspict=None):
