@@ -1470,6 +1470,18 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
     OUTPUT:
     An object ready to be draw
 
+    EXAMPLES
+    sage: curve1=ParametricCurve(x,x**2).graph(2,3)
+    sage: curve2=ParametricCurve(x,x**3).graph(2,5)
+    sage: region=SurfaceBetweenParametricCurves(curve1,curve2)
+
+    The segment "closing" the domain are available by the attributes 
+    low_segment and up_segment :
+    sage print region.low_segment
+    segment I=Point(2,8) F=Point(2,4)
+    sage print region.up_segment
+    segment I=Point(3,9) F=Point(5,125)
+
     NOTE:
     If the two curves make intersections, the result could be messy.
     """
@@ -1508,8 +1520,8 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
             self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
         a=[]
         
-        c1=self.curve1
-        c2=self.curve2
+        c1=self.curve1.graph(self.mx1,self.Mx1)
+        c2=self.curve2.graph(self.mx2,self.Mx2)
         if self.reverse1:
             c1=c1.reverse()
         if self.reverse2:
@@ -2851,6 +2863,20 @@ class ParametricCurve(object):
 
     The graph of curve with the parameter going from a to b is got by
         curve.graph(a,b)
+
+    INPUT:
+    - ``f1,f2`` - functions
+
+    OUTPUT:
+    an object ready to be drawn
+
+    EXAMPLES:
+    sage: x=var('x')
+    sage: f1=phyFunction(x)
+    sage: f2=phyFunction(x**2)
+    sage: F=ParametricCurve(f1,f2).graph(-2,3)
+    sage: print F.pstricks_code()
+    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{-2.00000000000000}{3.00000000000000}{t | t^2 }
     """
     # The derivatives of the parametric curves are stored in the
     # dictionary attribute self._derivative_dict
@@ -3138,7 +3164,8 @@ class ParametricCurve(object):
         g2=-sin(alpha)*self.f1+cos(alpha)*self.f2
         return ParametricCurve(g1,g2)
     def graph(self,mx,Mx):
-        return phystricks.GraphOfAParametricCurve(self,mx,Mx)
+        #return phystricks.GraphOfAParametricCurve(self,mx,Mx)      # I do not remember why I did so (March, 2, 2011)
+        return GraphOfAParametricCurve(self,mx,Mx)
     def __call__(self,llam,approx=False):
         return self.get_point(llam,approx)
     def __str__(self):
