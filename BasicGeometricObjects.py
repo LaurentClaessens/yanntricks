@@ -1823,7 +1823,6 @@ def ImplicitCurve(f,xrange,yrange,plot_points=100):
 
     Using Sage's implicit_curve and matplotlib, a list of points "contained" in the curve is created. The bounding_box is 
     calculated from that list. The pstricsk code generated will be an interpolation curve passing trough all these points.
-    On the examples I tested, using pstricks's function \psplotImp returns lower quality result.
     """
     return GeometricImplicitCurve(f).graph(xrange,yrange,plot_points=100)
 
