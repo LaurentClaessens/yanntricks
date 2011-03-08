@@ -458,6 +458,30 @@ class GeometricPoint(object):
         return phystricks.GraphOfAPoint(self)
     def copy(self):
         return Point(self.x,self.y)
+    def __eq__(self,other):
+        """
+        two points are equal if their coordinates, return True
+
+        INPUT:
+        - ``other`` - an other point
+
+        OUTPUT:
+        True, False
+
+        EXAMPLES:
+        The fact to change the properties of a point don't change the equality
+        sage: a=Point(1,1)
+        sage: b=Point(1,1)
+        sage: b.put_mark(1,1,"$P$")
+        sage: a==b
+        True
+        sage: c=Point(0,0)
+        sage: c==a
+        False
+        """
+        if self.x == other.x and self.y==other.y :
+            return True
+        return False
     def __add__(self,v):
         """
         Addition of a point with a vector is the parallel translation, while addition of a point with an other point is simply
@@ -804,11 +828,19 @@ class GeometricSegment(object):
         v = coef*self
         return self.return_deformations(v)
     def fix_size(self,l):
+        """
+        return a new vector or segment with size l.
+
+        This function has not to be used by the end user. Use self.normalize() instead.
+        """
         L=self.length()
         if L == 0:
             print "fix_size problem: this vector has a norm equal to zero"
             return self.copy()
-        v = self.dilatation(l/self.length())
+        if self.arrow_type=="segment":
+            v = self.dilatation(l/self.length())
+        if self.arrow_type=="vector":
+            return self.normalize(l)
         return self.return_deformations(v)
     def add_size(self,lI,lF):
         """
@@ -914,6 +946,36 @@ class GeometricSegment(object):
                 coef=-coef
         v = Segment(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
         return self.return_deformations(v)
+    def __add__(self,other):
+        """
+        In the case of addition of two segments with same origin, return a segment
+        representing the vector sum.
+
+        INPUT:
+        - ``other`` - an other segment
+
+        OUTPUT:
+        A new vector
+
+        EXAMPLES:
+        sage: a=Vector(1,1)
+        sage: b=Vector(2,3)
+        sage: print a+b
+        vector I=Point(0,0) F=Point(3,4)
+
+        sage: a=Segment(Point(1,1),Point(3,4))
+        sage: b=AffineVector(Point(1,1),Point(-1,3))
+        sage: print a+b
+        segment I=Point(1,1) F=Point(1,6)
+        """
+        if isinstance(other,GeometricSegment):
+            if self.I == other.I:
+                v=Vector(self.F.x-self.I.x+other.F.x-other.I.x, self.F.y-self.I.y+other.F.y-other.I.y,)
+                return self.return_deformations(v.origin(self.I))
+            else:
+                raise TypeError,"These two segments don't have the same origin. I cannot sum them."
+        else:
+            raise TypeError,"I do not know how to sum %s with %s"%(self,other)
     def __rmul__(self,coef):
         return self*coef
     def __neg__(self):
