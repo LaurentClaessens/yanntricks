@@ -1432,6 +1432,7 @@ class pspicture(object):
             separator_name=x.separator_name
             try :
                 self.BB.append(graph,self)
+                print "1435",type(graph)
                 self.add_latex_line(graph.pstricks_code(self),separator_name)
             except AttributeError,data:
                 if not "pstricks_code" in dir(graph):

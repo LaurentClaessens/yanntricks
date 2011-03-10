@@ -1714,8 +1714,8 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
         return BoundingBox(self.point,self.point)
     def pstricks_code(self,pspict=None):
         l=[]
-        if self.marque:
-            l.append(self.mark.pstricks_code(pspict))
+        #if self.marque:
+        #    l.append(self.mark.pstricks_code(pspict))
         l.append("\pstGeonode["+self.params()+"]"+self.coordinates(numerical=True)+"{"+self.psName+"}")
         return "\n".join(l)
 
@@ -2084,7 +2084,7 @@ class GraphOfASegment(GraphOfAnObject,GeometricSegment):
         if self.arrow_type == "vector" :
             P=self.F.copy()
         else :
-            P=self.center()
+            P=self.center().copy()
         return P
     def bounding_box(self,pspict=None):
         return BoundingBox(self.I,self.F)       # If you change this, maybe you have to adapt math_bounding_box
@@ -2365,8 +2365,8 @@ class MeasureLength(GraphOfASegment):
         vF.parameters=self.parameters
         a.append(vI.pstricks_code())
         a.append(vF.pstricks_code())
-        if self.marque :
-            a.append(self.mark.pstricks_code(pspict))
+        #if self.marque :
+        #    a.append(self.mark.pstricks_code(pspict))
         return "\n".join(a)
 
 
@@ -2449,8 +2449,8 @@ class GraphOfAnAngle(GraphOfAnObject,GeometricAngle):
         circle=self.circle()
         circle.parameters=self.parameters
         l=[]
-        if self.marque:
-            l.append(self.mark.pstricks_code(pspict))
+        #if self.marque:
+        #    l.append(self.mark.pstricks_code(pspict))
         l.append(circle.pstricks_code(pspict))
         return "\n".join(l)
 
