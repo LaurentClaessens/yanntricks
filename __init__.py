@@ -73,7 +73,7 @@ def RemoveLastZeros(x,n):
         return u[:-1]
     return u
 
-def _latinize(word):
+def latinize(word):
     """
     return a "latinized" version of a string.
 
@@ -91,9 +91,9 @@ def _latinize(word):
     string
     
     EXAMPLES:
-    sage: phystricks._latinize("/home/MyName/.sage/my_script11.py")
+    sage: latinize("/home/MyName/.sage/my_script11.py")
     'homeMyNameDsagemyscriptOODpy'
-    sage: phystricks._latinize("/home/MyName/.sage/my_script13.py")
+    sage: latinize("/home/MyName/.sage/my_script13.py")
     'homeMyNameDsagemyscriptOThDpy'
     """
     latin = ""
@@ -226,21 +226,21 @@ def newwriteName():
     OUTPUT:
     A string containing "writeOf"+something_based_on_the_script_name
     """
-    return "writeOf"+_latinize(sysargvzero)
+    return "writeOf"+latinize(sysargvzero)
 def counterName():
     r"""
     This function provides the name of the counter. 
     
     This has the same use of newwriteName, for the same reason of limitation.
     """
-    return "counterOf"+_latinize(sysargvzero)
+    return "counterOf"+latinize(sysargvzero)
 def newlengthName():
     r"""
     This function provides the name of the length.
     
     This has the same use of newwriteName, for the same reason of limitation.
     """
-    return "lengthOf"+_latinize(sysargvzero)
+    return "lengthOf"+latinize(sysargvzero)
 
 class global_variables(object):
     def __init__(self):
@@ -648,7 +648,7 @@ class SingleAxe(object):
                 P.parameters.symbol="|"
                 bar_angle=SR(self.mark_angle+90).n(digits=7)    # pstricks does not accept too large numbers
                 P.add_option("dotangle=%s"%str(bar_angle))
-                P.psName=P.psName+pspict.name+_latinize(str(numerical_approx(x)))   # Make the point name unique.
+                P.psName=P.psName+pspict.name+latinize(str(numerical_approx(x)))   # Make the point name unique.
                 if self.numbering :
                     P.put_mark(0.4,self.mark_angle,symbol)      # TODO : use the size of the box as distance
                                             # I do not understand why I don't have to multiply 0.4 by xunit or yunit
@@ -897,7 +897,7 @@ class figure(object):
         """
         if name==None:
             number=len(self.record_subfigure)
-            name="sub"+_latinize(str(number))
+            name="sub"+latinize(str(number))
         ssfig=subfigure(caption,self.name+"ss"+name)
         ssfig.mother=self
         self._append_subfigure(ssfig)
@@ -912,7 +912,7 @@ class figure(object):
     def new_pspicture(self,name=None,pspict=None):
         if name==None:
             number=len(self.record_pspicture)
-            name="sub"+_latinize(str(number))
+            name="sub"+latinize(str(number))
         if pspict==None:
             pspict=pspicture("FIG"+self.name+"PICT"+name)
         self._add_pspicture(pspict)
@@ -973,7 +973,7 @@ class subfigure(object):
     def new_pspicture(self,name=None):
         if name==None:
             number=len(self.record_pspicture)
-            name="sub"+_latinize(str(number))
+            name="sub"+latinize(str(number))
         pspict=pspicture("FIG"+self.name+"PICT"+name)
         pspict.mother=self
         self._add_pspicture(pspict)

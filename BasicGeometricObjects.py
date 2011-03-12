@@ -32,7 +32,7 @@ This module also contains some specific "constructors" for some classes, like Po
 import math
 import types
 from sage.all import *
-import phystricks
+from phystricks import *
 from phystricks.SmallComputations import *
 import doctest
 
@@ -397,7 +397,7 @@ class GeometricPoint(object):
         return P
     def default_associated_graph_class(self):
         """Return the class which is the Graph associated type"""
-        return phystricks.GraphOfAPoint             # Graph is also a method of Sage
+        return GraphOfAPoint             # Graph is also a method of Sage
     def create_PSpoint(self):
         """Return the code of creating a pstgeonode. The argument is a Point of GraphOfAPoint"""
         P = Point(self.x,self.y)
@@ -455,7 +455,7 @@ class GeometricPoint(object):
     def Affiche(self):
         return self.coordinates()
     def graph_object(self):
-        return phystricks.GraphOfAPoint(self)
+        return GraphOfAPoint(self)
     def copy(self):
         return Point(self.x,self.y)
     def __eq__(self,other):
@@ -908,10 +908,10 @@ class GeometricSegment(object):
             v.arrow_type="vector"
         return self.return_deformations(v)
     def graph(self):
-        return phystricks.GraphOfASegment(self)
+        return GraphOfASegment(self)
     def default_associated_graph_class(self):
         """Return the class which is the Graph associated type"""
-        return phystricks.GraphOfASegment
+        return GraphOfASegment
     def Affiche(self):
         raise DeprecationWarning,"use print instead"
         return str(self.equation[0])+" x + "+str(self.equation[1])+" y + "+str(self.equation[2])
@@ -1138,7 +1138,7 @@ class GraphOfACircle(GraphOfAnObject,GeometricCircle):
             if self.angleF==360:        # Because the function radian simplifies modulo 2pi.
                 alphaF=2*pi
             curve = self.parametric_curve()
-            G = phystricks.GraphOfAParametricCurve(curve,alphaI,alphaF)
+            G = GraphOfAParametricCurve(curve,alphaI,alphaF)
             G.add_option(self.params())
             # The two following lines are a pity. If I add some properties, I have to change by hand...
             G.parameters.style = self.parameters.style
@@ -1190,7 +1190,7 @@ class GeometricRectangle(object):
         return self.first_diagonal().center()
     def default_associated_graph_class(self):
         """Return the class which is the Graph associated type"""
-        return phystricks.GraphOfARectangle
+        return GraphOfARectangle
 
 def OptionsStyleLigne():
     return ["linecolor","linestyle"]
@@ -1949,7 +1949,7 @@ class GeometricImplicitCurve(object):
         - ``xrange`` - the X-range on which the curve will be plotted.
         - ``yrange`` - the Y-range on which the curve will be plotted.
         """
-        return phystricks.GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
+        return GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
     def __str__(self):
         """
         Return string representation of this implicit curve.
@@ -2451,7 +2451,7 @@ class GeometricAngle(object):
     def measure(self):
         return AngleMeasure(value_degree=self.angleF.degree-self.angleI.degree)
     def graph(self):
-        return phystricks.GraphOfAnAngle(self)
+        return GraphOfAnAngle(self)
 
 class GraphOfAnAngle(GraphOfAnObject,GeometricAngle):
     """
@@ -2756,7 +2756,7 @@ class phyFunction(object):
         Ag = Point( A.x-1,A.y-ca )
         return ( Segment(Ag,Ad) )
     def graph(self,mx,Mx):
-        return phystricks.GraphOfAphyFunction(self,mx,Mx)
+        return GraphOfAphyFunction(self,mx,Mx)
     def surface_under(self,mx=None,Mx=None):
         """
         Return the graph of a surface under the function.
