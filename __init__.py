@@ -125,11 +125,15 @@ def _latinize(word):
     return latin
 
 def unify_point_name(s):
-    """
+    r"""
     Internet s as the pstricks code of something and return a chain with
     all the points names changed to "Xaaaa", "Xaaab" etc.
 
-    Practically, it changes the stringls like "{abcd}" to "{Xaaaa}"
+    Practically, it changes the strings like "{abcd}" to "{Xaaaa}".
+
+    When "{abcd}" is found, it also replace the occurences of "(abcd)".
+    This is because the marks of points are given by example as
+    '\rput(abcd){\rput(0;0){$-2$}}'
 
     This serves to build stronger doctests by providing strings in which
     we are sure that the names of the points are the first in the list.
@@ -141,14 +145,14 @@ def unify_point_name(s):
     string
 
     EXAMPLES:
-    In the following example, the points name in the segment
-    begin by "aaad" due to the definition of P.
+    In the following example, the points name in the segment do not begin
+    by "aaaa" because of the definition of P, or even because of other doctests executed before.
     (due to complex implementation, the names of the points are 
-    more or less imprevisible and can change)
+    more or less unpredictable and can change)
 
     sage: P=Point(3,4)
     sage: S = Segment(Point(1,1),Point(2,2))
-    sage: print S.pstricks_code()
+    sage: print S.pstricks_code()       # random
     \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){aaad}
     \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](2.00000000000000,2.00000000000000){aaae}
     <BLANKLINE>
@@ -162,7 +166,7 @@ def unify_point_name(s):
     \pstLineAB[linestyle=solid,linecolor=black]{Xaaaa}{Xaaab}
 
     Notice that the presence of "X" is necessary in order to avoid
-    conflicts when one of the points original name is one of the new points name as in
+    conflicts when one of the points original name is one of the new points name as in the following example :
 
     sage: s="{xxxx}{aaaa}{yyyy}"
     sage: print unify_point_name(s)
@@ -172,6 +176,11 @@ def unify_point_name(s):
     1. the first "xxxx" would be changed to "aaaa"
     2. when changing "aaaa" into "aaab", the first one
             would be changed too.
+
+    sage: P=Point(-1,1)
+    sage: P.put_mark(0.3,90,"$A$")
+    sage: unify_point_name(P.mark.pstricks_code())
+    '\\pstGeonode[](-1.00000000000000,1.30000000000000){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$A$}}'
     """
     import re
 
@@ -180,13 +189,14 @@ def unify_point_name(s):
 
     rematch=[]
     for m in match:
-        if m not in rematch:
-            rematch.append(m)
+        n=m[1:-1]       # I transform "{abcd}" into "abcd"
+        if n not in rematch:
+            rematch.append(n)
 
     names=PointsNameList()
     for m in rematch:
         name=names.next()
-        s=s.replace(m,"{X%s}"%name)
+        s=s.replace("{%s}"%m,"{X%s}"%name).replace("(%s)"%m,"(X%s)"%name)
 
     return s
 
@@ -578,18 +588,27 @@ class SingleAxe(object):
     """
     Describe an axe.
     
-    ARGUMENS
-    C : the center
-    base : the base of the axes
-    mx : the initial value (typically negative). It is taken in units of <base>.
-    Mx : the final value (typically positive)
+    INPUT:
+    - ``C`` - the center of the axe. This is the point corresponding to the "zero" coordinate
+    - ``base`` - the unit of the axe. This indicates
+                1. the direction
+                2. the size of "1"
+                A mark will be added at each integer multiple of that vector (but zero) including negative.
+    - ``mx`` - the multiple of <base> at which the axe begins. This is typically negative
+    - ``Mx`` -  the multiple of <base> at which the axe ends. This is typically positive
+                    The axe goes from C+mx*base to C-Mx*base. 
 
-    The axe goes from C+mx*base to C-Mx*base. A number is written each Dx*base.
+    OTHER CONTROLS
+    The default behaviour can be modified by the following attributes.
 
-    self.mark_angle : the angle under which the marks are written (in degree).
+    self.Dx (default=1). A mark is written each multiple of self.Dx*<base>.
+    self.mark_angle : the angle in degree under which the mark are written. By default this is orthogonal
+                        to the direction given by self.base.
 
-    A mark is put at each integer multiple of self.axes_unit. The latter is by default the length of the vector <base>.
     If an user-defined axes_unit is given, the length of <base> is "forgotten"
+
+    EXAMPLES:
+    sage: axe = SingleAxe(Point(1,1),Vector(0,1),-2,2)
     """
     def __init__(self,C,base,mx,Mx):
         self.C=C
@@ -645,6 +664,12 @@ class SingleAxe(object):
     def math_bounding_box(self,pspict):
         return self.segment().bounding_box(pspict)
     def pstricks_code(self,pspict=None):
+        """
+        Return the pstricks code of the axe.
+
+        EXAMPLES:
+
+        """
         sDx=RemoveLastZeros(self.Dx,10)
         self.add_option("Dx="+sDx)
         #bgx = self.BB.mx
@@ -659,7 +684,7 @@ class SingleAxe(object):
             c.append(P.pstricks_code())
         if self.graduation :
             for P in self.graduation_points(pspict):
-                c.append(P.pstricks_code(pspict))
+                c.append(P.pstricks_code(pspict,with_mark=True))
         h=AffineVector(self.segment())
         c.append(h.pstricks_code(pspicture))
         return "\n".join(c)

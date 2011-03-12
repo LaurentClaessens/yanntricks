@@ -1712,10 +1712,42 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
     def math_bounding_box(self,pspict=None):
         """Return a bounding box which include itself and that's it."""
         return BoundingBox(self.point,self.point)
-    def pstricks_code(self,pspict=None):
+    def pstricks_code(self,pspict=None,with_mark=False):
+        r"""
+        Return the pstricks code of the point
+
+        INPUT:
+        - ``with_mark`` - (default : False) if it is true, return the pstrick code
+                                of the mark in the same time. This is only used by the axes.
+        OUTPUT:
+        string
+
+        This function is not supposed to be used by the end-user.
+
+        When the point has a mark, the code of the mark is not included here because the
+        function pspicture.DrawGraph automatically adds the mark to the list of objects
+        to be drawn.
+        However, some constructions want to include the pstricks code of points in its own
+        pstricks code. In that case we want the code of the mark to be part of the code
+        of the point.
+        This is the case of the axes. The pstricks code of the axes have to be in one block
+        including the markes. For that usage, we use with_mark=True
+        
+        EXAMPLE:
+        sage: P=Point(1,1)
+        sage: P.put_mark(0.3,45,"$P$")
+
+        By default the code of the mark does not appears in the code of the point:
+        sage: P.pstricks_code()
+        '\\pstGeonode[PointSymbol=*,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){aaaa}'
+
+        If we specify with_mark=True, then we see the code of the mark:
+        sage: unify_point_name(P.pstricks_code(with_mark=True))
+        '\\pstGeonode[](1.21213203435596,1.21213203435596){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$P$}}\n\\pstGeonode[PointSymbol=*,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaab}'
+        """
         l=[]
-        #if self.marque:
-        #    l.append(self.mark.pstricks_code(pspict))
+        if self.marque and with_mark:
+            l.append(self.mark.pstricks_code(pspict))
         l.append("\pstGeonode["+self.params()+"]"+self.coordinates(numerical=True)+"{"+self.psName+"}")
         return "\n".join(l)
 
