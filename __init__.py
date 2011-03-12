@@ -135,7 +135,7 @@ def unify_point_name(s):
     This is because the marks of points are given by example as
     '\rput(abcd){\rput(0;0){$-2$}}'
 
-    This serves to build stronger doctests by providing strings in which
+    This serves to build more robust doctests by providing strings in which
     we are sure that the names of the points are the first in the list.
 
     INPUT:
@@ -643,12 +643,14 @@ class SingleAxe(object):
         """
         if self.graduation :
             points_list=[]
+            bar_angle=SR(self.mark_angle+90).n(digits=7)    # pstricks does not accept too large numbers
             for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,self.Dx,self.mark_origin):
                 P=(x*self.base).F
                 P.parameters.symbol="|"
-                bar_angle=SR(self.mark_angle+90).n(digits=7)    # pstricks does not accept too large numbers
                 P.add_option("dotangle=%s"%str(bar_angle))
                 P.psName=P.psName+pspict.name+latinize(str(numerical_approx(x)))   # Make the point name unique.
+                P.psName="ForTheBar"   # Since this point is not supposed to
+                                       # be used, all of them have the same ps name.
                 if self.numbering :
                     P.put_mark(0.4,self.mark_angle,symbol)      # TODO : use the size of the box as distance
                                             # I do not understand why I don't have to multiply 0.4 by xunit or yunit

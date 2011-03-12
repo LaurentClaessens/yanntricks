@@ -1738,8 +1738,8 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
         sage: P.put_mark(0.3,45,"$P$")
 
         By default the code of the mark does not appears in the code of the point:
-        sage: P.pstricks_code()
-        '\\pstGeonode[PointSymbol=*,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){aaaa}'
+        sage: unify_point_name(P.pstricks_code())
+        '\\pstGeonode[PointSymbol=*,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaaa}'
 
         If we specify with_mark=True, then we see the code of the mark:
         sage: unify_point_name(P.pstricks_code(with_mark=True))
