@@ -2356,13 +2356,55 @@ class MeasureLength(GraphOfASegment):
     The segment (and then the graph associated with the mark) is the parallel one,
     not the segment given in argument.
 
+    INPUT:
+    - ``seg`` - the segment to be measured
+    - ``dist`` - the distance between the segment and the measure
+
+    The sign of <dist> is an issue. If you give 0.3 you get one result, if you give
+    -0.3, you get the segment on the other side.
+    The algorithm is the following. If v is the vector seg.I --> seg.F and w is the vector from
+    <seg> to the arrow line to be drawn, then (v,w) has the same orientation as (Y,X) where X=(1,0) 
+    and Y=(0,1).
+    The rational is that if the segment is vertical, we want the measure to appear
+    on the right.
+
     EXAMPLES:
+    
+    In order to check the position of the arrow line,
+    we check the position of the mark_point.
+
     sage: O=Point(0,0)
     sage: A=Point(1,0)
+
+    Horizontal line directed from right to left; the
+    arrow line has to be bellow :
     sage: measureOA=MeasureLength(Segment(O,A),0.1)
-    sage: measureOA.put_mark(0.3,-90,"$a$")
-    sage: print measureOA.mark.central_point()
-    Point(0.5,-0.400000000000000)
+    sage: print measureOA.mark_point()
+    Point(0.500000000000000,-0.100000000000000)
+
+    Horizontal line directed from left to right:
+    sage: measureAO=MeasureLength(Segment(A,O),0.1)
+    sage: print measureAO.mark_point()
+    Point(0.5,0.100000000000000)
+
+    Vertical line 
+    sage: B=Point(0,2)
+    sage: measureOB=MeasureLength(Segment(O,B),0.1)
+    sage: print measureOB.mark_point()
+    Point(0.100000000000000,1.0)
+
+    USEFUL ATTRIBUTE
+    - ``self.advised_mark_angle`` - the angle at which we advise you to put the mark.
+                                    It indicates the direction orthogonal to the segment,
+                                    with the orientation given in the discussion about the
+                                    sign of <dist>
+
+    sage: m=MeasureLength(Segment( Point(1,1) ,Point(2,2) ),0.1)
+    sage: print m.advised_mark_angle
+    AngleMeasure, degree=315.000000000000,radian=-1/4*pi
+
+    You are invited to use advised_mark_angle. If not the position of the mark
+    could be unpredictable.
     """
     def __init__(self,seg,dist=0.1):
         try :
@@ -2370,9 +2412,10 @@ class MeasureLength(GraphOfASegment):
         except AttributeError :
             self.segment=seg
         self.dist=dist
-        self.delta=seg.get_normal_vector().fix_size(self.dist)
+        self.delta=seg.rotation(-90).fix_size(self.dist)
         self.mseg=seg.translate(self.delta)
         GraphOfASegment.__init__(self,self.mseg)
+        self.advised_mark_angle=self.delta.angle()
         self.mI=self.mseg.I
         self.mF=self.mseg.F
     def math_bounding_box(self,pspict=None):
@@ -2400,7 +2443,6 @@ class MeasureLength(GraphOfASegment):
         #if self.marque :
         #    a.append(self.mark.pstricks_code(pspict))
         return "\n".join(a)
-
 
 class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
     """
