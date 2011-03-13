@@ -854,16 +854,44 @@ class GeometricSegment(object):
         """
         Return a Segment which is dilated by the coefficient coef 
 
-        This add the same length at both extremities. If you want to add some length to one
-        of the extremities, use
-        self.add_size
-        or
-        l*self
-        with a scalar l.
+        If self is a segment:
+            This adds the same length at both extremities.
+            The segment A --> B dilated by 0.5 returns
+            a segment C --> D where [CD] is the _central_ half of [AB].
+            If you want to add some length to one
+            of the extremities, use
+            self.add_size
+            or
+            l*self
+            with a scalar l.
+
+        If self is a vector:
+            This adds the length only at the end.
+            The affine vector A --> B dilated by 0.5 returns
+            an affine vector A --> D where D is the _central_ point of [AB].
+
+        INPUT:
+        - ``coef`` - a number. This is the dilatation coefficient
+
+        OUTPUT:
+        a new vector or segment
+
+        EXAMPLES:
+        sage: S=Segment(Point(-2,-2),Point(2,2))
+        sage: print S.dilatation(0.5)           
+        segment I=Point(-1.00000000000000,-1.00000000000000) F=Point(1.00000000000000,1.00000000000000)
+
+        But
+        sage: v=AffineVector(Point(-2,-2),Point(2,2))
+        sage: print v.dilatation(0.5)                
+        vector I=Point(-2,-2) F=Point(0.000000000000000,0.000000000000000)
         """
-        x=0.5*self.length()*(coef-1)
-        v = self.add_size(x,x)
-        return self.return_deformations(v)
+        if self.arrow_type=="segment":
+            d=0.5*self.length()*(coef-1)
+            return self.add_size(d,d)
+        if self.arrow_type=="vector":
+            l=self.length*coef
+            return self.normalize(l)
     def normalize(self,l=1):
         """
         If self.arrow_type is "segment", it normalize the segment to <l> by dilating in both extremities

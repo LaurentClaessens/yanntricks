@@ -43,3 +43,23 @@ def Test_SingleAxe():
     sage: unify_point_name(axe.pstricks_code(pspict))
     '\\pstGeonode[](0.400000000000000,-2.00000000000000){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$-2$}}\n\\pstGeonode[PointSymbol=|,dotangle=90.00000,linestyle=solid,linecolor=black](0,-2.00000000000000){ForTheBar}\n\\pstGeonode[](0.400000000000000,-1.00000000000000){Xaaab}\n\\rput(Xaaab){\\rput(0;0){$-1$}}\n\\pstGeonode[PointSymbol=|,dotangle=90.00000,linestyle=solid,linecolor=black](0,-1.00000000000000){ForTheBar}\n\\pstGeonode[](0.400000000000000,0){Xaaac}\n\\rput(Xaaac){\\rput(0;0){$0$}}\n\\pstGeonode[PointSymbol=|,dotangle=90.00000,linestyle=solid,linecolor=black](0,0){ForTheBar}\n\\pstGeonode[](0.400000000000000,1.00000000000000){Xaaad}\n\\rput(Xaaad){\\rput(0;0){$1$}}\n\\pstGeonode[PointSymbol=|,dotangle=90.00000,linestyle=solid,linecolor=black](0,1.00000000000000){ForTheBar}\n\\pstGeonode[](0.400000000000000,2.00000000000000){Xaaae}\n\\rput(Xaaae){\\rput(0;0){$2$}}\n\\pstGeonode[PointSymbol=|,dotangle=90.00000,linestyle=solid,linecolor=black](0,2.00000000000000){ForTheBar}\n\\pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,-1.00000000000000){Xaaaf}\n\\pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,3.00000000000000){Xaaag}\n\\ncline[linestyle=solid,linecolor=black]{->}{Xaaaf}{Xaaag}'
     """
+
+def Test_Dilatation():
+    r"""
+    sage: A = Point(1,1)
+    sage: B = Point(-4,-1)
+    sage: v=AffineVector(A,B)
+    sage: w=v.dilatation(0.5)
+    sage: v.parameters.color="blue"
+    sage: w.parameters.color="red"
+
+    sage: print unify_point_name(v.pstricks_code())
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaaa}
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-4.00000000000000,-1.00000000000000){Xaaab}
+    \ncline[linestyle=solid,linecolor=blue]{->}{Xaaaa}{Xaaab}
+
+    sage: print unify_point_name(w.pstricks_code())
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaaa}
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-1.50000000000000,0){Xaaab}
+    \ncline[linestyle=solid,linecolor=red]{->}{Xaaaa}{Xaaab}
+    """
