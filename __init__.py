@@ -635,6 +635,10 @@ class SingleAxe(object):
         self.Label = marque
         self.DistLabel = dist
         self.AngleLabel = angle
+    def no_numbering(self):
+        self.numbering=False
+    def no_graduation(self):
+        self.graduation=False
     def graduation_points(self,pspict):
         """
         Return the list of points that makes the graduation of the axes
@@ -734,11 +738,11 @@ class Axes(object):
     def add_option(self,opt):
         self.options.add_option(opt)
     def no_graduation(self):
-        self.single_axeX.graduation=False
-        self.single_axeY.graduation=False
+        self.single_axeX.no_graduation()
+        self.single_axeY.no_graduation()
     def no_numbering(self):
-        self.single_axeX.numbering=False
-        self.single_axeY.numbering=False
+        self.single_axeX.no_numbering()
+        self.single_axeY.no_numbering()
     def AjusteCircle(self,Cer):
         self.BB.AddCircle(Cer)
     def bounding_box(self,pspict=None):
