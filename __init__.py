@@ -648,7 +648,7 @@ class SingleAxe(object):
                 P=(x*self.base).F
                 P.parameters.symbol="|"
                 P.add_option("dotangle=%s"%str(bar_angle))
-                P.psName=P.psName+pspict.name+latinize(str(numerical_approx(x)))   # Make the point name unique.
+                #P.psName=P.psName+pspict.name+latinize(str(numerical_approx(x)))   # Make the point name unique.
                 P.psName="ForTheBar"   # Since this point is not supposed to
                                        # be used, all of them have the same ps name.
                 if self.numbering :
