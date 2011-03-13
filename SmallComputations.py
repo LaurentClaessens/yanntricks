@@ -193,18 +193,22 @@ class ConversionAngles(object):
         """
         Simplify the angles modulo the maximum. 
 
-        If what is given is a number, return a number. If what is given is a AngleMeasure, return a new AngleMeasure
+        If what is given is a number, return a number. If what is given is a AngleMeasure, return a new AngleMeasure.
     
         INPUT:
+
         - ``angle`` - an angle that can be an instance of AngleMeasure or a number.
                         if it is a number, the simplify modulo self.max_value
                         if it is a AngleMeasure, then first extract the value of the angle
-                            using self.exit_attribute
+                            using self.exit_attribute .
+
         - ``keep_max`` - (defautl=False) If True, does not simplify the angle with max value.
                                             Typically, keeps 2*pi as 2*pi. 
                                             This is used in order to keep track of the difference
                                             between 0 and 2*pi in the context of drawing an full circle.
+
         - ``number`` - (default=False) If True, return a number even is a AngleMeasure is given.
+
         - ``numerical`` - (default=False) If True, return numerical_approx of the result
 
         NOTE:

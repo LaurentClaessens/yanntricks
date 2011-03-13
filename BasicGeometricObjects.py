@@ -813,9 +813,12 @@ class GeometricSegment(object):
         return self.return_deformations(v)
     def rotation(self,angle):
         """
-        Return the segment attached to the same point but with a rotation of angle
+        Return the segment attached to the same point but with a rotation of angle.
 
-        angle is given in radian.
+        INPUT:
+
+        - ``angle`` - the value of the rotation angle (in radian)
+
         """
         v = PolarSegment(self.I,self.polaires().r,self.polaires().degree+angle)
         return self.return_deformations(v)

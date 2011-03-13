@@ -39,7 +39,9 @@ def RemoveLastZeros(x,n):
     The output is a string, not a number.
 
     INPUT:
-    - ``x`` - a number
+
+    - ``x`` - a number.
+
     - ``n`` - the number of decimals we want to keep.
 
     OUTPUT:
@@ -90,9 +92,13 @@ def latinize(word):
     OUTPUT:
     string
     
-    EXAMPLES:
+    EXAMPLES::
+
     sage: latinize("/home/MyName/.sage/my_script11.py")
     'homeMyNameDsagemyscriptOODpy'
+
+    ::
+
     sage: latinize("/home/MyName/.sage/my_script13.py")
     'homeMyNameDsagemyscriptOThDpy'
     """
@@ -145,10 +151,13 @@ def unify_point_name(s):
     string
 
     EXAMPLES:
+    
     In the following example, the points name in the segment do not begin
     by "aaaa" because of the definition of P, or even because of other doctests executed before.
     (due to complex implementation, the names of the points are 
     more or less unpredictable and can change)
+
+    ::
 
     sage: P=Point(3,4)
     sage: S = Segment(Point(1,1),Point(2,2))
@@ -158,7 +167,9 @@ def unify_point_name(s):
     <BLANKLINE>
     \pstLineAB[linestyle=solid,linecolor=black]{aaad}{aaae}
 
-    However, using the function unify_point_name, the returned string begins with "Xaaaa" :
+
+    However, using the function unify_point_name, the returned string begins with "Xaaaa" ::
+
     sage: print unify_point_name(S.pstricks_code())
     \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaaa}
     \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](2.00000000000000,2.00000000000000){Xaaab}
@@ -166,16 +177,18 @@ def unify_point_name(s):
     \pstLineAB[linestyle=solid,linecolor=black]{Xaaaa}{Xaaab}
 
     Notice that the presence of "X" is necessary in order to avoid
-    conflicts when one of the points original name is one of the new points name as in the following example :
+    conflicts when one of the points original name is one of the new points name as in the following example ::
 
     sage: s="{xxxx}{aaaa}{yyyy}"
     sage: print unify_point_name(s)
     {Xaaaa}{Xaaab}{Xaaac}
 
-    Without the additional X, 
+    Without the additional X,
     1. the first "xxxx" would be changed to "aaaa"
     2. when changing "aaaa" into "aaab", the first one
             would be changed too.
+
+    ::
 
     sage: P=Point(-1,1)
     sage: P.put_mark(0.3,90,"$A$")
@@ -593,6 +606,7 @@ class SingleAxe(object):
     - ``base`` - the unit of the axe. This indicates
                 1. the direction
                 2. the size of "1"
+
                 A mark will be added at each integer multiple of that vector (but zero) including negative.
     - ``mx`` - the multiple of <base> at which the axe begins. This is typically negative
     - ``Mx`` -  the multiple of <base> at which the axe ends. This is typically positive
@@ -607,7 +621,8 @@ class SingleAxe(object):
 
     If an user-defined axes_unit is given, the length of <base> is "forgotten"
 
-    EXAMPLES:
+    EXAMPLES::
+    
     sage: axe = SingleAxe(Point(1,1),Vector(0,1),-2,2)
     """
     def __init__(self,C,base,mx,Mx):
