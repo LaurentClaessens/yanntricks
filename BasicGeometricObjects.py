@@ -21,12 +21,9 @@
 # email: moky.math@gmai.com
 
 """
-This module contains the basic graphics elements like points, segments and vectors.
+This module contains the basic graphics elements like points, segments and vectors. Each of them have the methods for basic geometric manipulations: rotations, dilatations, tangent vector, ...
 
-These elements are not supposed to depend on others. They include new LaTeX commands. Objects that are not here do not 
-imply new LaTeX concepts and only make an automated use of the objects that are here.
-
-This module also contains some specific "constructors" for some classes, like PolarVector for example.
+The end-user should not use the functions whose name begin with ``GraphOf`` or ``Geometric``. Rather he has to use the constructors like :func:`Point`, :func:`AffineVector` and so on.
 """
 
 import math
@@ -44,8 +41,9 @@ def SubstitutionMathPsTricks(fx):
     listeSubst.append(["e^","2.718281828459045^"])
     for i in range(1,10):   
         listeSubst.append(["math.log"+str(i),str(0.43429448190325*math.log(i))+"*log"])
-    listeSubst.append(["math.log","2.302585092994046*log"])     # Parce que \psplot[]{1}{5}{log(x)} trace le logarithme en base 10
-                                    # Pour rappel, la formule est log_b(x)=log_a(x)/log_a(b)
+    listeSubst.append(["math.log","2.302585092994046*log"])     # because \psplot[]{1}{5}{log(x)} draws the logarithm in basis 10.
+    listeSubst.append(["log","2.302585092994046*log"])  
+    # Pour rappel, la formule est log_b(x)=log_a(x)/log_a(b)
     listeSubst.append(["math.pi","3.141592653589793"])
     listeSubst.append(["pi","3.141516"])
     listeSubst.append(["math.cosh","COSH"])
@@ -56,7 +54,6 @@ def SubstitutionMathPsTricks(fx):
     listeSubst.append(["arcsin","asin"])
     listeSubst.append(["arctan","atan"])
     listeSubst.append(["math.",""])
-    listeSubst.append(["log","2.302585092994046*log"])      # Parce que \psplot[]{1}{5}{log(x)} trace le logarithme en base 10
     a = fx
     for s in listeSubst :
         a = a.replace(s[0],s[1])
@@ -80,14 +77,15 @@ def PointsNameList():
     Furnish a list of points name.
 
     This is the generator of the sequence of strings 
-    "aaa", "aab", ..., "aaz","aaA", ..., "aaZ","aba" etc.
+    "aaaa", "aaab", ..., "aaaz","aaaA", ..., "aaaZ","aaba" etc.
 
-    EXAMPLES:
-    sage: x=PointsNameList()
-    sage: x.next()
-    'aaaa'
-    sage: x.next()
-    'aaab'
+    EXAMPLES::
+    
+        sage: x=PointsNameList()
+        sage: x.next()
+        'aaaa'
+        sage: x.next()
+        'aaab'
     """
     # The fact that this function return 4 character strings is hard-coded here 
     #   and that 4 is hard-coded in the function unify_point_name
@@ -111,18 +109,51 @@ def CircleOA(O,A):
     radius=sqrt( (O.x-A.x)**2+(O.y-A.y)**2 )
     return Circle(O,radius)
 def Point(x,y):
+    """
+    return a point.
+
+    INPUT:
+
+    - ``x,y`` - the coordinates of the point. These are numbers.
+
+    EXAMPLES::
+
+        sage: P=Point(-1,sqrt(2))
+        sage: print P
+        Point(-1,sqrt(2))
+
+    You can pass variables::
+
+        sage: x=var('x')
+        sage: P=Point(x**2,1)   
+        sage: print P
+        Point(x^2,1)
+
+    Notice that the coordinates of the point have to be numerical in order to be passed to pstricks at the end::
+
+        sage: print P.pstricks_code()
+        Traceback (most recent call last):
+        ...
+        TypeError: cannot evaluate symbolic expression numerically
+
+                
+    """
     return GraphOfAPoint(GeometricPoint(x,y))
 def PolarPoint(r,theta):
     """
-    return the point at polar coordinates (r,theta)
+    return the point at polar coordinates (r,theta).
 
     INPUT:
+
     - ``r`` - the distance from origine
     - ``theta`` - the angle
 
-    EXAMPLES:
-    sage: print PolarPoint(2,45)
-    Point(sqrt(2),sqrt(2))
+    EXAMPLES::
+
+        sage: print PolarPoint(2,45)
+        Point(sqrt(2),sqrt(2))
+
+
     """
     return Point(r*cos(radian(theta)),r*sin(radian(theta)))
 def Segment(A,B):
@@ -130,49 +161,54 @@ def Segment(A,B):
 
 def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
     """
-    return a vector field that is drawn on the points given in the list
+    return a vector field that is drawn on the points given in the list.
 
     INPUT:
+
     - ``fx,fy`` - two functions
 
     OPTIONAL :
-    - ``xvalues`` - a tuple (x,mx,Mx,n) where mx and Mx are the min and max values of x and
-                    n is the number of values to be used on that interval.
+
+    - ``xvalues`` - a tuple `(x,mx,Mx,n)` where `mx` and `Mx` are the min and max values of x and
+                    `n` is the number of values to be used on that interval.
+
     - ``draw_points`` - a list of points on which the vector field has to be drawn.
-                        If draw_point is given, xvalues and yvalues are not taken into account
+                        If draw_point is given, xvalues and yvalues are not taken into account.
 
     OUTPUT:
     the graphe vector field.
 
-    EXAMPLES:
-    sage: x,y=var('x,y')
-    sage: F=VectorField(x*y,cos(x)+y)
-    sage: F.divergence()
-    y + 1
+    EXAMPLES::
 
-    If you want an automatic Cartesian grid of points, use xvalues and yvalues :
+        sage: x,y=var('x,y')
+        sage: F=VectorField(x*y,cos(x)+y)
+        sage: F.divergence()
+        y + 1
 
-    sage: F=VectorField(exp(x+y),x**2+y**2,xvalues=(x,-1,1,3),yvalues=(y,-5,5,6))
-    sage: len(F.draw_points)
-    18
-    sage: print F.draw_points[5]
-    Point(-1.0,5.0)
+    If you want an automatic Cartesian grid of points, use xvalues and yvalues::
 
-    The same can be obtained using the following syntax (see the function GeometricVectorField.graph) :
+        sage: F=VectorField(exp(x+y),x**2+y**2,xvalues=(x,-1,1,3),yvalues=(y,-5,5,6))
+        sage: len(F.draw_points)
+        18
+        sage: print F.draw_points[5]
+        Point(-1.0,5.0)
 
-    sage: F=VectorField(exp(x+y),x**2+y**2).graph(xvalues=(x,-1,1,3),yvalues=(y,-5,5,6))
-    sage: len(F.draw_points)
-    18
-    sage: print F.draw_points[5]
-    Point(-1.0,5.0)
+    The same can be obtained using the following syntax (see the function GeometricVectorField.graph)::
 
-    If you want a personal list of points, use draw_points :
+        sage: F=VectorField(exp(x+y),x**2+y**2).graph(xvalues=(x,-1,1,3),yvalues=(y,-5,5,6))
+        sage: len(F.draw_points)
+        18
+        sage: print F.draw_points[5]
+        Point(-1.0,5.0)
 
-    sage: F=VectorField(exp(x+y),x**2+y**2, draw_points=[Point(1,1),Point(5,-23)] )
-    sage: print F.draw_points[0]
-    Point(1,1)    
-    sage: print F.draw_points[1]
-    Point(5,-23)
+    If you want a personal list of points, use draw_points ::
+
+        sage: F=VectorField(exp(x+y),x**2+y**2, draw_points=[Point(1,1),Point(5,-23)] )
+        sage: print F.draw_points[0]
+        Point(1,1)    
+        sage: print F.draw_points[1]
+        Point(5,-23)
+
     """
     if xvalues is None and yvalues is None and draw_points is None :
         return GeometricVectorField(fx,fy)
@@ -193,7 +229,7 @@ def _vector_pstricks_code(segment,pspict=None):
 
 def AffineVector(A=None,B=None):
     """
-    From points A and B, return the AFFINE vector from A to B.
+    return an affine vector from one point to an other
 
     A vector is nothing else than a Segment for which the pstricks_code method is changed.
     """
@@ -314,23 +350,33 @@ class GeometricPoint(object):
             Rx = (self.y*seg.slope - seg.slope*seg.independent + self.x)/(seg.slope**2 + 1)
             Ry = (self.y*seg.slope**2 + self.x*seg.slope + seg.independent)/(seg.slope**2 + 1)
             return Point(Rx,Ry)
-    def get_polar_point(self,l,theta,pspict=None):
+    def get_polar_point(self,r,theta,pspict=None):
         """
-        Return the point located at distance l and angle theta from point self.
-        theta is given in degree or AngleMeasure.
+        Return the point located at distance r and angle theta from point self.
 
-        If pspict is given, we compute the deformation due to the dilatation. 
-        Be carefull : in that case <dist> is given as _absolute value_ and the visual effect will not
-        be affected by dilatations.
+        INPUT:
+
+        - ``r`` - A number
+        - ``theta`` - the angle (degree or :class:`AngleMeasure`).
+        - ``pspict`` - the pspicture in which the point is supposed to live. If `pspict` is given, we compute the deformation due to the dilatation.  Be careful: in that case `r` is given as absolute value and the visual effect will not be affected by dilatations.
+
+        OUTPUT: A point.
+
+        EXAMPLES::
+
+            sage: P=Point(1,2)
+            sage: print P.get_polar_point(sqrt(2),45)
+            Point(2,3)
+
         """
         alpha=radian(theta,number=True)
         if pspict:
             A=pspict.xunit
             B=pspict.yunit
-            xP=l*cos(alpha)/A
-            yP=l*sin(alpha)/B
+            xP=r*cos(alpha)/A
+            yP=r*sin(alpha)/B
             return self.translate(Vector(xP,yP))
-        return Point(self.x+l*cos(alpha),self.y+l*sin(alpha))
+        return Point(self.x+r*cos(alpha),self.y+r*sin(alpha))
     def value_on_line(self,line):
         """
         If f(x,y)=0 is the equation of <line>, return the number f(self.x,self.y).
@@ -817,7 +863,7 @@ class GeometricSegment(object):
 
         INPUT:
 
-        - ``angle`` - the value of the rotation angle (in radian)
+        - ``angle`` - the value of the rotation angle (in radian).
 
         """
         v = PolarSegment(self.I,self.polaires().r,self.polaires().degree+angle)
@@ -1956,14 +2002,17 @@ class GeometricImplicitCurve(object):
     Describe a curve given by an implicit equation.
 
     INPUT:
+
     - ``f`` -- a function of two variables or equation in two variables
 
-    End users should not use this class but use the constrcutor ImplicitCurve.
+    End users should not use this class but use the constrcutor :func:`ImplicitCurve`.
 
-    EXAMPLES:
-    sage: f(x,y)=x**2+1/x
-    sage: F=GeometricImplicitCurve(f(x,y)==2)
-    sage: G=GeometricImplicitCurve(x+y==2)   
+    EXAMPLES::
+
+        sage: f(x,y)=x**2+1/x
+        sage: F=GeometricImplicitCurve(f(x,y)==2)
+        sage: G=GeometricImplicitCurve(x+y==2)   
+
     """
     def __init__(self,f):
         self.f=f
@@ -1983,7 +2032,7 @@ class GeometricImplicitCurve(object):
         return GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
     def __str__(self):
         """
-        Return string representation of this implicit curve.
+        Return string representation of this implicit curve
 
         EXAMPLE:
         sage: f(x,y)=x**2+1/x
@@ -2174,14 +2223,17 @@ class GeometricVectorField(object):
     Describe a vector field
 
     INPUT:
+    
     - ``f`` - a tupe of function
 
-    EXAMPLES:
-    sage: x,y=var('x,y')
-    sage: f1=phyFunction(x**2)
-    sage: F = GeometricVectorField( f1,cos(x*y) )
-    sage: print F(3,pi/3)
-    vector I=Point(3,1/3*pi) F=Point(12,1/3*pi - 1)
+    EXAMPLES::
+
+        sage: x,y=var('x,y')
+        sage: f1=phyFunction(x**2)
+        sage: F = GeometricVectorField( f1,cos(x*y) )
+        sage: print F(3,pi/3)
+        vector I=Point(3,1/3*pi) F=Point(12,1/3*pi - 1)
+
     """
     def __init__(self,fx,fy):
         g=[fx,fy]
@@ -2193,28 +2245,31 @@ class GeometricVectorField(object):
         self.vector_field=self
     def divergence(self):
         """
-        return the divergence of the vector field
+        return the divergence of the vector field.
 
         OUTPUT:
+
         a two-variable function
 
-        EXAMPLES:
-        sage: x,y=var('x,y')
-        sage: F = GeometricVectorField( x , y )
-        sage: F.divergence()
-        2
+        EXAMPLES::
 
-        The divergence of the gravitational field is zero:
+            sage: x,y=var('x,y')
+            sage: F = GeometricVectorField( x , y )
+            sage: F.divergence()
+            2
 
-        sage: G=GeometricVectorField(x/(x**2+y**2),y/(x**2+y**2))
-        sage: G.divergence().simplify_full()
-        0
+        The divergence of the gravitational field vanishes::
 
-        The divergence is a funciton:
-        sage: a,b=var('a,b')
-        sage: H=GeometricVectorField( x**2,y**3 )
-        sage: H.divergence()(x=a,y=b)
-        3*b^2 + 2*a
+            sage: G=GeometricVectorField(x/(x**2+y**2),y/(x**2+y**2))
+            sage: G.divergence().simplify_full()
+            0
+
+        The divergence is a funciton::
+
+            sage: a,b=var('a,b')
+            sage: H=GeometricVectorField( x**2,y**3 )
+            sage: H.divergence()(x=a,y=b)
+            3*b^2 + 2*a
         """
         x,y=var('x,y')
         divergence=self.fx.diff(x)(x=x,y=y)+self.fy.diff(y)(x=x,y=y)
@@ -2611,21 +2666,20 @@ class phyFunction(object):
         """
         return the derivative of the function. 
 
-        If the optional argument n is given, provides higher derivative. If n=0, return self.
-        The result is of type phyFunction even if self is the graph.
-
         INPUT:
-        - ``n`` (default = 1) the order of derivative. If n=0, return self.
 
-        EXAMPLES:
-        sage: f=phyFunction(x**2)
-        sage: print f.derivative()
-        2*x
-        sage: print f.derivative()(3)
-        6
-        sage: g(x)=cos(x)
-        sage: print [g.derivative(i) for i in range(0,5)]
-        [x |--> cos(x), x |--> -sin(x), x |--> -cos(x), x |--> sin(x), x |--> cos(x)]
+        - ``n`` - an interger (default = 1) the order of derivative. If n=0, return self.
+
+        EXAMPLES::
+
+            sage: f=phyFunction(x**2)
+            sage: print f.derivative()
+            2*x
+            sage: print f.derivative()(3)
+            6
+            sage: g(x)=cos(x)
+            sage: print [g.derivative(i) for i in range(0,5)]
+            [x |--> cos(x), x |--> -sin(x), x |--> -cos(x), x |--> sin(x), x |--> cos(x)]
         """
         if n==0 :
             try :
@@ -3071,23 +3125,24 @@ class ParametricCurve(object):
         """
         Return the parametric curve given by the derivative. (f1,f2) -> (f1',f2').
 
-        If the optional parameter n is given, give higher order derivatives. If n=0, return self.
+        INPUT:
+        - ``n`` - an integer (default=1).  If the optional parameter `n` is given, give higher order derivatives. If n=0, return self.
 
-        EXAMPLES:
+        EXAMPLES::
         
-        sage: var('x')
-        x
-        sage: f1=phyFunction(cos(2*x))
-        sage: f2=phyFunction(x*exp(2*x))
-        sage: F=ParametricCurve(f1,f2)
-        sage: print F.derivative()
-        The parametric curve given by
-        x(t)=-2*sin(2*t)
-        y(t)=2*t*e^(2*t) + e^(2*t)
-        sage: print F.derivative(3)
-        The parametric curve given by
-        x(t)=8*sin(2*t)
-        y(t)=8*t*e^(2*t) + 12*e^(2*t)
+            sage: var('x')
+            x
+            sage: f1=phyFunction(cos(2*x))
+            sage: f2=phyFunction(x*exp(2*x))
+            sage: F=ParametricCurve(f1,f2)
+            sage: print F.derivative()
+            The parametric curve given by
+            x(t)=-2*sin(2*t)
+            y(t)=2*t*e^(2*t) + e^(2*t)
+            sage: print F.derivative(3)
+            The parametric curve given by
+            x(t)=8*sin(2*t)
+            y(t)=8*t*e^(2*t) + 12*e^(2*t)
         """
         try :
             return self._derivative_dict[n]

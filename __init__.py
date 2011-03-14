@@ -87,6 +87,7 @@ def latinize(word):
     string that can be a filename for the LaTeX's intermediate file.
 
     INPUT:
+
     - ``word`` - string
 
     OUTPUT:
@@ -94,13 +95,13 @@ def latinize(word):
     
     EXAMPLES::
 
-    sage: latinize("/home/MyName/.sage/my_script11.py")
-    'homeMyNameDsagemyscriptOODpy'
+        sage: latinize("/home/MyName/.sage/my_script11.py")
+        'homeMyNameDsagemyscriptOODpy'
 
     ::
 
-    sage: latinize("/home/MyName/.sage/my_script13.py")
-    'homeMyNameDsagemyscriptOThDpy'
+        sage: latinize("/home/MyName/.sage/my_script13.py")
+        'homeMyNameDsagemyscriptOThDpy'
     """
     latin = ""
     for s in word:
@@ -139,12 +140,13 @@ def unify_point_name(s):
 
     When "{abcd}" is found, it also replace the occurences of "(abcd)".
     This is because the marks of points are given by example as
-    '\rput(abcd){\rput(0;0){$-2$}}'
+    '\\rput(abcd){\\rput(0;0){$-2$}}'
 
     This serves to build more robust doctests by providing strings in which
     we are sure that the names of the points are the first in the list.
 
     INPUT:
+
     - ``s`` - a string
 
     OUTPUT:
@@ -159,41 +161,42 @@ def unify_point_name(s):
 
     ::
 
-    sage: P=Point(3,4)
-    sage: S = Segment(Point(1,1),Point(2,2))
-    sage: print S.pstricks_code()       # random
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){aaad}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](2.00000000000000,2.00000000000000){aaae}
-    <BLANKLINE>
-    \pstLineAB[linestyle=solid,linecolor=black]{aaad}{aaae}
+        sage: P=Point(3,4)
+        sage: S = Segment(Point(1,1),Point(2,2))
+        sage: print S.pstricks_code()       # random
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){aaad}
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](2.00000000000000,2.00000000000000){aaae}
+        <BLANKLINE>
+        \pstLineAB[linestyle=solid,linecolor=black]{aaad}{aaae}
 
 
     However, using the function unify_point_name, the returned string begins with "Xaaaa" ::
 
-    sage: print unify_point_name(S.pstricks_code())
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaaa}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](2.00000000000000,2.00000000000000){Xaaab}
-    <BLANKLINE>
-    \pstLineAB[linestyle=solid,linecolor=black]{Xaaaa}{Xaaab}
+        sage: print unify_point_name(S.pstricks_code())
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaaa}
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](2.00000000000000,2.00000000000000){Xaaab}
+        <BLANKLINE>
+        \pstLineAB[linestyle=solid,linecolor=black]{Xaaaa}{Xaaab}
 
     Notice that the presence of "X" is necessary in order to avoid
     conflicts when one of the points original name is one of the new points name as in the following example ::
 
-    sage: s="{xxxx}{aaaa}{yyyy}"
-    sage: print unify_point_name(s)
-    {Xaaaa}{Xaaab}{Xaaac}
+        sage: s="{xxxx}{aaaa}{yyyy}"
+        sage: print unify_point_name(s)
+        {Xaaaa}{Xaaab}{Xaaac}
 
     Without the additional X,
-    1. the first "xxxx" would be changed to "aaaa"
-    2. when changing "aaaa" into "aaab", the first one
+
+    1. The first "xxxx" would be changed to "aaaa".
+    2. When changing "aaaa" into "aaab", the first one
             would be changed too.
 
     ::
 
-    sage: P=Point(-1,1)
-    sage: P.put_mark(0.3,90,"$A$")
-    sage: unify_point_name(P.mark.pstricks_code())
-    '\\pstGeonode[](-1.00000000000000,1.30000000000000){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$A$}}'
+        sage: P=Point(-1,1)
+        sage: P.put_mark(0.3,90,"$A$")
+        sage: unify_point_name(P.mark.pstricks_code())
+        '\\pstGeonode[](-1.00000000000000,1.30000000000000){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$A$}}'
     """
     import re
 
@@ -602,28 +605,31 @@ class SingleAxe(object):
     Describe an axe.
     
     INPUT:
+
     - ``C`` - the center of the axe. This is the point corresponding to the "zero" coordinate
     - ``base`` - the unit of the axe. This indicates
+
                 1. the direction
                 2. the size of "1"
 
                 A mark will be added at each integer multiple of that vector (but zero) including negative.
-    - ``mx`` - the multiple of <base> at which the axe begins. This is typically negative
-    - ``Mx`` -  the multiple of <base> at which the axe ends. This is typically positive
-                    The axe goes from C+mx*base to C-Mx*base. 
+    - ``mx`` - the multiple of ``base`` at which the axe begins. This is typically negative
+    - ``Mx`` -  the multiple of ``base`` at which the axe ends. This is typically positive
+                    The axe goes from ``C+mx*base`` to ``C-Mx*base``. 
 
-    OTHER CONTROLS
+    OTHER CONTROLS :
+
     The default behaviour can be modified by the following attributes.
 
-    self.Dx (default=1). A mark is written each multiple of self.Dx*<base>.
-    self.mark_angle : the angle in degree under which the mark are written. By default this is orthogonal
-                        to the direction given by self.base.
+    - ``self.Dx`` - (default=1) A mark is written each multiple of ``self.Dx*base``.
+    - ``self.mark_angle`` - the angle in degree under which the mark are written. By default this is orthogonal
+                        to the direction given by ``self.base``.
 
-    If an user-defined axes_unit is given, the length of <base> is "forgotten"
+    If an user-defined axes_unit is given, the length of ``base`` is "forgotten"
 
     EXAMPLES::
     
-    sage: axe = SingleAxe(Point(1,1),Vector(0,1),-2,2)
+        sage: axe = SingleAxe(Point(1,1),Vector(0,1),-2,2)
     """
     def __init__(self,C,base,mx,Mx):
         self.C=C
@@ -687,9 +693,6 @@ class SingleAxe(object):
     def pstricks_code(self,pspict=None):
         """
         Return the pstricks code of the axe.
-
-        EXAMPLES:
-
         """
         sDx=RemoveLastZeros(self.Dx,10)
         self.add_option("Dx="+sDx)
@@ -714,7 +717,7 @@ class Axes(object):
     """
     Describe a system of axes (two axes).
 
-    By default an orthogonal)
+    By default they are orthogonal.
     """
     def __init__(self,C,bb):
         self.C = C                      
@@ -1351,13 +1354,20 @@ class pspicture(object):
                 self.DrawGraph(gr)
     def DrawGraph(self,graph,separator_name=None):
         """
-        Draw an object of type GraphOfA*.
+        Draw an object of type `GraphOfASomething`.
 
         More generally, it can draw anything that has the methods
-            bounding_box
-            pstricks_code
+
+            1. bounding_box
+            2. pstricks_code
+
         The first one should return a bounding box and the second one should return a valid pstricks code as string. 
         If the pstricks code is not valid, LaTeX will get angry but no warning are given here.
+
+        NOTE:
+
+        More precisely, it does not draw the object now, but it add it (and its mark if applicable) to ``self.record_draw_graph``
+        which is the list of objects to be drawn. Thus it is still possible to modify the object later (even if discouraged).
         """
         if separator_name==None:
             try :

@@ -142,14 +142,21 @@ def PointToPolaire(P=None,x=None,y=None):
     """
     Return the polar coordinates of a point.
 
-    If you give a point as argument, numerical approximations are returned (because the coordinated of a point is automatically numerically approximed)
-    If you explicitelly provides x and y, exact values are returned.
+    INPUT:
+    - ``P`` - (default=None) a point
+    - ``x,y`` - (defautl=None) the coordinates of the points
 
-    sage: from phystricks import *     
-    sage: print PointToPolaire(x=1,y=1)
-    PolarCoordinates, r=sqrt(2),degree=45,radian=1/4*pi
-    sage: print PointToPolaire(Point(1,1))
-    PolarCoordinates, r=sqrt(2),degree=45,radian=1/4*pi
+    EXAMPLES:
+
+    You can provide a point::
+
+        sage: print PointToPolaire(Point(1,1))
+        PolarCoordinates, r=sqrt(2),degree=45,radian=1/4*pi
+
+    or directly the coordinates ::
+
+        sage: print PointToPolaire(x=1,y=1)
+        PolarCoordinates, r=sqrt(2),degree=45,radian=1/4*pi
     """
     if P:
         x=P.x
@@ -212,19 +219,21 @@ class ConversionAngles(object):
         - ``numerical`` - (default=False) If True, return numerical_approx of the result
 
         NOTE:
-        number=True allow exit like pi/2 while numerical will return 1.57079632679490.
+        `number=True` allows exit like pi/2 while numerical will return 1.57079632679490.
 
 
-        EXAMPLE:
-        sage: simplify_degree=ConversionAngles(180/pi,360).simplify
-        sage: simplify_degree(400)
-        40
+        EXAMPLES::
 
-        If <keep_max> is True, maximal values are kept:
-        sage: simplify_degree(500,keep_max=True)
-        140
-        sage: simplify_degree(360,keep_max=True)
-        360
+            sage: simplify_degree=ConversionAngles(180/pi,360).simplify
+            sage: simplify_degree(400)
+            40
+
+        If <keep_max> is True, maximal values are kept::
+
+            sage: simplify_degree(500,keep_max=True)
+            140
+            sage: simplify_degree(360,keep_max=True)
+            360
 
         """
         if numerical:
@@ -259,8 +268,9 @@ class ConversionAngles(object):
         Makes the conversion and simplify.
 
         INPUT:
-        - ``theta`` - the angle to be converted
-        - ``number`` - (default =False) If true, return a number. Not to be confused with <numerical>
+
+        - ``theta`` - the angle to be converted.
+        - ``number`` - (default =False) If true, return a number. Not to be confused with <numerical>.
         - ``keep_max`` - (defaut False) If true, does not convert the max value into the minimal value. 
                                         Typically, leaves 2*pi as 2*pi instead of returning 0.
         - ``converting`` - (defaut = True) If False, make no conversion.
@@ -270,21 +280,34 @@ class ConversionAngles(object):
 
         EXAMPLES:
 
-        For converting 7 radian into degree, make the following.
-        sage: degree=ConversionAngles(180/pi,360).conversion
-        sage: degree(7)     
-        1260/pi - 360
+        For converting 7 radian into degree, make the following::
 
-        Notice that the result is an exact value. If you want a numerical approximation,
+            sage: degree=ConversionAngles(180/pi,360).conversion
+            sage: degree(7)     
+            1260/pi - 360
 
-        sage: degree(7,numerical=True)
-        41.0704565915763
-        sage: numerical_approx(degree(7))
-        41.0704565915763
-        sage: degree(120,converting=False)
-        120
+        Notice that the result is an exact value. If you want a numerical approximation::
 
-        Using converting=False,number=True is a way to ensure something to be a number instead of a AngleMeasure
+            sage: degree(7,numerical=True)
+            41.0704565915763
+            sage: numerical_approx(degree(7))
+            41.0704565915763
+            sage: degree(120,converting=False)
+            120
+
+        Using `converting=False,number=True` is a way to ensure something to be a number instead of a AngleMeasure. For that, we need to precise
+        what unit we want to produce. This is done by `self.exit_attribute`.
+        A realistic way to define a function that converts to degree is::
+
+            sage: DegreeConversions=ConversionAngles(SR(180)/pi,360,exit_attribute="degree",create_function=DegreeAngleMeasure)
+            sage: degree=DegreeConversions.conversion
+            sage: a=45 
+            sage: b=AngleMeasure(value_radian=pi/4)
+            sage: degree(a,number=True,converting=False)
+            45
+            sage: degree(b,number=True,converting=False)
+            45
+
         """
         if numerical:
             number=True
