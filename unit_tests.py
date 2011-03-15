@@ -100,7 +100,6 @@ def Test_Dilatation():
 
 def Test_Measure():
     r"""
-    sage: 
     sage: O=Point(0,0)
     sage: A=Point(0.3,0)
     sage: U=Point(1,0)

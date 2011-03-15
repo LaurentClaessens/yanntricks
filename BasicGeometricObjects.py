@@ -1094,7 +1094,7 @@ class GeometricCircle(object):
         Return a point at angle <theta> (degree) on the circle. 
         
         INPUT:
-        - ``theta`` - the angle given in degree
+        - ``theta`` - the angle given in degree.
         """
         return self.parametric_curve().get_point(radian(theta,numerical=numerical),advised=advised)
     def get_regular_points(self,mx,Mx,l,advised=True):
@@ -1102,21 +1102,23 @@ class GeometricCircle(object):
         return regularly spaced points on the circle
 
         INPUT:
-        - ``mx`` - initial angle (degree)
-        - ``Mx`` - final angle (degree)
-        - ``l`` - distance between two points (arc length)
+
+        - ``mx`` - initial angle (degree).
+        - ``Mx`` - final angle (degree).
+        - ``l`` - distance between two points (arc length).
         - ``advised`` - (default=True) if True, compute an advised mark angle for each point
-                                        this is CPU-intensive
+                                        this is CPU-intensive.
 
 
         OUTPUT:
         a list of points
 
-        EXAMPLES:
-        sage: C=Circle(Point(0,0),2)
-        sage: pts=C.get_regular_points(0,90,1)
-        sage: [str(p) for p in pts]
-        ['Point(2,0)', 'Point(2*cos(1/2),2*sin(1/2))', 'Point(2*cos(1),2*sin(1))', 'Point(2*cos(3/2),2*sin(3/2))']
+        EXAMPLES::
+
+            sage: C=Circle(Point(0,0),2)
+            sage: pts=C.get_regular_points(0,90,1)
+            sage: [str(p) for p in pts]
+            ['Point(2,0)', 'Point(2*cos(1/2),2*sin(1/2))', 'Point(2*cos(1),2*sin(1))', 'Point(2*cos(3/2),2*sin(3/2))']
 
         """
         Dtheta=(180/pi)*(l/self.radius)
@@ -2614,7 +2616,6 @@ class GraphOfAnAngle(GraphOfAnObject,GeometricAngle):
         l.append(circle.pstricks_code(pspict))
         return "\n".join(l)
 
-
 class phyFunction(object):
     """
     Represent a function.
@@ -2625,7 +2626,11 @@ class phyFunction(object):
         else :
             var('x,y')
             try:
-                self.sage = fun
+                #self.sage = fun        
+                # The technique to assure to have a function is taken from the
+                # answer by kcrisman in
+                # http://ask.sagemath.org/question/368/python-equivalent-of-txyxyxy
+                self.sage=symbolic_expression(fun).function(x)
                 try :
                     self.sageFast = self.sage._fast_float_(x)
                 # Happens when the derivative of the function is not implemented in Sage
@@ -2635,7 +2640,8 @@ class phyFunction(object):
                 except (NotImplementedError,TypeError,ValueError) :    
                     self.sageFast = self.sage(x)
 
-            except AttributeError:          # Happens when the function is given by a number like f=0  F=phyFunction(f)
+            except AttributeError,text:          # Happens when the function is given by a number like f=0  F=phyFunction(f)
+                raise AttributeError,text        # It is no more supposed to do that since I use self.sage=symbolic_expression(fun).function(x)
                 self.sage = SR(fun)
                 self.sageFast = self.sage._fast_float_(x)
             self.string = repr(self.sage)
@@ -2674,7 +2680,7 @@ class phyFunction(object):
 
             sage: f=phyFunction(x**2)
             sage: print f.derivative()
-            2*x
+            x |--> 2*x
             sage: print f.derivative()(3)
             6
             sage: g(x)=cos(x)
@@ -2775,17 +2781,19 @@ class phyFunction(object):
         Return the tangent at the given point as a phyFunction
 
         INPUT:
+
         - ``x0`` - a number
 
         OUTPUT:
+
         a phyFunction that represents the tangent.
 
-        EXAMPLE:
-        sage: g=phyFunction(cos(x))
-        sage: print g.tangent_phyFunction(pi/2)
-        1/2*pi - x
-        sage: g.tangent_phyFunction(pi/2)(1)
-        1/2*pi - 1
+        EXAMPLE::
+            sage: g=phyFunction(cos(x))
+            sage: print g.tangent_phyFunction(pi/2)
+            x |--> 1/2*pi - x
+            sage: g.tangent_phyFunction(pi/2)(1)
+            1/2*pi - 1
         """
         var('x')
         ca=self.derivative()(x0)
@@ -2797,10 +2805,24 @@ class phyFunction(object):
         return self.get_point(x).translate(vecteurNormal.fix_size(dy))
     def get_regular_points(self,mx,Mx,dx):
         """
-        return a list of points regularly spaced (with respect to the arc length) on the curve x |-->(x,f(x))
+        return a list of points regularly spaced (with respect to the arc length) on the graph of `self`.
 
-        The points are given between the abcisses mx and Mx
-        dx : the space between two points
+        INPUT:
+
+        - ``mx,Mx`` - the minimal and maximal values of `x` between we will search for points. 
+        - ``dx`` - the arc length between two points
+
+        OUTPUT:
+        A list of points
+            
+        EXAMPLES::
+        
+            sage: f=phyFunction(x+1)
+            sage: print [P.coordinates() for P in f.get_regular_points(-2,2,sqrt(2))]
+            ['(0.70434464532253749*sqrt(2) - 2,0.70434464532253749*sqrt(2) - 1)', '(1.408689290645075*sqrt(2) - 2,1.408689290645075*sqrt(2) - 1)', '(2.1130339359676125*sqrt(2) - 2,2.1130339359676125*sqrt(2) - 1)', '(2.81737858129015*sqrt(2) - 2,2.81737858129015*sqrt(2) - 1)']
+
+        Even if it is not clear from these expressions, these are almos the points (-1,0),(0,1), and (1,2).
+
         """
         var('x')
         f1 = phyFunction(x)
@@ -2848,9 +2870,36 @@ class phyFunction(object):
             if p.x >= mx and p.x <= Mx :
                 a.append(p)
         return a
-    # Donne le maximum de la fonction entre mx et Mx. 
     def get_minmax_data(self,mx,Mx):
-        return plot(self.sage,(mx,Mx)).get_minmax_data()
+        """
+        return numerical approximations of min and max of the function on the interval
+
+        INPUT:
+        - ``mx,Mx`` - the interval on which we look at the extrema
+
+        OUTPUT:
+
+        dictionary conaining `xmax`, `ymax`, `xmin` and `ymin`
+
+        Notice that we are only interested in ymax and ymin.
+
+        EXAMPLES::
+        
+            sage: f=phyFunction(x)
+            sage: f.get_minmax_data(-3,pi)
+
+        In the case of the sine function, the min and max are almost -1 and 1::
+
+            sage: f=phyFunction(sin(x))
+            sage: f.get_minmax_data(0,2*pi)
+            {'xmin': 0.0, 'ymin': -0.99981483866492937, 'ymax': 0.99999406354508058, 'xmax': 6.2831853071795862}
+
+        """
+        try :
+            return plot(self.sage,(mx,Mx)).get_minmax_data()
+        except ValueError :
+            print self
+            raise
     def xmax(self,deb,fin):
         return self.get_minmax_data(deb,fin)['xmax']
     def xmin(self,deb,fin):
@@ -3041,29 +3090,33 @@ def get_paths_from_implicit_plot(p):
     Each list correspond to a path.
 
     INPUT:
-    - ``p`` an implicit plot
+
+    - ``p`` an implicit plot.
+
     OUTPUT:
+
     A list of lists of points. Each list corresponds to a path (see matplotlib), but the components
-    are converted into points in the sens of phystricks (instead of matplotlib's vertices)
+    are converted into points in the sens of phystricks (instead of matplotlib's vertices).
 
     EXAMPLES:
-    The length of the list can be quite long:
 
-    sage: var('x,y')
-    (x, y)
-    sage: F=implicit_plot(x**2+y**2==2,(x,-5,5),(y,-5,5))
-    sage: len(get_paths_from_implicit_plot(F)[0])
-    169
+    The length of the list can be quite long::
 
-    When you have more than one connected component, you see it :
-    sage: F=implicit_plot(x**2-y**2==2,(x,-5,5),(y,-5,5))
-    sage: paths=get_paths_from_implicit_plot(F)
-    sage: len(paths)
-    4
-    sage: type(paths[0][1])
-    <class 'BasicGeometricObjects.GraphOfAPoint'>
-    sage: print paths[1][3]
-    Point(4.87405534614,-4.6644295302)
+        sage: x,y=var('x,y')
+        sage: F=implicit_plot(x**2+y**2==2,(x,-5,5),(y,-5,5))
+        sage: len(get_paths_from_implicit_plot(F)[0])
+        169
+
+    When you have more than one connected component, you see it ::
+
+        sage: F=implicit_plot(x**2-y**2==2,(x,-5,5),(y,-5,5))
+        sage: paths=get_paths_from_implicit_plot(F)
+        sage: len(paths)
+        4
+        sage: type(paths[0][1])
+        <class 'BasicGeometricObjects.GraphOfAPoint'>
+        sage: print paths[1][3]
+        Point(4.87405534614,-4.6644295302)
     """
     l=[]
     for path in get_paths_from_plot(p):
@@ -3072,6 +3125,7 @@ def get_paths_from_implicit_plot(p):
             pp.append(Point(vertice[0],vertice[1]))
         l.append(pp)
     return l
+
 
 class ParametricCurve(object):
     """
@@ -3090,13 +3144,16 @@ class ParametricCurve(object):
     OUTPUT:
     an object ready to be drawn
 
-    EXAMPLES:
-    sage: x=var('x')
-    sage: f1=phyFunction(x)
-    sage: f2=phyFunction(x**2)
-    sage: F=ParametricCurve(f1,f2).graph(-2,3)
-    sage: print F.pstricks_code()
-    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{-2.00000000000000}{3.00000000000000}{t | t^2 }
+    EXAMPLES::
+
+        sage: x=var('x')
+        sage: f1=phyFunction(x)
+        sage: f2=phyFunction(x**2)
+        sage: F=ParametricCurve(f1,f2).graph(-2,3)
+        sage: print F.pstricks_code()
+        \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{-2.00000000000000}{3.00000000000000}{t | t^2 }
+
+    Notice that due to several `@lazy_attribute`, changing the components after creation could be buggy.
     """
     # The derivatives of the parametric curves are stored in the
     # dictionary attribute self._derivative_dict
@@ -3115,6 +3172,22 @@ class ParametricCurve(object):
         #   In order to produce that, we use the Sage's function repr and the syntax f(x=t)
         var('t')
         return "%s | %s "%(SubstitutionMathPsTricks(repr(self.f1.sage(x=t)).replace("pi","3.1415")),  SubstitutionMathPsTricks(repr(self.f2.sage(x=t)).replace("pi","3.1415")) )
+
+    @lazy_attribute
+    def speed(self):
+        r"""
+        return the norm of the speed function.
+
+        That is the function
+
+        EXAMPLES::
+
+            sage: curve=ParametricCurve(cos(x),sin(2*x))
+            sage: print curve.speed
+            x |--> sqrt(sin(x)^2 + 4*cos(2*x)^2)
+        """
+        return sqrt( self.f1.derivative().sage**2+self.f2.derivative().sage**2 )
+
     def tangent_angle(self,llam):
         """"Return the angle of the tangent (radian)"""
         dx=self.f1.derivative()(llam)
@@ -3308,9 +3381,26 @@ class ParametricCurve(object):
         vecteurNormal =  self.get_normal_vector(x)
         return self.get_point(x).translate(self.get_normal_vector.fix_size(dy))
     def arc_length(self,mll,Mll):
-        """ numerically returns the arc length on the curve between the value mll and Mll of the parameter """
-        g = sqrt( self.f1.derivative().sage**2+self.f2.derivative().sage**2 )
-        return numerical_integral(g,mll,Mll)[0]
+        """
+        numerically returns the arc length on the curve between two bounds of the parameters
+        
+        INPUT:
+
+        - ``mll,Mll`` - the minimal and maximal values of the parameters
+
+        OUTPUT:
+        a number.
+
+        EXAMPLES:
+
+        The length of the circle of radius `sqrt(2)` in the first quadrant::
+
+            sage: curve=ParametricCurve(x,sqrt(2-x**2))
+            sage: numerical_approx( pi*sqrt(2)/2) - curve.arc_length(0,sqrt(2)) 
+            6.32560626101508e-9
+        
+        """
+        return numerical_integral(self.speed,mll,Mll)[0]
     def get_regular_parameter(self,mll,Mll,dl):
         """ 
         returns a list of values of the parameter such that the corresponding points are equally spaced by dl.
@@ -3548,8 +3638,14 @@ class BoundingBox(object):
             self.addBB(graphe.bounding_box(pspict))
     def AddCircleBB(self,Cer,xunit,yunit):
         """
-        Ajoute un cercle déformé par les xunit et yunit; c'est pratique pour agrandir la BB en taille réelle, pour
-        faire rentrer des lettres dans la bounding box, par exemple.
+        Add a deformed circle to the bounding box.
+
+        INPUT:
+
+        - ``Cer`` - a circle. 
+        - ``xunit,yunit`` - the `x` and `y` deformation coefficients.
+
+        The given circle will be deformed by the coefficient xunit and yunid and the be added to `self`.
         """
         self.AddPoint( Point( Cer.center.x-Cer.radius/xunit,Cer.center.y-Cer.radius/yunit ) )
         self.AddPoint( Point( Cer.center.x+Cer.radius/xunit,Cer.center.y+Cer.radius/yunit ) )

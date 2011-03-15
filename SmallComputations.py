@@ -21,11 +21,11 @@
 # email: moky.math@gmai.com
 
 """
-This submodule contains functions that perform small computations for phystricks. 
-The return values of the functions here are instances of classical classes, not from phystricks classes.
+This submodule contains some auxiliary computations that have to be performed 
+by phystricks but that are not geometry.
 """
 
-import math
+from phystricks import *
 from sage.all import *
 
 

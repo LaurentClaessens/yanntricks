@@ -437,28 +437,33 @@ def SubstitutionMathMaxima(exp):
 
 class Grid(object):
     """
-    ATTRIBUTES
-        self.BB : the bounding box of the grid : its size.
-        self.options : customisation.
-        self.Dx,self.Dy : the step of main subdivision along X and Y directions (have to be integers)
-        self.num_subX, self.num_subY : number of subdivision within each integer interval. When it is zero, there are no subdivisions.
-        self.draw_border : a boolean which says if the border of the grid has to be drawn (default=False)
+    A grid. This is main lines to appear at regular interval on the picture.
 
-        self.options : the options for the grid
-        self.main_horizontal : an objet of type GraphOfASegment from the opions of which the main horizontal lines
-                    will be customized.
-                    As an example, in order to have red main horizontal lines:
-                    grid.main_horizontal.parameters.color = "red"
 
-    METHODS
-        self.drawing() : returns a list of objects to be drawn. This is typically instances of GraphOfASegment
-    DESCRIPTION
-        An instance is a grid to appear on the picture.
-        If draw_border is True, the border is drawn. 
-        Then, it draws lines on the integer values of X and Y with a step given by Dx and Dy. It begins at the closest integer
-            from the lower left corner. It finishes before to reach the upper right corner if Dx or Dy is not an integer divisor of 
-            the size.
-        Subdivisions are drawn following the same rule.
+    ATTRIBUTES:
+
+    - ``self.BB`` - the bounding box of the grid : its size.
+
+    - ``self.Dx,self.Dy`` - the step of main subdivision along `X` and `Y` directions (have to be integers).
+
+    - ``self.num_subX,self.num_subY`` - number of subdivision within each main subdivision of length Dx or Dy. When it is zero, there are no subdivisions.
+
+    It draws lines on the integer multiples of `Dx`. It begins at the closest integer multiple of `Dx` from the lower left corner.
+    It finishes before to reach the upper right corner if `Dx` the size.
+    Subdivisions are drawn following the same rule.
+
+    - ``self.draw_border`` - (default=False) If True, the border is drawn even if it does not  arrives on an integer multiple of Dx. 
+                                        It turns out that for aestetical reasons, this is a bad idea to turn it True.
+
+
+    - ``self.main_horizontal`` : an objet of type :class:`GraphOfASegment`. This is the archetype of the horizontal lines
+                                 of the main grid will be drawn. 
+
+    As an example, in order to have red main horizontal lines::
+
+        sage: grid=Grid( BoundingBox() )
+        sage: grid.main_horizontal.parameters.color = "red"
+
     """
     def __init__(self,bb):
         self.BB = bb
@@ -498,7 +503,7 @@ class Grid(object):
     def drawing(self):
         a = []
         # ++++++++++++ Border ++++++++ 
-        self.draw_border = False        # 16 oct 2010 : no more border
+        #self.draw_border = False        # 16 oct 2010 : no more border  # commented this line on 14 March 2011
         if self.draw_border :
             # Right border
             if self.BB.Mx <> int(self.BB.Mx):
