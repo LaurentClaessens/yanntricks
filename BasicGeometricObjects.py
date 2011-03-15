@@ -2626,18 +2626,21 @@ class phyFunction(object):
         else :
             var('x,y')
             try:
-                #self.sage = fun        
                 # The technique to assure to have a function is taken from the
                 # answer by kcrisman in
                 # http://ask.sagemath.org/question/368/python-equivalent-of-txyxyxy
+                # Be careful : this induce the bug
+                # http://trac.sagemath.org/sage_trac/ticket/10246
+                # See the implementation of get_minmax_data
                 self.sage=symbolic_expression(fun).function(x)
                 try :
                     self.sageFast = self.sage._fast_float_(x)
-                # Happens when the derivative of the function is not implemented in Sage
-                # Also happens when there is a free variable,
-                # as an example
-                # F=GraphOfAVectorField(x,y)
+
                 except (NotImplementedError,TypeError,ValueError) :    
+                    # Happens when the derivative of the function is not implemented in Sage
+                    # Also happens when there is a free variable,
+                    # as an example
+                    # F=GraphOfAVectorField(x,y)
                     self.sageFast = self.sage(x)
 
             except AttributeError,text:          # Happens when the function is given by a number like f=0  F=phyFunction(f)
@@ -2645,7 +2648,7 @@ class phyFunction(object):
                 self.sage = SR(fun)
                 self.sageFast = self.sage._fast_float_(x)
             self.string = repr(self.sage)
-            self.fx = self.string.replace("^","**")
+            self.fx = self.string.replace("^","**").replace("x |--> ","")
             self.pstricks = SubstitutionMathPsTricks(self.fx)
             self.ListeSurface = []
             self.listeTests = []
@@ -2887,19 +2890,27 @@ class phyFunction(object):
         
             sage: f=phyFunction(x)
             sage: f.get_minmax_data(-3,pi)
+            {'xmin': -3.0, 'ymin': -3.0, 'ymax': 3.1415926535897931, 'xmax': 3.1415926535897931}
 
         In the case of the sine function, the min and max are almost -1 and 1::
 
             sage: f=phyFunction(sin(x))
             sage: f.get_minmax_data(0,2*pi)
-            {'xmin': 0.0, 'ymin': -0.99981483866492937, 'ymax': 0.99999406354508058, 'xmax': 6.2831853071795862}
+            {'xmin': 0.0, 'ymin': -0.99996566005741139, 'ymax': 0.99999992589514664, 'xmax': 6.2831853071795862}
+
+        NOTE:
+
+        This function is victim of the `Trac 10246 <http://trac.sagemath.org/sage_trac/ticket/10246>` The try ... except
+        block is a workaround.
 
         """
         try :
             return plot(self.sage,(mx,Mx)).get_minmax_data()
         except ValueError :
-            print self
-            raise
+            if self.sage==x:
+                return plot(x,mx,Mx).get_minmax_data()
+            else :
+                raise ValueError,"This is a strange case. Maybe to be reported to ticker 10246"
     def xmax(self,deb,fin):
         return self.get_minmax_data(deb,fin)['xmax']
     def xmin(self,deb,fin):
@@ -3002,6 +3013,15 @@ class GraphOfAphyFunction(GraphOfAnObject,phyFunction):
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def pstricks_code(self,pspict=None):
+        """
+        return the pstricks code of the function
+
+        EXAMPLES::
+
+            sage: f=phyFunction(x*sin(1/x)).graph(-5,5)
+            sage: f.pstricks_code()      
+            '\\psplot[linestyle=solid,plotpoints=100,linecolor=blue]{-5.00000000000000}{5.00000000000000}{x*sin(1/x)}'
+        """
         a = []
         if self.marque :
             P = self.get_point(self.Mx)
@@ -3393,11 +3413,12 @@ class ParametricCurve(object):
 
         EXAMPLES:
 
-        The length of the circle of radius `sqrt(2)` in the first quadrant::
+        The length of the circle of radius `sqrt(2)` in the first quadrant. We check that we 
+        get the correct result up to 0.01::
 
             sage: curve=ParametricCurve(x,sqrt(2-x**2))
-            sage: numerical_approx( pi*sqrt(2)/2) - curve.arc_length(0,sqrt(2)) 
-            6.32560626101508e-9
+            sage: bool( abs(pi*sqrt(2)/2) - curve.arc_length(0,sqrt(2)) <0.01) 
+            True
         
         """
         return numerical_integral(self.speed,mll,Mll)[0]
