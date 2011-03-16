@@ -66,7 +66,7 @@ class AngleMeasure(object):
     """
     describe an angle.
 
-    This class is an attempt to abstract the degree/radian problem
+    This class is an attempt to abstract the degree/radian problem.
 
     EXAMPLES::
 
@@ -86,7 +86,6 @@ class AngleMeasure(object):
         sage: b=AngleMeasure(a)
         sage: b.degree
         180
-
     """
     # TODO : take into account the following thread:
     # http://ask.sagemath.org/question/332/add-a-personnal-coercion-rule
@@ -109,17 +108,18 @@ class AngleMeasure(object):
         return AngleMeasure(value_radian=self.radian-other.radian)
     def __add__(self,other):
         """
-        return the sum of two angles
+        return the sum of two angles.
 
-        EXAMPLES:
-        sage: a=AngleMeasure(value_degree=45)
-        sage: b=AngleMeasure(value_radian=pi/3)
-        sage: a.degree,a.radian
-        (45, 1/4*pi)
-        sage: b.degree,b.radian
-        (60, 1/3*pi)
-        sage: (a+b).degree,(a+b).radian
-        (105, 7/12*pi)
+        EXAMPLES::
+
+            sage: a=AngleMeasure(value_degree=45)
+            sage: b=AngleMeasure(value_radian=pi/3)
+            sage: a.degree,a.radian
+            (45, 1/4*pi)
+            sage: b.degree,b.radian
+            (60, 1/3*pi)
+            sage: (a+b).degree,(a+b).radian
+            (105, 7/12*pi)
         """
         return AngleMeasure(value_radian=self.radian+other.radian)
     def __call__(self):

@@ -21,9 +21,11 @@
 # email: moky.math@gmai.com
 
 """
-This module contains the basic graphics elements like points, segments and vectors. Each of them have the methods for basic geometric manipulations: rotations, dilatations, tangent vector, ...
+This module contains the basic graphics elements like points, segments and vectors. 
+Each of them have the methods for basic geometric manipulations: rotations, dilatations, tangent vector, etc.
 
-The end-user should not use the functions whose name begin with ``GraphOf`` or ``Geometric``. Rather he has to use the constructors like :func:`Point`, :func:`AffineVector` and so on.
+The end-user should not use the functions whose name begin with ``GraphOf`` or ``Geometric``. 
+Rather he has to use the constructors like :func:`Point`, :func:`AffineVector` and so on.
 """
 
 import math
@@ -1505,22 +1507,37 @@ def EnsurephyFunction(f):
         return phyFunction(f)
 
 class SurfaceBetweenFunctions(GraphOfAnObject):
-    """
+    r"""
     Represents a surface between two functions.
 
-    Arguments
-    f1 : a function (sage or phyFunction)
-    f2 : an other (will be considered as lower)
-    mx,Mx : initial and end values of x
+    INPUT:
 
-    If x is an instance, 
-    x.parameters.color="blue"
-    will set everything blue. 
-    If you want to control separately the color of the function and the filling, you have to use the methods
-    x.f1 and x.f2 
-    that are the graph of the functions. You control their parameters in the same way as others graphs of functions.
+    - ``f1,f2`` - functions (sage or phyFunction). ``f1`` is considered to be the upper function while ``f2`` is the lower function.
 
-    If nothing is said, the functions are not drawn at all.
+    - ``mx,Mx`` - initial and end values of x.
+
+    EXAMPLES:
+
+    If you want the surface and the functions to be blue ::
+
+        sage: surf=SurfaceBetweenFunctions(sin(x)+3,cos(x),0,2*pi)
+        sage: surf.parameters.color="blue"
+
+    If the style of the functions is not set, the functions are not drawn at all.
+    In the following example you see that the function ``f1`` is not drawn. In particular, the color red is nowhere::
+
+        sage: surf.f1.parameters.color="red"
+        sage: surf.pstricks_code()
+        '\\pscustom[hatchcolor=blue,linestyle=none,fillcolor=blue,linecolor=blue,fillstyle=vlines]{\n\\psplot[linestyle=none]{0.000000000000000}{6.28318530717959}{sin(x) + 3}\n\\psplot[linestyle=none]{6.28318530717959}{0.000000000000000}{cos(x)}\n}'
+
+    If you want the function ``f1`` to be red without changing the color of the surface, you have to change
+    the color AND the style::
+
+        sage: surf.f1.parameters.color="red"
+        sage: surf.f1.parameters.style="solid"
+        sage: surf.pstricks_code()
+        '\\pscustom[hatchcolor=blue,linestyle=none,fillcolor=blue,linecolor=blue,fillstyle=vlines]{\n\\psplot[linestyle=none]{0.000000000000000}{6.28318530717959}{sin(x) + 3}\n\\psplot[linestyle=none]{6.28318530717959}{0.000000000000000}{cos(x)}\n}\n\\psplot[linestyle=solid,plotpoints=100,linecolor=red]{0.000000000000000}{6.28318530717959}{sin(x) + 3}'
+
     You can also try to control the option linestyle (use add_option).
     """
 
@@ -1581,47 +1598,53 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
     Represents a surface between two parametric curves.
 
     INPUT:
-    - ``curve1,curve2`` - two parametric curves
 
-    Optional :
-    - ``mx1,Mx1`` - initial and final values of the parameter for the first curve
-    - ``mx2,Mx2`` - initial and final values of the parameter for the first curve
+    - ``curve1,curve2`` - two parametric curves.
+
+    OPTIONAL ARGUMENTS :
+    - ``mx1,Mx1`` - initial and final values of the parameter for the first curve.
+
+    - ``mx2,Mx2`` - initial and final values of the parameter for the first curve.
         If these parameters are not given, consider the values of mx and Mx of curve1 and curve2
-        (if the latter are graphs)
-    - ``reverse1`` - (default=False) if True, reverse the sense of curve1 
-    - ``reverse2`` - (default=True) if True, reverse the sense of curve1 
-        Let us suppose that curve1 goes from A1 to B1 and curve2 from A2 to B2
-        If we do not reverse the sense of anything, the result will be
-        the surface delimited by
+        (if the latter are graphs).
 
-        curve1 :        A1 -> B1
-        up_segment :    B1 -> B2
-        curve2 :        A2 -> B2
-        low_segment     A2 -> A1
+    - ``reverse1`` - (default=False) if True, reverse the sense of curve1.
+
+    - ``reverse2`` - (default=True) if True, reverse the sense of curve1.
+
+    Let us suppose that curve1 goes from A1 to B1 and curve2 from A2 to B2
+    If we do not reverse the sense of anything, the result will be
+    the surface delimited by
+
+    curve1:        A1 -> B1
+    up_segment:    B1 -> B2
+    curve2:        A2 -> B2
+    low_segment:   A2 -> A1
         
-        This is wrong since the last point of each line is not the first
-        point of the next line.
+    This is wrong since the last point of each line is not the first
+    point of the next line.
 
-        For that reason, the second curve is, by default, reversed in order to get
-        curve1 :            A1 -> B1
-        up_segment :        B1 -> B2
-        curve2 (reversed)   B2 -> A2
-        low_segment         A2 -> A1
+    For that reason, the second curve is, by default, reversed in order to get
+    curve1:             A1 -> B1
+    up_segment:         B1 -> B2
+    curve2 (reversed):  B2 -> A2
+    low_segment:        A2 -> A1
 
     OUTPUT:
-    An object ready to be draw
+    An object ready to be draw.
 
-    EXAMPLES
-    sage: curve1=ParametricCurve(x,x**2).graph(2,3)
-    sage: curve2=ParametricCurve(x,x**3).graph(2,5)
-    sage: region=SurfaceBetweenParametricCurves(curve1,curve2)
+    EXAMPLES::
 
-    The segment "closing" the domain are available by the attributes 
-    low_segment and up_segment :
-    sage print region.low_segment
-    segment I=Point(2,8) F=Point(2,4)
-    sage print region.up_segment
-    segment I=Point(3,9) F=Point(5,125)
+        sage: curve1=ParametricCurve(x,x**2).graph(2,3)
+        sage: curve2=ParametricCurve(x,x**3).graph(2,5)
+        sage: region=SurfaceBetweenParametricCurves(curve1,curve2)
+
+    The segment "closing" the domain are available by the attributes `low_segment and up_segment`::
+
+        sage: print region.low_segment
+        segment I=Point(2,8) F=Point(2,4)
+        sage: print region.up_segment
+        segment I=Point(3,9) F=Point(5,125)
 
     NOTE:
     If the two curves make intersections, the result could be messy.
@@ -2781,7 +2804,7 @@ class phyFunction(object):
         return Segment(mv.F,v.F)
     def tangent_phyFunction(self,x0):
         """
-        Return the tangent at the given point as a phyFunction
+        Return the tangent at the given point as a :class:`phyFunction`.
 
         INPUT:
 
@@ -2789,9 +2812,10 @@ class phyFunction(object):
 
         OUTPUT:
 
-        a phyFunction that represents the tangent.
+        A :class:`phyFunction` that represents the tangent. This is an affine function.
 
         EXAMPLE::
+
             sage: g=phyFunction(cos(x))
             sage: print g.tangent_phyFunction(pi/2)
             x |--> 1/2*pi - x
@@ -2803,7 +2827,7 @@ class phyFunction(object):
         h0=self.get_point(x0).y
         return phyFunction(h0+ca*(x-x0))
     def get_normal_point(self,x,dy):
-        """ return a point at distance dy in the normal direction of the point (x,f(x)) """
+        """ return a point at distance `dy` in the normal direction of the point `(x,f(x))` """
         vecteurNormal =  self.get_normal_vector(x)
         return self.get_point(x).translate(vecteurNormal.fix_size(dy))
     def get_regular_points(self,mx,Mx,dx):
@@ -3151,18 +3175,12 @@ class ParametricCurve(object):
     """
     This class describes a parametric curve.
 
-    You create a parametric curve by
-        curve = ParamatricCurve(f1,f2)
-    where f1 and f2 are phyFunction.
-
-    The graph of curve with the parameter going from a to b is got by
-        curve.graph(a,b)
-
     INPUT:
-    - ``f1,f2`` - functions
+
+    - ``f1,f2`` - functions.
 
     OUTPUT:
-    an object ready to be drawn
+    an object ready to be drawn.
 
     EXAMPLES::
 
@@ -3328,25 +3346,31 @@ class ParametricCurve(object):
         return the second derivative vector normalised to 1.
 
         INPUT:
-        - ``llam`` - the value of the parameter on which we want the second derivative
+
+        - ``llam`` - the value of the parameter on which we want the second derivative.
+
         - ``advised`` - (default=False) If True, the initial point is given with
-                                            an advised_mark_angle
+                                            an advised_mark_angle.
+
         - ``normalize`` - (defautl=True) If True, provides a vector normalized to 1.
                                             if False, the norm is not guaranteed and depend on the 
-                                            parametrization.
+                                            parametrization..
 
-        EXAMPLES:
-        sage: F=ParametricCurve(x,x**3)
+        EXAMPLES::
 
-        Normalizing a null vector produces a warning:
+            sage: F=ParametricCurve(x,x**3)
 
-        sage: print F.get_second_derivative_vector(0,normalize=True)
-        vector I=Point(0,0) F=Point(0,0)
+        Normalizing a null vector produces a warning::
 
-        sage: print F.get_second_derivative_vector(0,normalize=False)
-        vector I=Point(0,0) F=Point(0,0)
-        sage: print F.get_second_derivative_vector(1)
-        vector I=Point(1,1) F=Point(1,2)
+            sage: print F.get_second_derivative_vector(0,normalize=True)
+            vector I=Point(0,0) F=Point(0,0)
+
+        ::
+
+            sage: print F.get_second_derivative_vector(0,normalize=False)
+            vector I=Point(0,0) F=Point(0,0)
+            sage: print F.get_second_derivative_vector(1)
+            vector I=Point(1,1) F=Point(1,2)
 
         Note : if the parametrization is not normal, this is not orthogonal to the tangent.
         If you want a normal vector, use self.get_normal_vector
