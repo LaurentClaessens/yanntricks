@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010
+# copyright (c) Laurent Claessens, 2010-2011
 # email: moky.math@gmai.com
 
 """
@@ -64,20 +64,28 @@ def RadianAngleMeasure(x):
 
 class AngleMeasure(object):
     """
-    sage: x=AngleMeasure(value_radian=pi/2)
-    sage: x()
-    90
+    describe an angle.
 
-    Conversions are exact:
-    sage: a=AngleMeasure(value_degree=30)
-    sage: cos(a.radian)
-    1/2*sqrt(3)
+    This class is an attempt to abstract the degree/radian problem
 
-    You can create a new angle from an old one:
-    sage: a=AngleMeasure(value_degree=180)
-    sage: b=AngleMeasure(a)
-    sage: b.degree
-    180
+    EXAMPLES::
+
+        sage: x=AngleMeasure(value_radian=pi/2)
+        sage: x()
+        90
+
+    Conversions are exact::
+
+        sage: a=AngleMeasure(value_degree=30)
+        sage: cos(a.radian)
+        1/2*sqrt(3)
+
+    You can create a new angle from an old one::
+
+        sage: a=AngleMeasure(value_degree=180)
+        sage: b=AngleMeasure(a)
+        sage: b.degree
+        180
 
     """
     # TODO : take into account the following thread:
