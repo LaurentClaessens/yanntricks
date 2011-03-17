@@ -124,3 +124,39 @@ def Test_Measure():
     \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,-0.100000000000000){Xaaac}
     \ncline[linestyle=solid,linecolor=black]{->}{Xaaaa}{Xaaac}
     """
+
+def Test_SurfaceBetweenFunctions():
+    """
+    sage: a=1
+    sage: b=4
+    sage: m=float(b+a)/2
+    sage: x=var('x')
+    sage: f=phyFunction(sin(x+1)+2)
+    sage: g=phyFunction(-(x-2)**(2)+6)                                                                                                             
+    sage: F=f.graph(a,b)
+    sage: G=g.graph(a,b)
+    sage: reg=SurfaceBetweenFunctions(f,g,a,b)                                                                                                      
+    sage: reg.parameters.hatched()                                                                                                                  
+    sage: reg.parameters.hatch.color="red"                                                                                                          
+    sage: reg.vertical_left.parameters.style="dashed"                                                                                               
+    sage: reg.vertical_right.parameters.style="dashed"                                                                                              
+    sage: reg.f1.parameters.style="solid"                                                                                                           
+    sage: reg.f1.parameters.color="blue"                                                                                                            
+    sage: reg.f2.parameters.style="solid"                                                                                                           
+    sage: reg.f2.parameters.color="blue"                                                                                                          
+    sage: print unify_point_name(reg.pstricks_code())
+    \pscustom[hatchcolor=red,linestyle=none,hatchangle=-45,linecolor=black,fillstyle=vlines]{
+    \psplot[linestyle=none]{1.00000000000000}{4.00000000000000}{sin(x + 1) + 2}
+    \psplot[linestyle=none]{4.00000000000000}{1.00000000000000}{-(x - 2)^2 + 6}
+    }
+    \psplot[linestyle=solid,plotpoints=100,linecolor=blue]{1.00000000000000}{4.00000000000000}{sin(x + 1) + 2}
+    \psplot[linestyle=solid,plotpoints=100,linecolor=blue]{1.00000000000000}{4.00000000000000}{-(x - 2)^2 + 6}
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,2.90929742682568){Xaaaa}
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,5.00000000000000){Xaaab}
+    <BLANKLINE>    
+    \pstLineAB[linestyle=dashed,linecolor=black]{Xaaaa}{Xaaab}
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](4.00000000000000,1.04107572533686){Xaaac}
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](4.00000000000000,2.00000000000000){Xaaad}
+    <BLANKLINE>    
+    \pstLineAB[linestyle=dashed,linecolor=black]{Xaaac}{Xaaad}
+    """

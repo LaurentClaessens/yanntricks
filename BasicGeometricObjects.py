@@ -593,24 +593,28 @@ class GeometricPoint(object):
         return Point(self.x,self.y)
     def __eq__(self,other):
         """
-        two points are equal if their coordinates, return True
+        return True if the coordinates of `self` and `other` are the same.
 
         INPUT:
+        
         - ``other`` - an other point
 
         OUTPUT:
-        True, False
+
+        boolean
 
         EXAMPLES:
-        The fact to change the properties of a point don't change the equality
-        sage: a=Point(1,1)
-        sage: b=Point(1,1)
-        sage: b.put_mark(1,1,"$P$")
-        sage: a==b
-        True
-        sage: c=Point(0,0)
-        sage: c==a
-        False
+
+        The fact to change the properties of a point don't change the equality::
+
+            sage: a=Point(1,1)
+            sage: b=Point(1,1)
+            sage: b.put_mark(1,1,"$P$")
+            sage: a==b
+            True
+            sage: c=Point(0,0)
+            sage: c==a
+            False
         """
         if self.x == other.x and self.y==other.y :
             return True
