@@ -912,27 +912,33 @@ class GeometricSegment(object):
         return self.return_deformations(v)
     def fix_origin(self,a,b=None):
         """
-        Return the segment fixed at P. This is the translation of self by P-self.
+        Return the segment fixed at `P`. This is the translation of `self`  by `P-self`.
 
-        The point P can be given by its coordinates
-        Typically it is used in the framework of affine vector.
+        Typically it is used in the framework of affine vector..
 
         INPUT:
+
         - ``P`` - The point on which we want to "attach" the new segment.
 
         OUTPUT:
-        A new segment (or vector) with initial point at P
+
+        A new segment (or vector) with initial point at `P`
 
         EXAMPLES:
-        sage: v=AffineVector( Point(1,1),Point(2,2) )
-        sage: w=v.fix_origin(3,5)
-        sage: w.I.coordinates(),w.F.coordinates()
-        ('(3,5)', '(4,6)')
+    
+        We can fix the orignin by giving the coordinates of the new origin::
 
-        sage: P=Point(-1,-pi)
-        sage: u=w.fix_origin(P)
-        sage: u.I.coordinates(),u.F.coordinates()
-        ('(-1,-pi)', '(0,-pi + 1)')
+            sage: v=AffineVector( Point(1,1),Point(2,2) )
+            sage: w=v.fix_origin(3,5)
+            sage: w.I.coordinates(),w.F.coordinates()
+            ('(3,5)', '(4,6)')
+        
+        We can also give a point::    
+
+            sage: P=Point(-1,-pi)
+            sage: u=w.fix_origin(P)
+            sage: u.I.coordinates(),u.F.coordinates()
+            ('(-1,-pi)', '(0,-pi + 1)')
         """
         if b:
             P=Point(a,b)
