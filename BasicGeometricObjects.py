@@ -229,11 +229,39 @@ def _vector_pstricks_code(segment,pspict=None):
         a = a + P.pstricks_code(pspict)
     return a
 
-
 def AffineVector(A=None,B=None):
     """
-    Return an affine vector from one point to an other.
-    A vector is nothing else than a Segment for which the pstricks_code method is changed.
+    return an affine vector.
+
+    An affine vector is a vector whose origin is not specifically (0,0).
+
+    EXAMPLES:
+        
+    An affine vector can be given by two points::
+
+        sage: print AffineVector(Point(1,1),Point(pi,sqrt(2)))
+        vector I=Point(1,1) F=Point(pi,sqrt(2))
+
+    It can be simply derived from a segment::
+
+        sage: segment=Segment( Point(1,1),Point(2,2)  )
+        sage: av=AffineVector(segment)
+        sage: print av
+        vector I=Point(1,1) F=Point(2,2)
+
+    If you pass an object which has a method `segment`, the
+    :func:`AffineVector` will provide the corresponding affine vector::
+
+        sage: axe=SingleAxe(  Point(-2,2),Vector(1,1),-3,3  )
+        sage: print AffineVector(axe)
+        vector I=Point(-5,-1) F=Point(1,5)
+
+    NOTE:
+
+    The main difference between a :func:`Segment` an :func:`AffineVector` is that
+    the latter will be draw with an arrow. There are also some difference in their
+    behaviour under rotation, dilatation and operations like that.
+
     """
     if B :      # If B is given, I suppose that we gave two points
         vect=Segment(A,B)
@@ -333,12 +361,34 @@ class GeometricPoint(object):
         Return the projection of the point on the given segment.
 
         INPUT:
+
         - ``seg`` - a segment
 
         OUTPUT:
-        a point
 
-        Return a point even if the projections happens to lies outside the segment.
+        a point.
+
+        EXAMPLES:
+
+        Return a point even if the projections happens to lies outside the segment::
+
+            sage: s1=Segment( Point(0,0),Point(2,1) )
+            sage: print Point(3,-1).projection(s1)
+            Point(2,1)
+            sage: print Point(5,0).projection(s1) 
+            Point(4,2)
+
+        You con project on a vector::
+
+            sage: print Point(5,0).projection(Vector(2,1))
+            Point(4,2)
+
+        Computations are exact::
+
+            sage: v=Vector(2,1)
+            sage: print Point(sqrt(2),pi).projection(v)
+            Point(2/5*pi + 4/5*sqrt(2),1/5*pi + 2/5*sqrt(2))
+
         """
         try :
             seg=seg.segment()       # allows to project onto an axe
@@ -388,7 +438,42 @@ class GeometricPoint(object):
         x,y=var('x,y')
         return line.equation.lhs()(x=self.x,y=self.y)
     def translate(self,a,b=None):
-        """Do a translation of the point with the vector v"""
+        """
+        translate `self`.
+
+        EXAMPLES:
+
+        You can translate by a :func:`Vector`::
+
+            sage: v=Vector(2,1)                        
+            sage: P=Point(-1,-1)
+            sage: print P.translate(v)
+            Point(1,0)
+
+        An :func:`AffineVector` is accepted::
+
+            sage: w=AffineVector( Point(1,1),Point(2,3) )
+            sage: print P.translate(w)
+            Point(0,1)
+
+        You can also directly provide the coordinates::
+
+            sage: print P.translate(10,-9)
+            Point(9,-10)
+
+        Or the :func:`Point` corresponding to the translation vector::
+
+            sage: print P.translate( Point(3,4)  )
+            Point(2,3)
+
+        Translation by minus itself produces zero::
+
+            sage: x,y=var('x,y')
+            sage: P=Point(x,y)
+            sage: print P.translate(-P)
+            Point(0,0)
+
+        """
         if b==None :
             v=a
         else :
@@ -1881,27 +1966,35 @@ class InterpolationCurve(GraphOfAnObject):
 
     INPUT:
     - ``points_list`` - a list of points that have to be joined.
+
     OPTIONAL INPUT:
+
     - ``context_object`` -  the object that is going to use the InterpolationCurve's pstricks_code.
                             ImplicitCurve and wavy curves are using InterpolationCurve as "backend"
                             for the pstricks_code.
                             Here we use the context_object in order to take this one into account
                             when determining the parameters (color, ...).
-                            See self.pstricks_code()
+                            See :func:`self.pstricks_code()`.
 
     EXAMPLES:
-    This example is valid, but will not plot the expected line (this is a feature of \pscurve)
-    sage: F=InterpolationCurve([Point(0,0),Point(1,1)])
 
-    If you want to plot the small segment, you have to add a point in the center:
-    sage: F=InterpolationCurve([Point(0,0),Point(0.5,0.5),Point(1,1)])
+    This example is valid, but will not plot the expected line (this is a feature of `\pscurve`)::
 
-    sage: C=Circle(Point(0,0),1)
-    sage: G=InterpolationCurve([C.get_point(2*pi/i,advised=False) for i in range(1,100)])
+        sage: F=InterpolationCurve([Point(0,0),Point(1,1)])
+
+    If you want to plot the small segment, you have to add a point in the center::
+
+        sage: F=InterpolationCurve([Point(0,0),Point(0.5,0.5),Point(1,1)])
+
+    The following draws a circle::
+    
+        sage: C=Circle(Point(0,0),1)
+        sage: G=InterpolationCurve([C.get_point(2*pi/i,advised=False) for i in range(1,100)])
 
     Notice in the lase example the use of advised=False in order to speed up the computation.
 
     NOTE:
+
     InterpolationCurve is used in order to produce implicit plot and wavy functions.
 
     """
@@ -2073,20 +2166,32 @@ class GeometricImplicitCurve(object):
         Return the graph corresponding to the implicit curve.
 
         INPUT:
+
         - ``xrange`` - the X-range on which the curve will be plotted.
+
         - ``yrange`` - the Y-range on which the curve will be plotted.
+
+        EXAMPLE ::
+    
+            sage: x,y=var('x,y')
+            sage: F=GeometricImplicitCurve(x-y==3)
+            sage: graph=F.graph((x,-3,3),(y,-2,2))
+            sage: print graph.bounding_box()
+            (1.0,-2.0),(3.0,1.88737914186e-15)
+
         """
         return GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
     def __str__(self):
         """
         Return string representation of this implicit curve
 
-        EXAMPLE:
-        sage: f(x,y)=x**2+1/x
-        sage: print GeometricImplicitCurve(f(x,y)==2)
-        Implicit curve of equation x^2 + 1/x - 2 == 0
-        sage: print GeometricImplicitCurve(x+y==7)   
-        Implicit curve of equation x + y - 7 == 0
+        EXAMPLE::
+
+            sage: f(x,y)=x**2+1/x
+            sage: print GeometricImplicitCurve(f(x,y)==2)
+            Implicit curve of equation x^2 + 1/x - 2 == 0
+            sage: print GeometricImplicitCurve(x+y==7)   
+            Implicit curve of equation x + y - 7 == 0
         """
         return "Implicit curve of equation %s == 0"%repr(self.f)
 
@@ -2311,7 +2416,7 @@ class GeometricVectorField(object):
             sage: G.divergence().simplify_full()
             0
 
-        The divergence is a funciton::
+        The divergence is a function::
 
             sage: a,b=var('a,b')
             sage: H=GeometricVectorField( x**2,y**3 )
@@ -2326,22 +2431,27 @@ class GeometricVectorField(object):
         return a graph of self with the given points
 
         INPUT:
-        - ``xvalues`` - tuple (x,mx,My,n) interval and number of points with respect to X
-        - ``yvalues`` - tuple (y,my,My,n) interval and number of points with respect to Y
-        - ``draw_points`` - (defaulf : empty list) a list of points
+
+        - ``xvalues`` - tuple (x,mx,My,n) interval and number of points with respect to X.
+
+        - ``yvalues`` - tuple (y,my,My,n) interval and number of points with respect to Y.
+
+        - ``draw_points`` - (defaulf : empty list) a list of points.
 
         If xvalues is given, then yvalues has to be given.
 
         OUTPUT:
-        object GraphOfAVectorField
+
+        object GraphOfAVectorField.
         
-        EXAMPLES:
-        sage: x,y=var('x,y')
-        sage: F=VectorField(x,y).graph(xvalues=(x,-2,2,3),yvalues=(y,-10,10,3),draw_points=[Point(100,100)])
-        sage: print F.draw_points[0]
-        Point(100,100)
-        sage: print len(F.draw_points)
-        10
+        EXAMPLES::
+
+            sage: x,y=var('x,y')
+            sage: F=VectorField(x,y).graph(xvalues=(x,-2,2,3),yvalues=(y,-10,10,3),draw_points=[Point(100,100)])
+            sage: print F.draw_points[0]
+            Point(100,100)
+            sage: print len(F.draw_points)
+            10
         """
         if draw_points is None:
             draw_points=[]
@@ -2361,23 +2471,25 @@ class GeometricVectorField(object):
         return GraphOfAVectorField(self,draw_points=draw_points)
     def __call__(self,a,b=None):
         """
-        return the affine vector at point (a,b)
+        return the affine vector at point (a,b).
 
         INPUT:
-        - ``a,b`` - numbers
+
+        - ``a,b`` - numbers.
 
         OUTPUT:
-        an affine vector based on (a,b)
+        an affine vector based on (a,b).
 
-        EXAMPLES:
-        sage: x,y=var('x,y')
-        sage: F=VectorField(x**2,y**3)
-        sage: print F(1,2)
-        vector I=Point(1,2) F=Point(2,10)
+        EXAMPLES::
 
-        sage: P=Point(3,4)
-        sage: print F(P)
-        vector I=Point(3,4) F=Point(12,68)
+            sage: x,y=var('x,y')
+            sage: F=VectorField(x**2,y**3)
+            sage: print F(1,2)
+            vector I=Point(1,2) F=Point(2,10)
+
+            sage: P=Point(3,4)
+            sage: print F(P)
+            vector I=Point(3,4) F=Point(12,68)
 
         """
         if b is not None :
@@ -2490,8 +2602,10 @@ class MeasureLength(GraphOfASegment):
     not the segment given in argument.
 
     INPUT:
-    - ``seg`` - the segment to be measured
-    - ``dist`` - the distance between the segment and the measure
+
+    - ``seg`` - the segment to be measured.
+
+    - ``dist`` - the distance between the segment and the measure.
 
     The sign of <dist> is an issue. If you give 0.3 you get one result, if you give
     -0.3, you get the segment on the other side.
@@ -2504,37 +2618,43 @@ class MeasureLength(GraphOfASegment):
     EXAMPLES:
     
     In order to check the position of the arrow line,
-    we check the position of the mark_point.
+    we check the position of the mark_point::
 
-    sage: O=Point(0,0)
-    sage: A=Point(1,0)
+        sage: O=Point(0,0)
+        sage: A=Point(1,0)
 
     Horizontal line directed from right to left; the
-    arrow line has to be bellow :
-    sage: measureOA=MeasureLength(Segment(O,A),0.1)
-    sage: print measureOA.mark_point()
-    Point(0.500000000000000,-0.100000000000000)
+    arrow line has to be bellow::
 
-    Horizontal line directed from left to right:
-    sage: measureAO=MeasureLength(Segment(A,O),0.1)
-    sage: print measureAO.mark_point()
-    Point(0.5,0.100000000000000)
+        sage: measureOA=MeasureLength(Segment(O,A),0.1)
+        sage: print measureOA.mark_point()
+        Point(0.500000000000000,-0.100000000000000)
 
-    Vertical line 
-    sage: B=Point(0,2)
-    sage: measureOB=MeasureLength(Segment(O,B),0.1)
-    sage: print measureOB.mark_point()
-    Point(0.100000000000000,1.0)
+    Horizontal line directed from left to right::
 
-    USEFUL ATTRIBUTE
+        sage: measureAO=MeasureLength(Segment(A,O),0.1)
+        sage: print measureAO.mark_point()
+        Point(0.5,0.100000000000000)
+
+    Vertical line::
+
+        sage: B=Point(0,2)
+        sage: measureOB=MeasureLength(Segment(O,B),0.1)
+        sage: print measureOB.mark_point()
+        Point(0.100000000000000,1.0)
+
+    USEFUL ATTRIBUTE:
+
     - ``self.advised_mark_angle`` - the angle at which we advise you to put the mark.
                                     It indicates the direction orthogonal to the segment,
                                     with the orientation given in the discussion about the
-                                    sign of <dist>
+                                    sign of <dist>.
 
-    sage: m=MeasureLength(Segment( Point(1,1) ,Point(2,2) ),0.1)
-    sage: print m.advised_mark_angle
-    AngleMeasure, degree=315.000000000000,radian=-1/4*pi
+    ::
+
+        sage: m=MeasureLength(Segment( Point(1,1) ,Point(2,2) ),0.1)
+        sage: print m.advised_mark_angle
+        AngleMeasure, degree=315.000000000000,radian=-1/4*pi
 
     You are invited to use advised_mark_angle. If not the position of the mark
     could be unpredictable.

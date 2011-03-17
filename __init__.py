@@ -47,19 +47,20 @@ def RemoveLastZeros(x,n):
     OUTPUT:
     A string.
 
-    Example:
-    sage: RemoveLastZeros(1.000,4) 
-    '1'
-    sage: RemoveLastZeros(3/4,1)
-    '0.7'
-    sage: RemoveLastZeros(3/4,3)
-    '0.75'
-    sage: RemoveLastZeros(3/4,4)
-    '0.75'
-    sage: RemoveLastZeros(pi,4)
-    '3.1415'
-    sage: RemoveLastZeros(130*e,2)
-    '353.37'
+    EXAMPLES::
+
+        sage: RemoveLastZeros(1.000,4) 
+        '1'
+        sage: RemoveLastZeros(3/4,1)
+        '0.7'
+        sage: RemoveLastZeros(3/4,3)
+        '0.75'
+        sage: RemoveLastZeros(3/4,4)
+        '0.75'
+        sage: RemoveLastZeros(pi,4)
+        '3.1415'
+        sage: RemoveLastZeros(130*e,2)
+        '353.37'
 
     NOTE :
     Part of the algorithm comes from
