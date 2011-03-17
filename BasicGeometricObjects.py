@@ -229,10 +229,10 @@ def _vector_pstricks_code(segment,pspict=None):
         a = a + P.pstricks_code(pspict)
     return a
 
+
 def AffineVector(A=None,B=None):
     """
-    return an affine vector from one point to an other
-
+    Return an affine vector from one point to an other.
     A vector is nothing else than a Segment for which the pstricks_code method is changed.
     """
     if B :      # If B is given, I suppose that we gave two points
@@ -1733,9 +1733,31 @@ class CustomSurface(GraphOfAnObject):
     """
     Represent the surface contained between some lines and (parametric) curves.
 
-    Usage :
-    surf = CustomSurface(g1,g2)
-    describes whose border is g1 and g2 that have to be graphs.
+    INPUT:
+    - ``*args`` - la tuple of lines like segments, functions, parametric curves.
+
+    EXAMPLE:
+    
+    The following describes the surface between the circle of radius 1 and 
+    the square of length 1::
+    
+        sage: C=Circle(Point(0,0),1)
+        sage: arc=C.parametric_curve(0,pi/2)
+        sage: h=Segment(Point(0,1),Point(1,1))
+        sage: v=Segment(Point(1,1),Point(1,0))
+        sage: surf=CustomSurface(arc,h,v)
+        sage: print unify_point_name(surf.pstricks_code())
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,1.00000000000000){Xaaaa}
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaab}
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaac}
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,0){Xaaad}
+        \pscustom[linestyle=none,linecolor=black,fillstyle=vlines]{
+        \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{0.000000000000000}{1.57079632679490}{cos(t) | sin(t) }
+        <BLANKLINE>
+        \pstLineAB[linestyle=solid,linecolor=black]{Xaaaa}{Xaaab}
+        <BLANKLINE>
+        \pstLineAB[linestyle=solid,linecolor=black]{Xaaac}{Xaaad}
+        }
 
     The border is not drawn.
 
