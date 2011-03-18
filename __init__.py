@@ -219,7 +219,8 @@ def unify_point_name(s):
 
 def number_at_position(s,n):
     """
-    return the number being at position `n` in `s`.
+    return the number being at position `n` in `s` 
+    as well as the first and last positions of that number in `s`.
 
     Return False is the position `n` is not part of a number.
 
@@ -231,22 +232,39 @@ def number_at_position(s,n):
 
     OUTPUT:
 
-    a string representing the number.
+    a tuple (string,integer,integer)
 
     EXAMPLES:
 
         sage: s="Point(-1.3427,0.1223)"
         sage: number_at_position(s,9)
-        -1.3427
+        ('-1.3427', 6, 13)
         sage: number_at_position(s,6)
-        -1.3427
+        ('-1.3427', 6, 13)
 
         sage: number_at_position(s,3)
-        False
+        (False, 0, 0)
 
         sage: s="\\begin{pspicture}(-0.375000000000000,-1.94848632812500)(3.00000000000000,1.94860839843750)"
-        sage: number_at_position(s,24)
-        -1.9484863281250
+        sage: number_at_position(s,20)
+        ('-0.375000000000000', 18, 36)
+
+        sage: number_at_position(s,27)
+        ('-0.375000000000000', 18, 36)
+
+        sage: number_at_position(s,60)
+        ('3.00000000000000', 56, 72)
+
+        sage: number_at_position(s,80)
+        ('1.94860839843750', 73, 89)
+
+    That allows to make cool replacements. In the following, we replace
+    the occurrence of "0.12124" that is on position 4::
+
+        sage: s="Ps=0.12124 and Qs=0.12124"       
+        sage: v,first,last=number_at_position(s,4)
+        sage: print s[:first]+"AAA"+s[last:]      
+        Ps=AAA and Qs=0.12124
 
     NOTE:
 
@@ -263,7 +281,7 @@ def number_at_position(s,n):
     number_elements = digits+["-","."]
     s=str(s)
     if s[n] not in number_elements :
-        return False
+        return False,0,0
     i=n
     while s[i] in number_elements:
         i=i-1
@@ -274,7 +292,7 @@ def number_at_position(s,n):
     last=i
     # When treating the string read in the test file,
     # the string is an unicode. SR does not work with unicode
-    return str(s[first:last])
+    return str(s[first:last]),first,last
 
 def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
     """
@@ -294,7 +312,7 @@ def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
 
     OUTPUT:
 
-    tuple boolean,string
+    tuple (boolean,string).
 
     EXAMPLES:
 
@@ -304,7 +322,7 @@ def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
         sage: s1="Point(-0.2,0.111)"
         sage: s2="Point(-0.3,0.111)"
         sage: string_number_comparison(s1,s2)
-        (False, 'distance between -0.2 and -0.3 is larger than 0.01')
+        (False, 'Distance between -0.2 and -0.3 is larger than 0.01.')
 
     In the following the comparison fails due to
     the second number::
@@ -325,18 +343,45 @@ def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
 
     if s1 == s2:
         return True,last_justification
-    i=0
-    while s1[i] == s2[i]:
-        i = i+1
-    v1=number_at_position(s1,i)
-    v2=number_at_position(s2,i)
+    pos=0
+    while s1[pos] == s2[pos]:
+        pos = pos+1
+    v1,first1,last1=number_at_position(s1,pos)
+    v2,first2,last2=number_at_position(s2,pos)
+
+    #print "343 j'ai trouvé",v1,"dans"
+    #print "---"
+    #print s1
+    #print "---"
+    #print "343 j'ai trouvé",v2,"dans"
+    #print "---"
+    #print s2
+    #print "---"
+
 
     if v1 == False or v2 == False :
         return False,"There is a difference outside a number"
     if abs(SR(v1)-SR(v2))<epsilon:
-        justification=last_justification+"d(%s,%s)=%s;"%(v1,v2,str(SR(v1)-SR(v2)))
-        t1=s1.replace(v1,v2)
+        justification=last_justification+"d(%s,%s)=%s\n"%(v1,v2,str(SR(v1)-SR(v2)))
+
+        t1=s1[:first1]+v2+s1[last1:]
+
+        #print "différence acceptée",v1,v2
+        #print "je vais concaténer"
+        #print s1
+        #print s1[:first1]
+        #print v2
+        #print s1[last1:]
+
         t2=s2
+        
+        #print "371 récurence, je vais comparer"
+        #print "---"
+        #print t1
+        #print "---"
+        #print t2
+        #print "---"
+
         return string_number_comparison(t1,t2,epsilon=epsilon,last_justification=justification)
     justification=last_justification+"Distance between %s and %s is larger than %s."%(str(v1),str(v2),str(epsilon))
     return False,justification
@@ -365,6 +410,7 @@ class TestPspictLaTeXCode(object):
         text=unify_point_name(self.notice_text+self.pspict.contenu_pstricks)
         self.test_file.write(text,"w")
     def test(self):
+        print "---"
         print "Testing pspicture %s ..."%self.name
         obtained_text=unify_point_name(self.pspict.contenu_pstricks)
         expected_text=unify_point_name("".join(self.test_file.contenu()).replace(self.notice_text,""))
@@ -381,6 +427,7 @@ class TestPspictLaTeXCode(object):
             raise ValueError,"The test of pspicture %s failed. %s"%(str(self.name),justification)
         print justification
         print "Successful test for pspicture %s"%self.name
+        print "---"
     
 sysargvzero = sys.argv[0][:]
 def newwriteName():

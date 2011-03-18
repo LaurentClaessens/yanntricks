@@ -3577,13 +3577,15 @@ class ParametricCurve(object):
         the fact that we need the result to be reproducible
         for tests.
 
+        WARNING: this is no more the case. See the example bellow.
+
         EXAMPLES::
             
             sage: from phystricks import *
             sage: f=1.5*(1+cos(x))
             sage: cardioid=PolarCurve(f)
             sage: cardioid.get_minmax_data(0,2*pi)
-            {'xmin': -0.375, 'ymin': -1.95, 'ymax': 1.95, 'xmax': 3.00}
+            {'xmin': -0.37499998976719928, 'ymin': -1.9484987597486128, 'ymax': 1.9482356168366479, 'xmax': 3.0}
 
         """
         dico_sage = MyMinMax(parametric_plot( (self.f1,self.f2), (deb,fin) ).get_minmax_data())

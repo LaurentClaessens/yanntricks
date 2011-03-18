@@ -32,6 +32,8 @@ def MyMinMax(dico_sage,n=3):
     """
     return the dictionary with numbers cut to `n` digits.
 
+    WARNING: this is no more the case. See the example below.
+
     INPUT:
 
     - ``dico_sage`` - a dictionary with number values
@@ -45,9 +47,10 @@ def MyMinMax(dico_sage,n=3):
 
         sage: d={'xmin': -0.3456475, 'ymin': -1.94565, 'ymax': 1.7895, 'xmax': 3.0000124}
         sage: MyMinMax(d)
-        {'xmin': -0.346, 'ymin': -1.95, 'ymax': 1.79, 'xmax': 3.00}
+        {'xmin': -0.345647500000000, 'ymin': -1.94565000000000, 'ymax': 1.78950000000000, 'xmax': 3.00001240000000}
 
     """
+    return dico_sage
     return dict(   [ (k,numerical_approx(dico_sage[k],digits=n)) for k in dico_sage.keys()  ]   )
 
 
