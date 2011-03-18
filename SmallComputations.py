@@ -28,6 +28,28 @@ by phystricks but that are not geometry.
 from phystricks import *
 from sage.all import *
 
+def MyMinMax(dico_sage,n=3):
+    """
+    return the dictionary with numbers cut to `n` digits.
+
+    INPUT:
+
+    - ``dico_sage`` - a dictionary with number values
+    - ``n`` - (default=3) the number of digits to keep
+
+    OUTPUT:
+
+    A dictionary
+
+    EXAMPLES:
+
+        sage: d={'xmin': -0.3456475, 'ymin': -1.94565, 'ymax': 1.7895, 'xmax': 3.0000124}
+        sage: MyMinMax(d)
+        {'xmin': -0.346, 'ymin': -1.95, 'ymax': 1.79, 'xmax': 3.00}
+
+    """
+    return dict(   [ (k,numerical_approx(dico_sage[k],digits=n)) for k in dico_sage.keys()  ]   )
+
 
 def MultipleLower(x,m):
     """ return the biggest multiple of m which is lower or equal to x"""

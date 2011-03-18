@@ -1251,7 +1251,7 @@ class GeometricCircle(object):
     def get_minmax_data(self,angleI,angleF):
         deb = radian(angleI)
         fin = radian(angleF)
-        return self.parametric_curve().get_minmax_data(deb,fin)
+        return MyMinMax(self.parametric_curve().get_minmax_data(deb,fin))
     def xmax(self,angleI,angleF):
         return self.get_minmax_data(angleI,angleF)['xmax']
     def xmin(self,angleI,angleF):
@@ -2032,7 +2032,7 @@ class InterpolationCurve(GraphOfAnObject):
         ymin=min([P.y for P in self.points_list])
         ymax=max([P.y for P in self.points_list])
         if dict:
-            return {'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax}
+            return MyMinMax({'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax})
         else:
             return xmin,xmax,ymin,ymax
     def xmin(self):
@@ -2272,7 +2272,7 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
         ymin=min(yy)
         ymax=max(yy)
         if dict:
-            return {'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax}
+            return MyMinMax({'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax})
         else:
             return xmin,xmax,ymin,ymax
     def xmin(self):
@@ -3081,10 +3081,10 @@ class phyFunction(object):
 
         """
         try :
-            return plot(self.sage,(mx,Mx)).get_minmax_data()
+            return MyMinMax(plot(self.sage,(mx,Mx)).get_minmax_data())
         except ValueError :
             if self.sage==x:
-                return plot(x,mx,Mx).get_minmax_data()
+                return MyMinMax(plot(x,mx,Mx).get_minmax_data())
             else :
                 raise ValueError,"This is a strange case. Maybe to be reported to ticker 10246"
     def xmax(self,deb,fin):
@@ -3230,6 +3230,13 @@ def PolarCurve(fr,ftheta=None):
     If ftheta is given, return the curve
     x(t)=fr(t)cos( ftheta(t) )
     y(t)=fr(t)sin( ftheta(t) )
+
+    EXAMPLES:
+    
+    We create a cardioid::
+
+        sage: f=1.5*(1+cos(x))
+        sage: cardioid=PolarCurve(f).graph(0,2*pi)
 
     """
     x=var('x')
@@ -3564,7 +3571,23 @@ class ParametricCurve(object):
         center=Point(Ox,Oy)
         return CircleOA(center,P)
     def get_minmax_data(self,deb,fin):
-        return parametric_plot( (self.f1,self.f2), (deb,fin) ).get_minmax_data()
+        """
+        The difference between this and the get_minmax_data from Sage
+        if that here we cut to 3 digits. This is due to
+        the fact that we need the result to be reproducible
+        for tests.
+
+        EXAMPLES::
+            
+            sage: from phystricks import *
+            sage: f=1.5*(1+cos(x))
+            sage: cardioid=PolarCurve(f)
+            sage: cardioid.get_minmax_data(0,2*pi)
+            {'xmin': -0.375, 'ymin': -1.95, 'ymax': 1.95, 'xmax': 3.00}
+
+        """
+        dico_sage = MyMinMax(parametric_plot( (self.f1,self.f2), (deb,fin) ).get_minmax_data())
+        return MyMinMax(dico_sage)
     def xmax(self,deb,fin):
         return self.get_minmax_data(deb,fin)['xmax']
     def xmin(self,deb,fin):

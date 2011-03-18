@@ -217,7 +217,171 @@ def unify_point_name(s):
 
     return s
 
+def number_at_position(s,n):
+    """
+    return the number being at position `n` in `s`.
 
+    Return False is the position `n` is not part of a number.
+
+    INPUT:
+
+    - ``s`` - a string.
+
+    - ``n`` - a number.
+
+    OUTPUT:
+
+    a string representing the number.
+
+    EXAMPLES:
+
+        sage: s="Point(-1.3427,0.1223)"
+        sage: number_at_position(s,9)
+        -1.3427
+        sage: number_at_position(s,6)
+        -1.3427
+
+        sage: number_at_position(s,3)
+        False
+
+        sage: s="\\begin{pspicture}(-0.375000000000000,-1.94848632812500)(3.00000000000000,1.94860839843750)"
+        sage: number_at_position(s,24)
+        -1.9484863281250
+
+    NOTE:
+
+    We cannot return the number since the aim is to substitute it *as string* in the 
+    function :func:`string_number_comparison`.
+
+    The problem in returning a number is the following::
+
+        sage: SR(str('1.94848632812500'))
+        1.94848632812
+
+    """
+    digits=["0","1","2","3","4","5","6","7","8","9"]
+    number_elements = digits+["-","."]
+    s=str(s)
+    if s[n] not in number_elements :
+        return False
+    i=n
+    while s[i] in number_elements:
+        i=i-1
+    first=i+1
+    i=n
+    while s[i] in number_elements:
+        i=i+1
+    last=i
+    # When treating the string read in the test file,
+    # the string is an unicode. SR does not work with unicode
+    return str(s[first:last])
+
+def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
+    """
+    Compare two strings. 
+
+    The comparison is True is the two string differ by numbers that are `epsilon`-close. 
+
+    It return a tuple of a boolean and a string. The string is a justification of the result.
+
+    INPUT:
+
+    - ``s1`` - first string.
+
+    - ``s2`` - second string.
+
+    - ``epsilon`` - tolerance.
+
+    OUTPUT:
+
+    tuple boolean,string
+
+    EXAMPLES:
+
+    In the following, the comparison fails due to
+    the first number::
+
+        sage: s1="Point(-0.2,0.111)"
+        sage: s2="Point(-0.3,0.111)"
+        sage: string_number_comparison(s1,s2)
+        (False, 'distance between -0.2 and -0.3 is larger than 0.01')
+
+    In the following the comparison fails due to
+    the second number::
+
+        sage: s1="Point(-0.02,1)"
+        sage: s2="Point(-0.03,2)"
+        sage: string_number_comparison(s1,s2,epsilon=0.1)
+        (False, 'd(-0.02,-0.03)=0.01;Distance between 1 and 2 is larger than 0.100000000000000.')
+
+     Here the comparison succeed::
+
+        sage: s1="Point(1.99,1.001)"
+        sage: s2="Point(2,1.002)"
+        sage: string_number_comparison(s1,s2,epsilon=0.1)
+        (True, 'd(1.99,2)=-0.01;d(1.001,1.002)=-0.001;')
+
+    """
+
+    if s1 == s2:
+        return True,last_justification
+    i=0
+    while s1[i] == s2[i]:
+        i = i+1
+    v1=number_at_position(s1,i)
+    v2=number_at_position(s2,i)
+
+    if v1 == False or v2 == False :
+        return False,"There is a difference outside a number"
+    if abs(SR(v1)-SR(v2))<epsilon:
+        justification=last_justification+"d(%s,%s)=%s;"%(v1,v2,str(SR(v1)-SR(v2)))
+        t1=s1.replace(v1,v2)
+        t2=s2
+        return string_number_comparison(t1,t2,epsilon=epsilon,last_justification=justification)
+    justification=last_justification+"Distance between %s and %s is larger than %s."%(str(v1),str(v2),str(epsilon))
+    return False,justification
+     
+
+class TestPspictLaTeXCode(object):
+    def __init__(self,pspict):
+        self.pspict=pspict
+        self.name=pspict.name
+        self.notice_text="This is a testing file containing the LaTeX code of the figure %s."%(self.name)
+        self.test_file=Fichier("test_pspict_LaTeX_%s.tmp"%(self.name))
+    def create_test_file(self):
+        """
+        Write the LaTeX code of `pspict` in a file.
+
+        The purpose is to compare that file with the code actually 
+        produced later. This is a way to test changes in phystricks.
+
+        INPUT:
+
+        - ``pspict`` - a pspicture
+
+        If the option `--create_test_file` is passed to the program, this function is called
+        on each pspicture when concluding a :class:`figure`.
+        """
+        text=unify_point_name(self.notice_text+self.pspict.contenu_pstricks)
+        self.test_file.write(text,"w")
+    def test(self):
+        print "Testing pspicture %s ..."%self.name
+        obtained_text=unify_point_name(self.pspict.contenu_pstricks)
+        expected_text=unify_point_name("".join(self.test_file.contenu()).replace(self.notice_text,""))
+        boo,justification = string_number_comparison(obtained_text,expected_text)
+        if not boo:
+            print "Test failed"
+            print "Expected:"
+            print expected_text
+            print "----"
+            print "Got:"
+            print obtained_text
+            print "---"
+            print justification
+            raise ValueError,"The test of pspicture %s failed. %s"%(str(self.name),justification)
+        print justification
+        print "Successful test for pspicture %s"%self.name
+    
 sysargvzero = sys.argv[0][:]
 def newwriteName():
     r"""
@@ -263,6 +427,8 @@ class global_variables(object):
     def __init__(self):
         self.eps_exit = False
         self.pdf_exit = False
+        self.test_exit = False
+        self.make_tests = False
         self.pstricks_language = True
         self.list_exits = ["eps","pdf"]
     def special_exit(self):
@@ -819,14 +985,14 @@ def Intersection(f,g):
     """
     When f and g are objects with an attribute equation, return the list of points of intersections.
 
-    Example (in a Sage console which has already imported phystricks)
+    EXAMPLES::
 
-    sage: fun=phyFunction(x**2-5*x+6)
-    sage: droite=phyFunction(2)
-    sage: pts = Intersection(fun,droite)
-    sage: for P in pts:print P
-    Point(4,2)
-    Point(1,2)
+        sage: fun=phyFunction(x**2-5*x+6)
+        sage: droite=phyFunction(2)
+        sage: pts = Intersection(fun,droite)
+        sage: for P in pts:print P
+        Point(4,2)
+        Point(1,2)
     """
     var('x,y')
     pts=[]
@@ -951,9 +1117,9 @@ class figure(object):
         pspict.mother=self      # This was in self.new_pspicture
         self.record_pspicture.append(pspict)
     def add_pspicture(self,pspict):
-        raise DeprecationWarning,"Use fig.new_pspicture instead"
+        raise DeprecationWarning,"Use fig.new_pspicture instead."
     def append_subfigure(self,pspict):
-        raise DeprecationWarning,"Use fig.new_subfigure instead"
+        raise DeprecationWarning,"Use fig.new_subfigure instead."
     def add_latex_line(self,ligne,separator_name="DEFAULT"):
         self.separator_dico[separator_name].add_latex_line(ligne)
     def IncrusteLigne(self,ligne,n):
@@ -967,6 +1133,10 @@ class figure(object):
             self.add_latex_line(pspict.separator_dico["WRITE_AND_LABEL"].latex_code,"WRITE_AND_LABEL")
             pspict.separator_dico["WRITE_AND_LABEL"].latex_code=[]
             self.add_latex_line(pspict.contenu(),"PSPICTURE")           # Here, what is added depends on --eps
+            if globals_vars.make_tests:
+                TestPspictLaTeXCode(pspict).test()
+            if globals_vars.test_exit:
+                TestPspictLaTeXCode(pspict).create_test_file()
         if not globals_vars.special_exit() :
             self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+"}","BEFORE SUBFIGURES")
         for f in self.record_subfigure :
@@ -1044,7 +1214,7 @@ class PspictureToOtherOutputs(object):
         # that need packages of personal commands.
         code.append(self.pspict.specific_needs)     
         code.extend(["\\begin{document}\n","\\begin{TeXtoEPS}"])
-        code.append(self.pspict.contenu_pstricks())
+        code.append(self.pspict.contenu_pstricks)
         code.extend(["\end{TeXtoEPS}\n","\end{document}\n"])
         return "".join(code)
     def create_eps_file(self):
@@ -1118,9 +1288,25 @@ class DrawElement(object):
 
 class pspicture(object):
     r"""
-    self.pstricks_code contains the pstricks code of what has to be between \begin{pspicture} and \end{pspicture}. This is not the environment itself, neither the definition of xunit, yunit.
-    self.contenu_pstricks() is the whole code including the x/yunit
-    self.contenu_eps() contains the line to be added in order to include the eps file
+    Describe a pspicture
+
+    METHODS:
+
+    - `self.pstricks_code` - contains the pstricks code of what has to be between \begin{pspicture} and \end{pspicture}. This is not the environment itself, neither the definition of xunit, yunit.
+
+    - `self.contenu_pstricks` - is the whole code including the x/yunit. This is in fact a `lazy_attribute`
+
+    - `self.contenu_eps()` - contains the line to be added in order to include the eps file
+
+    EXAMPLES:
+
+    Creating a new pspicture::
+
+        sage: pspict=pspicture("ThisIsMyName")
+        sage: pspict.name
+        'ThisIsMyName'
+
+    The name of the pspict is used to produce intermediate filesnames, and other names.
     """
     NomPointLibre = PointsNameList()
 
@@ -1177,6 +1363,31 @@ class pspicture(object):
         self.new_separator("OTHER STUFF")
         self.new_separator("DEFAULT")
         self.new_separator("AFTER PSPICTURE")
+
+    @lazy_attribute
+    def contenu_pstricks(self):                
+        r"""
+        The LaTeX of `self` including xunit,yunit and \begin{pspicture} ... \end{pspicture}
+
+        This is a lazy_attribute because this has to be used independently at more than one place while this function
+        adds non trivial code in `self`.
+
+        NOTE :
+
+        One has to declare the xunit,yunit before to give the bounding box.
+        
+        The value of LabelSep is the distance between an angle and the lable of the angle. It is by default 1, but if there is a dilatation, the visual effect is bad.
+        """
+        if self.LabelSep == 1 : 
+            self.LabelSep = 2/(self.xunit+self.yunit)
+        add_latex_line_entete(self)
+        self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+",LabelSep="+str(self.LabelSep)+"}","BEFORE PSPICTURE")
+        self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}\n","BEFORE PSPICTURE")
+        self.add_latex_line("\\begin{pspicture}%s%s\n"%(self.bounding_box(self).SW().coordinates(numerical=True),self.bounding_box(self).NE().coordinates(numerical=True)),"BEGIN PSPICTURE")
+        self.add_latex_line("\end{pspicture}\n","AFTER PSPICTURE")
+        self.add_latex_line(self.pstricks_code,"OTHER STUFF")
+        return DicoSeparatorToCode(self.separator_dico)
+
     def default_figure(self,name=None):
         """
         Create and return a Figure object that contains self.
@@ -1441,19 +1652,7 @@ class pspicture(object):
         to_pdf = PspictureToOtherOutputs(self)
         to_pdf.create_pdf_file()
         return to_pdf.input_code_pdf
-    def contenu_pstricks(self):                 # class pspicture
-        """
-        One has to declare the xunit,yunit before to give the bounding box. The value of LabelSep is the distance between an angle and the lable of the angle. It is by default 1, but if there is a dilatation, the visual effect is bad.
-        """
-        if self.LabelSep == 1 : 
-            self.LabelSep = 2/(self.xunit+self.yunit)
-        add_latex_line_entete(self)
-        self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+",LabelSep="+str(self.LabelSep)+"}","BEFORE PSPICTURE")
-        self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}\n","BEFORE PSPICTURE")
-        self.add_latex_line("\\begin{pspicture}%s%s\n"%(self.bounding_box(self).SW().coordinates(numerical=True),self.bounding_box(self).NE().coordinates(numerical=True)),"BEGIN PSPICTURE")
-        self.add_latex_line("\end{pspicture}\n","AFTER PSPICTURE")
-        self.add_latex_line(self.pstricks_code,"OTHER STUFF")
-        return DicoSeparatorToCode(self.separator_dico)
+
     def force_math_bounding_box(self,g):
         """
         Add an object to the math bounding box of the pspicture. This object will not be drawn, but the axes and the grid will take it into account.
@@ -1504,7 +1703,7 @@ class pspicture(object):
             if globals_vars.__getattribute__(sortie+"_exit"):
                 print "I've to make an exit : %s"%sortie
                 return self.__getattribute__("contenu_"+sortie)()
-        return self.contenu_pstricks()
+        return self.contenu_pstricks
     # Important de pouvoir produire des fichiers qui ne contiennent qu'une pspicture parce que ça peut être inséré directement 
     # à l'intérieur d'une ligne en LaTeX. J'utilise ça pour des diagrammes de Dynkin par exemple.
     def write_the_file(self,f):                 # Nous sommes dans la classe pspicture
@@ -1518,3 +1717,7 @@ if "--eps" in sys.argv :
     globals_vars.eps_exit = True
 if "--pdf" in sys.argv :
     globals_vars.pdf_exit = True
+if "--create_tests" in sys.argv :
+    globals_vars.test_exit = True
+if "--tests" in sys.argv :
+    globals_vars.make_tests = True
