@@ -330,14 +330,14 @@ def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
         sage: s1="Point(-0.02,1)"
         sage: s2="Point(-0.03,2)"
         sage: string_number_comparison(s1,s2,epsilon=0.1)
-        (False, 'd(-0.02,-0.03)=0.01;Distance between 1 and 2 is larger than 0.100000000000000.')
+        (False, 'd(-0.02,-0.03)=0.01\nDistance between 1 and 2 is larger than 0.100000000000000.')
 
      Here the comparison succeed::
 
         sage: s1="Point(1.99,1.001)"
         sage: s2="Point(2,1.002)"
         sage: string_number_comparison(s1,s2,epsilon=0.1)
-        (True, 'd(1.99,2)=-0.01;d(1.001,1.002)=-0.001;')
+        (True, 'd(1.99,2)=-0.01\nd(1.001,1.002)=-0.001\n')
 
     """
 
