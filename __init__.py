@@ -295,7 +295,7 @@ def number_at_position(s,n):
     return str(s[first:last]),first,last
 
 def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
-    """
+    r"""
     Compare two strings. 
 
     The comparison is True is the two string differ by numbers that are `epsilon`-close. 
@@ -312,7 +312,8 @@ def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
 
     OUTPUT:
 
-    tuple (boolean,string).
+    tuple (boolean,string). The boolean says if the two strings are equal up to `epsilon`-close numbers.
+                            The string provides a short explanation.
 
     EXAMPLES:
 
@@ -324,15 +325,16 @@ def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
         sage: string_number_comparison(s1,s2)
         (False, 'Distance between -0.2 and -0.3 is larger than 0.01.')
 
-    In the following the comparison fails due to
-    the second number::
+
+
+    In the following the comparison fails due to the second number::
 
         sage: s1="Point(-0.02,1)"
         sage: s2="Point(-0.03,2)"
         sage: string_number_comparison(s1,s2,epsilon=0.1)
         (False, 'd(-0.02,-0.03)=0.01\nDistance between 1 and 2 is larger than 0.100000000000000.')
 
-     Here the comparison succeed::
+    Here the comparison succeed::
 
         sage: s1="Point(1.99,1.001)"
         sage: s2="Point(2,1.002)"
