@@ -3570,6 +3570,12 @@ class ParametricCurve(object):
         \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{-2.00000000000000}{3.00000000000000}{t | t^2 }
 
     Notice that due to several `@lazy_attribute`, changing the components after creation could be buggy.
+
+
+    .. literalinclude:: phystricksCycloide.py
+
+    .. image:: Cycloide2.png
+
     """
     # The derivatives of the parametric curves are stored in the
     # dictionary attribute self._derivative_dict
