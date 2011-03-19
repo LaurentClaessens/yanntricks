@@ -100,16 +100,65 @@ def PointsNameList():
 
 def Angle(A,O,B,r=None):
     """
-    Return the angle AOB
+    Return the angle AOB.
+
+    It represent the angle formed at the point O with the lines
+    OA and OB (in that order).
+
+    INPUT:
+
+    - ``A,O,A`` - points.
+
+    - ``r`` - (default, see below) the radius of the arc circle marking the angle.
+
+    OUTPUT:
+
+    An object ready to be drawn of type :class:`GraphOfAnAngle`.
+
+    If `r` is not given, a default value of 0.2 times the length OA is taken.
+
+    EXAMPLES:
+
+    Notice the difference between AOB and BOA::
+
+        sage: A=Point(1,1)
+        sage: O=Point(0,0)
+        sage: B=Point(1,0)
+        sage: print Angle(A,O,B).measure()
+        AngleMeasure, degree=-45.0000000000000,radian=7/4*pi
+        sage: print Angle(B,O,A).measure()
+        AngleMeasure, degree=45.0000000000000,radian=1/4*pi
+
     """
     return GraphOfAnAngle(GeometricAngle(A,O,B,r))
+
 def CircleOA(O,A):
     """
     From the centrer O and a point A, return the circle.
+
+    INPUT:
+
+    - ``O`` - a point that will be the center of the circle.
+    
+    - ``A`` - a point on the circle.
+
+    OUTPUT:
+
+    A circle ready to be drawn of type :class:`GraphOfACircle`.
+
+    EXAMPLES::
+
+        sage: A=Point(2,1)
+        sage: O=Point(0,0)
+        sage: circle=CircleOA(O,A)
+        sage: circle.radius
+        sqrt(5)
+
     """
     center=O
     radius=sqrt( (O.x-A.x)**2+(O.y-A.y)**2 )
     return Circle(O,radius)
+
 def Point(x,y):
     """
     return a point.
@@ -185,7 +234,8 @@ def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
         sage: x,y=var('x,y')
         sage: F=VectorField(x*y,cos(x)+y)
         sage: F.divergence()
-        y + 1
+        (x, y) |--> y + 1
+
 
     If you want an automatic Cartesian grid of points, use xvalues and yvalues::
 
@@ -290,8 +340,38 @@ def Vector(*args):
         x=args[0].x
         y=args[0].y
     return AffineVector(Point(0,0),Point(x,y))
-def Circle(center,radius):
-    return GraphOfACircle(GeometricCircle(center,radius))
+
+def Circle(center,radius,angleI=0,angleF=360):
+    """
+    Return a circle of given radius and center.
+
+    INPUT:
+
+    - ``center`` - the center of the circle.
+
+    - ``radius`` - the radius of the circle.
+    
+    - ``angleI`` - (default=0) If you want an arc of circle, this is the beginning angle.
+    - ``angleF`` - (default=0) If you want an arc of circle, this is the ending angle.
+
+    OUTPUT:
+
+    A circle ready to be drawn
+
+    EXAMPLES:
+
+    The following describes the usual trigonometric circle::
+
+            sage: circle=Circle(Point(0,0),1)
+            sage: print circle.angleI
+            AngleMeasure, degree=0.000000000000000,radian=0
+            sage: print circle.angleF
+            AngleMeasure, degree=360.000000000000,radian=0
+
+    """
+    # TODO: in the last example, the radian value should be 2*pi.
+    return GraphOfACircle(center,radius)
+
 def Rectangle(NW,SE):
     return GraphOfARectangle(GeometricRectangle(NW,SE))
 
@@ -344,7 +424,14 @@ class GraphOfAnObject(object):
 
 class GeometricPoint(object):
     """
-    This is a point. Each point comes with a name given by a class attribute.
+    This is a point. It is defined by its Cartesian coordinates.
+
+    EXAMPLES:
+
+        sage: print Point(1,1)
+        Point(1,1)
+        sage: print Point(pi,sqrt(2))
+        Point(pi,sqrt(2))
     """
     NomPointLibre = PointsNameList()
     
@@ -408,8 +495,10 @@ class GeometricPoint(object):
 
         INPUT:
 
-        - ``r`` - A number
+        - ``r`` - A number.
+
         - ``theta`` - the angle (degree or :class:`AngleMeasure`).
+
         - ``pspict`` - the pspicture in which the point is supposed to live. If `pspict` is given, we compute the deformation due to the dilatation.  Be careful: in that case `r` is given as absolute value and the visual effect will not be affected by dilatations.
 
         OUTPUT: A point.
@@ -431,9 +520,34 @@ class GeometricPoint(object):
         return Point(self.x+r*cos(alpha),self.y+r*sin(alpha))
     def value_on_line(self,line):
         """
-        If f(x,y)=0 is the equation of <line>, return the number f(self.x,self.y).
+        Return the value of the equation of a line on `self`.
 
-        <line> has to have an attribute line.equation
+        If $f(x,y)=0$ is the equation of `line`, return the number f(self.x,self.y).
+
+        NOTE:
+
+        The object `line` has to have an attribute line.equation
+
+        EXAMPLE::
+
+            sage: s=Segment(Point(0,1),Point(1,0))
+            sage: s.equation()
+            x + y - 1 == 0
+            sage: P=Point(-1,3)
+            sage: P.value_on_line(s)
+            1   
+
+        It allows to know if a point is inside or outside a circle::
+
+            sage: circle=Circle(Point(-1,2),4)
+            sage: Point(1,1).value_on_line(circle)
+            -11
+
+        ::
+
+            sage: Point(1,sqrt(2)).value_on_line(circle)
+            (sqrt(2) - 2)^2 - 12
+
         """
         x,y=var('x,y')
         return line.equation.lhs()(x=self.x,y=self.y)
@@ -479,8 +593,6 @@ class GeometricPoint(object):
         else :
             v=Vector(a,b)
         return self+v
-    def lie(self,p):
-        raise DeprecationWarning, "Use self.origin instead"
     def origin(self,p):
         return AffineVector(p,Point(p.x+self.x,p.y+self.y))
     def Vector(self):
@@ -1162,12 +1274,77 @@ class GeometricSegment(object):
         if self.arrow_type=="vector":
             return "vector I=%s F=%s"%(str(self.I),str(self.F))
 
-class GeometricCircle(object):
-    def __init__(self,center,radius):
+
+class GraphOfACircle(GraphOfAnObject):
+    """
+    This is a circle, or an arc of circle.
+
+    INPUT:
+
+    - ``center`` - a point, the center of the circle.
+
+    - ``radius`` - a number, the radius of the circle.
+
+    - ``self.angleI`` - (default=0) the beginning angle of the arc (degree).
+
+    - ``self.angleF`` - (default=360) the ending angle of the arc (degree).
+
+
+    OUTPUT:
+
+    A circle ready to be drawn.
+
+    EXAMPLES::
+
+        sage: circle=Circle(Point(-1,1),3)
+        sage: print unify_point_name(circle.pstricks_code())
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-4.00000000000000,1.00000000000000){Xaaaa}
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-1.00000000000000,1.00000000000000){Xaaab}
+        \pstCircleOA[linestyle=solid,linecolor=black]{Xaaab}{Xaaaa}
+    
+    If you want the same circle but between the angles 45 and 78::
+        
+        sage: other_circle=circle.graph(45,78)
+        sage: print unify_point_name(other_circle.pstricks_code())
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.12132034355964,3.12132034355964){Xaaaa}
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-0.376264927546722,3.93444280220142){Xaaab}
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-1.00000000000000,1.00000000000000){Xaaac}
+        \pstArcOAB[linestyle=solid,linecolor=black]{Xaaac}{Xaaaa}{Xaaab}
+
+    """
+    def __init__(self,center,radius,angleI=0,angleF=360):
         self.center = center
         self.radius = radius
+        GraphOfAnObject.__init__(self,self)
         self.diameter = 2*self.radius
         self._parametric_curve=None
+        self.angleI = AngleMeasure(value_degree=angleI)
+        self.angleF = AngleMeasure(value_degree=angleF)
+
+    @lazy_attribute
+    def equation(self):
+        """
+        Return the equation of `self`.
+
+        OUTPUT:
+
+        an equation.
+
+        EXAMPLES::
+
+            sage: circle=Circle(Point(0,0),1)
+            sage: circle.equation()
+            x^2 + y^2 - 1 == 0
+
+        ::
+
+            sage: circle=CircleOA(Point(-1,-1),Point(0,0))
+            sage: circle.equation()
+            (y + 1)^2 + (x + 1)^2 - 2 == 0
+        """
+        var('x,y')
+        return (x-self.center.x)**2+(y-self.center.y)**2-self.radius**2==0
+    
     def parametric_curve(self,a=None,b=None):
         """
         Return the parametric curve associated to the circle.
@@ -1264,26 +1441,44 @@ class GeometricCircle(object):
         """
         Return a graph of the circle between the two angles given in degree
         """
-        C=GraphOfACircle(self.circle)
-        C.angleI=angleI
-        C.angleF=angleF
-        return C
+        return GraphOfACircle(self.center,self.radius,angleI,angleF)
     def __str__(self):
         return "Circle, center=%s, radius=%s"%(self.center.__str__(),str(self.radius))
-
-
-class GraphOfACircle(GraphOfAnObject,GeometricCircle):
-    """
-    The attributes self.angleI and self.angleF are in degree since they are to be used by the end-user.
-    """
-    def __init__(self,circle):
-        GraphOfAnObject.__init__(self,circle)
-        GeometricCircle.__init__(self,circle.center,circle.radius)
-        self.circle = self.obj
-        self.angleI = AngleMeasure(value_degree=0)
-        self.angleF = AngleMeasure(value_degree=360)
     def copy(self):
-        """Return a copy of the object as geometrical object: the style and drawing parameters are not copied."""
+        """
+        Return a copy of the object as geometrical object.
+        
+        It only copies the center and the radius. In particular
+        the following are not copied:
+
+        - style of drawing.
+
+        - initial and final angle if `self` is an arc.
+
+        EXAMPLES:
+
+        Python copies by assignation::
+
+            sage: c1=Circle( Point(1,1),2 )
+            sage: c2=c1
+            sage: c2.center=Point(3,3)
+            sage: print c1.center
+            Point(3,3)
+
+        The method :func:`copy` pass through::
+
+            sage: c1=Circle( Point(1,1),3 )
+            sage: c2=c1.copy()
+            sage: c2.center=Point(3,3)
+            sage: print c1.center
+            Point(1,1)
+
+        NOTE:
+
+        Due to use of `lazy_attribute`, it is not recommended to change the center of
+        a circle after having defined it.
+
+        """
         return Circle(self.center,self.radius)
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
@@ -1537,11 +1732,42 @@ class Mark(object):
         return "\n".join(l)
 
 class FillParameters(object):
-    """The filling parameters"""
+    """
+    Represent the parameters of filling a surface.
+    """
     def __init__(self):
         self.color= None
         self.style= "solid"
     def add_to_options(self,opt):
+        """
+        add `self` to a set of options.
+
+    
+        INPUT:
+
+        - ``opt`` - an instance of :class:`Options`.
+
+        OUTPUT:
+
+        Return `opt` with added properties.
+
+        EXAMPLES::
+
+            sage: opt=Options()
+            sage: fill=FillParameters()
+            sage: fill.color="blue"
+            sage: fill.add_to_options(opt)
+            sage: opt.code()
+            'fillcolor=blue,fillstyle=solid'
+
+        ::
+
+            sage: fill.style="MyStyle"
+            sage: fill.add_to_options(opt)
+            sage: opt.code()
+            'fillcolor=blue,fillstyle=MyStyle'
+
+        """
         if self.color :
             opt.add_option("fillcolor=%s"%str(self.color))
         if self.style :
@@ -2317,18 +2543,6 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
             code.append(curve.pstricks_code(pspict))
         return "\n".join(code)
 
-def Code_Pscurve(listePoints,params):
-    """
-    From a list of points and parameters, gives the code of the corresponding pscurve.
-    """
-    raise DeprecationWarning,"Use InterpolationCurve instead"
-    l = []
-    l.append("\pscurve["+params+"]")
-    for p in listePoints :
-        l.append(p.coordinates(numerical=True))
-    ligne = "".join(l)
-    return ligne
-
 class GraphOfASegment(GraphOfAnObject,GeometricSegment):
     def __init__(self,seg):
         GraphOfAnObject.__init__(self,seg)
@@ -2418,23 +2632,25 @@ class GeometricVectorField(object):
             sage: x,y=var('x,y')
             sage: F = GeometricVectorField( x , y )
             sage: F.divergence()
-            2
+            (x, y) |--> 2
 
         The divergence of the gravitational field vanishes::
 
             sage: G=GeometricVectorField(x/(x**2+y**2),y/(x**2+y**2))
             sage: G.divergence().simplify_full()
-            0
+            (x, y) |--> 0
 
         The divergence is a function::
 
             sage: a,b=var('a,b')
             sage: H=GeometricVectorField( x**2,y**3 )
-            sage: H.divergence()(x=a,y=b)
+            sage: H.divergence()(a,b)
             3*b^2 + 2*a
+
         """
         x,y=var('x,y')
-        divergence=self.fx.diff(x)(x=x,y=y)+self.fy.diff(y)(x=x,y=y)
+        formula = self.fx.diff(x)+self.fy.diff(y)
+        divergence=symbolic_expression(formula).function(x,y)
         return divergence
     def graph(self,xvalues=None,yvalues=None,draw_points=None):
         """
