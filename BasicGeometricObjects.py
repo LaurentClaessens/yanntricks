@@ -1407,19 +1407,22 @@ class GraphOfACircle(GraphOfAnObject):
         return PolarPoint(1,theta+90).origin(self.get_point(theta,advised=False))
     def get_normal_vector(self,theta):
         """
-        Return a normal vector at angle <theta>
-
-        The angle is in degree, or AngleMeasure.
-
+        Return a normal vector at the given angle 
+        
         INPUT:
-        - ``theta`` - an angle
-        OUTPU:
-        a vector
 
-        EXAMPLES:
-        sage: C=Circle(Point(0,0),2)
-        sage: print C.get_normal_vector(45)
-        vector I=Point(sqrt(2),sqrt(2)) F=Point(3/2*sqrt(2),3/2*sqrt(2))
+        - ``theta`` - an angle in degree or :class:`AngleMeasure`.
+
+        OUTPUT:
+
+        An affine vector
+
+        EXAMPLES::
+
+            sage: C=Circle(Point(0,0),2)
+            sage: print C.get_normal_vector(45)
+            vector I=Point(sqrt(2),sqrt(2)) F=Point(3/2*sqrt(2),3/2*sqrt(2))
+
         """
         v = PolarPoint(1,theta).origin(self.get_point(theta,advised=False))
         v.arrow_type="vector"
@@ -1506,7 +1509,7 @@ class GraphOfACircle(GraphOfAnObject):
             waviness = self.waviness
             alphaI = radian(self.angleI,number=True,keep_max=True)
             alphaF = radian(self.angleF,number=True,keep_max=True)
-            if self.angleF==360:        # Because the function radian simplifies modulo 2pi.
+            if self.angleF.degree==360:        # Because the function radian simplifies modulo 2pi.
                 alphaF=2*pi
             curve = self.parametric_curve()
             G = GraphOfAParametricCurve(curve,alphaI,alphaF)
