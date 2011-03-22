@@ -3574,7 +3574,7 @@ class ParametricCurve(object):
 
     .. literalinclude:: phystricksCycloide.py
 
-    .. image:: Cycloide2.png
+    .. image:: Picture_FIGLabelFigCycloidePICTCycloide-for_eps.png
 
     """
     # The derivatives of the parametric curves are stored in the

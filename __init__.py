@@ -475,11 +475,12 @@ def newlengthName():
 class global_variables(object):
     def __init__(self):
         self.eps_exit = False
+        self.png_exit = False
         self.pdf_exit = False
         self.test_exit = False
         self.make_tests = False
         self.pstricks_language = True
-        self.list_exits = ["eps","pdf"]
+        self.list_exits = ["eps","pdf","png"]
     def special_exit(self):
         for sortie in self.list_exits :
             if self.__getattribute__(sortie+"_exit"):
@@ -1092,6 +1093,7 @@ def GenericFigure(nom):
     print "The result is on figure \\ref{"+label+"}."
     print "\\newcommand{"+caption+"}{<+Type your caption here+>}"
     print "\\input{Fig_"+nom+".pstricks}"
+
     return  figure(caption,label,nFich)
 
 class figure(object):
@@ -1255,8 +1257,10 @@ class PspictureToOtherOutputs(object):
         self.file_dvi = Fichier(self.file_for_eps.chemin.replace(".tex",".dvi"))
         self.file_eps = Fichier(self.file_dvi.chemin.replace(".dvi",".eps"))
         self.file_pdf = Fichier(self.file_eps.chemin.replace(".eps",".pdf"))
+        self.file_png = Fichier(self.file_eps.chemin.replace(".eps",".png"))
         self.input_code_eps = "\includegraphics{%s}"%(self.file_eps.nom)
         self.input_code_pdf = "\includegraphics{%s}"%(self.file_pdf.nom)
+        self.input_code_png = "\includegraphics{%s}"%(self.file_png.nom)
     def latex_code_for_eps(self):
         code = ["\documentclass{article}\n","\usepackage{pstricks,pst-eucl,pstricks-add}\n","\usepackage{pst-plot}\n","\usepackage{pst-eps}\n","\pagestyle{empty}\n\usepackage{calc}\n"]
         # Allows to add some lines, like packages or macro definitions required. This is useful when one add formulas in the picture
@@ -1267,15 +1271,19 @@ class PspictureToOtherOutputs(object):
         code.extend(["\end{TeXtoEPS}\n","\end{document}\n"])
         return "".join(code)
     def create_eps_file(self):
-        """ Creates an eps file by the chain latex/dvips """
+        """ Create an eps file by the chain latex/dvips """
         file_tex = self.file_for_eps
         file_tex.write(self.latex_code_for_eps(),"w")
         commande_e = "latex %s"%self.file_for_eps.chemin
-        print "J'execute"
         print commande_e
         os.system(commande_e)
         commande_e = "dvips -E %s -o %s -q"%(self.file_dvi.chemin,self.file_eps.chemin)
-        print "J'execute"
+        print commande_e
+        os.system(commande_e)
+    def create_png_file(self):
+        """ Creates a png file by the chain latex/dvips/convert"""
+        self.create_eps_file()
+        commande_e = "convert %s %s"%(self.file_eps.chemin,self.file_png.chemin)
         print commande_e
         os.system(commande_e)
     def create_pdf_file(self):
@@ -1701,7 +1709,10 @@ class pspicture(object):
         to_pdf = PspictureToOtherOutputs(self)
         to_pdf.create_pdf_file()
         return to_pdf.input_code_pdf
-
+    def contenu_png(self):
+        to_png = PspictureToOtherOutputs(self)
+        to_png.create_png_file()
+        return to_png.input_code_png
     def force_math_bounding_box(self,g):
         """
         Add an object to the math bounding box of the pspicture. This object will not be drawn, but the axes and the grid will take it into account.
@@ -1764,6 +1775,8 @@ class pspicture(object):
 globals_vars = global_variables()
 if "--eps" in sys.argv :
     globals_vars.eps_exit = True
+if "--png" in sys.argv :
+    globals_vars.png_exit = True
 if "--pdf" in sys.argv :
     globals_vars.pdf_exit = True
 if "--create_tests" in sys.argv :
