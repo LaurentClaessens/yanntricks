@@ -1201,10 +1201,16 @@ class figure(object):
             """%(self.caption,self.name)
         self.add_latex_line(after_all,"AFTER ALL")
         self.contenu = DicoSeparatorToCode(self.separator_dico)
-    def write_the_file(self):                   # Nous sommes dans la classe figure.
-        self.fichier.open_file("w")
-        self.fichier.file.write(self.contenu)
-        self.fichier.file.close()
+    def write_the_file(self):
+        """
+        Write the figure in the file.
+
+        Does not write if we are testing.
+        """
+        if not globals_vars.make_tests:
+            self.fichier.open_file("w")
+            self.fichier.file.write(self.contenu)
+            self.fichier.file.close()
             
 # Le \subfigure[caption]{ ne se met pas dans le code de la classe subfigure parce que dans la classe figure, je numérote les sous-figures.
 # Typiquement, une sousfigure sera juste créée en ajoutant une pspicture d'un coup, et puis c'est tout.
