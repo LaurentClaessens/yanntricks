@@ -77,8 +77,13 @@ def ProportionBetween(cotes,n,delta):
 
 class Grades(object):
 	"""
-	grades_list : the list of grades that are given.
-	full_grade : the maximal note
+    represent a list of grades
+
+    INPUT :
+
+	- ``grades_list`` - the list of grades that are given.
+
+	- ``full_grade`` - the maximal note
 	"""
 	def __init__(self,grades_list,full_grade):
 		self.grades_list = grades_list
@@ -191,8 +196,8 @@ class Grades(object):
 		"""
 		Create all the figures and write them in files.
 		"""
-		self.y_is_proportion_bigger_than_x(name+"pcb",Xsize=Xsize,Ysize=Ysize).write_the_figure_file("svt")
-		self.average_bigger(name+"avb",Xsize=Xsize,Ysize=Ysize).write_the_figure_file("svt")
-		self.proportion_between(name+"pbt",delta,Xsize=Xsize,Ysize=Ysize).write_the_figure_file("svt")
+		self.y_is_proportion_bigger_than_x(name+"pcb",Xsize=Xsize,Ysize=Ysize).write_the_figure_file("automatic")
+		self.average_bigger(name+"avb",Xsize=Xsize,Ysize=Ysize).write_the_figure_file("automatic")
+		self.proportion_between(name+"pbt",delta,Xsize=Xsize,Ysize=Ysize).write_the_figure_file("automatic")
 	def __str__(self):
 		return str(self.grades_list)
