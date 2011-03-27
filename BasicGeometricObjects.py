@@ -2029,21 +2029,25 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
             a.append(self.up_segment.pstricks_code())
         return "\n".join(a)
 
-
-
 class SurfaceUnderFunction(SurfaceBetweenFunctions):
     """
     Represent a surface under a function.
 
     This is a particular case of SurfaceBetweenFunctions when the second function is the y=0 axis.
 
-    Arguments :
-    f : a function
-    mx : initial x value
-    Mx : end x value
-
-    The function f becomes self.f1 while self.f2 will be the function 0 (this is a consequence of inheritance).
+    The function `f` becomes `self.f1` while self.f2 will be the function 0 (this is a consequence of inheritance).
     The function f will also be recorded as self.f.
+
+    INPUT:
+
+    - ``f`` - a function
+    - ``mx,Mx`` - initial and final values 
+
+    EXAMPLES::
+
+    .. literalinclude:: phystricksSurfaceFunction.py
+    .. image:: Picture_FIGLabelFigSurfaceFunctionPICTSurfaceFunction-for_eps.png
+
     """
 
     def __init__(self,f,mx,Mx):

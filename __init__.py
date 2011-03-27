@@ -20,6 +20,29 @@
 
 """
 A collection of tools for building LaTeX-pstricks figures with python.
+
+COMMAND LINE ARGUMENTS:
+
+    - ``--pdf`` - the picture arrives as an \includegraphics of a pdf.
+
+    - ``--eps`` - the picture arrives as an \includegraphics of a eps.
+
+    - ``--png`` - the picture arrives as an \includegraphics of a png.
+
+    - ``--create-png`` - create the png file, but does not change the `.pstricks`
+                         file. Thus the LaTeX output will not be modified.
+
+    NOTE:
+
+    Here we are really speaking about pspicture. There will be one file of one 
+    \includegraphics for each pspicture. This is not figure-wise.
+
+    - ``--create_tests`` - create a `tmp` file in which the pspicture is written.
+
+    - ``--tests`` - compares the produced pspicture with the corresponding `tmp` file and
+                    raises a ValueError if it does not correspond.
+                    If this option is set, nothing is written on the disk.
+
 """
 
 #from __future__ import division
@@ -473,19 +496,34 @@ def newlengthName():
     return "lengthOf"+latinize(sysargvzero)
 
 class global_variables(object):
+    """
+    Some global variables
+
+    - ``create_formats`` - dictionary which says the exit files we want to produce. These can be
+
+                    * eps,pdf,pfd : I think that these names are self-explaining.
+
+                    * test : outputs a `tmp` file 
+
+    - ``exit_format`` - the format one wants to use in the LaTeX file. By default it is pstricks.
+
+    - ``perform_tests`` - (default=False) If True, perform the tests. 
+
+    The difference between `create_formats` and `exit_format` is that `create_format` says 
+    what files are going to be _produced_ while `exit_format` is the format that LaTeX will see.
+
+    Notice that `create_formats` is a plural while `exit_format` is a singlular. This is 
+    not a joke ;)
+    """
     def __init__(self):
-        self.eps_exit = False
-        self.png_exit = False
-        self.pdf_exit = False
-        self.test_exit = False
-        self.make_tests = False
-        self.pstricks_language = True
-        self.list_exits = ["eps","pdf","png"]
-    def special_exit(self):
-        for sortie in self.list_exits :
-            if self.__getattribute__(sortie+"_exit"):
-                return True
-        return False
+        self.create_formats={"eps":False,"pdf":False,"png":False,"test":False}
+        self.exit_format="pstricks"
+        self.perform_tests = False
+    #def special_exit(self):
+    #    for sortie in self.list_exits :
+    #        if self.__getattribute__(sortie+"_exit"):
+    #            return True
+    #    return False
 
 class Fichier(object):
     def __init__ (self, filename):
@@ -1184,11 +1222,9 @@ class figure(object):
             self.add_latex_line(pspict.separator_dico["WRITE_AND_LABEL"].latex_code,"WRITE_AND_LABEL")
             pspict.separator_dico["WRITE_AND_LABEL"].latex_code=[]
             self.add_latex_line(pspict.contenu(),"PSPICTURE")           # Here, what is added depends on --eps
-            if globals_vars.make_tests:
+            if global_vars.perform_tests:
                 TestPspictLaTeXCode(pspict).test()
-            if globals_vars.test_exit:
-                TestPspictLaTeXCode(pspict).create_test_file()
-        if not globals_vars.special_exit() :
+        if not global_vars.special_exit() :
             self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+"}","BEFORE SUBFIGURES")
         for f in self.record_subfigure :
             self.add_latex_line("\subfigure["+f.caption+"]{%","SUBFIGURES")
@@ -1207,10 +1243,15 @@ class figure(object):
 
         Does not write if we are testing.
         """
-        if not globals_vars.make_tests:
+        to_be_written=self.contenu
+        if not (global_vars.perform_tests or global_vars.create_png):
             self.fichier.open_file("w")
-            self.fichier.file.write(self.contenu)
+            self.fichier.file.write(to_be_written)
             self.fichier.file.close()
+        if global_vars.create_png :
+            print "1801 Je dois faire la png"
+            to_png = PspictureToOtherOutputs(self)
+            to_png.create_png_file()
             
 # Le \subfigure[caption]{ ne se met pas dans le code de la classe subfigure parce que dans la classe figure, je numérote les sous-figures.
 # Typiquement, une sousfigure sera juste créée en ajoutant une pspicture d'un coup, et puis c'est tout.
@@ -1276,6 +1317,8 @@ class PspictureToOtherOutputs(object):
         code.append(self.pspict.contenu_pstricks)
         code.extend(["\end{TeXtoEPS}\n","\end{document}\n"])
         return "".join(code)
+    def create_test_file(self):
+        TestPspictLaTeXCode(self.pspict).create_test_file()
     def create_eps_file(self):
         """ Create an eps file by the chain latex/dvips """
         file_tex = self.file_for_eps
@@ -1386,7 +1429,7 @@ class pspicture(object):
         """
         self.name = name        # self.name is used in order to name the intermediate files when one produces the eps file.
         self.mother=None
-        self.pstricks_code = []
+        self.pstricks_code_list = []
         self.specific_needs = ""    # See the class PspictureToOtherOutputs
         self.newwriteDone = False
         self.interWriteFile = newwriteName()+".pstricks.aux"
@@ -1448,7 +1491,7 @@ class pspicture(object):
         self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}\n","BEFORE PSPICTURE")
         self.add_latex_line("\\begin{pspicture}%s%s\n"%(self.bounding_box(self).SW().coordinates(numerical=True),self.bounding_box(self).NE().coordinates(numerical=True)),"BEGIN PSPICTURE")
         self.add_latex_line("\end{pspicture}\n","AFTER PSPICTURE")
-        self.add_latex_line(self.pstricks_code,"OTHER STUFF")
+        self.add_latex_line(self.pstricks_code_list,"OTHER STUFF")
         return DicoSeparatorToCode(self.separator_dico)
 
     def default_figure(self,name=None):
@@ -1706,19 +1749,8 @@ class pspicture(object):
             self.separator_dico[separator_name].add_latex_line(ligne)
     def IncrusteLigne(self,ligne,n):
         raise DeprecationWarning, "The method pspicture.IncrusteLigne() is depreciated."
-        self.pstricks_code[n:n]=ligne+"\n"
-    def contenu_eps(self):
-        to_eps = PspictureToOtherOutputs(self)
-        to_eps.create_eps_file()
-        return to_eps.input_code_eps
-    def contenu_pdf(self):
-        to_pdf = PspictureToOtherOutputs(self)
-        to_pdf.create_pdf_file()
-        return to_pdf.input_code_pdf
-    def contenu_png(self):
-        to_png = PspictureToOtherOutputs(self)
-        to_png.create_png_file()
-        return to_png.input_code_png
+        self.pstricks_code_list[n:n]=ligne+"\n"
+
     def force_math_bounding_box(self,g):
         """
         Add an object to the math bounding box of the pspicture. This object will not be drawn, but the axes and the grid will take it into account.
@@ -1736,13 +1768,11 @@ class pspicture(object):
                 print "Warning: it seems to me that object <%s> (type :%s) has no method math_boundig_box"%(str(graphe),type(graphe))
                 bb.append(graphe,self)
         return bb
-    def contenu(self):
-        """
-        Notice that if the option --eps/pdf is given, this method launches some compilations when creating contenu_eps/pdf 
-        """
-        # Here we are supposed to be sure of the xunit, yunit, so we can compute the BB's needed for the points with marks.
+    def pstricks_code(self):
+        # Here we are supposed to be  sure of the xunit, yunit, so we can compute the BB's needed for the points with marks.
         # For the same reason, all the marks that were asked to be drawn are added now.
-        # Most of the difficulty is when the user use pspicture.dilatation_X and Y with different coefficients. TODO : take it into account.
+        # Most of the difficulty is when the user use pspicture.dilatation_X and Y with different coefficients.
+        # TODO : take it into account.
         list_to_be_drawn = [a.graph for a in self.record_draw_graph if a.take_graph]
         for graph in list_to_be_drawn:
             try :
@@ -1762,30 +1792,56 @@ class pspicture(object):
                 self.add_latex_line(graph.pstricks_code(self),separator_name)
             except AttributeError,data:
                 if not "pstricks_code" in dir(graph):
-                    print "phystricks error : object %s has no pstricks_code method"%(str(graph))
+                    print "phystricks error: object %s has no pstricks_code method"%(str(graph))
                     raise 
                 raise
-        for sortie in globals_vars.list_exits:
-            if globals_vars.__getattribute__(sortie+"_exit"):
-                print "I've to make an exit : %s"%sortie
-                return self.__getattribute__("contenu_"+sortie)()
         return self.contenu_pstricks
-    # Important de pouvoir produire des fichiers qui ne contiennent qu'une pspicture parce que ça peut être inséré directement 
-    # à l'intérieur d'une ligne en LaTeX. J'utilise ça pour des diagrammes de Dynkin par exemple.
-    def write_the_file(self,f):                 # Nous sommes dans la classe pspicture
+    def contenu(self):              # pspicture
+        r"""
+        return the LaTeX code of the pspicture and creates the files 
+        corresponding to the `exit_format`.
+
+        This is of the form \begin{pspicture} ... \end{pspicture} if
+        the global variable `exit_format` is "pstricks".
+
+        In the other cases, this is \includegraphics{...}.
+        """
+        to_other = PspictureToOtherOutputs(self)
+        create_dico=global_vars.create_formats
+        # Create files for the requested formats, including tests
+        for k in create_dico.keys():
+            if create_dico[k] :
+                to_other.__getattribute__("create_%s_file"%k)()
+
+        # return the LaTeX code of self
+        if global_vars.exit_format=="pstricks":
+            return self.pstricks_code()
+        return to_other.__getattribute__("input_code_"+global_vars.exit_format)
+    def write_the_file(self,f):             
+        """
+        Writes the LaTeX code of the pspict.
+
+        This function is almost never used because most of time we want to pspicture
+        to be included in a figure.
+        """
         self.fichier = Fichier(f)
-        #self.fichier.open_file("w")
         self.fichier.file.write(self.contenu())
         self.fichier.file.close()
 
-globals_vars = global_variables()
+global_vars = global_variables()
 if "--eps" in sys.argv :
-    globals_vars.eps_exit = True
+    global_vars.exit_format="eps"
 if "--png" in sys.argv :
-    globals_vars.png_exit = True
+    global_vars.exit_format="png"
 if "--pdf" in sys.argv :
-    globals_vars.pdf_exit = True
+    global_vars.exit_format="pdf"
+if "--create-png" in sys.argv :
+    global_vars.create_formats["png"] = True
+if "--create-pdf" in sys.argv :
+    global_vars.create_formats["pdf"] = True
+if "--create-eps" in sys.argv :
+    global_vars.create_formats["eps"] = True
 if "--create_tests" in sys.argv :
-    globals_vars.test_exit = True
+    global_vars.test_exit = True
 if "--tests" in sys.argv :
-    globals_vars.make_tests = True
+    global_vars.make_tests = True
