@@ -1918,13 +1918,12 @@ class pspicture(object):
                 to_other.__getattribute__("create_%s_file"%k)()
         # return the LaTeX code of self
         if global_vars.exit_format=="pstricks":
-            return self.pstricks_code
+            return self.contenu_pstricks
         return to_other.__getattribute__("input_code_"+global_vars.exit_format)
 
     def write_the_file(self,f):             
         """
         Writes the LaTeX code of the pspict.
-
 
         This function is almost never used because most of time we want to pspicture
         to be included in a figure.
