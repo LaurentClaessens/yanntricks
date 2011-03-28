@@ -1236,7 +1236,7 @@ class figure(object):
             \end{figure}
             """%(self.caption,self.name)
         self.add_latex_line(after_all,"AFTER ALL")
-        self.contenu = DicoSeparatorToCode(self.separator_list)
+        self.contenu = self.separator_list.code()
     def write_the_file(self):
         """
         Write the figure in the file.
@@ -1353,6 +1353,7 @@ def add_latex_line_entete(truc,position=""):
     truc.add_latex_line("% http://gitorious.org/~moky\n",position)
 
 def DicoSeparatorToCode(separator_dico):
+    raise DeprecationWarning,"Everything should use SeparatorList"
     """"takes a dictionary of Separator as argument and return the glued code"""
     list_separator = separator_dico.values()
     list_separator.sort()
@@ -1367,22 +1368,32 @@ class SeparatorList(object):
     """
     def __init__(self):
         self.separator_list=[]
+    def title_list(self):
+        return [x.title for x in self.separator_list]
     def new_separator(self,title,number=None):
         for separator in self.separator_list :
             if separator.title == title :
                 raise ValueError, "A new separator cannot have the same title as an old one: %s"%title
         separator=Separator(title)
         if number:
-            self.separator_list.insert(separator,number)
+            self.separator_list.insert(number,separator)
         else:
             self.separator_list.append(separator)
     def code(self):
         return "".join(separator.code() for separator in self.separator_list)
-    def fusion(title_list,new_title):
+    def fusion(self,title_list,new_title):
         """
         Remove of the list the separators whose names are in the `title_list`
         and add a new separator with the fusion code at the place
         where the *first* one was.
+
+        INPUT :
+
+        - ``title_list`` - a list of `str` that are name of separators
+                           supposed to be part of `self.separator_list`
+
+        - ``new_title`` - the title of the new separator that will be
+                            created.
 
         Schematically,
 
@@ -1397,18 +1408,37 @@ class SeparatorList(object):
         "NEW" : "second code third code"
         "FOUR": "fourth code"
 
+        NOTE:
+
+        It respect the order. So if the `title_list` comes in the order `["THREE","TWO"]`, it first orders
+        the list to `["TWO","THREE"]`
+
         """
+
+        # One has to remove duplicates. If not the LaTeX code
+        # will be written more than once.
+        short_list=[]
+        for title in title_list:
+            if title not in short_list:
+                short_list.append(title)
+
+        # On has to sort the list in order the code to appear in
+        # the right order. As an example, we want the axes first.
+        # The order to be respected is basically the one furnished in
+        # __init__ of pspicture and figure.
+        short_list.sort(lambda x,y:(self.title_list().index(x)-self.title_list().index(y)))
+
         new_code=""
         new_place=len(self.separator_list)
         concerned_separators=[]
-        for title in title_list:
+        for title in short_list:
             separator=self[title]
             concerned_separators.append(separator)
             new_code=new_code+separator.code()
-            new_place=min(new_place,self.separator_list.index())
-        new_separator=Separator(new_title)
-        new_separator.add_latex_line(new_code)
-        self.new_separator(new_separator,new_place)
+            new_place=min(new_place,self.separator_list.index(separator))
+
+        self.new_separator(new_title,new_place)
+        self[new_title].add_latex_line(new_code)
         for sep in concerned_separators:
             self.separator_list.remove(sep)
         
@@ -1547,6 +1577,7 @@ class pspicture(object):
         
         The value of LabelSep is the distance between an angle and the lable of the angle. It is by default 1, but if there is a dilatation, the visual effect is bad.
         """
+        self.create_pstricks_code
         if self.LabelSep == 1 : 
             self.LabelSep = 2/(self.xunit+self.yunit)
         add_latex_line_entete(self)
@@ -1555,19 +1586,15 @@ class pspicture(object):
         self.add_latex_line("\\begin{pspicture}%s%s\n"%(self.bounding_box(self).SW().coordinates(numerical=True),self.bounding_box(self).NE().coordinates(numerical=True)),"BEGIN PSPICTURE")
         self.add_latex_line("\end{pspicture}\n","END PSPICTURE")
         self.add_latex_line(self.pstricks_code_list,"OTHER STUFF")
-        print "1493", self.separator_list["DEFAULT"].code()
-        return DicoSeparatorToCode(self.separator_list)
+        return self.separator_list.code()
 
     @lazy_attribute
-    def pstricks_code(self):
-        r"""
-        Return the pstricks code that has to appears between \begin{pspicture} and \end{pspicture}.
+    def create_pstricks_code(self):
+        """
+        Fix the bounding box and create the separator "PSTRICKS CODE"
 
-        This is a lazy_attribute and perform non trivial task changing the state
-        of many other attributes of `self`.
-        Among other it changes the bounding box.
-
-        This is called by :func:`contenu_pstricks`
+        This function is not supposed to be used twice. In fact, this is 
+        supposed to be called only from `lazy_attributes`
         """
         # Here we are supposed to be  sure of the xunit, yunit, so we can compute the BB's needed for the points with marks.
         # For the same reason, all the marks that were asked to be drawn are added now.
@@ -1601,7 +1628,20 @@ class pspicture(object):
                 if not "pstricks_code" in dir(graph):
                     print "phystricks error: object %s has no pstricks_code method"%(str(graph))
                 raise
-        self.separator_list.fusion([x.title for x in list_used_separators],"PSTRICKS CODE")
+        self.separator_list.fusion(list_used_separators,"PSTRICKS CODE")
+
+    @lazy_attribute
+    def pstricks_code(self):
+        r"""
+        Return the pstricks code that has to appears between \begin{pspicture} and \end{pspicture}.
+
+        This is a lazy_attribute and perform non trivial task changing the state
+        of many other attributes of `self`.
+        Among other it changes the bounding box.
+
+        This is called by :func:`contenu_pstricks`
+        """
+        self.create_pstricks_code
         return self.separator_list["PSTRICKS CODE"].code()
 
     def default_figure(self,name=None):
@@ -1878,7 +1918,7 @@ class pspicture(object):
                 to_other.__getattribute__("create_%s_file"%k)()
         # return the LaTeX code of self
         if global_vars.exit_format=="pstricks":
-            return self.pstricks_code()
+            return self.pstricks_code
         return to_other.__getattribute__("input_code_"+global_vars.exit_format)
 
     def write_the_file(self,f):             
@@ -1892,8 +1932,6 @@ class pspicture(object):
         self.fichier = Fichier(f)
         self.fichier.file.write(self.contenu())
         self.fichier.file.close()
-
-
 
 global_vars = global_variables()
 if "--eps" in sys.argv :
@@ -1911,7 +1949,7 @@ if "--create-pdf" in sys.argv :
     global_vars.create_formats["pdf"] = True
 if "--create-eps" in sys.argv :
     global_vars.create_formats["eps"] = True
-if "--create_tests" in sys.argv :
-    global_vars.test_exit = True
+if "--create-tests" in sys.argv :
+    global_vars.create_formats["test"] = True
 if "--tests" in sys.argv :
-    global_vars.make_tests = True
+    global_vars.perform_tests = True
