@@ -23,11 +23,11 @@ A collection of tools for building LaTeX-pstricks figures with python.
 
 COMMAND LINE ARGUMENTS:
 
-    - ``--pdf`` - the picture arrives as an \includegraphics of a pdf.
+    - ``--pdf`` - the picture arrives as an \includegraphics of a pdf. It also creates the `pdf` file.
 
-    - ``--eps`` - the picture arrives as an \includegraphics of a eps.
+    - ``--eps`` - the picture arrives as an \includegraphics of a eps. It also creates the `eps` file.
 
-    - ``--png`` - the picture arrives as an \includegraphics of a png.
+    - ``--png`` - the picture arrives as an \includegraphics of a png. It also creates the `png` file.
 
     - ``--create-png`` - create the png file, but does not change the `.pstricks`
                          file. Thus the LaTeX output will not be modified.
@@ -519,11 +519,11 @@ class global_variables(object):
         self.create_formats={"eps":False,"pdf":False,"png":False,"test":False}
         self.exit_format="pstricks"
         self.perform_tests = False
-    #def special_exit(self):
-    #    for sortie in self.list_exits :
-    #        if self.__getattribute__(sortie+"_exit"):
-    #            return True
-    #    return False
+    def special_exit(self):
+        for sortie in self.create_formats.values():
+            if sortie:
+                return True
+        return False
 
 class Fichier(object):
     def __init__ (self, filename):
@@ -1146,23 +1146,23 @@ class figure(object):
         self.fichier = Fichier (fich)
 
         # The order of declaration is important, because it is recorded in the Separator.number attribute.
-        self.separator_dico = {}            
-        self.separator_number = 0
-        self.new_separator("ENTETE")
-        self.new_separator("WRITE_AND_LABEL")
-        self.new_separator("BEFORE SUBFIGURES")
-        self.new_separator("SUBFIGURES")
-        self.new_separator("AFTER SUBFIGURES")
-        self.new_separator("DEFAULT")
-        self.new_separator("BEFORE PSPICTURE")
-        self.new_separator("PSPICTURE")
-        self.new_separator("AFTER PSPICTURE")
-        self.new_separator("AFTER ALL")
+        self.separator_list=SeparatorList()
+        self.separator_list.new_separator("ENTETE FIGURE")
+        self.separator_list.new_separator("WRITE_AND_LABEL")
+        self.separator_list.new_separator("BEFORE SUBFIGURES")
+        self.separator_list.new_separator("SUBFIGURES")
+        self.separator_list.new_separator("AFTER SUBFIGURES")
+        self.separator_list.new_separator("DEFAULT")
+        self.separator_list.new_separator("BEFORE PSPICTURE")
+        self.separator_list.new_separator("PSPICTURE")
+        self.separator_list.new_separator("AFTER PSPICTURE")
+        self.separator_list.new_separator("AFTER ALL")
         add_latex_line_entete(self)
 
         self.add_latex_line("\\begin{figure}[ht]","BEFORE SUBFIGURES")
         self.add_latex_line("\centering","BEFORE SUBFIGURES")
     def new_separator(self,title):
+        raise DeprecationWarning
         self.separator_number = self.separator_number + 1
         self.separator_dico[title]=Separator(title,self.separator_number)
     def dilatation_X(self,fact):
@@ -1210,7 +1210,7 @@ class figure(object):
     def append_subfigure(self,pspict):
         raise DeprecationWarning,"Use fig.new_subfigure instead."
     def add_latex_line(self,ligne,separator_name="DEFAULT"):
-        self.separator_dico[separator_name].add_latex_line(ligne)
+        self.separator_list[separator_name].add_latex_line(ligne)
     def IncrusteLigne(self,ligne,n):
         print "The method picture.IncrusteLigne() is depreciated."
         self.code[n:n]=ligne+"\n"
@@ -1219,9 +1219,9 @@ class figure(object):
     def conclude(self):
         for pspict in self.record_pspicture :
             # What has to be written in the WRITE_AND_LABEL part of the picture is written now
-            self.add_latex_line(pspict.separator_dico["WRITE_AND_LABEL"].latex_code,"WRITE_AND_LABEL")
-            pspict.separator_dico["WRITE_AND_LABEL"].latex_code=[]
-            self.add_latex_line(pspict.contenu(),"PSPICTURE")           # Here, what is added depends on --eps
+            self.add_latex_line(pspict.separator_list["WRITE_AND_LABEL"].latex_code,"WRITE_AND_LABEL")
+            pspict.separator_list["WRITE_AND_LABEL"].latex_code=[]
+            self.add_latex_line(pspict.contenu(),"PSPICTURE")           # Here, what is added depends on --eps, --pdf, --png and so on.
             if global_vars.perform_tests:
                 TestPspictLaTeXCode(pspict).test()
         if not global_vars.special_exit() :
@@ -1236,7 +1236,7 @@ class figure(object):
             \end{figure}
             """%(self.caption,self.name)
         self.add_latex_line(after_all,"AFTER ALL")
-        self.contenu = DicoSeparatorToCode(self.separator_dico)
+        self.contenu = DicoSeparatorToCode(self.separator_list)
     def write_the_file(self):
         """
         Write the figure in the file.
@@ -1244,14 +1244,10 @@ class figure(object):
         Does not write if we are testing.
         """
         to_be_written=self.contenu
-        if not (global_vars.perform_tests or global_vars.create_png):
+        if not global_vars.perform_tests :
             self.fichier.open_file("w")
             self.fichier.file.write(to_be_written)
             self.fichier.file.close()
-        if global_vars.create_png :
-            print "1801 Je dois faire la png"
-            to_png = PspictureToOtherOutputs(self)
-            to_png.create_png_file()
             
 # Le \subfigure[caption]{ ne se met pas dans le code de la classe subfigure parce que dans la classe figure, je numérote les sous-figures.
 # Typiquement, une sousfigure sera juste créée en ajoutant une pspicture d'un coup, et puis c'est tout.
@@ -1343,10 +1339,16 @@ class PspictureToOtherOutputs(object):
         print commande_e
         os.system(commande_e)
 
-def add_latex_line_entete(truc,position="ENTETE"):
+def add_latex_line_entete(truc,position=""):
+    if position == "" :
+        if isinstance(truc,pspicture):
+            position="ENTETE PSPICTURE"
+        if isinstance(truc,figure):
+            position="ENTETE FIGURE"
     truc.add_latex_line("% This file is automatically generated by phystricks",position)
     truc.add_latex_line("% See the documentation ",position)
     truc.add_latex_line("% http://student.ulb.ac.be/~lclaesse/phystricks-doc.pdf ",position)
+    truc.add_latex_line("% http://student.ulb.ac.be/~lclaesse/phystricks-documentation/_build/html/index.html ",position)
     truc.add_latex_line("% and the projects phystricks and phystricks-doc at ",position)
     truc.add_latex_line("% http://gitorious.org/~moky\n",position)
 
@@ -1359,27 +1361,81 @@ def DicoSeparatorToCode(separator_dico):
         a.append(sep.code())
     return "".join(a)
 
+class SeparatorList(object):
+    """
+    represent a dictionary of :class:`Separator`
+    """
+    def __init__(self):
+        self.separator_list=[]
+    def new_separator(self,title,number=None):
+        for separator in self.separator_list :
+            if separator.title == title :
+                raise ValueError, "A new separator cannot have the same title as an old one: %s"%title
+        separator=Separator(title)
+        if number:
+            self.separator_list.insert(separator,number)
+        else:
+            self.separator_list.append(separator)
+    def code(self):
+        return "".join(separator.code() for separator in self.separator_list)
+    def fusion(title_list,new_title):
+        """
+        Remove of the list the separators whose names are in the `title_list`
+        and add a new separator with the fusion code at the place
+        where the *first* one was.
+
+        Schematically,
+
+        "ONE": "first code"
+        "TWO": "second code"
+        "THREE": "third code"
+        "FOUR": "fourth code"
+
+        If one fusion the second and third with the name "NEW", we get
+
+        "ONE": "first code"
+        "NEW" : "second code third code"
+        "FOUR": "fourth code"
+
+        """
+        new_code=""
+        new_place=len(self.separator_list)
+        concerned_separators=[]
+        for title in title_list:
+            separator=self[title]
+            concerned_separators.append(separator)
+            new_code=new_code+separator.code()
+            new_place=min(new_place,self.separator_list.index())
+        new_separator=Separator(new_title)
+        new_separator.add_latex_line(new_code)
+        self.new_separator(new_separator,new_place)
+        for sep in concerned_separators:
+            self.separator_list.remove(sep)
+        
+    def __getitem__(self,i):
+        """
+        One can call a separator by its title or its number.
+        """
+        if isinstance(i,str):
+            for separator in self.separator_list :
+                if separator.title == i :
+                    return separator
+            raise IndexError,"No separator with title %s"%i
+        return self.separator_list[i]
+
 class Separator(object):
-    def __init__(self,title,number):
+    def __init__(self,title):
         self.title = title
-        self.number = number
         self.latex_code=[]
-        self.add_latex_line("%"+title)
+        self.add_latex_line("%"+self.title)
     def add_latex_line(self,line):
-        try:
+        if isinstance(line,Separator):
             text=line.code()
-        except AttributeError:
-            text = "".join(line)        # In some case, the line can in fact be a list of lines.
+        else :
+            text = "".join(line)        # Notice that "".join(x) also works when x is a string.
         self.latex_code.append(text+"\n")
     def code(self):
         return "".join(self.latex_code)
-    def __cmp__(self,other):
-        if self.number < other.number :
-            return -1
-        if self.number == other.number :
-            raise "Two separators should not have the same number, you're trying to make me crazy."
-        if self.number > other.number :
-            return 1
 
 class DrawElement(object):
     # The attributes take_xxx are intended to say what we have to take into account in the element.
@@ -1398,11 +1454,18 @@ class pspicture(object):
 
     METHODS:
 
-    - `self.pstricks_code` - contains the pstricks code of what has to be between \begin{pspicture} and \end{pspicture}. This is not the environment itself, neither the definition of xunit, yunit.
+    - `self.pstricks_code()` - contains the pstricks code of what has to be between \begin{pspicture} and \end{pspicture}. This is not the environment itself, neither the definition of xunit, yunit.
 
-    - `self.contenu_pstricks` - is the whole code including the x/yunit. This is in fact a `lazy_attribute`
+    - `self.contenu_pstricks` - is the whole code including the x/yunit and \begin{pspicture}...\end{pspicture}.
+                                This is in fact a `lazy_attribute`. 
+                                
+                                This has not to be used for creating other outputs than pure pstricks.
+                               
+    - `self.latex_code_for_eps()` - the LaTeX code that produces the eps file. This function calls `self.contenu_pstricks`
 
-    - `self.contenu_eps()` - contains the line to be added in order to include the eps file
+    - `self.latex_code_for_png()` - the same.
+
+    - `self.latex_code_for_contenu_pdf()` - the same.
 
     EXAMPLES:
 
@@ -1458,25 +1521,25 @@ class pspicture(object):
         #    see the functions DrawAxes and DrawGrid and the fact that they use IncrusteLigne
 
         # The order of declaration is important, because it is recorded in the Separator.number attribute.
-        self.separator_dico = {}            
-        self.separator_number = 0
-        self.new_separator("ENTETE")
-        self.new_separator("BEFORE PSPICTURE")
-        self.new_separator("WRITE_AND_LABEL")
-        self.new_separator("BEGIN PSPICTURE")
-        self.new_separator("GRID")
-        self.new_separator("AXES")
-        self.new_separator("OTHER STUFF")
-        self.new_separator("DEFAULT")
-        self.new_separator("AFTER PSPICTURE")
+        self.separator_list = SeparatorList()
+        self.separator_list.new_separator("ENTETE PSPICTURE")
+        self.separator_list.new_separator("BEFORE PSPICTURE")
+        self.separator_list.new_separator("WRITE_AND_LABEL")
+        self.separator_list.new_separator("BEGIN PSPICTURE")        # This separator is supposed to contain only \begin{pspicture}
+        self.separator_list.new_separator("GRID")
+        self.separator_list.new_separator("AXES")
+        self.separator_list.new_separator("OTHER STUFF")
+        self.separator_list.new_separator("DEFAULT")
+        self.separator_list.new_separator("END PSPICTURE")
+        self.separator_list.new_separator("AFTER PSPICTURE")
 
     @lazy_attribute
     def contenu_pstricks(self):                
         r"""
         The LaTeX of `self` including xunit,yunit and \begin{pspicture} ... \end{pspicture}
 
-        This is a lazy_attribute because this has to be used independently at more than one place while this function
-        adds non trivial code in `self`.
+        This is a `lazy_attribute` because it has to be used more than once while it adds non
+        trivial code to `self`.
 
         NOTE :
 
@@ -1490,9 +1553,56 @@ class pspicture(object):
         self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+",LabelSep="+str(self.LabelSep)+"}","BEFORE PSPICTURE")
         self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}\n","BEFORE PSPICTURE")
         self.add_latex_line("\\begin{pspicture}%s%s\n"%(self.bounding_box(self).SW().coordinates(numerical=True),self.bounding_box(self).NE().coordinates(numerical=True)),"BEGIN PSPICTURE")
-        self.add_latex_line("\end{pspicture}\n","AFTER PSPICTURE")
+        self.add_latex_line("\end{pspicture}\n","END PSPICTURE")
         self.add_latex_line(self.pstricks_code_list,"OTHER STUFF")
-        return DicoSeparatorToCode(self.separator_dico)
+        print "1493", self.separator_list["DEFAULT"].code()
+        return DicoSeparatorToCode(self.separator_list)
+
+    @lazy_attribute
+    def pstricks_code(self):
+        r"""
+        Return the pstricks code that has to appears between \begin{pspicture} and \end{pspicture}.
+
+        This is a lazy_attribute and perform non trivial task changing the state
+        of many other attributes of `self`.
+        Among other it changes the bounding box.
+
+        This is called by :func:`contenu_pstricks`
+        """
+        # Here we are supposed to be  sure of the xunit, yunit, so we can compute the BB's needed for the points with marks.
+        # For the same reason, all the marks that were asked to be drawn are added now.
+        # Most of the difficulty is when the user use pspicture.dilatation_X and Y with different coefficients.
+        # TODO : take it into account.
+
+        # Creating the bounding box
+        list_to_be_drawn = [a.graph for a in self.record_draw_graph if a.take_graph]
+        for graph in list_to_be_drawn:
+            try :
+                if graph.draw_bounding_box:
+                    bb=graph.bounding_box(self)
+                    rect = Rectangle(bb.SW(),bb.NE())
+                    rect.parameters.color="cyan"
+                    self.DrawGraph(rect)
+            except AttributeError :
+                pass
+
+        list_to_be_drawn = [a for a in self.record_draw_graph if a.take_graph]
+
+        # Produce the code in the sense that if writes everything in the separators.
+        list_used_separators=[]
+        for x in list_to_be_drawn:
+            graph=x.graph
+            separator_name=x.separator_name
+            try :
+                self.BB.append(graph,self)
+                self.add_latex_line(graph.pstricks_code(self),separator_name)
+                list_used_separators.append(separator_name)
+            except AttributeError,data:
+                if not "pstricks_code" in dir(graph):
+                    print "phystricks error: object %s has no pstricks_code method"%(str(graph))
+                raise
+        self.separator_list.fusion([x.title for x in list_used_separators],"PSTRICKS CODE")
+        return self.separator_list["PSTRICKS CODE"].code()
 
     def default_figure(self,name=None):
         """
@@ -1522,6 +1632,7 @@ class pspicture(object):
         fig.conclude()
         fig.write_the_file()
     def new_separator(self,title):
+        raise DeprecationWarning
         self.separator_number = self.separator_number + 1
         self.separator_dico[title]=Separator(title,self.separator_number)
     def initialize_newwrite(self):
@@ -1705,22 +1816,6 @@ class pspicture(object):
                 self.record_draw_graph.append(x)
         except AttributeError,msg :
             pass            # This happens when the graph has no mark; that is most of the time.
-    def DrawGrid(self,grid):
-        raise DeprecationWarning,"This is depreciated. The grid has to be drawn with DrawGraph as everyone"
-    def TraceTriangle(self,tri,params):
-        raise DeprecationWarning, "Method TraceTriangle is depreciated"
-        self.BB.AddPoint(tri.A)
-        self.BB.AddPoint(tri.B)
-        self.BB.AddPoint(tri.C)
-        self.add_latex_line("\pstTriangle["+params+",PointSymbol=none]"+tri.A.coordinates(numerical=True)+"{A}"+tri.B.coordinates(numerical=True)+"{B}"+tri.C.coordinates(numerical=True)+"{C}")
-    def TraceGrid(self,grille):
-        raise DeprecationWarning, "I think TraceGrid should no more be used"
-        self.IncrusteLigne(grille.code(self),2)
-    def AjusteGrid(self,grille):
-        raise DeprecationWarning, "I think AjusteGrid should no more be used"
-        grille.BB = self.BB
-    def DrawAxes(self,axes):
-        raise DeprecationWarning, "This method is depreciated"
     def DrawDefaultAxes(self):
         self.axes.BB = self.math_bounding_box()
         self.axes.BB.AddPoint(Point(0,0))
@@ -1746,11 +1841,7 @@ class pspicture(object):
         if separator_name=="WRITE_AND_LABEL" and self.mother :
             self.mother.add_latex_line(ligne,separator_name)
         else :
-            self.separator_dico[separator_name].add_latex_line(ligne)
-    def IncrusteLigne(self,ligne,n):
-        raise DeprecationWarning, "The method pspicture.IncrusteLigne() is depreciated."
-        self.pstricks_code_list[n:n]=ligne+"\n"
-
+            self.separator_list[separator_name].add_latex_line(ligne)
     def force_math_bounding_box(self,g):
         """
         Add an object to the math bounding box of the pspicture. This object will not be drawn, but the axes and the grid will take it into account.
@@ -1768,38 +1859,11 @@ class pspicture(object):
                 print "Warning: it seems to me that object <%s> (type :%s) has no method math_boundig_box"%(str(graphe),type(graphe))
                 bb.append(graphe,self)
         return bb
-    def pstricks_code(self):
-        # Here we are supposed to be  sure of the xunit, yunit, so we can compute the BB's needed for the points with marks.
-        # For the same reason, all the marks that were asked to be drawn are added now.
-        # Most of the difficulty is when the user use pspicture.dilatation_X and Y with different coefficients.
-        # TODO : take it into account.
-        list_to_be_drawn = [a.graph for a in self.record_draw_graph if a.take_graph]
-        for graph in list_to_be_drawn:
-            try :
-                if graph.draw_bounding_box:
-                    bb=graph.bounding_box(self)
-                    rect = Rectangle(bb.SW(),bb.NE())
-                    rect.parameters.color="cyan"
-                    self.DrawGraph(rect)
-            except AttributeError :
-                pass
-        list_to_be_drawn = [a for a in self.record_draw_graph if a.take_graph]
-        for x in list_to_be_drawn:
-            graph=x.graph
-            separator_name=x.separator_name
-            try :
-                self.BB.append(graph,self)
-                self.add_latex_line(graph.pstricks_code(self),separator_name)
-            except AttributeError,data:
-                if not "pstricks_code" in dir(graph):
-                    print "phystricks error: object %s has no pstricks_code method"%(str(graph))
-                    raise 
-                raise
-        return self.contenu_pstricks
     def contenu(self):              # pspicture
         r"""
-        return the LaTeX code of the pspicture and creates the files 
-        corresponding to the `exit_format`.
+        return the LaTeX code of the pspicture
+        
+        Also creates the files corresponding to the `exit_format`.
 
         This is of the form \begin{pspicture} ... \end{pspicture} if
         the global variable `exit_format` is "pstricks".
@@ -1812,14 +1876,15 @@ class pspicture(object):
         for k in create_dico.keys():
             if create_dico[k] :
                 to_other.__getattribute__("create_%s_file"%k)()
-
         # return the LaTeX code of self
         if global_vars.exit_format=="pstricks":
             return self.pstricks_code()
         return to_other.__getattribute__("input_code_"+global_vars.exit_format)
+
     def write_the_file(self,f):             
         """
         Writes the LaTeX code of the pspict.
+
 
         This function is almost never used because most of time we want to pspicture
         to be included in a figure.
@@ -1828,13 +1893,18 @@ class pspicture(object):
         self.fichier.file.write(self.contenu())
         self.fichier.file.close()
 
+
+
 global_vars = global_variables()
 if "--eps" in sys.argv :
     global_vars.exit_format="eps"
+    global_vars.create_formats["eps"] = True
 if "--png" in sys.argv :
     global_vars.exit_format="png"
+    global_vars.create_formats["png"] = True
 if "--pdf" in sys.argv :
     global_vars.exit_format="pdf"
+    global_vars.create_formats["pdf"] = True
 if "--create-png" in sys.argv :
     global_vars.create_formats["png"] = True
 if "--create-pdf" in sys.argv :
