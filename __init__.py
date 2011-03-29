@@ -47,6 +47,18 @@ COMMAND LINE ARGUMENTS:
 
                     See :class:`TestPspictLaTeXCode`
 
+KNOWN BUGS
+
+    - The figure "Custon units on the Y axe". The distance between the marks and the axe is not correct.
+
+    - The figure "A single axe". The bounding box is too small when compiled with pdflatex.
+    
+    - The figure "Some points on a parametric curve" is not centred. Idem dans GeomAnal.
+
+    - The figure "A point on a dilated picture". The bounding box of the point is wrong. This is due to the fact
+                            that the bounding box of the mark does not take into account the
+                            dilatation.
+
 """
 
 #from __future__ import division
@@ -1609,6 +1621,8 @@ class pspicture(object):
         for graph in list_to_be_drawn:
             try :
                 if graph.draw_bounding_box:
+                    raise AttributeError,"I don't think that the attribute `draw_bounding_box` still exists"
+                    # It seems to me that we can safely remove all this part. March, 29, 2011.
                     bb=graph.bounding_box(self)
                     rect = Rectangle(bb.SW(),bb.NE())
                     rect.parameters.color="cyan"
@@ -1622,6 +1636,22 @@ class pspicture(object):
         list_used_separators=[]
         for x in list_to_be_drawn:
             graph=x.graph
+
+            # If the graph is a bounding box of a mark, we recompute it
+            # because a dilatation of the figure could have
+            # changed the bounding box.
+            if isinstance(graph,BoundingBox):
+                if graph.parent:
+                    if isinstance(graph.parent,Mark):
+                        graph=graph.parent.bounding_box(self)
+
+            # If the graph is a mark, then one has to recompute
+            # its position because of possible xunit,yunit.
+            #if isinstance(graph,Mark):
+            #    print "1651 central point",graph.central
+            #    if graph.parent:
+            #        graph = Mark(graph.parent,graph.dist,graph.angle,graph.text,graph.automatic_place)
+
             separator_name=x.separator_name
             try :
                 self.BB.append(graph,self)

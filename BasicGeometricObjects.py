@@ -1658,6 +1658,7 @@ class Mark(object):
         This class should not be used by the end-user.
         """
         self.graph = graph
+        self.parent = graph
         self.angle = angle
         self.dist = dist
         self.text = text
@@ -1677,7 +1678,9 @@ class Mark(object):
         The central point of the mark is computed from self.graph.mark_point()
         Thus an object that want to accept a mark has to have a method mark_point that returns the point on which the mark will be put.
         """
+
         default=self.graph.mark_point().get_polar_point(self.dist,self.angle,pspict)
+
         if self.automatic_place :
             try :
                 position=self.automatic_place[1]
@@ -1685,7 +1688,11 @@ class Mark(object):
             except TypeError :
                 pspict=self.automatic_place
                 position="corner"
+
             dimx,dimy=pspict.get_box_size(self.text)
+            dimx=float(dimx)/pspict.xunit
+            dimy=float(dimy)/pspict.yunit
+
             if position=="corner":
                 if self.x>=0:
                     lx=dimx*0.5
@@ -1714,18 +1721,21 @@ class Mark(object):
         """
         return self.graph.math_bounding_box(pspict)
     def bounding_box(self,pspict=None):
+        print "1717 je calcule une BB de %s"%str(type(self))
         central_point=self.central_point(pspict)
         bb=BoundingBox(central_point,central_point)
         dimx,dimy=pspict.get_box_size(self.text)
         try :
             dimx=float(dimx)/pspict.xunit
             dimy=float(dimy)/pspict.yunit
+            print "1724 résultat",dimx,dimy
         except AttributeError:
             print "Try to pass a pspicture when computing the bounding box of",type(self)
         pt1=Point(central_point.x-dimx/2,central_point.y-dimy/2) 
         pt2=Point(central_point.x+dimx/2,central_point.y+dimy/2)
         bb.AddPoint(pt1)
         bb.AddPoint(pt2)
+        bb.parent=self
         return bb
     def pstricks_code(self,pspict=None):
         l=[]
@@ -2177,8 +2187,8 @@ class GraphOfAPoint(GraphOfAnObject,GeometricPoint):
 
         This function is not supposed to be used by the end-user.
 
-        When the point has a mark, the code of the mark is not included here because the
-        function pspicture.DrawGraph automatically adds the mark to the list of objects
+        When the point has a mark, the code of the mark is not included here because 
+        :func:`DrawGraph` automatically adds the mark to the list of objects
         to be drawn.
         However, some constructions want to include the pstricks code of points in its own
         pstricks code. In that case we want the code of the mark to be part of the code
@@ -3992,13 +4002,6 @@ class GraphOfAParametricCurve(GraphOfAnObject,ParametricCurve):
             return "\parametricplot[%s]{%s}{%s}{%s}" %(self.params(),str(initial),str(final),self.curve.pstricks())
 
 
-
-#class Nuage_de_Points(object):
-#   def __init__(self):
-#       self.listePoints = []
-#   def ajoute_point(self,p):
-#       self.listePoints.append(p)
-
 def PolarSegment(P,r,theta):
     """
     returns a segment on the base point P (class Point) of length r angle theta (degree)
@@ -4007,11 +4010,47 @@ def PolarSegment(P,r,theta):
     return Segment(P, Point(P.x+r*math.cos(alpha),P.y+r*math.sin(alpha)) )
 
 class BoundingBox(object):
-    def __init__(self,dSW=GeometricPoint(0,0),dNE=GeometricPoint(0,0)):
+    """
+    Represent the bounding box of something.
+
+    INPUT:
+
+    - ``dSW`` - The point at the "South-West" corner of the bounding box.
+
+    - ``dNE`` - The point at the "North-East" corner of the bounding box.
+
+    - ``parent`` - the object of which this is the bounding box.
+
+
+    The attribute `parent` is used for drawing the bounding boxes that can vary with
+    the dilatation. The usual way for drawing the bounding bow of the mark of an object is::
+
+	    pspict,fig = SinglePicture("DefinitionCartesiennes")
+        sage: P=Point(1,1)
+        sage: P.put_mark(0.3,0,"$P$")
+        sage: pspict.DrawGraph(P.mark.bounding_box(pspict))
+
+    The problem arises when one dilates the figure after the call to `DrawGraph`.
+    Indeed the bounding box of the mark will be the LaTeX's size of the box
+    containing the text. In order to be correct one has to take into account the 
+    parameters `xunit`/`yunit` that are not yet fixed at the time of `DrawGraph`.
+
+    EXAMPLE::
+
+	    pspict,fig = SinglePicture("DefinitionCartesiennes")
+        sage: P=Point(1,1)
+        sage: P.put_mark(0.3,0,"$MMM$")
+        sage: print P.mark.bounding_box(pspict)
+        sage: pspict.dilatation(2)
+        sage: print P.mark.bounding_box(pspict)
+
+    """
+    def __init__(self,dSW=GeometricPoint(0,0),dNE=GeometricPoint(0,0),parent=None):
         self.mx=dSW.x
         self.Mx=dNE.x
         self.my=dSW.y
         self.My=dNE.y
+        self.parent=parent
     def N(self):
         return Segment(self.NW(),self.NE()).center()
     def S(self):
@@ -4038,9 +4077,17 @@ class BoundingBox(object):
         raise DeprecationWarning
         return self.coordinates()
     def tailleX(self):
+        raise DeprecationWarning,"Use xsize instead"
         return self.Mx-self.mx
     def tailleY(self):
+        raise DeprecationWarning,"Use ysize instead"
         return self.My-self.my
+
+    def xsize(self):
+        return self.Mx-self.mx
+    def ysize(self):
+        return self.My-self.my
+
     def extraX_left(self,l):
         """Enlarge the bounding box of a length l on the left"""
         self.mx=self.mx-l
