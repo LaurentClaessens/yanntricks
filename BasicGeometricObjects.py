@@ -1721,14 +1721,12 @@ class Mark(object):
         """
         return self.graph.math_bounding_box(pspict)
     def bounding_box(self,pspict=None):
-        print "1717 je calcule une BB de %s"%str(type(self))
         central_point=self.central_point(pspict)
         bb=BoundingBox(central_point,central_point)
         dimx,dimy=pspict.get_box_size(self.text)
         try :
             dimx=float(dimx)/pspict.xunit
             dimy=float(dimy)/pspict.yunit
-            print "1724 résultat",dimx,dimy
         except AttributeError:
             print "Try to pass a pspicture when computing the bounding box of",type(self)
         pt1=Point(central_point.x-dimx/2,central_point.y-dimy/2) 
