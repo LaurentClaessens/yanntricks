@@ -55,10 +55,6 @@ KNOWN BUGS
     
     - The figure "Some points on a parametric curve" is not centred. Idem dans GeomAnal.
 
-    - The figure "A point on a dilated picture". The bounding box of the point is wrong. This is due to the fact
-                            that the bounding box of the mark does not take into account the
-                            dilatation.
-
 """
 
 #from __future__ import division

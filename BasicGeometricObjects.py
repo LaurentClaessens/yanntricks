@@ -2051,9 +2051,10 @@ class SurfaceUnderFunction(SurfaceBetweenFunctions):
     - ``f`` - a function
     - ``mx,Mx`` - initial and final values 
 
-    EXAMPLES::
+    EXAMPLES:
 
     .. literalinclude:: phystricksSurfaceFunction.py
+
     .. image:: Picture_FIGLabelFigSurfaceFunctionPICTSurfaceFunction-for_eps.png
 
     """
@@ -4008,7 +4009,7 @@ def PolarSegment(P,r,theta):
     return Segment(P, Point(P.x+r*math.cos(alpha),P.y+r*math.sin(alpha)) )
 
 class BoundingBox(object):
-    """
+    r"""
     Represent the bounding box of something.
 
     INPUT:
@@ -4021,12 +4022,8 @@ class BoundingBox(object):
 
 
     The attribute `parent` is used for drawing the bounding boxes that can vary with
-    the dilatation. The usual way for drawing the bounding bow of the mark of an object is::
-
-	    pspict,fig = SinglePicture("DefinitionCartesiennes")
-        sage: P=Point(1,1)
-        sage: P.put_mark(0.3,0,"$P$")
-        sage: pspict.DrawGraph(P.mark.bounding_box(pspict))
+    the dilatation. The usual way for drawing the bounding bow of the mark of an object is to put
+    `P.mark.bounding_box(pspict)` in `pspict.DrawGraph`.
 
     The problem arises when one dilates the figure after the call to `DrawGraph`.
     Indeed the bounding box of the mark will be the LaTeX's size of the box
@@ -4035,12 +4032,23 @@ class BoundingBox(object):
 
     EXAMPLE::
 
-	    pspict,fig = SinglePicture("DefinitionCartesiennes")
+        sage: pspict,fig = SinglePicture("DefinitionCartesiennes")
+        The result is on figure \ref{LabelFigDefinitionCartesiennes}.
+        \newcommand{\CaptionFigDefinitionCartesiennes}{<+Type your caption here+>}
+        \input{Fig_DefinitionCartesiennes.pstricks}
         sage: P=Point(1,1)
         sage: P.put_mark(0.3,0,"$MMM$")
         sage: print P.mark.bounding_box(pspict)
+        Warning: the auxiliary file seems not to exist. Compile your LaTeX file.
+        Warning: the auxiliary file seems not to exist. Compile your LaTeX file.
+        (1.30000000000000,1),(1.30000000000000,1)
         sage: pspict.dilatation(2)
         sage: print P.mark.bounding_box(pspict)
+        Warning: the auxiliary file seems not to exist. Compile your LaTeX file.
+        Warning: the auxiliary file seems not to exist. Compile your LaTeX file.
+        (1.15000000000000,1),(1.15000000000000,1)
+
+    In the first call, the bounding box is not the same as in the second call.
 
     """
     def __init__(self,dSW=GeometricPoint(0,0),dNE=GeometricPoint(0,0),parent=None):
@@ -4153,9 +4161,12 @@ class BoundingBox(object):
         """
         Essentially intended to the bounding box of a axis coordinate. 
         The aim is to make the axis slightly larger than the picture in such a way that all the numbers are written
-        1. If a coordinate is integer multiple of epsilon, (say n), we enlarge to n+epsilon, so that the number n appears on the axis
+
+        1. If a coordinate is integer multiple of epsilon, (say n), we enlarge to n+epsilon, so that the number n appears on the axis.
+
         2. If a coordinate is non integer multiple, we enlarge to the next integer multiple (plus epsilon) so that the axis still has a number written
             further than the limit of the picture.
+
         The aim is to make the axes slightly bigger than their (Dx,Dy) in order the last graduation to be visible.
         """
         self.mx = enlarge_a_little_low(self.mx,Dx,epsilonX)
