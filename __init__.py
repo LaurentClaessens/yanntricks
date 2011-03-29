@@ -31,6 +31,8 @@ COMMAND LINE ARGUMENTS:
 
     - ``--create-png`` - create the png file, but does not change the `.pstricks`
                          file. Thus the LaTeX output will not be modified.
+                         
+                         See :class:`TestPspictLaTeXCode`
 
     NOTE:
 
@@ -42,6 +44,8 @@ COMMAND LINE ARGUMENTS:
     - ``--tests`` - compares the produced pspicture with the corresponding `tmp` file and
                     raises a ValueError if it does not correspond.
                     If this option is set, nothing is written on the disk.
+
+                    See :class:`TestPspictLaTeXCode`
 
 """
 
@@ -410,7 +414,6 @@ def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
         return string_number_comparison(t1,t2,epsilon=epsilon,last_justification=justification)
     justification=last_justification+"Distance between %s and %s is larger than %s."%(str(v1),str(v2),str(epsilon))
     return False,justification
-     
 
 class TestPspictLaTeXCode(object):
     def __init__(self,pspict):
@@ -429,7 +432,7 @@ class TestPspictLaTeXCode(object):
 
         - ``pspict`` - a pspicture
 
-        If the option `--create_test_file` is passed to the program, this function is called
+        If the option `--create-tests` is passed to the program, this function is called
         on each pspicture when concluding a :class:`figure`.
         """
         text=unify_point_name(self.notice_text+self.pspict.contenu_pstricks)
