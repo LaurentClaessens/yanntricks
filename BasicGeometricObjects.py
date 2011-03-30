@@ -1872,6 +1872,11 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
         '\\pscustom[hatchcolor=blue,linestyle=none,fillcolor=blue,linecolor=blue,fillstyle=vlines]{\n\\psplot[linestyle=none]{0.000000000000000}{6.28318530717959}{sin(x) + 3}\n\\psplot[linestyle=none]{6.28318530717959}{0.000000000000000}{cos(x)}\n}\n\\psplot[linestyle=solid,plotpoints=100,linecolor=red]{0.000000000000000}{6.28318530717959}{sin(x) + 3}'
 
     You can also try to control the option linestyle (use add_option).
+
+    .. literalinclude:: phystricksexSurfaceBetweenFunction.py
+
+    .. image:: Picture_FIGLabelFigexSurfaceBetweenFunctionPICTexSurfaceBetweenFunction-for_eps.png
+
     """
 
     #TODO: change this class into a function which returns a SurfaceBetweenParametricCurves instead.

@@ -1337,6 +1337,7 @@ class PspictureToOtherOutputs(object):
         print commande_e
         os.system(commande_e)
     def create_png_file(self):
+        # TODO : study the package python-uniconvertor
         """ Creates a png file by the chain latex/dvips/convert"""
         self.create_eps_file()
         commande_e = "convert %s %s"%(self.file_eps.chemin,self.file_png.chemin)
