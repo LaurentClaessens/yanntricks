@@ -1128,9 +1128,38 @@ def LineInterLine(l1,l2):
     return Point( s[0],s[1] )
     
 def SinglePicture(name):
-    """ Return the tuple of pspicture and figure that one needs in 90% of the cases """
+    """ Return the tuple of pspicture and figure that one needs in 90% of the cases. """
     fig = GenericFigure(name)
     pspict=fig.new_pspicture(name)
+    return pspict,fig
+
+def MultiplePictures(name,n):
+    """
+    return a figure with multiple subfigures. This is the other 10% of cases.
+
+    INPUT:
+
+    - `name` - the name of the figure.
+
+    - `n` - the number of subfigures.
+
+    You have to think about naming the subfigures.
+
+    EXAMPLE::
+
+        sage: fig,pspict = MultiplePictures("MyName",3)
+        sage: pspict[0].mother.caption="My first subfigure"
+        sage: pspict[1].mother.caption="My second subfigure"
+        sage: pspict[2].mother.caption="My third subfigure"
+
+    Notice that a caption is related to a figure or a subfigure, not to a pspicture.
+    """
+    fig = GenericFigure(name)
+    pspict=[]
+    for i in range(n):
+        subfigure=fig.new_subfigure("name"+str(i),"LabelSubFig"+name+str(i))
+        picture=subfigure.new_pspicture(name+"pspict"+str(i))
+        pspict.append(picture)
     return pspict,fig
 
 def GenericFigure(nom):
@@ -1268,6 +1297,13 @@ class subfigure(object):
     This is a subfigure.
 
     If no label are given, a default one will be set when included in the figure.
+    
+    EXAMPLES
+
+    .. literalinclude:: phystricksSubFigure.py
+    .. image:: Picture_FIGLabelFigSubFiguressLabelssFigFirstPICTFirstPoint-for_eps.png
+    .. image:: Picture_FIGLabelFigSubFiguressLabelssFigSecondPICTSecondPoint-for_eps.png
+    .. image:: Picture_FIGLabelFigSubFiguressLabelssFigThirdPICTthirdPoint-for_eps.png
     """
     def __init__(self,caption,name=None):
         self.caption = caption
@@ -1352,8 +1388,8 @@ class PspictureToOtherOutputs(object):
         # TODO: check if inkscape is present. If not use convert. If convert
         # is not present, prendi la f-parola.
         self.create_eps_file()
-        x_cmsize=100*self.pspict.bounding_box().xsize()
-        y_cmsize=100*self.pspict.bounding_box().ysize()
+        x_cmsize=100*numerical_approx(self.pspict.bounding_box().xsize()*self.pspict.xunit)
+        y_cmsize=100*numerical_approx(self.pspict.bounding_box().ysize()*self.pspict.yunit)
         commande_e = "convert -density 1000 %s -resize %sx%s %s"%(self.file_eps.chemin,str(x_cmsize),str(y_cmsize),self.file_png.chemin)
         #commande_e = "inkscape -f %s -e %s -D -d 600"%(self.file_pdf.chemin,self.file_png.chemin)
         print commande_e
