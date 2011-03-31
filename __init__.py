@@ -32,7 +32,8 @@ COMMAND LINE ARGUMENTS:
     - ``--create-png`` - create the png file, but does not change the `.pstricks`
                          file. Thus the LaTeX output will not be modified.
                          
-                         See :class:`TestPspictLaTeXCode`
+                         See :class:`TestPspictLaTeXCode` and the function :func:`create_png_file`
+                         in :class:`PspictureToOtherOutputs`
 
     NOTE:
 
@@ -1337,17 +1338,30 @@ class PspictureToOtherOutputs(object):
         print commande_e
         os.system(commande_e)
     def create_png_file(self):
-        # TODO : study the package python-uniconvertor
-        """ Creates a png file by the chain latex/dvips/convert"""
+        """
+        Creates a png file by the chain latex->eps->png
+
+        The last step is done by convert.
+
+        NOTE :
+
+        It is also possible to use inkscape in order to produce svg but
+        on my computer inkscape crashes on a segmentation fault
+        when launched from a script :(
+        """
+        # TODO: check if inkscape is present. If not use convert. If convert
+        # is not present, prendi la f-parola.
         self.create_eps_file()
-        commande_e = "convert %s %s"%(self.file_eps.chemin,self.file_png.chemin)
+        x_cmsize=100*self.pspict.bounding_box().xsize()
+        y_cmsize=100*self.pspict.bounding_box().ysize()
+        commande_e = "convert -density 1000 %s -resize %sx%s %s"%(self.file_eps.chemin,str(x_cmsize),str(y_cmsize),self.file_png.chemin)
+        #commande_e = "inkscape -f %s -e %s -D -d 600"%(self.file_pdf.chemin,self.file_png.chemin)
         print commande_e
         os.system(commande_e)
     def create_pdf_file(self):
         """ Creates a pdf file by the chain latex/dvips/epstopdf """
         self.create_eps_file()
         commande_e = "epstopdf %s --outfile=%s"%(self.file_eps.chemin,self.file_pdf.chemin)
-        print "J'execute"
         print commande_e
         os.system(commande_e)
 
