@@ -1392,6 +1392,7 @@ class PspictureToOtherOutputs(object):
         y_cmsize=100*numerical_approx(self.pspict.bounding_box().ysize()*self.pspict.yunit)
         commande_e = "convert -density 1000 %s -resize %sx%s %s"%(self.file_eps.chemin,str(x_cmsize),str(y_cmsize),self.file_png.chemin)
         #commande_e = "inkscape -f %s -e %s -D -d 600"%(self.file_pdf.chemin,self.file_png.chemin)
+        #inkscape -f test.pdf -l test.svg
         print commande_e
         os.system(commande_e)
     def create_pdf_file(self):

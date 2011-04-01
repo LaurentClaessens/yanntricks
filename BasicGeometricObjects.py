@@ -1899,9 +1899,9 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
         self.parameters.color=None              
     def bounding_box(self,pspict=None):
         bb=BoundingBox()
-        bb.append(self.f1,pspict=None)
-        bb.append(self.f2,pspict=None)
-        bb.AddY(0)
+        bb.append(self.f1,pspict)
+        bb.append(self.f2,pspict)
+        #bb.AddY(0)      # Really, what was that line for ??
         return bb
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
@@ -1986,6 +1986,11 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
 
     NOTE:
     If the two curves make intersections, the result could be messy.
+
+    
+    .. literalinclude:: phystricksBetweenParametric.py
+    .. image:: Picture_FIGLabelFigBetweenParametricPICTBetweenParametric-for_eps.png
+
     """
     def __init__(self,curve1,curve2,mx1=None,Mx1=None,mx2=None,Mx2=None,reverse1=False,reverse2=True):
         GraphOfAnObject.__init__(self,self)
@@ -2010,6 +2015,7 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
 
         self.add_option("fillstyle=vlines,linestyle=none")  
         self.parameters.color=None              
+
     def bounding_box(self,pspict=None):
         bb=BoundingBox()
         bb.append(self.curve1,pspict=None)
@@ -2018,8 +2024,6 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def pstricks_code(self,pspict=None):
-        if self.parameters.color :      # Here we give a default color
-            self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
         a=[]
         
         c1=self.curve1.graph(self.mx1,self.Mx1)
@@ -2030,6 +2034,8 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
             c2=c2.reverse()
 
         custom=CustomSurface(c1,self.up_segment,c2,self.low_segment)
+        if self.parameters.color :      # Here we give a default color
+            custom.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
         a.append(custom.pstricks_code())
 
         if self.curve1.parameters.style != "none":
