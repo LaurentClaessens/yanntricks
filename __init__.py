@@ -56,6 +56,13 @@ KNOWN BUGS
     
     - The figure "Some points on a parametric curve" is not centred. Idem dans GeomAnal.
 
+    - It is now hard to print the axes over the picture. One difficulty is that the axes of a pspicture
+        are computed when the content of the pspicture is known. It is thus nonsense to write something like
+
+::
+        sage: pspict.DrawGraph(pspict.axes) #random
+        
+
 """
 
 #from __future__ import division
@@ -1134,7 +1141,7 @@ def SinglePicture(name):
     return pspict,fig
 
 def MultiplePictures(name,n):
-    """
+    r"""
     return a figure with multiple subfigures. This is the other 10% of cases.
 
     INPUT:
@@ -1147,7 +1154,13 @@ def MultiplePictures(name,n):
 
     EXAMPLE::
 
-        sage: fig,pspict = MultiplePictures("MyName",3)
+        sage: pspict,fig = MultiplePictures("MyName",3)
+        The result is on figure \ref{LabelFigMyName}.                                                                                                                                                             
+        \newcommand{\CaptionFigMyName}{<+Type your caption here+>}                                                                                                                                                
+        \input{Fig_MyName.pstricks}                                                                                                                                                                               
+        See also the subfigure \ref{LabelFigMyNamessLabelSubFigMyName0}                                                                                                                                           
+        See also the subfigure \ref{LabelFigMyNamessLabelSubFigMyName1}                                                                                                                                           
+        See also the subfigure \ref{LabelFigMyNamessLabelSubFigMyName2}
         sage: pspict[0].mother.caption="My first subfigure"
         sage: pspict[1].mother.caption="My second subfigure"
         sage: pspict[2].mother.caption="My third subfigure"

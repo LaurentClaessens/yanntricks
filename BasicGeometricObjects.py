@@ -1817,9 +1817,9 @@ class Parameters(object):
         self._hatched=True
     def add_to_options(self,opt):
         """
-        Add to the object <opt> (type Option) the different options that correspond to the parameters.
+        Add to the object `opt` (type Option) the different options that correspond to the parameters.
 
-        In an imaged way, this method adds self to the object <opt>.
+        In an imaged way, this method adds `self` to the object `opt`.
         """
         if self.color :
             opt.add_option("linecolor=%s"%str(self.color))
@@ -2034,8 +2034,7 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
             c2=c2.reverse()
 
         custom=CustomSurface(c1,self.up_segment,c2,self.low_segment)
-        if self.parameters.color :      # Here we give a default color
-            custom.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
+        self.parameters.add_to_options(custom.options)     # This line is essentially dedicated to the colors
         a.append(custom.pstricks_code())
 
         if self.curve1.parameters.style != "none":
@@ -4031,6 +4030,7 @@ class BoundingBox(object):
 
     - ``parent`` - the object of which this is the bounding box.
 
+    By default, the bounding box has `mx=1000`, `Mx=-1000` and the same for `y`.
 
     The attribute `parent` is used for drawing the bounding boxes that can vary with
     the dilatation. The usual way for drawing the bounding bow of the mark of an object is to put
@@ -4062,11 +4062,21 @@ class BoundingBox(object):
     In the first call, the bounding box is not the same as in the second call.
 
     """
-    def __init__(self,dSW=GeometricPoint(0,0),dNE=GeometricPoint(0,0),parent=None):
-        self.mx=dSW.x
-        self.Mx=dNE.x
-        self.my=dSW.y
-        self.My=dNE.y
+    def __init__(self,dSW=None,dNE=None,parent=None):
+        if dSW :
+            self.mx=dSW.x
+            self.my=dSW.y
+        else :
+            self.mx=1000
+            self.my=1000
+
+        if dNE :
+            self.Mx=dNE.x
+            self.My=dNE.y
+        else :
+            self.Mx=-1000
+            self.My=-1000
+
         self.parent=parent
     def N(self):
         return Segment(self.NW(),self.NE()).center()
