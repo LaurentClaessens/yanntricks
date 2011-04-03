@@ -58,10 +58,7 @@ KNOWN BUGS
 
     - It is now hard to print the axes over the picture. One difficulty is that the axes of a pspicture
         are computed when the content of the pspicture is known. It is thus nonsense to write something like
-
-::
-        sage: pspict.DrawGraph(pspict.axes) #random
-        
+        `pspict.DrawGraph(pspict.axes)`
 
 """
 

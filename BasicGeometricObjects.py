@@ -873,11 +873,6 @@ class GeometricSegment(object):
         x = self.angle()+AngleMeasure(value_degree=90)
         return x
 
-    def copy(self):
-        v=Segment(self.I,self.F)
-        v.arrow_type=self.arrow_type
-        return v
-
     def phyFunction(self):
         if self.horizontal:
             # The trick to define a constant function is explained here:
@@ -889,6 +884,36 @@ class GeometricSegment(object):
             parms = [self.slope,(A.y*B.x-A.x*B.y)/(A.x-B.x)]
             var('x')
             return phyFunction( self.slope*x+self.independent )
+        
+    def parametric_curve(self):
+        """
+        Return the parametric curve corresponding to `self`.
+
+        The starting point is `self.I` and the parameters is the arc length.
+        The parameter is positive on the side of `self.B` and negative on the
+        opposite side.
+
+        EXAMPLES::
+
+            sage: segment=Segment(Point(0,0),Point(1,1))
+            sage: curve=segment.parametric_curve()
+            sage: print curve(0)
+            Point(0,0)
+            sage: print curve(1)
+            Point(1/2*sqrt(2),1/2*sqrt(2))
+            sage: print curve(segment.length())
+            Point(1,1)
+        """
+        x=var('x')
+        l=self.length()
+        f1=phyFunction(self.I.x+x*(self.F.x-self.I.x)/l)
+        f2=phyFunction(self.I.y+x*(self.F.y-self.I.y)/l)
+        return ParametricCurve(f1,f2)
+
+    def copy(self):
+        v=Segment(self.I,self.F)
+        v.arrow_type=self.arrow_type
+        return v
 
     def get_regular_points(self,dx):
         """
@@ -1346,7 +1371,14 @@ class GraphOfACircle(GraphOfAnObject):
         var('x,y')
         return (x-self.center.x)**2+(y-self.center.y)**2-self.radius**2==0
     
+    def phyFunction(self):
+        """
+        return the function corresponding to
+        the graph of the *upper* part of the circle
+        """
+
     def parametric_curve(self,a=None,b=None):
+
         """
         Return the parametric curve associated to the circle.
 
@@ -1364,6 +1396,7 @@ class GraphOfACircle(GraphOfAnObject):
             return curve
         else :
             return curve.graph(a,b)
+
     def get_point(self,theta,advised=True,numerical=False):
         """
         Return a point at angle <theta> (degree) on the circle. 
@@ -1836,8 +1869,16 @@ class Parameters(object):
 def EnsurephyFunction(f):
     if "sage" in dir(f):        # This tests in the same time if the type if phyFunction or GraphOfAphyFunction
         return phyFunction(f.sage)
+    if "phyFunction" in dir(f):
+        return f.phyFunction()
     else :
         return phyFunction(f)
+
+def EnsureParametricCurce(curve):
+    if "parametric_curve" in dir(curve):
+        return curve.parametric_curve()
+    else :
+        return curve
 
 class SurfaceBetweenFunctions(GraphOfAnObject):
     r"""
@@ -1986,7 +2027,6 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
 
     NOTE:
     If the two curves make intersections, the result could be messy.
-
     
     .. literalinclude:: phystricksBetweenParametric.py
     .. image:: Picture_FIGLabelFigBetweenParametricPICTBetweenParametric-for_eps.png
@@ -2008,8 +2048,8 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
             self.mx2=curve2.llamI
             self.Mx2=curve2.llamF
 
-        self.curve1=curve1
-        self.curve2=curve2
+        self.curve1=EnsureParametricCurce(curve1).graph(mx1,Mx1)
+        self.curve2=EnsureParametricCurce(curve2).graph(mx2,Mx2)
         self.low_segment=Segment(self.curve2.get_point(self.mx2,advised=False),self.curve1.get_point(self.mx1,advised=False))
         self.up_segment=Segment(self.curve1.get_point(self.Mx1,advised=False),self.curve2.get_point(self.Mx2,advised=False))
 
