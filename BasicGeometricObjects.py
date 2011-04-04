@@ -1882,7 +1882,7 @@ class Parameters(object):
             sage: p2.fill.color="cyan"
             sage: p2.add_to(p1)
             sage: print p1.color,p1.style,p1.symbol,p1._filled,p1.fill.color
-            red,solid,B,True,cyan
+            red solid A True cyan
         """
         for attr in dir(parameters):
             if parameters.__getattribute__(attr) in [None,False]:
@@ -1916,7 +1916,7 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
 
     EXAMPLES:
 
-    If you want the surface and the functions to be blue ::
+    If you want the surface to be blue ::
 
         sage: surf=SurfaceBetweenFunctions(sin(x)+3,cos(x),0,2*pi)
         sage: surf.parameters.color="blue"
@@ -1925,16 +1925,18 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
     In the following example you see that the function ``f1`` is not drawn. In particular, the color red is nowhere::
 
         sage: surf.f1.parameters.color="red"
-        sage: surf.pstricks_code()
-        '\\pscustom[hatchcolor=blue,linestyle=none,fillcolor=blue,linecolor=blue,fillstyle=vlines]{\n\\psplot[linestyle=none]{0.000000000000000}{6.28318530717959}{sin(x) + 3}\n\\psplot[linestyle=none]{6.28318530717959}{0.000000000000000}{cos(x)}\n}'
+        sage: print "red" in surf.pstricks_code()
+        False
 
     If you want the function ``f1`` to be red without changing the color of the surface, you have to change
     the color AND the style::
 
         sage: surf.f1.parameters.color="red"
         sage: surf.f1.parameters.style="solid"
-        sage: surf.pstricks_code()
-        '\\pscustom[hatchcolor=blue,linestyle=none,fillcolor=blue,linecolor=blue,fillstyle=vlines]{\n\\psplot[linestyle=none]{0.000000000000000}{6.28318530717959}{sin(x) + 3}\n\\psplot[linestyle=none]{6.28318530717959}{0.000000000000000}{cos(x)}\n}\n\\psplot[linestyle=solid,plotpoints=100,linecolor=red]{0.000000000000000}{6.28318530717959}{sin(x) + 3}'
+        sage: print "red" in surf.pstricks_code(),"solid" in surf.pstricks_code()
+        True True
+
+    Notice that the output of `surf.pstricks_code()` is too long to be written here.
 
     You can also try to control the option linestyle (use add_option).
 
@@ -1976,7 +1978,10 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
         fin = numerical_approx(self.Mx)
 
         surface=SurfaceBetweenParametricCurves(self.f1,self.f2)
-        self.parameters.add_to_options(surface.options)     # This line is essentially dedicated to the colors
+        self.parameters.add_to(surface.parameters)     # This line is essentially dedicated to the colors
+
+        surface.low_segment=self.vertical_left
+        surface.up_segment=self.vertical_right
 
         a.append(surface.pstricks_code(pspict))
 
@@ -2022,16 +2027,16 @@ def extract_interval_information(curve):
 
         sage: f=phyFunction(x**2).graph(1,pi)
         sage: extract_interval_information(f)
-        (1,pi)
+        (1, pi)
          
         sage: a=var('a')
-        sage: curve=ParametricCurve(f1,f2).graph(sqrt(2),a)
+        sage: curve=ParametricCurve(x,sin(x)).graph(sqrt(2),a)
         sage: extract_interval_information(curve)
-        (sqrt(2),a)
+        (sqrt(2), a)
 
         sage: f=phyFunction(x**3)
         sage: extract_interval_information(f)
-        (None,None)
+        (None, None)
 
     """
     if "llamI" in dir(curve):
@@ -2100,7 +2105,7 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
         sage: f2=phyFunction(x)
         sage: curve=SurfaceBetweenParametricCurves(f1,f2,(1,2))
         sage: print curve.mx1,curve.Mx1,curve.mx2,curve.Mx2
-        1,2,1,2
+        1 2 1 2
 
     If you provides two tuples (mx1,Mx1),(mx2,Mx2), these are taken
     as you believe::
@@ -2109,7 +2114,7 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
         sage: f2=phyFunction(x)
         sage: region=SurfaceBetweenParametricCurves(f1,f2,(1,2),(3,4))
         sage: print region.mx1,region.Mx1,region.mx2,region.Mx2
-        1,2,3,4
+        1 2 3 4
 
     The explicit data of an interval erases an interval that could be furnished
     by a curve ::
@@ -2118,13 +2123,13 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
         sage: f2=phyFunction(x)
         sage: region=SurfaceBetweenParametricCurves(f1,f2,(1,2),(3,4))
         sage: print region.mx1,region.Mx1,region.mx2,region.Mx2
-        1,2,3,4
+        1 2 3 4
 
         sage: f1=phyFunction(x**2)
         sage: f2=phyFunction(x).graph(5,6)
         sage: region=SurfaceBetweenParametricCurves(f1,f2,(1,2))
         sage: print region.mx1,region.Mx1,region.mx2,region.Mx2
-        1,2,5,6
+        1 2 5 6
 
     NOTE:
     If the two curves make intersections, the result could be messy.
@@ -2160,6 +2165,11 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
 
         self.curve1=EnsureParametricCurve(curve1).graph(self.mx1,self.Mx1)
         self.curve2=EnsureParametricCurve(curve2).graph(self.mx2,self.Mx2)
+
+        if "parameters" in dir(curve1):
+            curve1.parameters.add_to(self.curve1.parameters)
+        if "parameters" in dir(curve2):
+            curve2.parameters.add_to(self.curve2.parameters)
 
         self.low_segment=Segment(self.curve2.get_point(self.mx2,advised=False),self.curve1.get_point(self.mx1,advised=False))
         self.up_segment=Segment(self.curve1.get_point(self.Mx1,advised=False),self.curve2.get_point(self.Mx2,advised=False))
