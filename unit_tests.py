@@ -4,6 +4,55 @@ from phystricks import *
 This file contains only doctests with output too long or not sufficiently interesting to be included in the code itself.
 """
 
+def Test_SurfaceBetweenParametricCurve():
+    r"""
+    sage: pspict,fig = SinglePicture("IntBoutCercle")
+    The result is on figure \ref{LabelFigIntBoutCercle}.
+    \newcommand{\CaptionFigIntBoutCercle}{<+Type your caption here+>}
+    \input{Fig_IntBoutCercle.pstricks}
+    sage: C=Point(0,1)
+    sage: alpha=0
+    sage: circle = Circle(C,1)
+    sage: c1=circle.graph(-90,alpha)
+    sage: c2=circle.graph(alpha,270)
+    sage: c1.parameters.color="red"
+    sage: c2.parameters.color="blue"
+    sage: P=circle.get_point(alpha)
+    sage: P.put_mark(0.3,-45,"$P$")
+    sage: s1=Segment(Point(0,0),P)
+    sage: segment=s1.dilatation(2)
+    sage: segment.parameters.color="red"
+    sage: surface=SurfaceBetweenParametricCurves(s1,circle,0,s1.length(),-pi/2,radian(alpha))
+    sage: surface.parameters.color="cyan"
+    sage: surface.curve1.parameters.style="solid"
+    sage: surface.curve1.parameters.color="red"
+    sage: surface.curve2.parameters=surface.curve1.parameters
+    sage: print surface.pstricks_code(pspict)
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){aabc}
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){aabd}
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,0){aaba}
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,0){aabb}
+    \pscustom[hatchcolor=cyan,linestyle=none,fillcolor=cyan,linecolor=cyan,fillstyle=vlines]{
+    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{0.000000000000000}{1.41421356237310}{1/2*sqrt(2)*t | 1/2*sqrt(2)*t }
+    <BLANKLINE>
+    \pstLineAB[linestyle=solid,linecolor=black]{aabc}{aabd}
+    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{-1.57079632679490}{0.000000000000000}{cos(-1/2*3.1415 - t) | sin(-1/2*3.1415 - t) + 1 }
+    <BLANKLINE>
+    \pstLineAB[linestyle=solid,linecolor=black]{aaba}{aabb}
+    }
+    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=red]{0.000000000000000}{1.41421356237310}{1/2*sqrt(2)*t | 1/2*sqrt(2)*t }
+    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=red]{-1.57079632679490}{0.000000000000000}{cos(t) | sin(t) + 1 }
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,0){aaba}
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,0){aabb}
+    <BLANKLINE>
+    \pstLineAB[linestyle=solid,linecolor=black]{aaba}{aabb}
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){aabc}
+    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){aabd}
+    <BLANKLINE>
+    \pstLineAB[linestyle=solid,linecolor=black]{aabc}{aabd}
+    """
+
+
 def Test_Segment():
     """
     sage: v = Segment(Point(0,0),Point(2,0)).get_normal_vector()
@@ -127,6 +176,7 @@ def Test_Measure():
 
 def Test_SurfaceBetweenFunctions():
     """
+    sage: pspict,fig = SinglePicture("TesTSurfaceBetweenFunction")
     sage: a=1
     sage: b=4
     sage: m=float(b+a)/2
@@ -144,7 +194,7 @@ def Test_SurfaceBetweenFunctions():
     sage: reg.f1.parameters.color="blue"                                                                                                            
     sage: reg.f2.parameters.style="solid"                                                                                                           
     sage: reg.f2.parameters.color="blue"                                                                                                          
-    sage: print unify_point_name(reg.pstricks_code())
+    sage: print unify_point_name(reg.pstricks_code(pspict))
     \pscustom[hatchcolor=red,linestyle=none,hatchangle=-45,linecolor=black,fillstyle=vlines]{
     \psplot[linestyle=none]{1.00000000000000}{4.00000000000000}{sin(x + 1) + 2}
     \psplot[linestyle=none]{4.00000000000000}{1.00000000000000}{-(x - 2)^2 + 6}
@@ -160,3 +210,5 @@ def Test_SurfaceBetweenFunctions():
     <BLANKLINE>    
     \pstLineAB[linestyle=dashed,linecolor=black]{Xaaac}{Xaaad}
     """
+
+
