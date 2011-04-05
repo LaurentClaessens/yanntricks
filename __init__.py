@@ -352,7 +352,7 @@ def get_line(s,pos):
     """
     a=s.rfind("\n",0,pos)
     b=s.find("\n",pos,len(s))
-    return s[a:b]
+    return s[a+1:b]
 
 
 def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
@@ -413,7 +413,7 @@ def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
     if v1 == False or v2 == False :
         line1=get_line(s1,pos)
         line2=get_line(s2,pos)
-        justification="There is a difference ouside a number\n %s\n %s"%(ligne1,ligne2)
+        justification="There is a difference ouside a number\nExpected:\n%s\nGot:\n %s"%(line2,line1)
         return False,justification
     if abs(SR(v1)-SR(v2))<epsilon:
         justification=last_justification+"d(%s,%s)=%s\n"%(v1,v2,str(SR(v1)-SR(v2)))

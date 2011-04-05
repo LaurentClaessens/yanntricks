@@ -2070,10 +2070,18 @@ def extract_interval_information(curve):
         (None, None)
 
     """
+    # For parametric curves
     if "llamI" in dir(curve):
         return curve.llamI,curve.llamF
+    # for functions
     if "mx" in dir(curve):
         return curve.mx,curve.Mx
+    # for segments
+    if "I" in dir(curve) and "F" in dir(curve):
+        return 0,curve.length()
+    # for circles
+    if "angleI" in dir(curve):
+        return curve.angleI,curve.angleF
     return None,None
 
 class SurfaceBetweenParametricCurves(GraphOfAnObject):
