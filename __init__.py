@@ -1767,9 +1767,12 @@ class pspicture(object):
             code = r""" \makeatletter 
                 \@ifundefined{%s}           
                 {\newwrite{\%s}
-                \immediate\openout\%s=%s
                 }
-                \makeatother"""%(newwriteName(),newwriteName(),newwriteName(),self.interWriteFile)
+                \makeatother"""%(newwriteName(),newwriteName())
+                # I was adding the following line in the \@ifundefined :
+                # \immediate\openout\%s=%s
+                # Thus I had that more in the string formating :
+                # newwriteName(),self.interWriteFile)
             self.add_latex_line(code,"WRITE_AND_LABEL")
             code = r"""\makeatletter
                 \@ifundefined{phystricksAppendToFile}{
@@ -1849,7 +1852,6 @@ class pspicture(object):
         """
         # Make LaTeX write the value of the counter in a specific file
         interCounterId = "counter"+self.name+self.NomPointLibre.next()
-        print "J'ai le ID",interCounterId
         self.initialize_counter()
         self.add_write_line(interCounterId,r"\arabic{%s}"%counter_name)
         # Read the file and return the value

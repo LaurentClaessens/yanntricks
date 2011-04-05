@@ -4242,20 +4242,15 @@ class BoundingBox(object):
 
     EXAMPLE::
 
-        sage: pspict,fig = SinglePicture("DefinitionCartesiennes")
-        The result is on figure \ref{LabelFigDefinitionCartesiennes}.
-        \newcommand{\CaptionFigDefinitionCartesiennes}{<+Type your caption here+>}
-        \input{Fig_DefinitionCartesiennes.pstricks}
+        sage: pspict,fig = SinglePicture("DefinitionCartesiennes")  #random
         sage: P=Point(1,1)
         sage: P.put_mark(0.3,0,"$MMM$")
-        sage: print P.mark.bounding_box(pspict)
-        Warning: the auxiliary file seems not to exist. Compile your LaTeX file.
-        Warning: the auxiliary file seems not to exist. Compile your LaTeX file.
+        sage: bb = P.mark.bounding_box(pspict)  #random
+        sage: print bb
         (1.30000000000000,1),(1.30000000000000,1)
         sage: pspict.dilatation(2)
-        sage: print P.mark.bounding_box(pspict)
-        Warning: the auxiliary file seems not to exist. Compile your LaTeX file.
-        Warning: the auxiliary file seems not to exist. Compile your LaTeX file.
+        sage: bb = P.mark.bounding_box(pspict) #random
+        sage: print bb
         (1.15000000000000,1),(1.15000000000000,1)
 
     In the first call, the bounding box is not the same as in the second call.
