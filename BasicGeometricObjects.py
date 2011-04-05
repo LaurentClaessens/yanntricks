@@ -1875,18 +1875,49 @@ class Parameters(object):
             sage: p1=Parameters()
             sage: p1.color="red"
             sage: p1.symbol="A"
+
             sage: p2=Parameters()
             sage: p2.style="solid"
             sage: p2.symbol="B"
             sage: p2.filled()
             sage: p2.fill.color="cyan"
+
             sage: p2.add_to(p1)
             sage: print p1.color,p1.style,p1.symbol,p1._filled,p1.fill.color
             red solid A True cyan
         """
-        for attr in dir(parameters):
+        for attr in parameters.__dict__.keys():
             if parameters.__getattribute__(attr) in [None,False]:
                 parameters.__dict__[attr]=self.__getattribute__(attr)
+        parameters.fill=self.fill
+        parameters.hatch=self.hatch
+    def replace_to(self,parameters):
+        """
+        The same as :func:`add_to`, but replace also non-trivial parameters
+
+        EXAMPLES::
+
+            sage: p1=Parameters()
+            sage: p1.color="red"
+            sage: p1.symbol="A"
+
+            sage: p2=Parameters()
+            sage: p2.style="solid"
+            sage: p2.symbol="B"
+            sage: p2.filled()
+            sage: p2.fill.color="cyan"
+
+            sage: p2.replace_to(p1)
+            sage: print p1.color,p1.style,p1.symbol,p1._filled,p1.fill.color
+            red solid B True cyan
+
+        Notice that here `p1.style` is replace while it was not replaced by the function 
+        :func:`add_to`.
+        """
+        for attr in parameters.__dict__.keys():
+            candidate=self.__getattribute__(attr)
+            if candidate is not None :
+                parameters.__dict__[attr]=candidate
         parameters.fill=self.fill
         parameters.hatch=self.hatch
 
@@ -1974,10 +2005,10 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
         return self.bounding_box(pspict)
     def pstricks_code(self,pspict=None):
         a=[]
-        deb = numerical_approx(self.mx)     # Avoid "pi" in the pstricks code
-        fin = numerical_approx(self.Mx)
+        mx = numerical_approx(self.mx)     # Avoid "pi" in the pstricks code
+        Mx = numerical_approx(self.Mx)
 
-        surface=SurfaceBetweenParametricCurves(self.f1,self.f2)
+        surface=SurfaceBetweenParametricCurves(self.f1,self.f2,interval=(mx,Mx))
         self.parameters.add_to(surface.parameters)     # This line is essentially dedicated to the colors
 
         surface.low_segment=self.vertical_left
@@ -2056,10 +2087,6 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
     OPTIONAL ARGUMENTS :
     - ``(mx1,Mx1)`` - a tuple. Initial and final values of the parameter for the first curve.
 
-    - ``(mx2,Mx2)`` - a tuple. Initial and final values of the parameter for the first curve.
-        If these parameters are not given, consider the values of mx and Mx of curve1 and curve2
-        (if the latter are graphs).
-
     - ``reverse1`` - (default=False) if True, reverse the sense of curve1.
 
     - ``reverse2`` - (default=True) if True, reverse the sense of curve1.
@@ -2099,37 +2126,30 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
         segment I=Point(3,9) F=Point(5,125)
 
     The initial and final values of the parameters can be given in different ways.
-    If you provide one tupe (mx,Mx), this is taken for both curves::
+    The "normal" way is to provide the curves by triples `(curve,mx,Mx)`::
 
         sage: f1=phyFunction(x**2)
         sage: f2=phyFunction(x)
-        sage: curve=SurfaceBetweenParametricCurves(f1,f2,(1,2))
+        sage: curve=SurfaceBetweenParametricCurves((f1,1,2),(f2,3,4))
         sage: print curve.mx1,curve.Mx1,curve.mx2,curve.Mx2
-        1 2 1 2
-
-    If you provides two tuples (mx1,Mx1),(mx2,Mx2), these are taken
-    as you believe::
-
-        sage: f1=phyFunction(x**2)
-        sage: f2=phyFunction(x)
-        sage: region=SurfaceBetweenParametricCurves(f1,f2,(1,2),(3,4))
-        sage: print region.mx1,region.Mx1,region.mx2,region.Mx2
         1 2 3 4
 
-    The explicit data of an interval erases an interval that could be furnished
-    by a curve ::
+    If one of the curve is provided without interval, the latter will
+    be deduced::
 
-        sage: f1=phyFunction(x**2).graph(7,8)
+        sage: f1=phyFunction(x**2).graph(1,2)
         sage: f2=phyFunction(x)
-        sage: region=SurfaceBetweenParametricCurves(f1,f2,(1,2),(3,4))
-        sage: print region.mx1,region.Mx1,region.mx2,region.Mx2
+        sage: curve=SurfaceBetweenParametricCurves(f1,(f2,3,4))
+        sage: print curve.mx1,curve.Mx1,curve.mx2,curve.Mx2
         1 2 3 4
 
-        sage: f1=phyFunction(x**2)
-        sage: f2=phyFunction(x).graph(5,6)
-        sage: region=SurfaceBetweenParametricCurves(f1,f2,(1,2))
-        sage: print region.mx1,region.Mx1,region.mx2,region.Mx2
-        1 2 5 6
+    If the optional argument `interval` is provided, it erases the other intervals::
+
+        sage: f1=phyFunction(x**2).graph(1,2)
+        sage: f2=phyFunction(x)
+        sage: curve=SurfaceBetweenParametricCurves(f1,(f2,3,4),interval=(7,8))
+        sage: print curve.mx1,curve.Mx1,curve.mx2,curve.Mx2
+        7 8 7 8
 
     NOTE:
     If the two curves make intersections, the result could be messy.
@@ -2138,44 +2158,48 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
     .. image:: Picture_FIGLabelFigBetweenParametricPICTBetweenParametric-for_eps.png
 
     """
-    def __init__(self,curve1,curve2,interval1=None,interval2=None,reverse1=False,reverse2=True):
+    def __init__(self,curve1,curve2,interval=None,reverse1=False,reverse2=True):
         GraphOfAnObject.__init__(self,self)
+
+        curve=[curve1,curve2]
+        self.curve=[None,None]
+        self.mx=[None,None]
+        self.Mx=[None,None]
 
         self.reverse1=reverse1
         self.reverse2=reverse2
 
-        if interval1:
-            self.mx1=interval1[0]
-            self.Mx1=interval1[1]
-        if interval2:
-            self.mx2=interval2[0]
-            self.Mx2=interval2[1]
+        for i in [0,1]:
+            if isinstance(curve[i],tuple) :
+                self.mx[i]=curve[i][1]
+                self.Mx[i]=curve[i][2]
+                self.curve[i]=EnsureParametricCurve(curve[i][0]).graph(self.mx[i],self.Mx[i])
+            else :
+                self.mx[i],self.Mx[i]=extract_interval_information(curve[i])
+                self.curve[i]=EnsureParametricCurve(curve[i]).graph(self.mx[i],self.Mx[i])
 
-        if not interval1:
-            self.mx1,self.Mx1=extract_interval_information(curve1)
-        if not interval2:
-            self.mx2,self.Mx2=extract_interval_information(curve2)
+            if self.mx[i] == None :
+                raise ValueError, "Cannot determine the initial or final value of the parameter for %s"%str(curve[i])
 
-        if self.mx2 == None :
-            self.mx2 = self.mx1
-            self.Mx2 = self.Mx1
+            if "parameters" in dir(curve[i]):
+                curve[i].parameters.replace_to(self.curve[i].parameters)
 
-        if self.mx1 == None :
-            raise ValueError, "Cannot determine the initial or final value of the parameter for %s"%str(curve1)
+            if interval:
+                self.mx[i]=interval[0]
+                self.Mx[i]=interval[1]
 
-        self.curve1=EnsureParametricCurve(curve1).graph(self.mx1,self.Mx1)
-        self.curve2=EnsureParametricCurve(curve2).graph(self.mx2,self.Mx2)
-
-        if "parameters" in dir(curve1):
-            curve1.parameters.add_to(self.curve1.parameters)
-        if "parameters" in dir(curve2):
-            curve2.parameters.add_to(self.curve2.parameters)
+        self.curve1=self.curve[0]
+        self.curve2=self.curve[1]
+        self.mx1=self.mx[0]
+        self.mx2=self.mx[1]
+        self.Mx1=self.Mx[0]
+        self.Mx2=self.Mx[1]
 
         self.low_segment=Segment(self.curve2.get_point(self.mx2,advised=False),self.curve1.get_point(self.mx1,advised=False))
         self.up_segment=Segment(self.curve1.get_point(self.Mx1,advised=False),self.curve2.get_point(self.Mx2,advised=False))
 
-        self.add_option("fillstyle=vlines,linestyle=none")  
-        self.parameters.color=None              
+        self.add_option("fillstyle=vlines,linestyle=none") 
+        self.parameters.color=None       
 
     def bounding_box(self,pspict=None):
         bb=BoundingBox()
@@ -2186,7 +2210,7 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
         return self.bounding_box(pspict)
     def pstricks_code(self,pspict=None):
         a=[]
-        
+       
         c1=self.curve1.graph(self.mx1,self.Mx1)
         c2=self.curve2.graph(self.mx2,self.Mx2)
         if self.reverse1:
@@ -2246,7 +2270,7 @@ class CustomSurface(GraphOfAnObject):
     - ``*args`` - la tuple of lines like segments, functions, parametric curves.
 
     EXAMPLE:
-    
+  
     The following describes the surface between the circle of radius 1 and 
     the square of length 1::
     

@@ -5,56 +5,6 @@ This file contains only doctests with output too long or not sufficiently intere
 """
 
 
-
-def Test_SurfaceBetweenParametricCurve():
-    r"""
-    sage: pspict,fig = SinglePicture("IntBoutCercle")
-    The result is on figure \ref{LabelFigIntBoutCercle}.
-    \newcommand{\CaptionFigIntBoutCercle}{<+Type your caption here+>}
-    \input{Fig_IntBoutCercle.pstricks}
-    sage: C=Point(0,1)
-    sage: alpha=0
-    sage: circle = Circle(C,1)
-    sage: c1=circle.graph(-90,alpha)
-    sage: c2=circle.graph(alpha,270)
-    sage: c1.parameters.color="red"
-    sage: c2.parameters.color="blue"
-    sage: P=circle.get_point(alpha)
-    sage: P.put_mark(0.3,-45,"$P$")
-    sage: s1=Segment(Point(0,0),P)
-    sage: segment=s1.dilatation(2)
-    sage: segment.parameters.color="red"
-    sage: surface=SurfaceBetweenParametricCurves(s1,circle,(0,s1.length()),(-pi/2,radian(alpha)))
-    sage: surface.parameters.color="cyan"
-    sage: surface.curve1.parameters.style="solid"
-    sage: surface.curve1.parameters.color="red"
-    sage: surface.curve2.parameters=surface.curve1.parameters
-    sage: print surface.pstricks_code(pspict)
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){aabc}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){aabd}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,0){aaba}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,0){aabb}
-    \pscustom[hatchcolor=cyan,linestyle=none,fillcolor=cyan,linecolor=cyan,fillstyle=vlines]{
-    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{0.000000000000000}{1.41421356237310}{1/2*sqrt(2)*t | 1/2*sqrt(2)*t }
-    <BLANKLINE>
-    \pstLineAB[linestyle=solid,linecolor=black]{aabc}{aabd}
-    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{-1.57079632679490}{0.000000000000000}{cos(-1/2*3.1415 - t) | sin(-1/2*3.1415 - t) + 1 }
-    <BLANKLINE>
-    \pstLineAB[linestyle=solid,linecolor=black]{aaba}{aabb}
-    }
-    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=red]{0.000000000000000}{1.41421356237310}{1/2*sqrt(2)*t | 1/2*sqrt(2)*t }
-    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=red]{-1.57079632679490}{0.000000000000000}{cos(t) | sin(t) + 1 }
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,0){aaba}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,0){aabb}
-    <BLANKLINE>
-    \pstLineAB[linestyle=solid,linecolor=black]{aaba}{aabb}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){aabc}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){aabd}
-    <BLANKLINE>
-    \pstLineAB[linestyle=solid,linecolor=black]{aabc}{aabd}
-    """
-
-
 def Test_Segment():
     """
     sage: v = Segment(Point(0,0),Point(2,0)).get_normal_vector()
@@ -194,101 +144,8 @@ def Test_SurfaceBetweenFunctions_second():
     \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{0.000000000000000}{6.28318530717959}{t | sin(t) + 3 }
     <BLANKLINE>
     \pstLineAB[linestyle=none,linecolor=black]{Xaaaa}{Xaaab}
-    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{0.000000000000000}{6.28318530717959}{2*3.1415 - t | cos(2*3.1415 - t) }
+    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{0.000000000000000}{6.28318530717959}{-t + 6.28318530717959 | cos(-t + 6.28318530717959) }
     <BLANKLINE>
     \pstLineAB[linestyle=none,linecolor=black]{Xaaac}{Xaaad}
     }
-    """
-
-def Test_SurfaceBetweenFunctions_third():
-    r"""
-    sage: pspict,fig = SinglePicture("TesTSurfaceBetweenFunctionthird")
-    The result is on figure \ref{LabelFigTesTSurfaceBetweenFunctionthird}.
-    \newcommand{\CaptionFigTesTSurfaceBetweenFunctionthird}{<+Type your caption here+>}
-    \input{Fig_TesTSurfaceBetweenFunctionthird.pstricks}
-    sage: surf=SurfaceBetweenFunctions(sin(x)+3,cos(x),0,2*pi)
-    sage: surf.parameters.color="green"
-    sage: surf.f1.parameters.color="red"
-    sage: surf.f1.parameters.style="solid"
-    sage: surf.vertical_left.parameters.style="dashed"
-    sage: surf.vertical_left.parameters.color="brown"
-    sage: print unify_point_name(surf.pstricks_code(pspict))
-       \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](6.28318530717959,3.00000000000000){Xaaaa}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](6.28318530717959,1.00000000000000){Xaaab}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,3.00000000000000){Xaaac}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,1.00000000000000){Xaaad}
-    \pscustom[hatchcolor=green,linestyle=none,fillcolor=green,linecolor=green,fillstyle=vlines]{
-    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{0.000000000000000}{6.28318530717959}{t | sin(t) + 3 }
-    <BLANKLINE>
-    \pstLineAB[linestyle=none,linecolor=black]{Xaaaa}{Xaaab}
-    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{0.000000000000000}{6.28318530717959}{2*3.1415 - t | cos(2*3.1415 - t) }
-    <BLANKLINE>
-    \pstLineAB[linestyle=dashed,linecolor=brown]{Xaaac}{Xaaad}
-    }
-    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{0.000000000000000}{6.28318530717959}{t | sin(t) + 3 }
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,3.00000000000000){Xaaac}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,1.00000000000000){Xaaad}
-    <BLANKLINE>
-    \pstLineAB[linestyle=dashed,linecolor=brown]{Xaaac}{Xaaad}
-    \psplot[linestyle=solid,plotpoints=100,linecolor=red]{0.000000000000000}{6.28318530717959}{sin(x) + 3}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,3.00000000000000){Xaaac}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,1.00000000000000){Xaaad}
-    <BLANKLINE>
-    \pstLineAB[linestyle=dashed,linecolor=brown]{Xaaac}{Xaaad}
-    """
-
-def Test_SurfaceBetweenFunctions():
-    r"""
-    sage: pspict,fig = SinglePicture("TesTSurfaceBetweenFunction")
-    The result is on figure \ref{LabelFigTesTSurfaceBetweenFunction}.
-    \newcommand{\CaptionFigTesTSurfaceBetweenFunction}{<+Type your caption here+>}
-    \input{Fig_TesTSurfaceBetweenFunction.pstricks}
-    sage: a=1
-    sage: b=4
-    sage: m=float(b+a)/2
-    sage: x=var('x')
-    sage: f=phyFunction(sin(x+1)+2)
-    sage: g=phyFunction(-(x-2)**(2)+6)                                                                                                             
-    sage: reg=SurfaceBetweenFunctions(f,g,a,b)                                                                                                      
-    sage: reg.parameters.hatched()                                                                                                                  
-    sage: reg.parameters.hatch.color="red"                                                                                                          
-    sage: reg.vertical_left.parameters.style="dashed"                                                                                               
-    sage: reg.vertical_right.parameters.style="solid"                       
-    sage: reg.f1.parameters.style="solid"  
-    sage: reg.f1.parameters.color="blue"       
-    sage: reg.f2.parameters.style="dotted"         
-    sage: reg.f2.parameters.color="blue"                                                                                                          
-    sage: print unify_point_name(reg.pstricks_code(pspict))
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](4.00000000000000,1.04107572533686){Xaaaa}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](4.00000000000000,2.00000000000000){Xaaab}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,2.90929742682568){Xaaac}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,5.00000000000000){Xaaad}
-    \pscustom[hatchcolor=red,linestyle=none,hatchangle=-45,linecolor=black,fillstyle=vlines]{
-    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{1.00000000000000}{4.00000000000000}{t | sin(t + 1) + 2 }
-    <BLANKLINE>
-    \pstLineAB[linestyle=solid,linecolor=black]{Xaaaa}{Xaaab}
-    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{1.00000000000000}{4.00000000000000}{-t + 5 | -(t - 3)^2 + 6 }
-    <BLANKLINE>
-    \pstLineAB[linestyle=dashed,linecolor=black]{Xaaac}{Xaaad}
-    }
-    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{1.00000000000000}{4.00000000000000}{t | sin(t + 1) + 2 }
-    \parametricplot[plotstyle=curve,linestyle=dotted,plotpoints=1000,linecolor=blue]{1.00000000000000}{4.00000000000000}{t | -(t - 2)^2 + 6 }
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,2.90929742682568){Xaaac}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,5.00000000000000){Xaaad}
-    <BLANKLINE>
-    \pstLineAB[linestyle=dashed,linecolor=black]{Xaaac}{Xaaad}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](4.00000000000000,1.04107572533686){Xaaaa}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](4.00000000000000,2.00000000000000){Xaaab}
-    <BLANKLINE>
-    \pstLineAB[linestyle=solid,linecolor=black]{Xaaaa}{Xaaab}
-    \psplot[linestyle=solid,plotpoints=100,linecolor=blue]{1.00000000000000}{4.00000000000000}{sin(x + 1) + 2}
-    \psplot[linestyle=dotted,plotpoints=100,linecolor=blue]{1.00000000000000}{4.00000000000000}{-(x - 2)^2 + 6}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,2.90929742682568){Xaaac}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,5.00000000000000){Xaaad}
-    <BLANKLINE>
-    \pstLineAB[linestyle=dashed,linecolor=black]{Xaaac}{Xaaad}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](4.00000000000000,1.04107572533686){Xaaaa}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](4.00000000000000,2.00000000000000){Xaaab}
-    <BLANKLINE>
-    \pstLineAB[linestyle=solid,linecolor=black]{Xaaaa}{Xaaab}
     """

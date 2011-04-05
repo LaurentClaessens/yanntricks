@@ -334,6 +334,27 @@ def number_at_position(s,n):
     # the string is an unicode. SR does not work with unicode
     return str(s[first:last]),first,last
 
+def get_line(s,pos):
+    """
+    return the line containing `s[pos]`
+
+    INPUT:
+
+    - ``s`` - a srting.
+
+    - ``pos`` - integer.
+
+    EXAMPLES:
+
+        sage: s="Hello\n how do you do ? \n See you"
+        sage: print get_line(s,10)
+        how do you do ?
+    """
+    a=s.rfind("\n",0,pos)
+    b=s.find("\n",pos,len(s))
+    return s[a:b]
+
+
 def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
     r"""
     Compare two strings. 
@@ -365,8 +386,6 @@ def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
         sage: string_number_comparison(s1,s2)
         (False, 'Distance between -0.2 and -0.3 is larger than 0.01.')
 
-
-
     In the following the comparison fails due to the second number::
 
         sage: s1="Point(-0.02,1)"
@@ -391,39 +410,15 @@ def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
     v1,first1,last1=number_at_position(s1,pos)
     v2,first2,last2=number_at_position(s2,pos)
 
-    #print "343 j'ai trouvé",v1,"dans"
-    #print "---"
-    #print s1
-    #print "---"
-    #print "343 j'ai trouvé",v2,"dans"
-    #print "---"
-    #print s2
-    #print "---"
-
-
     if v1 == False or v2 == False :
-        return False,"There is a difference outside a number"
+        line1=get_line(s1,pos)
+        line2=get_line(s2,pos)
+        justification="There is a difference ouside a number\n %s\n %s"%(ligne1,ligne2)
+        return False,justification
     if abs(SR(v1)-SR(v2))<epsilon:
         justification=last_justification+"d(%s,%s)=%s\n"%(v1,v2,str(SR(v1)-SR(v2)))
-
         t1=s1[:first1]+v2+s1[last1:]
-
-        #print "différence acceptée",v1,v2
-        #print "je vais concaténer"
-        #print s1
-        #print s1[:first1]
-        #print v2
-        #print s1[last1:]
-
         t2=s2
-        
-        #print "371 récurence, je vais comparer"
-        #print "---"
-        #print t1
-        #print "---"
-        #print t2
-        #print "---"
-
         return string_number_comparison(t1,t2,epsilon=epsilon,last_justification=justification)
     justification=last_justification+"Distance between %s and %s is larger than %s."%(str(v1),str(v2),str(epsilon))
     return False,justification
