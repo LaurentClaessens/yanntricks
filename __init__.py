@@ -1593,7 +1593,8 @@ class pspicture(object):
         self.pstricks_code_list = []
         self.specific_needs = ""    # See the class PspictureToOtherOutputs
         self.newwriteDone = False
-        self.interWriteFile = newwriteName()+".pstricks.aux"
+        #self.interWriteFile = newwriteName()+".pstricks.aux"
+        self.interWriteFile = "phystricks.aux"
         self.NomPointLibre = PointsNameList()
         self.record_marks=[]
         self.record_bounding_box=[]
@@ -1770,6 +1771,18 @@ class pspicture(object):
                 }
                 \makeatother"""%(newwriteName(),newwriteName(),newwriteName(),self.interWriteFile)
             self.add_latex_line(code,"WRITE_AND_LABEL")
+            code = r"""\makeatletter
+                \@ifundefined{phystricksAppendToFile}{
+                \newcommand{\phystricksAppendToFile}[1]{
+                \CatchFileDef \phystricksContent {%s}{}
+                \immediate\openout\%s=%s
+                \immediate\write\%s{\phystricksContent}
+                \immediate\write\%s{#1}
+                \immediate\closeout\%s
+                }
+                }
+                \makeatother"""%(self.interWriteFile,newwriteName(),self.interWriteFile,newwriteName(),newwriteName(),newwriteName())
+            self.add_latex_line(code,"WRITE_AND_LABEL")
             self.newwriteDone = True
     def initialize_counter(self):
         if not self.counterDone:
@@ -1793,19 +1806,40 @@ class pspicture(object):
         r"""Writes in the standard auxiliary file \newwrite an identifier and a value separated by a «:»"""
         interWriteName = newwriteName()
         self.initialize_newwrite()
-        self.add_latex_line(r"\immediate\write\%s{%s:%s:}"%(interWriteName,Id,value),"WRITE_AND_LABEL")
-    def get_Id_value(self,Id,counter_name="NO NAME ?",default_value=0):
+        #self.add_latex_line(r"\immediate\write\%s{%s:%s:}"%(interWriteName,Id,value),"WRITE_AND_LABEL")
+        self.add_latex_line(r"\phystricksAppendToFile{%s:%s-}"%(Id,value),"WRITE_AND_LABEL")
+
+    @lazy_attribute
+    def id_values_dict(self):
+        """
+        Build the dictionary of stored values in the auxiliary file
+        and rewrite that file.
+        """
+        d={}
         try :
-            f=open(self.interWriteFile)
+            f=open(self.interWriteFile,"r")
         except IOError :
             print "Warning: the auxiliary file seems not to exist. Compile your LaTeX file."
-            return default_value
-        text = f.read().replace('\n','').split(":")
-        try:
-            return text[text.index(Id)+1]           
-        except ValueError :
-            print "Warning: the auxiliary file does not contain the id «%s». Compile your LaTeX file."%Id
-            return default_value
+            return d
+        idlist = f.read().replace('\n','').replace(' ','').replace('\\par','').split("-")
+        f.close()
+
+        for els in idlist[0:-1]:
+            key=els.split(":")[0]
+            value=els.split(':')[1]
+            d[key]=value
+
+        f=open(self.interWriteFile,"w")
+        for k in d.keys():
+            f.write("%s:%s-"%(k,d[k]))
+        f.close()
+        return d
+
+    def get_Id_value(self,Id,counter_name="NO NAME ?",default_value=0):
+            if Id not in self.id_values_dict.keys():
+                print "Warning: the auxiliary file does not contain the id «%s». Compile your LaTeX file."%Id
+                return default_value
+            return self.id_values_dict[Id]
     def get_counter_value(self,counter_name,default_value=0):
         """
         return the value of the (LaTeX) counter <name> at this point of the LaTeX file 

@@ -1837,7 +1837,7 @@ class HatchParameters(object):
 
 class Parameters(object):
     def __init__(self):
-        self.color = None
+        self.color = None           # I take into account in SurfaceBetweenParametricCurves that the default values are None
         self.symbol = None
         self.style = None
         self.fill=FillParameters()
@@ -2230,14 +2230,17 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
         self.parameters.add_to(custom.parameters)     # This line is essentially dedicated to the colors
         a.append(custom.pstricks_code())
 
-        if self.curve1.parameters.style != "none":
-            a.append(self.curve1.pstricks_code())
-        if self.curve2.parameters.style != "none":
-            a.append(self.curve2.pstricks_code())
-        if self.low_segment.parameters.style != "none" :
-            a.append(self.low_segment.pstricks_code())
-        if self.up_segment.parameters.style != "none" :
-            a.append(self.up_segment.pstricks_code())
+        if self.curve1.parameters.style is not None :
+            a.append(self.curve1.pstricks_code(pspict))
+
+        if self.curve2.parameters.style is not None :
+            a.append(self.curve2.pstricks_code(pspict))
+
+        if self.low_segment.parameters.style is not None :
+            a.append(self.low_segment.pstricks_code(pspict))
+
+        if self.up_segment.parameters.style is not None :
+            a.append(self.up_segment.pstricks_code(pspict))
         return "\n".join(a)
 
 class SurfaceUnderFunction(SurfaceBetweenFunctions):
