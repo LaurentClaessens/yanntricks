@@ -494,7 +494,9 @@ def newwriteName():
     OUTPUT:
     A string containing "writeOf"+something_based_on_the_script_name
     """
+    raise DeprecationWarning,"We use 'writeOfphystricks' as name everywhere"
     return "writeOf"+latinize(sysargvzero)
+
 def counterName():
     r"""
     This function provides the name of the counter. 
@@ -1199,6 +1201,7 @@ class figure(object):
         self.separator_list=SeparatorList()
         self.separator_list.new_separator("ENTETE FIGURE")
         self.separator_list.new_separator("WRITE_AND_LABEL")
+        self.separator_list.new_separator("CLOSE_WRITE_AND_LABEL")
         self.separator_list.new_separator("BEFORE SUBFIGURES")
         self.separator_list.new_separator("SUBFIGURES")
         self.separator_list.new_separator("AFTER SUBFIGURES")
@@ -1599,6 +1602,7 @@ class pspicture(object):
         self.newwriteDone = False
         #self.interWriteFile = newwriteName()+".pstricks.aux"
         self.interWriteFile = "phystricks.aux"
+        self.newwriteName = "writeOfphystricks"
         self.NomPointLibre = PointsNameList()
         self.record_marks=[]
         self.record_bounding_box=[]
@@ -1628,6 +1632,7 @@ class pspicture(object):
         self.separator_list.new_separator("ENTETE PSPICTURE")
         self.separator_list.new_separator("BEFORE PSPICTURE")
         self.separator_list.new_separator("WRITE_AND_LABEL")
+        self.separator_list.new_separator("CLOSE_WRITE_AND_LABEL")
         self.separator_list.new_separator("BEGIN PSPICTURE")        # This separator is supposed to contain only \begin{pspicture}
         self.separator_list.new_separator("GRID")
         self.separator_list.new_separator("AXES")
@@ -1772,24 +1777,30 @@ class pspicture(object):
                 \@ifundefined{%s}           
                 {\newwrite{\%s}
                 }
-                \makeatother"""%(newwriteName(),newwriteName())
-                # I was adding the following line in the \@ifundefined :
-                # \immediate\openout\%s=%s
-                # Thus I had that more in the string formating :
-                # newwriteName(),self.interWriteFile)
+                \makeatother"""%(self.newwriteName,self.newwriteName)
             self.add_latex_line(code,"WRITE_AND_LABEL")
-            code = r"""\makeatletter
-                \@ifundefined{phystricksAppendToFile}{
-                \newcommand{\phystricksAppendToFile}[1]{
-                \CatchFileDef \phystricksContent {%s}{\endlinechar=10 }
+            code="""\CatchFileDef \phystricksContent {%s}{\endlinechar=10 }
                 \immediate\openout\%s=%s
                 \immediate\write\%s{\phystricksContent}
-                \immediate\write\%s{#1}
-                \immediate\closeout\%s
-                }
-                }
-                \makeatother"""%(self.interWriteFile,newwriteName(),self.interWriteFile,newwriteName(),newwriteName(),newwriteName())
+                """%(self.interWriteFile,self.newwriteName,self.interWriteFile,self.newwriteName)
             self.add_latex_line(code,"WRITE_AND_LABEL")
+
+            code=r"""\immediate\closeout\%s"""%self.newwriteName
+            self.add_latex_line(code,"CLOSE_WRITE_AND_LABEL")
+
+            #code = r"""\makeatletter
+            #    \@ifundefined{phystricksAppendToFile}{
+            #    \newcommand{\phystricksAppendToFile}[1]{
+            #    \CatchFileDef \phystricksContent {%s}{\endlinechar=10 }
+            #    \immediate\openout\%s=%s
+            #    \immediate\write\%s{\phystricksContent}
+            #    \immediate\write\%s{#1}
+            #    \immediate\closeout\%s
+            #    }
+            #    }
+            #    \makeatother"""%(self.interWriteFile,newwriteName(),self.interWriteFile,newwriteName(),newwriteName(),newwriteName())
+            #self.add_latex_line(code,"WRITE_AND_LABEL")
+
             self.newwriteDone = True
 
             # Now we check that the file phystricks.aux exists. If not, we create it.
@@ -1818,10 +1829,10 @@ class pspicture(object):
             self.newlengthDone = True
     def add_write_line(self,Id,value):
         r"""Writes in the standard auxiliary file \newwrite an identifier and a value separated by a «:»"""
-        interWriteName = newwriteName()
+        interWriteName = self.newwriteName
         self.initialize_newwrite()
-        #self.add_latex_line(r"\immediate\write\%s{%s:%s:}"%(interWriteName,Id,value),"WRITE_AND_LABEL")
-        self.add_latex_line(r"\phystricksAppendToFile{%s:%s-}"%(Id,value),"WRITE_AND_LABEL")
+        self.add_latex_line(r"\immediate\write\%s{%s:%s-}"%(interWriteName,Id,value),"WRITE_AND_LABEL")
+        #self.add_latex_line(r"\phystricksAppendToFile{%s:%s-}"%(Id,value),"WRITE_AND_LABEL")
 
     @lazy_attribute
     def id_values_dict(self):
