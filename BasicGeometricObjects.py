@@ -1952,18 +1952,10 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
         sage: surf=SurfaceBetweenFunctions(sin(x)+3,cos(x),0,2*pi)
         sage: surf.parameters.color="blue"
 
-    If the style of the functions is not set, the functions are not drawn at all.
-    In the following example you see that the function ``f1`` is not drawn. In particular, the color red is nowhere::
-
-        sage: surf.f1.parameters.color="red"
-        sage: print "red" in surf.pstricks_code()
-        False
-
     If you want the function ``f1`` to be red without changing the color of the surface, you have to change
     the color AND the style::
 
         sage: surf.f1.parameters.color="red"
-        sage: surf.f1.parameters.style="solid"
         sage: print "red" in surf.pstricks_code(),"solid" in surf.pstricks_code()
         True True
 
@@ -2206,7 +2198,7 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
         self.low_segment=Segment(self.curve2.get_point(self.mx2,advised=False),self.curve1.get_point(self.mx1,advised=False))
         self.up_segment=Segment(self.curve1.get_point(self.Mx1,advised=False),self.curve2.get_point(self.Mx2,advised=False))
 
-        self.add_option("fillstyle=vlines,linestyle=none") 
+        self.add_option("fillstyle=vlines") 
         self.parameters.color=None       
 
     def bounding_box(self,pspict=None):
@@ -2230,17 +2222,10 @@ class SurfaceBetweenParametricCurves(GraphOfAnObject):
         self.parameters.add_to(custom.parameters)     # This line is essentially dedicated to the colors
         a.append(custom.pstricks_code())
 
-        if self.curve1.parameters.style is not None :
-            a.append(self.curve1.pstricks_code(pspict))
-
-        if self.curve2.parameters.style is not None :
-            a.append(self.curve2.pstricks_code(pspict))
-
-        if self.low_segment.parameters.style is not None :
-            a.append(self.low_segment.pstricks_code(pspict))
-
-        if self.up_segment.parameters.style is not None :
-            a.append(self.up_segment.pstricks_code(pspict))
+        a.append(self.curve1.pstricks_code(pspict))
+        a.append(self.curve2.pstricks_code(pspict))
+        a.append(self.low_segment.pstricks_code(pspict))
+        a.append(self.up_segment.pstricks_code(pspict))
         return "\n".join(a)
 
 class SurfaceUnderFunction(SurfaceBetweenFunctions):

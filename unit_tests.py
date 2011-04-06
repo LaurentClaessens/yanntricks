@@ -125,27 +125,3 @@ def Test_Measure():
     \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,-0.100000000000000){Xaaac}
     \ncline[linestyle=solid,linecolor=black]{->}{Xaaaa}{Xaaac}
     """
-
-    
-def Test_SurfaceBetweenFunctions_second():
-    r"""
-    sage: pspict,fig = SinglePicture("TesTSurfaceBetweenFunctionsecond")
-    The result is on figure \ref{LabelFigTesTSurfaceBetweenFunctionsecond}.
-    \newcommand{\CaptionFigTesTSurfaceBetweenFunctionsecond}{<+Type your caption here+>}
-    \input{Fig_TesTSurfaceBetweenFunctionsecond.pstricks}
-    sage: surf=SurfaceBetweenFunctions(sin(x)+3,cos(x),0,2*pi)
-    sage: surf.parameters.color="green"
-    sage: print unify_point_name(surf.pstricks_code(pspict))
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](6.28318530717959,3.00000000000000){Xaaaa}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](6.28318530717959,1.00000000000000){Xaaab}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,3.00000000000000){Xaaac}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,1.00000000000000){Xaaad}
-    \pscustom[hatchcolor=green,linestyle=none,fillcolor=green,linecolor=green,fillstyle=vlines]{
-    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{0.000000000000000}{6.28318530717959}{t | sin(t) + 3 }
-    <BLANKLINE>
-    \pstLineAB[linestyle=none,linecolor=black]{Xaaaa}{Xaaab}
-    \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{0.000000000000000}{6.28318530717959}{-t + 6.28318530717959 | cos(-t + 6.28318530717959) }
-    <BLANKLINE>
-    \pstLineAB[linestyle=none,linecolor=black]{Xaaac}{Xaaad}
-    }
-    """

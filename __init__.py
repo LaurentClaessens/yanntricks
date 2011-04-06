@@ -53,6 +53,8 @@ KNOWN BUGS
     - The figure "Custon units on the Y axe". The distance between the marks and the axe is not correct.
 
     - The figure "A single axe". The bounding box is too small when compiled with pdflatex.
+
+    - The figure "ExempleArcParam". The numbers on the axes are cut in the pdflatex version.
     
     - The figure "Some points on a parametric curve" is not centred. Idem dans GeomAnal.
 
@@ -60,12 +62,13 @@ KNOWN BUGS
         are computed when the content of the pspicture is known. It is thus nonsense to write something like
         `pspict.DrawGraph(pspict.axes)`
 
+
 """
 
 #from __future__ import division
 from sage.all import *
 import codecs
-import math, sys
+import math, sys, os
 from phystricks.BasicGeometricObjects import *
 from phystricks.SmallComputations import *
 
@@ -335,7 +338,7 @@ def number_at_position(s,n):
     return str(s[first:last]),first,last
 
 def get_line(s,pos):
-    """
+    r"""
     return the line containing `s[pos]`
 
     INPUT:
@@ -344,11 +347,12 @@ def get_line(s,pos):
 
     - ``pos`` - integer.
 
-    EXAMPLES:
+    EXAMPLES::
 
         sage: s="Hello\n how do you do ? \n See you"
         sage: print get_line(s,10)
         how do you do ?
+
     """
     a=s.rfind("\n",0,pos)
     b=s.find("\n",pos,len(s))
@@ -1777,7 +1781,7 @@ class pspicture(object):
             code = r"""\makeatletter
                 \@ifundefined{phystricksAppendToFile}{
                 \newcommand{\phystricksAppendToFile}[1]{
-                \CatchFileDef \phystricksContent {%s}{}
+                \CatchFileDef \phystricksContent {%s}{\endlinechar=10 }
                 \immediate\openout\%s=%s
                 \immediate\write\%s{\phystricksContent}
                 \immediate\write\%s{#1}
@@ -1787,6 +1791,13 @@ class pspicture(object):
                 \makeatother"""%(self.interWriteFile,newwriteName(),self.interWriteFile,newwriteName(),newwriteName(),newwriteName())
             self.add_latex_line(code,"WRITE_AND_LABEL")
             self.newwriteDone = True
+
+            # Now we check that the file phystricks.aux exists. If not, we create it.
+            exist_aux = os.path.isfile(self.interWriteFile)
+            if not exist_aux:
+                f=open(self.interWriteFile,"w")
+                f.write("a:b-")
+                f.close()
     def initialize_counter(self):
         if not self.counterDone:
             code = r""" \makeatletter 
@@ -1834,7 +1845,7 @@ class pspicture(object):
 
         f=open(self.interWriteFile,"w")
         for k in d.keys():
-            f.write("%s:%s-"%(k,d[k]))
+            f.write("%s:%s-\n"%(k,d[k]))
         f.close()
         return d
 
