@@ -2245,7 +2245,6 @@ class SurfaceUnderFunction(SurfaceBetweenFunctions):
     EXAMPLES:
 
     .. literalinclude:: phystricksSurfaceFunction.py
-
     .. image:: Picture_FIGLabelFigSurfaceFunctionPICTSurfaceFunction-for_eps.png
 
     """
@@ -2257,6 +2256,44 @@ class SurfaceUnderFunction(SurfaceBetweenFunctions):
         SurfaceBetweenFunctions.__init__(self,self.f,f2,mx,Mx)
     def __str__(self):
         return "SurfaceUnderFunction %s x:%s->%s"%(self.f,str(self.mx),str(self.Mx))
+
+class Polygon(GraphOfAnObject):
+    """
+    represent a polygon.
+
+    .. literalinclude:: phystricksPolygone.py
+    .. image:: Picture_FIGLabelFigExPolygonePICTExPolygone-for_eps.png
+    """
+    def __init__(self,*args):
+        GraphOfAnObject.__init__(self,self)
+        self.points_list=list(args)
+        self.edges_list=[]
+        self.edge=Segment(Point(0,0),Point(1,1))    # This is an arbitrary segment that only serves to have a
+                                                    # "model" for the parameters.
+        for i in range(len(self.points_list)-1):
+            segment=Segment(self.points_list[i],self.points_list[i+1])
+            self.edges_list.append(segment)
+        final_segment=Segment(self.points_list[-1],self.points_list[0])
+        self.edges_list.append(final_segment)
+        for edge in self.edges_list:
+            edge.parameters=self.edge.parameters
+    def math_bounding_box(self,pspict=None):
+        bb=BoundingBox()
+        for P in self.points_list:
+            bb.append(P,pspict)
+        return bb
+    def bounding_box(self,pspict=None):
+        return self.math_bounding_box(pspict)
+    def pstricks_code(self,pspict=None):
+        a=[]
+        custom=CustomSurface(tuple(self.edges_list))
+        custom.parameters=self.parameters
+        a.append(custom.pstricks_code(pspict))
+
+        for edge in self.edges_list:
+            a.append(edge.pstricks_code(pspict))
+        return "\n".join(a)
+
 
 class CustomSurface(GraphOfAnObject):
     """
@@ -2294,6 +2331,9 @@ class CustomSurface(GraphOfAnObject):
     """
     def __init__(self,*args):
         GraphOfAnObject.__init__(self,self)
+        # len(args)==1 when doing CustomSurface(list) where `list` is  a list.
+        if len(args)==1:
+            args=args[0]
         self.graphList=list(args)
         self.add_option("fillstyle=vlines,linestyle=none")  
     def bounding_box(self,pspict=None):
