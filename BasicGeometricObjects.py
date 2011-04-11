@@ -466,7 +466,7 @@ class GeometricPoint(object):
             sage: print Point(5,0).projection(s1) 
             Point(4,2)
 
-        You con project on a vector::
+        You can project on a vector::
 
             sage: print Point(5,0).projection(Vector(2,1))
             Point(4,2)
@@ -2261,7 +2261,7 @@ class Polygon(GraphOfAnObject):
     """
     represent a polygon.
 
-    .. literalinclude:: phystricksPolygone.py
+    .. literalinclude:: phystricksExPolygone.py
     .. image:: Picture_FIGLabelFigExPolygonePICTExPolygone-for_eps.png
     """
     def __init__(self,*args):
