@@ -3706,10 +3706,8 @@ def PolarCurve(fr,ftheta=None):
 
     EXAMPLES:
     
-    We create a cardioid::
-
-        sage: f=1.5*(1+cos(x))
-        sage: cardioid=PolarCurve(f).graph(0,2*pi)
+    .. literalinclude:: phystricksCardioid.py
+    .. image:: Picture_FIGLabelFigCardioidPICTCardioid-for_eps.png
 
     """
     x=var('x')
