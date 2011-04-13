@@ -858,7 +858,7 @@ class AxesUnit(object):
         1. values that are all the integer multiple of <frac>*self.numerical_value between mx and Mx
         2. the multiple of the basis unit.
 
-        Please give <frac> as litteral real. Recall that python evaluates 1/2 to 0. If you pass 0.5, it will be converted to 1/2 for a nice display.
+        Please give <frac> as literal real. Recall that python evaluates 1/2 to 0. If you pass 0.5, it will be converted to 1/2 for a nice display.
         """
         try :
             frac=sage.rings.rational.Rational(frac)     # If the user enters "0.5", it is converted to 1/2
@@ -873,7 +873,7 @@ class AxesUnit(object):
                 l.append((x,"$"+latex(x)+"$"))
             else :
                 pos=(x/self.numerical_value)*k
-                text="$"+latex(pos).replace("\mbox{TheTag}",self.latex_symbol)+"$"  # This risk to be Sage-version dependant.
+                text="$"+latex(pos).replace("\mbox{TheTag}",self.latex_symbol)+"$"  # This risks to be Sage-version dependent.
                 l.append((x,text))
         return l
 

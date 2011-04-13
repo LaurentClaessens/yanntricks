@@ -130,6 +130,10 @@ def Angle(A,O,B,r=None):
         sage: print Angle(B,O,A).measure()
         AngleMeasure, degree=45.0000000000000,radian=1/4*pi
 
+
+    .. literalinclude:: phystricksTriangleRectangle.py
+    .. image:: Picture_FIGLabelFigTriangleRectanglePICTTriangleRectangle-for_eps.png
+
     """
     return GraphOfAnAngle(GeometricAngle(A,O,B,r))
 
@@ -261,6 +265,17 @@ def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
         Point(1,1)    
         sage: print F.draw_points[1]
         Point(5,-23)
+
+    A vector field with automatic management of the points to be drawn:
+
+    .. literalinclude:: phystricksChampVecteursDeux.py
+    .. image:: Picture_FIGLabelFigChampVecteursDeuxPICTChampVecteursDeux-for_eps.png
+
+    A vector field with given points to be drawn: 
+
+    .. literalinclude:: phystricksChampVecteur.py
+    .. image:: Picture_FIGLabelFigChampVecteursPICTChampVecteurs-for_eps.png
+
 
     """
     if xvalues is None and yvalues is None and draw_points is None :
@@ -759,6 +774,9 @@ class GeometricPoint(object):
         return "Point(%s,%s)"%(str(self.x),str(self.y))
 
 class GeometricSegment(object):
+    """
+    Describe the geometry of a segment or a vector
+    """
     def __init__(self,A,B,arrow_type="segment"):
         self.I = A
         self.F = B
@@ -1045,6 +1063,57 @@ class GeometricSegment(object):
         new_Dy=self.Dx
         v=Segment(self.I,Point(self.I.x+new_Dx,self.I.y+new_Dy))
         return self.return_deformations(v)
+
+    def decomposition(self,v):
+        """
+        return the decomposition of `self` into a `v`-component and a normal component.
+
+        INPUT:
+
+        - ``v`` - a segment or a vector
+
+        OUTPUT:
+
+        a tuple of vectors that are the decomposition of `self` into `v` and `v-perp` directions
+
+        NOTE:
+
+        The result does not depend on `v`, but only on the *direction* of `v`.
+
+        EXAMPLES::
+
+            sage: v=Vector(2,3)
+            sage: vx,vy = v.decomposition(Segment(Point(0,0),Point(0,1)))
+            sage: print vx
+            vector I=Point(0,0) F=Point(0,3)
+            sage: print vy
+            vector I=Point(0,0) F=Point(2,0)
+
+
+
+        ::
+
+            sage: t=var('t')
+            sage: s=Segment(Point(0,0),Point(1,1))
+            sage: P=Point(0,0)
+            sage: v=AffineVector(P,P.get_polar_point(1,degree(t)))  # t is given in radian
+            sage: vx,vy=v.decomposition(s)
+            sage: print vx
+            sage: print vy
+
+
+        .. literalinclude:: phystricksExDecomposition.py
+        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition0PICTExDecompositionpspict0-for_eps.png
+        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition1PICTExDecompositionpspict1-for_eps.png
+        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition2PICTExDecompositionpspict2-for_eps.png
+        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition3PICTExDecompositionpspict3-for_eps.png
+        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition4PICTExDecompositionpspict4-for_eps.png
+        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition5PICTExDecompositionpspict5-for_eps.png
+        """
+        v1=self.projection(v)
+        v2=self-v1
+        return v1,v2
+
     def translate(self,vecteur):
         v = Segment(self.I.translate(vecteur),self.F.translate(vecteur))
         return self.return_deformations(v)
@@ -1263,11 +1332,13 @@ class GeometricSegment(object):
         In the case of addition of two segments with same origin, return a segment
         representing the vector sum.
 
+        If the two segments have not the same origin, the `other` one is first translated.
+
         INPUT:
         - ``other`` - an other segment
 
         OUTPUT:
-        A new vector
+        A new vector or segment that has the same origin as `self`.
 
         EXAMPLES:
         sage: a=Vector(1,1)
@@ -1281,13 +1352,14 @@ class GeometricSegment(object):
         segment I=Point(1,1) F=Point(1,6)
         """
         if isinstance(other,GeometricSegment):
-            if self.I == other.I:
-                v=Vector(self.F.x-self.I.x+other.F.x-other.I.x, self.F.y-self.I.y+other.F.y-other.I.y,)
-                return self.return_deformations(v.origin(self.I))
-            else:
-                raise TypeError,"These two segments don't have the same origin. I cannot sum them."
+            if self.I != other.I:
+                other=other.fix_origin(self.I)
+            v=Vector(self.F.x-self.I.x+other.F.x-other.I.x, self.F.y-self.I.y+other.F.y-other.I.y,)
+            return self.return_deformations(v.origin(self.I))
         else:
             raise TypeError,"I do not know how to sum %s with %s"%(self,other)
+    def __sub__(self,other):
+        return self+(-other)
     def __rmul__(self,coef):
         return self*coef
     def __neg__(self):
@@ -2862,12 +2934,15 @@ class GeometricVectorField(object):
 
     """
     def __init__(self,fx,fy):
-        g=[fx,fy]
-        for i in [0,1]:
-            if isinstance(g[i],phyFunction):
-                g[i]=g[i].sage
-        self.fx=g[0]
-        self.fy=g[1]
+        x,y=var('x,y')
+        self.fx=symbolic_expression(fx).function(x,y)
+        self.fy=symbolic_expression(fy).function(x,y)
+        #g=[fx,fy]
+        #for i in [0,1]:
+        #    if isinstance(g[i],phyFunction):
+        #        g[i]=g[i].sage
+        #self.fx=g[0]
+        #self.fy=g[1]
         self.vector_field=self
     def divergence(self):
         """
@@ -3092,6 +3167,9 @@ class MeasureLength(GraphOfASegment):
     on the right.
 
     EXAMPLES:
+
+    .. literalinclude:: phystricksIntervalleUn.py
+    .. image:: Picture_FIGLabelFigIntervallePICTIntervalle-for_eps.png
     
     In order to check the position of the arrow line,
     we check the position of the mark_point::
@@ -3118,6 +3196,8 @@ class MeasureLength(GraphOfASegment):
         sage: measureOB=MeasureLength(Segment(O,B),0.1)
         sage: print measureOB.mark_point()
         Point(0.100000000000000,1.0)
+
+        
 
     USEFUL ATTRIBUTE:
 
