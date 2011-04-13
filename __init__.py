@@ -1589,11 +1589,18 @@ class pspicture(object):
         A name is required for producing intermediate files. This is the case when one wants to produce eps/pdf files of one wants to 
            make interactions with LaTeX (see pspict.get_counter_value).
 
-           self.BB is the bounding box for LaTeX purpose.
-            Graph object need to have a method bounding_box
-           self.math_BB is the bounding box of objects that are "mathematically relevant". This bounding box does not take into account
+        SOME INTERESTING ATTRIBUTES:
+
+        - `self.BB` is the bounding box for LaTeX purpose.
+
+        - `self.math_BB` is the bounding box of objects that are "mathematically relevant". This bounding box does not take into account
             marks of points and thinks like that. This is the bounding box that is going to be used for the axes and the grid.
             When a graph object has a method math_bounding_box, this is the one taken into account in the math_BB here.
+
+        - `self.newwriteName` is the name that will be given to LaTeX in ``\newwrite{...}``. This is not the
+                name of the file in which the data is written.
+
+        - `self.interWriteFile` is the name of the file in which the data will be written.
         """
         self.name = name        # self.name is used in order to name the intermediate files when one produces the eps file.
         self.mother=None
@@ -1601,7 +1608,7 @@ class pspicture(object):
         self.specific_needs = ""    # See the class PspictureToOtherOutputs
         self.newwriteDone = False
         #self.interWriteFile = newwriteName()+".pstricks.aux"
-        self.interWriteFile = "phystricks.aux"
+        self.interWriteFile = self.name+".phystricks.aux"
         self.newwriteName = "writeOfphystricks"
         self.NomPointLibre = PointsNameList()
         self.record_marks=[]
@@ -1624,8 +1631,6 @@ class pspicture(object):
         self.single_axeX=self.axes.single_axeX
         self.single_axeY=self.axes.single_axeY
         self.grid = Grid(BoundingBox())
-        # We add the "anchors" %GRID and %AXES in order to force the axes and the grid to be written at these places.
-        #    see the functions DrawAxes and DrawGrid and the fact that they use IncrusteLigne
 
         # The order of declaration is important, because it is recorded in the Separator.number attribute.
         self.separator_list = SeparatorList()
