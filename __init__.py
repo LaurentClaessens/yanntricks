@@ -47,22 +47,6 @@ COMMAND LINE ARGUMENTS:
                     If this option is set, nothing is written on the disk.
 
                     See :class:`TestPspictLaTeXCode`
-
-KNOWN BUGS
-
-    - The figure "Custon units on the Y axe". The distance between the marks and the axe is not correct.
-
-    - The figure "A single axe". The bounding box is too small when compiled with pdflatex.
-
-    - The figure "ExempleArcParam". The numbers on the axes are cut in the pdflatex version.
-    
-    - The figure "Some points on a parametric curve" is not centred. Idem dans GeomAnal.
-
-    - It is now hard to print the axes over the picture. One difficulty is that the axes of a pspicture
-        are computed when the content of the pspicture is known. It is thus nonsense to write something like
-        `pspict.DrawGraph(pspict.axes)`
-
-
 """
 
 #from __future__ import division
@@ -1153,17 +1137,19 @@ def MultiplePictures(name,n):
     EXAMPLE::
 
         sage: pspict,fig = MultiplePictures("MyName",3)
-        The result is on figure \ref{LabelFigMyName}.                                                                                                                                                             
-        \newcommand{\CaptionFigMyName}{<+Type your caption here+>}                                                                                                                                                
-        \input{Fig_MyName.pstricks}                                                                                                                                                                               
-        See also the subfigure \ref{LabelFigMyNamessLabelSubFigMyName0}                                                                                                                                           
-        See also the subfigure \ref{LabelFigMyNamessLabelSubFigMyName1}                                                                                                                                           
+        The result is on figure \ref{LabelFigMyName}.
+        \newcommand{\CaptionFigMyName}{<+Type your caption here+>}
+        \input{Fig_MyName.pstricks}
+        See also the subfigure \ref{LabelFigMyNamessLabelSubFigMyName0}
+        See also the subfigure \ref{LabelFigMyNamessLabelSubFigMyName1}
         See also the subfigure \ref{LabelFigMyNamessLabelSubFigMyName2}
         sage: pspict[0].mother.caption="My first subfigure"
         sage: pspict[1].mother.caption="My second subfigure"
         sage: pspict[2].mother.caption="My third subfigure"
 
     Notice that a caption is related to a figure or a subfigure, not to a pspicture.
+
+    See also :class:`subfigure`
     """
     fig = GenericFigure(name)
     pspict=[]
