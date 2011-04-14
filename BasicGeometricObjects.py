@@ -1089,19 +1089,6 @@ class GeometricSegment(object):
             sage: print vy
             vector I=Point(0,0) F=Point(2,0)
 
-
-
-        ::
-
-            sage: t=var('t')
-            sage: s=Segment(Point(0,0),Point(1,1))
-            sage: P=Point(0,0)
-            sage: v=AffineVector(P,P.get_polar_point(1,degree(t)))  # t is given in radian
-            sage: vx,vy=v.decomposition(s)
-            sage: print vx
-            sage: print vy
-
-
         .. literalinclude:: phystricksExDecomposition.py
         .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition0PICTExDecompositionpspict0-for_eps.png
         .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition1PICTExDecompositionpspict1-for_eps.png
@@ -2935,8 +2922,10 @@ class GeometricVectorField(object):
     """
     def __init__(self,fx,fy):
         x,y=var('x,y')
-        self.fx=symbolic_expression(fx).function(x,y)
-        self.fy=symbolic_expression(fy).function(x,y)
+        fx = EnsurephyFunction(fx)
+        fy = EnsurephyFunction(fy)
+        self.fx=symbolic_expression(fx.sage).function(x,y)
+        self.fy=symbolic_expression(fy.sage).function(x,y)
         #g=[fx,fy]
         #for i in [0,1]:
         #    if isinstance(g[i],phyFunction):
