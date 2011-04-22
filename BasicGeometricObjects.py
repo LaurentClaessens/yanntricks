@@ -1743,11 +1743,29 @@ class Mark(object):
         Describe a mark (essentially a P on a point for example)
         angle is given in degree or AngleMeasure
 
-        If automatic_place is True, then place the corner of the box at the point instead of the "central point" of the mark.
-        automatic_place is intended to be a tuple of (pspict,anchor)
-        where pspict is the pspicture in which we are working and <anchor> is one of "corner","N","S","W","E". By default, "corner" is taken.
 
         This class should not be used by the end-user.
+
+        INPUT:
+
+        - ``graph`` - the graph that it marked. This is usually a point but it can be
+                        anything that has a `mark_point` method.
+        - ``dist`` - the distance between `graph.mark_point()` and the mark.
+        - ``angle`` - the angle
+        - ``text`` - the text to be printed on the mark. This is typically a LaTeX stuff like "$P$".
+        - ``automatic_place`` - this is a tuple (pspict,anchor) where pspict is the pspicture
+                                in which we are working and ̣`anchor` is one of "corner","N","S","W","E" 
+                                or special cases (see below).
+
+                        - "corner" will put the mark at the distance such that the corner of the 
+                          bounding box is at the (relative) position (dist;angle) instead
+                          of the center of the mark.
+
+                        - "N" will put the mark in such a way that the center of the north
+                          side of the bounding box is at the position (dist;angle).
+
+                        - Special case. If anchor is itself a tuple ("")<++>
+
         """
         self.graph = graph
         self.parent = graph
@@ -1763,25 +1781,26 @@ class Mark(object):
         else :
             self.x=self.dist*cos(alpha)
             self.y=self.dist*sin(alpha)
+
     def central_point(self,pspict=None):
         """
         return the central point of the mark, that is the point where the mark arrives.
 
         The central point of the mark is computed from self.graph.mark_point()
-        Thus an object that want to accept a mark has to have a method mark_point that returns the point on which the mark will be put.
+        Thus an object that wants to accept a mark needs a method mark_point that returns the point on which the mark will be put.
         """
 
         default=self.graph.mark_point().get_polar_point(self.dist,self.angle,pspict)
 
         if self.automatic_place :
             try :
-                position=self.automatic_place[1]
                 pspict=self.automatic_place[0]
+                position=self.automatic_place[1]
             except TypeError :
                 pspict=self.automatic_place
                 position="corner"
 
-            dimx,dimy=pspict.get_box_size(self.text)
+            dimx,dimy = pspict.get_box_size(self.text)
             dimx=float(dimx)/pspict.xunit
             dimy=float(dimy)/pspict.yunit
 
