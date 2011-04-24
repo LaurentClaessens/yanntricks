@@ -333,7 +333,7 @@ def AffineVector(A=None,B=None):
         vect=Segment(A,B)
     else :
         try :
-            vect=A.segment()
+            vect=A.segment
         except AttributeError :
             vect=A
     # the following is thanks to the python's french usenet group
@@ -459,13 +459,15 @@ class GeometricPoint(object):
     def psName(self):
         return GeometricPoint.NomPointLibre.next()
 
-    def projection(self,seg):
+    def projection(self,seg,direction=None):
         """
         Return the projection of the point on the given segment.
 
         INPUT:
 
         - ``seg`` - a segment
+        - ``direction`` - (default=None) a vector. If given, we use a projection parallel to
+                            `vector` instead of the orthogonal projection.
 
         OUTPUT:
 
@@ -494,17 +496,24 @@ class GeometricPoint(object):
 
         """
         try :
-            seg=seg.segment()       # allows to project onto an axe
+            seg=seg.segment       # allows to project onto an axe
         except AttributeError :
             pass
-        if seg.vertical :
-            return Point(seg.I.x,self.y)
-        if seg.horizontal :
-            return Point(self.x,seg.I.y)
-        else :
-            Rx = (self.y*seg.slope - seg.slope*seg.independent + self.x)/(seg.slope**2 + 1)
-            Ry = (self.y*seg.slope**2 + self.x*seg.slope + seg.independent)/(seg.slope**2 + 1)
-            return Point(Rx,Ry)
+
+        if direction is None:
+            direction=seg.get_normal_vector()
+
+        seg2=direction.fix_origin(self)
+        return Intersection(seg,seg2)[0]
+
+        #if seg.vertical :
+        #    return Point(seg.I.x,self.y)
+        #if seg.horizontal :
+        #    return Point(self.x,seg.I.y)
+        #else :
+        #    Rx = (self.y*seg.slope - seg.slope*seg.independent + self.x)/(seg.slope**2 + 1)
+        #    Ry = (self.y*seg.slope**2 + self.x*seg.slope + seg.independent)/(seg.slope**2 + 1)
+        #    return Point(Rx,Ry)
     def get_polar_point(self,r,theta,pspict=None):
         """
         Return the point located at distance r and angle theta from point self.
@@ -1764,7 +1773,13 @@ class Mark(object):
                         - "N" will put the mark in such a way that the center of the north
                           side of the bounding box is at the position (dist;angle).
 
-                        - Special case. If anchor is itself a tuple ("")<++>
+                        - "for axes". In this case we expect to have a 3-tuple `(pspict,"for axes",segment)`
+                          where `segment` is a segment (typically the segment of an axe).
+                          In this case, we suppose `self.angle` to be orthogonal to the segment.
+                          The mark will be put sufficiently far for the bounding box not to cross the segment.
+
+                          What is done is that the closest corner of the bounding box is at
+                          position (dist;angle) from the point.
 
         """
         self.graph = graph
@@ -1803,6 +1818,15 @@ class Mark(object):
             dimx,dimy = pspict.get_box_size(self.text)
             dimx=float(dimx)/pspict.xunit
             dimy=float(dimy)/pspict.yunit
+ 
+            if position=="for axes":
+                seg=self.automatic_place[2]
+                alpha=seg.angle()
+                print "1825",alpha
+                beta=-pi/2+alpha
+                print "1825 N'oublie pas d'ajouter self.dist"
+                d=0.5*max(dimx*sin(alpha),dimy*cos(alpha))
+                return self.graph.mark_point().get_polar_point(d,beta)
 
             if position=="corner":
                 if self.x>=0:
@@ -1829,6 +1853,9 @@ class Mark(object):
         Return the mathematics bounding box of its base object.
 
         A mark has non own math_bounding_box because we do not want the axes to fit even the marques.
+        This is the deep difference between math_bounding_box and bounding_box. We want the
+        marks to be fit in the bounding_box since if not the mark risks to be cut
+        in the pdf/png version.
         """
         return self.graph.math_bounding_box(pspict)
     def bounding_box(self,pspict=None):

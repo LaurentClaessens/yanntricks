@@ -908,6 +908,8 @@ class SingleAxe(object):
         self.mark_angle=degree(base.angle().radian-pi/2)
         #self.vertical=base.vertical
         #self.horizontal=base.horizontal
+
+    @lazy_attribute
     def segment(self):
         return Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
     def add_option(self,opt):
@@ -927,30 +929,29 @@ class SingleAxe(object):
 
         By defaut, it is one at each multiple of self.base. If an user-defined axes_unit is given, then self.base is modified.
         """
-        if self.graduation :
-            points_list=[]
-            bar_angle=SR(self.mark_angle+90).n(digits=7)    # pstricks does not accept too large numbers
-            for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,self.Dx,self.mark_origin):
-                P=(x*self.base).F
-                P.parameters.symbol="|"
-                P.add_option("dotangle=%s"%str(bar_angle))
-                #P.psName=P.psName+pspict.name+latinize(str(numerical_approx(x)))   # Make the point name unique.
-                P.psName="ForTheBar"   # Since this point is not supposed to
-                                       # be used, all of them have the same ps name.
-                if self.numbering :
-                    P.put_mark(0.4,self.mark_angle,symbol)      # TODO : use the size of the box as distance
-                                            # I do not understand why I don't have to multiply 0.4 by xunit or yunit
-                points_list.append(P)
-            return points_list
-        else :
+        if not self.graduation:
             return []
+        points_list=[]
+        bar_angle=SR(self.mark_angle+90).n(digits=7)    # pstricks does not accept too large numbers
+        for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,self.Dx,self.mark_origin):
+            P=(x*self.base).F
+            P.parameters.symbol="|"
+            P.add_option("dotangle=%s"%str(bar_angle))
+            #P.psName=P.psName+pspict.name+latinize(str(numerical_approx(x)))   # Make the point name unique.
+            P.psName="ForTheBar"   # Since this point is not supposed to
+                                       # be used, all of them have the same ps name.
+            if self.numbering :
+                P.put_mark(0.4,self.mark_angle,symbol,automatic_place=(pspict,"for axes",self.segment))
+                                            # I do not understand why I don't have to multiply 0.4 by xunit or yunit
+            points_list.append(P)
+        return points_list
     def bounding_box(self,pspict):
         BB=self.math_bounding_box(pspict)
         for P in self.graduation_points(pspict):
             BB.append(P,pspict)
         return BB
     def math_bounding_box(self,pspict):
-        return self.segment().bounding_box(pspict)
+        return self.segment.bounding_box(pspict)
     def pstricks_code(self,pspict=None):
         """
         Return the pstricks code of the axe.
@@ -963,14 +964,14 @@ class SingleAxe(object):
         #self.BB.mx = bgx
         c=[]
         if self.IsLabel :
-            P = self.segment().F
+            P = self.segment.F
             P.parameters.symbol="none"
             P.put_mark(self.DistLabel,self.AngleLabel,self.Label)
             c.append(P.pstricks_code())
         if self.graduation :
             for P in self.graduation_points(pspict):
                 c.append(P.pstricks_code(pspict,with_mark=True))
-        h=AffineVector(self.segment())
+        h=AffineVector(self.segment)
         c.append(h.pstricks_code(pspicture))
         return "\n".join(c)
 
@@ -1109,6 +1110,7 @@ def phyFunctionInterphyFunction(f,g):
     return a
 
 def LineInterLine(l1,l2):
+    raise DeprecationWarning, "Use Intersection instead"                        #(23 april 2011)
     var('x,y')
     eq1 = l1.equation
     eq2 = l2.equation
