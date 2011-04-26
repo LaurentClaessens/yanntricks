@@ -1365,7 +1365,15 @@ class PspictureToOtherOutputs(object):
         code.append(self.pspict.specific_needs)
         code.extend(["\\begin{document}\n","\\begin{TeXtoEPS}"])
         code.append(self.pspict.contenu_pstricks)
-        code.extend(["\end{TeXtoEPS}\n","\end{document}\n"])
+        code.append("\end{TeXtoEPS}\n")
+        code.append(self.pspict.separator_list["WRITE_AND_LABEL"].code())
+        code.append(self.pspict.separator_list["CLOSE_WRITE_AND_LABEL"].code())
+    
+        for sep in self.pspict.separator_list:
+            print "1373",sep.code()
+            print ""
+
+        code.append("\end{document}\n")
         return "".join(code)
     def create_test_file(self):
         TestPspictLaTeXCode(self.pspict).create_test_file()
@@ -2028,10 +2036,18 @@ class pspicture(object):
         """
         if separator_name==None:
             separator_name="DEFAULT"
-        if (separator_name in ["WRITE_AND_LABEL","CLOSE_WRITE_AND_LABEL"]) and self.mother :
-            self.mother.add_latex_line(ligne,separator_name)
-        else :
-            self.separator_list[separator_name].add_latex_line(ligne)
+
+        # I decide that the WRITE_AND_LABEL stuff will be glued to the pspict 
+        # in the sense that it has to appears just before the  \begin{pspicture}
+        # The reason is that one has to have the WRITE_AND_LABEL code 
+        # even in the auxiliary file that creates the pdf picture.
+
+        #if (separator_name in ["WRITE_AND_LABEL","CLOSE_WRITE_AND_LABEL"]) and self.mother :
+        #    self.mother.add_latex_line(ligne,separator_name)
+        #else :
+        #    self.separator_list[separator_name].add_latex_line(ligne)
+
+        self.separator_list[separator_name].add_latex_line(ligne)
     def force_math_bounding_box(self,g):
         """
         Add an object to the math bounding box of the pspicture. This object will not be drawn, but the axes and the grid will take it into account.
