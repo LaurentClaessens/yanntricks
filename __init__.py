@@ -954,7 +954,8 @@ class SingleAxe(object):
         BB=self.math_bounding_box(pspict)
         for P in self.graduation_points(pspict):
             BB.append(P,pspict)
-            BB.append(P.mark,pspict)
+            if P.marque :
+                BB.append(P.mark,pspict)
         return BB
     def math_bounding_box(self,pspict):
         return self.segment.bounding_box(pspict)
@@ -1367,12 +1368,6 @@ class PspictureToOtherOutputs(object):
         code.append(self.pspict.contenu_pstricks)
         code.append("\end{TeXtoEPS}\n")
 
-        # The following have to be put after self.pspict.contenu_pstricks because
-        # the content of WRITE_AND_LABEL is only decided when building 
-        # the contenu_pstricks.
-        code.append(self.pspict.separator_list["WRITE_AND_LABEL"].code())
-        code.append(self.pspict.separator_list["CLOSE_WRITE_AND_LABEL"].code())
-    
         code.append("\end{document}\n")
         return "".join(code)
     def create_test_file(self):
@@ -1402,8 +1397,8 @@ class PspictureToOtherOutputs(object):
         # TODO: check if inkscape is present. If not use convert. If convert
         # is not present, prendi la f-parola.
         self.create_eps_file()
-        x_cmsize=100*numerical_approx(self.pspict.bounding_box().xsize()*self.pspict.xunit)
-        y_cmsize=100*numerical_approx(self.pspict.bounding_box().ysize()*self.pspict.yunit)
+        x_cmsize=100*numerical_approx(self.pspict.xsize*self.pspict.xunit)
+        y_cmsize=100*numerical_approx(self.pspict.ysize*self.pspict.yunit)
         commande_e = "convert -density 1000 %s -resize %sx%s %s"%(self.file_eps.chemin,str(x_cmsize),str(y_cmsize),self.file_png.chemin)
         #commande_e = "inkscape -f %s -e %s -D -d 600"%(self.file_pdf.chemin,self.file_png.chemin)
         #inkscape -f test.pdf -l test.svg
@@ -1656,11 +1651,18 @@ class pspicture(object):
         This is a `lazy_attribute` because it has to be used more than once while it adds non
         trivial code to `self`.
 
+        It also creates the attributes `xsize` and `ysize` that
+        contain the size of the bounding box.
+
+
         NOTE :
 
-        One has to declare the xunit,yunit before to give the bounding box.
+        - You are not supposed to use `pspict.bounding_box().xsize()` in order to take
+          the size of the picture.
+
+        - One has to declare the xunit,yunit before to give the bounding box.
         
-        The value of LabelSep is the distance between an angle and the lable of the angle. It is by default 1, but if there is a dilatation, the visual effect is bad.
+        - The value of LabelSep is the distance between an angle and the lable of the angle. It is by default 1, but if there is a dilatation, the visual effect is bad.
         """
         self.create_pstricks_code
         if self.LabelSep == 1 :
@@ -1671,17 +1673,23 @@ class pspicture(object):
         self.add_latex_line("\\begin{pspicture}%s%s\n"%(self.bounding_box(self).SW().coordinates(numerical=True),self.bounding_box(self).NE().coordinates(numerical=True)),"BEGIN PSPICTURE")
         self.add_latex_line("\end{pspicture}\n","END PSPICTURE")
         self.add_latex_line(self.pstricks_code_list,"OTHER STUFF")
-        print "1661",self.separator_list["WRITE_AND_LABEL"].code()
-        print "1662",self.separator_list["CLOSE_WRITE_AND_LABEL"].code()
+
+        self.xsize=self.bounding_box(self).xsize()
+        self.ysize=self.bounding_box(self).ysize()
+
         return self.separator_list.code()
 
     @lazy_attribute
     def create_pstricks_code(self):
         """
-        Fix the bounding box and create the separator "PSTRICKS CODE"
+        Fix the bounding box and create the separator "PSTRICKS CODE".
 
-        This function is not supposed to be used twice. In fact, this is
-        supposed to be called only from `lazy_attributes`
+
+        NOTES :
+
+        - This function is not supposed to be used twice. In fact, this is
+          supposed to be called only from `lazy_attributes`
+
         """
         # Here we are supposed to be  sure of the xunit, yunit, so we can compute the BB's needed for the points with marks.
         # For the same reason, all the marks that were asked to be drawn are added now.
@@ -1794,9 +1802,6 @@ class pspicture(object):
                 """%(self.interWriteFile,self.newwriteName,self.interWriteFile,self.newwriteName)
             self.add_latex_line(code,"WRITE_AND_LABEL")
 
-            print "1811",self.separator_list["WRITE_AND_LABEL"].code()
-            print "1812",self.separator_list["CLOSE_WRITE_AND_LABEL"].code()
-
             code=r"""\immediate\closeout\%s"""%self.newwriteName
             self.add_latex_line(code,"CLOSE_WRITE_AND_LABEL")
 
@@ -1858,7 +1863,7 @@ class pspicture(object):
         try :
             f=open(self.interWriteFile,"r")
         except IOError :
-            print "Warning: the auxiliary file seems not to exist. Compile your LaTeX file."
+            print "Warning: the auxiliary file %s seems not to exist. Compile your LaTeX file."%self.interWriteFile
             return d
         idlist = f.read().replace('\n','').replace(' ','').replace('\\par','').split("-")
         f.close()
@@ -1876,7 +1881,7 @@ class pspicture(object):
 
     def get_Id_value(self,Id,counter_name="NO NAME ?",default_value=0):
             if Id not in self.id_values_dict.keys():
-                print "Warning: the auxiliary file does not contain the id «%s». Compile your LaTeX file."%Id
+                print "Warning: the auxiliary file %s does not contain the id «%s». Compile your LaTeX file."%(self.interWriteFile,Id)
                 return default_value
             return self.id_values_dict[Id]
     def get_counter_value(self,counter_name,default_value=0):

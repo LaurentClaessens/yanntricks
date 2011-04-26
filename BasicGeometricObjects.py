@@ -35,8 +35,6 @@ from phystricks import *
 from phystricks.SmallComputations import *
 import doctest
 
-
-
 def SubstitutionMathPsTricks(fx):
     listeSubst = []
     listeSubst.append(["**","^"])
