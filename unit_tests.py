@@ -125,3 +125,7 @@ def Test_Measure():
     \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,-0.100000000000000){Xaaac}
     \ncline[linestyle=solid,linecolor=black]{->}{Xaaaa}{Xaaac}
     """
+
+def Test_SingleAxe():
+    r"""
+    """

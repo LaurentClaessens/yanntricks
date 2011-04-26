@@ -35,10 +35,15 @@ COMMAND LINE ARGUMENTS:
                          See :class:`TestPspictLaTeXCode` and the function :func:`create_png_file`
                          in :class:`PspictureToOtherOutputs`
 
-    NOTE:
+    NOTES:
 
-    Here we are really speaking about pspicture. There will be one file of one 
-    \includegraphics for each pspicture. This is not figure-wise.
+        - Here we are really speaking about pspicture. There will be one file of one 
+          \includegraphics for each pspicture. This is not figure-wise.
+
+        - Using `--pdf`, `--create-png`, etc. create the picture from an auxiliary
+          LaTeX file that will we compiled and converted on the fly. As a consequence,
+          customizations (e.g. fonts) will not be taken into account. 
+          See `pspict.specific_needs`
 
     - ``--create_tests`` - create a `tmp` file in which the pspicture is written.
 
@@ -76,7 +81,7 @@ def RemoveLastZeros(x,n):
 
     EXAMPLES::
 
-        sage: RemoveLastZeros(1.000,4) 
+        sage: RemoveLastZeros(1.000,4)
         '1'
         sage: RemoveLastZeros(3/4,1)
         '0.7'
@@ -107,7 +112,7 @@ def latinize(word):
     """
     return a "latinized" version of a string.
 
-    From a string, return something that can be used as point name, file name. 
+    From a string, return something that can be used as point name, file name.
     In particular, remove the special characters, put everything in lowercase,
     and turn the numbers into letters.
 
@@ -184,7 +189,7 @@ def unify_point_name(s):
     
     In the following example, the points name in the segment do not begin
     by "aaaa" because of the definition of P, or even because of other doctests executed before.
-    (due to complex implementation, the names of the points are 
+    (due to complex implementation, the names of the points are
     more or less unpredictable and can change)
 
     ::
@@ -246,7 +251,7 @@ def unify_point_name(s):
 
 def number_at_position(s,n):
     """
-    return the number being at position `n` in `s` 
+    return the number being at position `n` in `s`
     as well as the first and last positions of that number in `s`.
 
     Return False is the position `n` is not part of a number.
@@ -288,14 +293,14 @@ def number_at_position(s,n):
     That allows to make cool replacements. In the following, we replace
     the occurrence of "0.12124" that is on position 4::
 
-        sage: s="Ps=0.12124 and Qs=0.12124"       
+        sage: s="Ps=0.12124 and Qs=0.12124"
         sage: v,first,last=number_at_position(s,4)
-        sage: print s[:first]+"AAA"+s[last:]      
+        sage: print s[:first]+"AAA"+s[last:]
         Ps=AAA and Qs=0.12124
 
     NOTE:
 
-    We cannot return the number since the aim is to substitute it *as string* in the 
+    We cannot return the number since the aim is to substitute it *as string* in the
     function :func:`string_number_comparison`.
 
     The problem in returning a number is the following::
@@ -347,7 +352,7 @@ def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
     r"""
     Compare two strings. 
 
-    The comparison is True is the two string differ by numbers that are `epsilon`-close. 
+    The comparison is True is the two string differ by numbers that are `epsilon`-close.
 
     It return a tuple of a boolean and a string. The string is a justification of the result.
 
@@ -421,7 +426,7 @@ class TestPspictLaTeXCode(object):
         """
         Write the LaTeX code of `pspict` in a file.
 
-        The purpose is to compare that file with the code actually 
+        The purpose is to compare that file with the code actually
         produced later. This is a way to test changes in phystricks.
 
         INPUT:
@@ -467,11 +472,11 @@ def newwriteName():
     We cannot use one different \newwrite for each counter because
     LaTeX is limited in the number of available \newwrite.
 
-    Since we want two different scripts to use two different intermediates files, 
+    Since we want two different scripts to use two different intermediates files,
     the name of the \newwrite will be created on the basis of the script name,
     that is sys.argv[0]
 
-    The idea is that for a LaTeX document containing 100 figures, 
+    The idea is that for a LaTeX document containing 100 figures,
     these will be created from the same script. If not, you'll get 100 different \newwrite
     and crash your LaTeX compilation.
 
@@ -483,7 +488,7 @@ def newwriteName():
 
 def counterName():
     r"""
-    This function provides the name of the counter. 
+    This function provides the name of the counter.
     
     This has the same use of newwriteName, for the same reason of limitation.
     """
@@ -504,16 +509,16 @@ class global_variables(object):
 
                     * eps,pdf,pfd : I think that these names are self-explaining.
 
-                    * test : outputs a `tmp` file 
+                    * test : outputs a `tmp` file
 
     - ``exit_format`` - the format one wants to use in the LaTeX file. By default it is pstricks.
 
-    - ``perform_tests`` - (default=False) If True, perform the tests. 
+    - ``perform_tests`` - (default=False) If True, perform the tests.
 
-    The difference between `create_formats` and `exit_format` is that `create_format` says 
+    The difference between `create_formats` and `exit_format` is that `create_format` says
     what files are going to be _produced_ while `exit_format` is the format that LaTeX will see.
 
-    Notice that `create_formats` is a plural while `exit_format` is a singlular. This is 
+    Notice that `create_formats` is a plural while `exit_format` is a singlular. This is
     not a joke ;)
     """
     def __init__(self):
@@ -529,13 +534,13 @@ class global_variables(object):
 class Fichier(object):
     def __init__ (self, filename):
         self.NomComplet = filename
-        self.chemin = self.NomComplet               
+        self.chemin = self.NomComplet
         self.nom = os.path.basename(self.chemin)
     def open_file(self,opt):
-        self.file = codecs.open(self.chemin,encoding="utf8",mode=opt)           
+        self.file = codecs.open(self.chemin,encoding="utf8",mode=opt)
     def close_file(self):
         self.file.close()
-    def write(self,texte,opt):              
+    def write(self,texte,opt):
         """ Write in a file following the option """
         self.open_file(opt)
         self.file.write(texte)
@@ -562,7 +567,7 @@ class CalculSage(object):
         """
         liste = solve(eqs,var,explicit_solutions=True)
         a = []
-        for soluce in liste :   
+        for soluce in liste :
             a.append(numerical_approx(soluce.rhs()))
         return a
     def solve_more_vars(self,eqs,*vars):
@@ -573,7 +578,7 @@ class CalculSage(object):
         """
         liste = solve(eqs,vars,explicit_solutions=True)
         a = []
-        for soluce in liste :   
+        for soluce in liste :
             sol = []
             for variable in soluce :
                 sol.append( numerical_approx(variable.rhs()))
@@ -586,7 +591,7 @@ class CalculPolynome(object):
     """
     # La méthode calcul donne la sortie de maxima en brut. Pour traiter l'information, il faudra encore des tonnes de manipulations, et on peut déjà en mettre dans filtre
     def calcul(self,ligne,filtre):
-        commande =  "maxima --batch-string=\"display2d:false; "+ligne+";\""+filtre 
+        commande =  "maxima --batch-string=\"display2d:false; "+ligne+";\""+filtre
         return commands.getoutput(commande)
     # reponse donne ce que calcule donne, après extraction de la partie intéressante, c'est à dire prise de grep o2 et enlevure de "o2" lui-même.
     def reponse(self,ligne):
@@ -598,22 +603,22 @@ class CalculPolynome(object):
         for i in range(0,P.deg-Q.deg+1):
             ligne =  "coeff( expand( divide("+P.maxima+","+Q.maxima+"))[1],x,"+str(P.deg-Q.deg-i)+")"
             l.append(  int( self.reponse(ligne) ) )
-        for i in range(0,Q.deg+1): 
+        for i in range(0,Q.deg+1):
             ligne =  "coeff( expand( divide("+P.maxima+","+Q.maxima+"))[2],x,"+str(Q.deg-i)+")"
             m.append( int (self.reponse(ligne) ) )
         return [Polynome(l),Polynome(m)]
     def MulPoly(self,P,Q):
         l = []
         for i in range(0,P.deg+Q.deg+1):
-            ligne = "coeff( expand(("+P.maxima+")*("+Q.maxima+")),x,"+str(P.deg+Q.deg-i)+")"    
+            ligne = "coeff( expand(("+P.maxima+")*("+Q.maxima+")),x,"+str(P.deg+Q.deg-i)+")"
             l.append( int( self.reponse(ligne)) )
         return Polynome(l)
     # Cette méthode est exactement la même que la précédente, au changement près de * vers +. Y'a peut être moyen de factoriser ...
     def sub_polynome(self,P,Q):
         l = []
         for i in range(0,P.deg+Q.deg+1):
-            ligne =   "coeff( expand(("+P.maxima+")-("+Q.maxima+")),x,"+str(P.deg+Q.deg-i)+")"    
-            rep = self.reponse(ligne) 
+            ligne =   "coeff( expand(("+P.maxima+")-("+Q.maxima+")),x,"+str(P.deg+Q.deg-i)+")"
+            rep = self.reponse(ligne)
             if rep <> "":
                 l.append(int(rep))
         return Polynome(l)
@@ -708,12 +713,12 @@ class Grid(object):
     It finishes before to reach the upper right corner if `Dx` the size.
     Subdivisions are drawn following the same rule.
 
-    - ``self.draw_border`` - (default=False) If True, the border is drawn even if it does not  arrives on an integer multiple of Dx. 
+    - ``self.draw_border`` - (default=False) If True, the border is drawn even if it does not  arrives on an integer multiple of Dx.
                                         It turns out that for aestetical reasons, this is a bad idea to turn it True.
 
 
     - ``self.main_horizontal`` : an objet of type :class:`GraphOfASegment`. This is the archetype of the horizontal lines
-                                 of the main grid will be drawn. 
+                                 of the main grid will be drawn.
 
     As an example, in order to have red main horizontal lines::
 
@@ -734,7 +739,7 @@ class Grid(object):
         self.main_horizontal = GraphOfASegment(Segment(Point(0,1),Point(1,1)))  # Ce segment est bidon, c'est juste pour les options de tracé.
         self.main_horizontal.parameters.color="gray"
         self.main_horizontal.parameters.style = "solid"
-        self.main_vertical = GraphOfASegment(Segment(Point(0,1),Point(1,1)))    
+        self.main_vertical = GraphOfASegment(Segment(Point(0,1),Point(1,1)))
         self.main_vertical.parameters.color="gray"
         self.main_vertical.parameters.style = "solid"
         self.sub_vertical = GraphOfASegment(Segment(Point(0,1),Point(1,1))) 
@@ -941,7 +946,7 @@ class SingleAxe(object):
             P.psName="ForTheBar"   # Since this point is not supposed to
                                        # be used, all of them have the same ps name.
             if self.numbering :
-                P.put_mark(0.4,self.mark_angle,symbol,automatic_place=(pspict,"for axes",self.segment))
+                P.put_mark(0.2,self.mark_angle,symbol,automatic_place=(pspict,"for axes",self.segment))
                                             # I do not understand why I don't have to multiply 0.4 by xunit or yunit
             points_list.append(P)
         return points_list
@@ -949,6 +954,7 @@ class SingleAxe(object):
         BB=self.math_bounding_box(pspict)
         for P in self.graduation_points(pspict):
             BB.append(P,pspict)
+            BB.append(P.mark,pspict)
         return BB
     def math_bounding_box(self,pspict):
         return self.segment.bounding_box(pspict)
@@ -986,7 +992,7 @@ class Axes(object):
         self.BB = bb.copy()
         self.options = Options()
         self.Dx = 1
-        self.Dy = 1                     # Ce sont les valeurs par défaut.
+        self.Dy = 1
         self.arrows = "->"
         self.separator_name="AXES"
         self.graduation=True
@@ -1354,9 +1360,9 @@ class PspictureToOtherOutputs(object):
         self.input_code_png = "\includegraphics{%s}"%(self.file_png.nom)
     def latex_code_for_eps(self):
         code = ["\documentclass{article}\n","\usepackage{pstricks,pst-eucl,pstricks-add}\n","\usepackage{pst-plot}\n","\usepackage{pst-eps}\n","\pagestyle{empty}\n\usepackage{calc}\n"]
-        # Allows to add some lines, like packages or macro definitions required. This is useful when one add formulas in the picture
+        # Allows to add some lines, like packages or macro definitions required. This is useful when one adds formulas in the picture
         # that need packages of personal commands.
-        code.append(self.pspict.specific_needs)     
+        code.append(self.pspict.specific_needs)
         code.extend(["\\begin{document}\n","\\begin{TeXtoEPS}"])
         code.append(self.pspict.contenu_pstricks)
         code.extend(["\end{TeXtoEPS}\n","\end{document}\n"])
@@ -1550,7 +1556,7 @@ class pspicture(object):
     - `self.pstricks_code()` - contains the pstricks code of what has to be between \begin{pspicture} and \end{pspicture}. This is not the environment itself, neither the definition of xunit, yunit.
 
     - `self.contenu_pstricks` - is the whole code including the x/yunit and \begin{pspicture}...\end{pspicture}.
-                                This is in fact a `lazy_attribute`. 
+                                This is in fact a `lazy_attribute`.
                                 
                                 This has not to be used for creating other outputs than pure pstricks.
                                
@@ -1574,7 +1580,7 @@ class pspicture(object):
 
     def __init__(self,name="CAN_BE_A_PROBLEM_IF_TRY_TO_PRODUCE_EPS_OR_PDF"):
         r"""
-        A name is required for producing intermediate files. This is the case when one wants to produce eps/pdf files of one wants to 
+        A name is required for producing intermediate files. This is the case when one wants to produce eps/pdf files of one wants to
            make interactions with LaTeX (see pspict.get_counter_value).
 
         SOME INTERESTING ATTRIBUTES:
@@ -1635,7 +1641,7 @@ class pspicture(object):
         self.separator_list.new_separator("AFTER PSPICTURE")
 
     @lazy_attribute
-    def contenu_pstricks(self):                
+    def contenu_pstricks(self):
         r"""
         The LaTeX of `self` including xunit,yunit and \begin{pspicture} ... \end{pspicture}
 
@@ -1649,7 +1655,7 @@ class pspicture(object):
         The value of LabelSep is the distance between an angle and the lable of the angle. It is by default 1, but if there is a dilatation, the visual effect is bad.
         """
         self.create_pstricks_code
-        if self.LabelSep == 1 : 
+        if self.LabelSep == 1 :
             self.LabelSep = 2/(self.xunit+self.yunit)
         add_latex_line_entete(self)
         self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+",LabelSep="+str(self.LabelSep)+"}","BEFORE PSPICTURE")
@@ -1657,6 +1663,8 @@ class pspicture(object):
         self.add_latex_line("\\begin{pspicture}%s%s\n"%(self.bounding_box(self).SW().coordinates(numerical=True),self.bounding_box(self).NE().coordinates(numerical=True)),"BEGIN PSPICTURE")
         self.add_latex_line("\end{pspicture}\n","END PSPICTURE")
         self.add_latex_line(self.pstricks_code_list,"OTHER STUFF")
+        print "1661",self.separator_list["WRITE_AND_LABEL"].code()
+        print "1662",self.separator_list["CLOSE_WRITE_AND_LABEL"].code()
         return self.separator_list.code()
 
     @lazy_attribute
@@ -1664,7 +1672,7 @@ class pspicture(object):
         """
         Fix the bounding box and create the separator "PSTRICKS CODE"
 
-        This function is not supposed to be used twice. In fact, this is 
+        This function is not supposed to be used twice. In fact, this is
         supposed to be called only from `lazy_attributes`
         """
         # Here we are supposed to be  sure of the xunit, yunit, so we can compute the BB's needed for the points with marks.
@@ -1766,8 +1774,8 @@ class pspicture(object):
         self.separator_dico[title]=Separator(title,self.separator_number)
     def initialize_newwrite(self):
         if not self.newwriteDone :
-            code = r""" \makeatletter 
-                \@ifundefined{%s}           
+            code = r""" \makeatletter
+                \@ifundefined{%s}
                 {\newwrite{\%s}
                 }
                 \makeatother"""%(self.newwriteName,self.newwriteName)
@@ -1777,6 +1785,9 @@ class pspicture(object):
                 \immediate\write\%s{\phystricksContent}
                 """%(self.interWriteFile,self.newwriteName,self.interWriteFile,self.newwriteName)
             self.add_latex_line(code,"WRITE_AND_LABEL")
+
+            print "1811",self.separator_list["WRITE_AND_LABEL"].code()
+            print "1812",self.separator_list["CLOSE_WRITE_AND_LABEL"].code()
 
             code=r"""\immediate\closeout\%s"""%self.newwriteName
             self.add_latex_line(code,"CLOSE_WRITE_AND_LABEL")
@@ -1802,10 +1813,12 @@ class pspicture(object):
                 f=open(self.interWriteFile,"w")
                 f.write("a:b-")
                 f.close()
+
+
     def initialize_counter(self):
         if not self.counterDone:
-            code = r""" \makeatletter 
-                \@ifundefined{c@%s}         
+            code = r""" \makeatletter
+                \@ifundefined{c@%s}
                 {\newcounter{%s}}
                 \makeatother
                 """%(counterName(),counterName())           # make LaTeX test if the counter exist before to create it.
@@ -1860,7 +1873,7 @@ class pspicture(object):
             return self.id_values_dict[Id]
     def get_counter_value(self,counter_name,default_value=0):
         """
-        return the value of the (LaTeX) counter <name> at this point of the LaTeX file 
+        return the value of the (LaTeX) counter <name> at this point of the LaTeX file
 
         Makes LaTeX write the value of the counter in an auxiliary file, then reads the value in that file.
         (needs several compilations to work)
@@ -1883,7 +1896,7 @@ class pspicture(object):
         self.initialize_newlength()
         self.add_latex_line(r"\setlength{\%s}{\%s{%s}}"%(newlengthName(),dimension_name,tex_expression),"WRITE_AND_LABEL")
         self.add_write_line(interId,r"\the\%s"%newlengthName())
-        read_value =  self.get_Id_value(interId,"dimension %s"%dimension_name,default_value="0pt") 
+        read_value =  self.get_Id_value(interId,"dimension %s"%dimension_name,default_value="0pt")
         dimenPT = float(read_value.replace("pt",""))
         return dimenPT/30           # 30 is the conversion factor : 1pt=(1/3)mm
     def get_box_size(self,tex_expression):
@@ -1904,7 +1917,7 @@ class pspicture(object):
 
         After having LaTeX-compiled the document containing the pspicture, a second
         execution of the script should print :
-        The dimensions of the LaTeX text $A_i=\int_a^bf_i$ is (1.66653833333,0.46667)   
+        The dimensions of the LaTeX text $A_i=\int_a^bf_i$ is (1.66653833333,0.46667)
 
         NOTE:
         As far as the problem is concerned from a LaTeX point of view, it was discussed here:
@@ -1972,7 +1985,7 @@ class pspicture(object):
             1. bounding_box
             2. pstricks_code
 
-        The first one should return a bounding box and the second one should return a valid pstricks code as string. 
+        The first one should return a bounding box and the second one should return a valid pstricks code as string.
         If the pstricks code is not valid, LaTeX will get angry but no warning are given here.
 
         NOTE:
@@ -2015,7 +2028,7 @@ class pspicture(object):
         """
         if separator_name==None:
             separator_name="DEFAULT"
-        if separator_name=="WRITE_AND_LABEL" and self.mother :
+        if (separator_name in ["WRITE_AND_LABEL","CLOSE_WRITE_AND_LABEL"]) and self.mother :
             self.mother.add_latex_line(ligne,separator_name)
         else :
             self.separator_list[separator_name].add_latex_line(ligne)
@@ -2058,7 +2071,7 @@ class pspicture(object):
             return self.contenu_pstricks
         return to_other.__getattribute__("input_code_"+global_vars.exit_format)
 
-    def write_the_file(self,f):             
+    def write_the_file(self,f):
         """
         Writes the LaTeX code of the pspict.
 

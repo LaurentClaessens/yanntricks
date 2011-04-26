@@ -1821,11 +1821,10 @@ class Mark(object):
  
             if position=="for axes":
                 seg=self.automatic_place[2]
-                alpha=seg.angle()
-                print "1825",alpha
-                beta=-pi/2+alpha
-                print "1825 N'oublie pas d'ajouter self.dist"
-                d=0.5*max(dimx*sin(alpha),dimy*cos(alpha))
+                alpha=seg.angle().radian
+                d=self.dist+0.5*max(dimx*sin(alpha),dimy*cos(alpha))
+                beta=degree(-pi/2+alpha)
+                beta=self.angle
                 return self.graph.mark_point().get_polar_point(d,beta)
 
             if position=="corner":
