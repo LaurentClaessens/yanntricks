@@ -1359,20 +1359,20 @@ class PspictureToOtherOutputs(object):
         self.input_code_pdf = "\includegraphics{%s}"%(self.file_pdf.nom)
         self.input_code_png = "\includegraphics{%s}"%(self.file_png.nom)
     def latex_code_for_eps(self):
-        code = ["\documentclass{article}\n","\usepackage{pstricks,pst-eucl,pstricks-add}\n","\usepackage{pst-plot}\n","\usepackage{pst-eps}\n","\pagestyle{empty}\n\usepackage{calc}\n"]
+        code = ["\documentclass{article}\n","\usepackage{pstricks,pst-eucl,pstricks-add}\n","\usepackage{pst-plot}\n","\usepackage{pst-eps}\n","\pagestyle{empty}\n\usepackage{calc}\n\usepackage{catchfile}"]
         # Allows to add some lines, like packages or macro definitions required. This is useful when one adds formulas in the picture
         # that need packages of personal commands.
         code.append(self.pspict.specific_needs)
         code.extend(["\\begin{document}\n","\\begin{TeXtoEPS}"])
         code.append(self.pspict.contenu_pstricks)
         code.append("\end{TeXtoEPS}\n")
+
+        # The following have to be put after self.pspict.contenu_pstricks because
+        # the content of WRITE_AND_LABEL is only decided when building 
+        # the contenu_pstricks.
         code.append(self.pspict.separator_list["WRITE_AND_LABEL"].code())
         code.append(self.pspict.separator_list["CLOSE_WRITE_AND_LABEL"].code())
     
-        for sep in self.pspict.separator_list:
-            print "1373",sep.code()
-            print ""
-
         code.append("\end{document}\n")
         return "".join(code)
     def create_test_file(self):
