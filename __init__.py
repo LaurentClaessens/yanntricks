@@ -1202,7 +1202,6 @@ class figure(object):
         self.separator_list=SeparatorList()
         self.separator_list.new_separator("ENTETE FIGURE")
         self.separator_list.new_separator("WRITE_AND_LABEL")
-        self.separator_list.new_separator("CLOSE_WRITE_AND_LABEL")
         self.separator_list.new_separator("BEFORE SUBFIGURES")
         self.separator_list.new_separator("SUBFIGURES")
         self.separator_list.new_separator("AFTER SUBFIGURES")
@@ -1257,7 +1256,7 @@ class figure(object):
         self._add_pspicture(pspict)
         return pspict
     def _add_pspicture(self,pspict):
-        pspict.mother=self      # This was in self.new_pspicture
+        pspict.mother=self
         self.record_pspicture.append(pspict)
     def add_pspicture(self,pspict):
         raise DeprecationWarning,"Use fig.new_pspicture instead."
@@ -1266,16 +1265,20 @@ class figure(object):
     def add_latex_line(self,ligne,separator_name="DEFAULT"):
         self.separator_list[separator_name].add_latex_line(ligne)
     def IncrusteLigne(self,ligne,n):
-        print "The method picture.IncrusteLigne() is depreciated."
+        raise DeprecationWarning, "The method picture.IncrusteLigne() is depreciated."
         self.code[n:n]=ligne+"\n"
     def AjouteCode(self,liste_code):
         self.code.extend(liste_code)
     def conclude(self):
         for pspict in self.record_pspicture :
+            # Here we add the picture itself. What arrives depends on --eps, --pdf, --png, ...
+            self.add_latex_line(pspict.contenu(),"PSPICTURE")
+
             # What has to be written in the WRITE_AND_LABEL part of the picture is written now
-            self.add_latex_line(pspict.separator_list["WRITE_AND_LABEL"].latex_code,"WRITE_AND_LABEL")
-            pspict.separator_list["WRITE_AND_LABEL"].latex_code=[]
-            self.add_latex_line(pspict.contenu(),"PSPICTURE")           # Here, what is added depends on --eps, --pdf, --png and so on.
+            # This has to be done _after_ having called pspict.contenu().
+            self.add_latex_line(pspict.write_and_label_separator_list["WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
+            self.add_latex_line(pspict.write_and_label_separator_list["CLOSE_WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
+
             if global_vars.perform_tests:
                 TestPspictLaTeXCode(pspict).test()
         if not global_vars.special_exit() :
@@ -1286,6 +1289,10 @@ class figure(object):
             self.add_latex_line("\label{%s}"%f.name,"SUBFIGURES")
             self.add_latex_line("}                  % Closing subfigure "+str(self.record_subfigure.index(f)+1),"SUBFIGURES")
             self.add_latex_line("%","SUBFIGURES")
+
+            for pspict in f.record_pspicture:
+                self.add_latex_line(pspict.write_and_label_separator_list["WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
+                self.add_latex_line(pspict.write_and_label_separator_list["CLOSE_WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
         after_all=r"""\caption{%s}\label{%s}
             \end{figure}
             """%(self.caption,self.name)
@@ -1303,8 +1310,6 @@ class figure(object):
             self.fichier.file.write(to_be_written)
             self.fichier.file.close()
             
-# Le \subfigure[caption]{ ne se met pas dans le code de la classe subfigure parce que dans la classe figure, je numérote les sous-figures.
-# Typiquement, une sousfigure sera juste créée en ajoutant une pspicture d'un coup, et puis c'est tout.
 class subfigure(object):
     """
     This is a subfigure.
@@ -1370,6 +1375,8 @@ class PspictureToOtherOutputs(object):
         # Allows to add some lines, like packages or macro definitions required. This is useful when one adds formulas in the picture
         # that need packages of personal commands.
         code.append(self.pspict.specific_needs)
+        code.append(self.pspict.write_and_label_separator_list["WRITE_AND_LABEL"].code())
+        code.append(self.pspict.write_and_label_separator_list["CLOSE_WRITE_AND_LABEL"].code())
         code.extend(["\\begin{document}\n","\\begin{TeXtoEPS}"])
         code.append(self.pspict.contenu_pstricks)
         code.append("\end{TeXtoEPS}\n")
@@ -1639,8 +1646,6 @@ class pspicture(object):
         self.separator_list = SeparatorList()
         self.separator_list.new_separator("ENTETE PSPICTURE")
         self.separator_list.new_separator("BEFORE PSPICTURE")
-        self.separator_list.new_separator("WRITE_AND_LABEL")
-        self.separator_list.new_separator("CLOSE_WRITE_AND_LABEL")
         self.separator_list.new_separator("BEGIN PSPICTURE")        # This separator is supposed to contain only \begin{pspicture}
         self.separator_list.new_separator("GRID")
         self.separator_list.new_separator("AXES")
@@ -1649,6 +1654,15 @@ class pspicture(object):
         self.separator_list.new_separator("END PSPICTURE")
         self.separator_list.new_separator("AFTER PSPICTURE")
 
+        # The separators corresponding to write and labels have to be apart 
+        # because they have to be included differently following
+        # 1. we are in a regular pspicture in a figure
+        # 2. we are in a subfigure environment : in that case one cannot
+        #    put the corresponding code between two subfigures
+        # 3. we are building the pdf file.
+        self.write_and_label_separator_list=SeparatorList()
+        self.write_and_label_separator_list.new_separator("WRITE_AND_LABEL")
+        self.write_and_label_separator_list.new_separator("CLOSE_WRITE_AND_LABEL")
     @lazy_attribute
     def contenu_pstricks(self):
         r"""
@@ -2047,18 +2061,10 @@ class pspicture(object):
         """
         if separator_name==None:
             separator_name="DEFAULT"
-
-        # I decide that the WRITE_AND_LABEL stuff will be glued to the pspict 
-        # in the sense that it has to appears just before the  \begin{pspicture}
-        # The reason is that one has to have the WRITE_AND_LABEL code 
-        # even in the auxiliary file that creates the pdf picture.
-
-        #if (separator_name in ["WRITE_AND_LABEL","CLOSE_WRITE_AND_LABEL"]) and self.mother :
-        #    self.mother.add_latex_line(ligne,separator_name)
-        #else :
-        #    self.separator_list[separator_name].add_latex_line(ligne)
-
-        self.separator_list[separator_name].add_latex_line(ligne)
+        if separator_name=="WRITE_AND_LABEL" or separator_name=="CLOSE_WRITE_AND_LABEL":
+            self.write_and_label_separator_list[separator_name].add_latex_line(ligne)
+        else:
+            self.separator_list[separator_name].add_latex_line(ligne)
     def force_math_bounding_box(self,g):
         """
         Add an object to the math bounding box of the pspicture. This object will not be drawn, but the axes and the grid will take it into account.
