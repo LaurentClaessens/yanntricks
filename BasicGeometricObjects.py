@@ -2045,7 +2045,7 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
 
     - ``f1,f2`` - functions (sage or phyFunction). ``f1`` is considered to be the upper function while ``f2`` is the lower function.
 
-    - ``mx,Mx`` - initial and end values of x.
+    - ``mx,Mx`` - (optional) initial and end values of x. If these are not given, we suppose that `f1` and `f2` are graphs.
 
     EXAMPLES:
 
@@ -2075,8 +2075,22 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
 
     # linestyle=none in self.add_option corresponds to the fact that we do not want to draw the curve.
     # No default color are given; the reason is that we want to be able  to control the color of each element separately. 
-    def __init__(self,f1,f2,mx,Mx):
+    def __init__(self,f1,f2,mx=None,Mx=None):
         GraphOfAnObject.__init__(self,self)
+        if mx==None :
+            try:
+                if f1.mx != f2.mx :
+                    raise ValueError,"The initial values of %s and %s does not fit"%(str(f1),str(f2))
+                mx=f1.mx
+            except AttributeError :
+                print "If you do not provide `mx` and/or `Mx`, you should pass graphs and not %s and %s"%(type(f1),type(f2))
+        if Mx==None :
+            try :
+                if f1.Mx != f2.Mx :
+                    raise ValueError,"The final values of %s and %s does not fit"%(str(f1),str(f2))
+                Mx=f1.Mx
+            except AttributeError :
+                print "If you do not provide `mx` and/or `Mx`, you should pass graphs and not %s and %s"%(type(f1),type(f2))
         self.f1=EnsurephyFunction(f1).graph(mx,Mx)
         self.f2=EnsurephyFunction(f2).graph(mx,Mx)
         self.vertical_left=Segment(self.f1.get_point(mx,advised=False),self.f2.get_point(mx,advised=False))
