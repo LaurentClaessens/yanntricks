@@ -913,8 +913,9 @@ class SingleAxe(object):
         self.mark_angle=degree(base.angle().radian-pi/2)
         #self.vertical=base.vertical
         #self.horizontal=base.horizontal
-
-    @lazy_attribute
+    
+    # SingleAxe.segment cannot be a lazy attribute because we use it for some projections before
+    # to compute the bounding box.
     def segment(self):
         return Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
     def add_option(self,opt):
@@ -946,7 +947,7 @@ class SingleAxe(object):
             P.psName="ForTheBar"   # Since this point is not supposed to
                                        # be used, all of them have the same ps name.
             if self.numbering :
-                P.put_mark(0.2,self.mark_angle,symbol,automatic_place=(pspict,"for axes",self.segment))
+                P.put_mark(0.2,self.mark_angle,symbol,automatic_place=(pspict,"for axes",self.segment()))
                                             # I do not understand why I don't have to multiply 0.4 by xunit or yunit
             points_list.append(P)
         return points_list
@@ -958,7 +959,7 @@ class SingleAxe(object):
                 BB.append(P.mark,pspict)
         return BB
     def math_bounding_box(self,pspict):
-        return self.segment.bounding_box(pspict)
+        return self.segment().bounding_box(pspict)
     def pstricks_code(self,pspict=None):
         """
         Return the pstricks code of the axe.
@@ -971,14 +972,14 @@ class SingleAxe(object):
         #self.BB.mx = bgx
         c=[]
         if self.IsLabel :
-            P = self.segment.F
+            P = self.segment().F
             P.parameters.symbol="none"
             P.put_mark(self.DistLabel,self.AngleLabel,self.Label)
             c.append(P.pstricks_code())
         if self.graduation :
             for P in self.graduation_points(pspict):
                 c.append(P.pstricks_code(pspict,with_mark=True))
-        h=AffineVector(self.segment)
+        h=AffineVector(self.segment())
         c.append(h.pstricks_code(pspicture))
         return "\n".join(c)
 
@@ -1037,7 +1038,12 @@ class Axes(object):
         BB=BoundingBox()
         BB.append(self.single_axeX.bounding_box(pspict))
         BB.append(self.single_axeY.bounding_box(pspict))
-        if BB.Mx==1000: 
+        if max(abs(BB.Mx),abs(BB.My),abs(BB.mx),abs(BB.my)) >= 1000: 
+            print "The bounding box of %s seems wrong :"%self
+            print "Mx",BB.Mx
+            print "My",BB.My
+            print "mx",BB.mx
+            print "my",BB.my
             raise ValueError
         return BB
     def math_bounding_box(self,pspict=None):

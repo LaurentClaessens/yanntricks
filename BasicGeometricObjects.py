@@ -31,9 +31,9 @@ Rather he has to use the constructors like :func:`Point`, :func:`AffineVector` a
 import math
 import types
 from sage.all import *
-from phystricks import *
+#from phystricks import *
+import phystricks
 from phystricks.SmallComputations import *
-import doctest
 
 def SubstitutionMathPsTricks(fx):
     listeSubst = []
@@ -331,7 +331,7 @@ def AffineVector(A=None,B=None):
         vect=Segment(A,B)
     else :
         try :
-            vect=A.segment
+            vect=A.segment()
         except AttributeError :
             vect=A
     # the following is thanks to the python's french usenet group
@@ -494,7 +494,7 @@ class GeometricPoint(object):
 
         """
         try :
-            seg=seg.segment       # allows to project onto an axe
+            seg=seg.segment()       # allows to project onto an axe
         except AttributeError :
             pass
 
@@ -502,7 +502,7 @@ class GeometricPoint(object):
             direction=seg.get_normal_vector()
 
         seg2=direction.fix_origin(self)
-        return Intersection(seg,seg2)[0]
+        return phystricks.Intersection(seg,seg2)[0]
 
         #if seg.vertical :
         #    return Point(seg.I.x,self.y)

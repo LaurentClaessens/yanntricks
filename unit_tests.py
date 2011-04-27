@@ -37,50 +37,6 @@ def Test_VectorField():
     '\\pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,2.00000000000000){Xaaaa}\n\\pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](2.00000000000000,4.00000000000000){Xaaab}\n\\ncline[linestyle=solid,linecolor=black]{->}{Xaaaa}{Xaaab}\n\\pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](3.00000000000000,4.00000000000000){Xaaac}\n\\pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](6.00000000000000,8.00000000000000){Xaaad}\n\\ncline[linestyle=solid,linecolor=black]{->}{Xaaac}{Xaaad}'
 """
 
-def Test_SingleAxe():
-    r"""
-    sage: axe = SingleAxe(Point(1,1),Vector(0,1),-2,2)
-    sage: pspict=pspicture("MyTest")
-    sage: a=unify_point_name(axe.pstricks_code(pspict)) #random
-    sage: a
-    \\pstGeonode[](0.400000000000000,-2.00000000000000){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$-2$}}\n\\pstGeonode[PointSymbol=|,dotangle=90.00000,linestyle=solid,linecolor=black](0,-2.00000000000000){ForTheBar}\n\\pstGeonode[](0.400000000000000,-1.00000000000000){Xaaab}\n\\rput(Xaaab){\\rput(0;0){$-1$}}\n\\pstGeonode[PointSymbol=|,dotangle=90.00000,linestyle=solid,linecolor=black](0,-1.00000000000000){ForTheBar}\n\\pstGeonode[](0.400000000000000,0){Xaaac}\n\\rput(Xaaac){\\rput(0;0){$0$}}\n\\pstGeonode[PointSymbol=|,dotangle=90.00000,linestyle=solid,linecolor=black](0,0){ForTheBar}\n\\pstGeonode[](0.400000000000000,1.00000000000000){Xaaad}\n\\rput(Xaaad){\\rput(0;0){$1$}}\n\\pstGeonode[PointSymbol=|,dotangle=90.00000,linestyle=solid,linecolor=black](0,1.00000000000000){ForTheBar}\n\\pstGeonode[](0.400000000000000,2.00000000000000){Xaaae}\n\\rput(Xaaae){\\rput(0;0){$2$}}\n\\pstGeonode[PointSymbol=|,dotangle=90.00000,linestyle=solid,linecolor=black](0,2.00000000000000){ForTheBar}\n\\pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,-1.00000000000000){Xaaaf}\n\\pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,3.00000000000000){Xaaag}\n\\ncline[linestyle=solid,linecolor=black]{->}{Xaaaf}{Xaaag}
-
-    sage: pspict=pspicture("MyTestAxe")
-    sage: base=Vector(1,2).normalize()
-    sage: a=unify_point_name(base.pstricks_code())
-    sage: print a
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,0){Xaaaa}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0.447213595499958,0.894427190999916){Xaaab}
-    \ncline[linestyle=solid,linecolor=black]{->}{Xaaaa}{Xaaab}
-
-    sage: C=Point(0,0)
-    sage: axe=SingleAxe(C,base,-1,1.5)
-    sage: a=unify_point_name(axe.pstricks_code(pspict)) #random
-    sage: print a
-    \pstGeonode[](-0.0894427190999917,-1.07331262919990){Xaaaa}
-    \rput(Xaaaa){\rput(0;0){$-1$}}
-    \pstGeonode[PointSymbol=|,dotangle=423.4349,linestyle=solid,linecolor=black](-0.447213595499958,-0.894427190999916){ForTheBar}
-    \pstGeonode[](0.357770876399966,-0.178885438199983){Xaaab}
-    \rput(Xaaab){\rput(0;0){$0$}}
-    \pstGeonode[PointSymbol=|,dotangle=423.4349,linestyle=solid,linecolor=black](0,0){ForTheBar}
-    \pstGeonode[](0.804984471899924,0.715541752799933){Xaaac}
-    \rput(Xaaac){\rput(0;0){$1$}}
-    \pstGeonode[PointSymbol=|,dotangle=423.4349,linestyle=solid,linecolor=black](0.447213595499958,0.894427190999916){ForTheBar}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-0.447213595499958,-0.894427190999916){Xaaad}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0.670820393249937,1.34164078649987){Xaaae}
-    \ncline[linestyle=solid,linecolor=black]{->}{Xaaad}{Xaaae}
-
-    sage: pspict=pspicture("AnOtherAxTest")
-    sage: pspict.axes.single_axeY.axes_unit=AxesUnit(2.34,"\\sigma")
-    sage: pspict.axes.single_axeY.Dx=0.5
-    sage: print unify_point_name(pspict.axes.pstricks_code(pspict))
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1000.01000000000,0){Xaaaa}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-1000.00000000000,0){Xaaab}
-    \ncline[linestyle=solid,linecolor=black]{->}{Xaaaa}{Xaaab}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,1000.01000000000){Xaaac}
-    \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,-1000.00000000000){Xaaad}
-    \ncline[linestyle=solid,linecolor=black]{->}{Xaaac}{Xaaad}
-    """
 
 def Test_Dilatation():
     r"""
