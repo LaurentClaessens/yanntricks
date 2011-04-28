@@ -29,11 +29,12 @@ Rather he has to use the constructors like :func:`Point`, :func:`AffineVector` a
 """
 
 import math
-import types
 from sage.all import *
-#from phystricks import *
-import phystricks
+#import types
+
+from phystricks.main import *
 from phystricks.SmallComputations import *
+
 
 def SubstitutionMathPsTricks(fx):
     listeSubst = []

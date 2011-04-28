@@ -25,8 +25,8 @@ This submodule contains some auxiliary computations that have to be performed
 by phystricks but that are not geometry.
 """
 
-from phystricks import *
-from sage.all import *
+from phystricks.main import *
+from phystricks.BasicGeometricObjects import *
 
 def MyMinMax(dico_sage,n=3):
     """
