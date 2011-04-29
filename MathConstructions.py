@@ -29,6 +29,44 @@ from __future__ import division
 from sage.all import *
 from phystricks import *
 
+class CalculPolynome(object):
+    """
+    This class should disappear when I learn how to perform euclidian divisions with Sage.
+    """
+    # La méthode calcul donne la sortie de maxima en brut. Pour traiter l'information, il faudra encore des tonnes de manipulations, et on peut déjà en mettre dans filtre
+    def calcul(self,ligne,filtre):
+        commande =  "maxima --batch-string=\"display2d:false; "+ligne+";\""+filtre
+        return commands.getoutput(commande)
+    # reponse donne ce que calcule donne, après extraction de la partie intéressante, c'est à dire prise de grep o2 et enlevure de "o2" lui-même.
+    def reponse(self,ligne):
+        ligne = self.calcul(ligne,"|grep o2")
+        return ligne.replace("(%o2)","").replace(" ","")
+    def DivPoly(self,P,Q):
+        l = []
+        m = []
+        for i in range(0,P.deg-Q.deg+1):
+            ligne =  "coeff( expand( divide("+P.maxima+","+Q.maxima+"))[1],x,"+str(P.deg-Q.deg-i)+")"
+            l.append(  int( self.reponse(ligne) ) )
+        for i in range(0,Q.deg+1):
+            ligne =  "coeff( expand( divide("+P.maxima+","+Q.maxima+"))[2],x,"+str(Q.deg-i)+")"
+            m.append( int (self.reponse(ligne) ) )
+        return [Polynome(l),Polynome(m)]
+    def MulPoly(self,P,Q):
+        l = []
+        for i in range(0,P.deg+Q.deg+1):
+            ligne = "coeff( expand(("+P.maxima+")*("+Q.maxima+")),x,"+str(P.deg+Q.deg-i)+")"
+            l.append( int( self.reponse(ligne)) )
+        return Polynome(l)
+    # Cette méthode est exactement la même que la précédente, au changement près de * vers +. Y'a peut être moyen de factoriser ...
+    def sub_polynome(self,P,Q):
+        l = []
+        for i in range(0,P.deg+Q.deg+1):
+            ligne =   "coeff( expand(("+P.maxima+")-("+Q.maxima+")),x,"+str(P.deg+Q.deg-i)+")"
+            rep = self.reponse(ligne)
+            if rep <> "":
+                l.append(int(rep))
+        return Polynome(l)
+
 class NewtonMethodStep():
 	"""
 	Return the informations about one step of the Newton method.

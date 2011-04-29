@@ -25,8 +25,490 @@ This submodule contains some auxiliary computations that have to be performed
 by phystricks but that are not geometry.
 """
 
-from phystricks.main import *
-from phystricks.BasicGeometricObjects import *
+def SubstitutionMathPsTricks(fx):
+    listeSubst = []
+    listeSubst.append(["**","^"])
+    listeSubst.append(["math.exp","2.718281828459045^"])
+    listeSubst.append(["e^","2.718281828459045^"])
+    for i in range(1,10):   
+        listeSubst.append(["math.log"+str(i),str(0.43429448190325*math.log(i))+"*log"])
+    listeSubst.append(["math.log","2.302585092994046*log"])     # because \psplot[]{1}{5}{log(x)} draws the logarithm in basis 10.
+    listeSubst.append(["log","2.302585092994046*log"])  
+    # Pour rappel, la formule est log_b(x)=log_a(x)/log_a(b)
+    listeSubst.append(["math.pi","3.141592653589793"])
+    listeSubst.append(["pi","3.141516"])
+    listeSubst.append(["math.cosh","COSH"])
+    listeSubst.append(["math.tan","TAN"])
+    listeSubst.append(["math.sinh","SINH"])
+    listeSubst.append(["math.sinc","SINC"])
+    listeSubst.append(["arccos","acos"])        # See the documentation of pst-math package
+    listeSubst.append(["arcsin","asin"])
+    listeSubst.append(["arctan","atan"])
+    listeSubst.append(["math.",""])
+    a = fx
+    for s in listeSubst :
+        a = a.replace(s[0],s[1])
+    return a
+
+def MultipleBetween(Dx,mx,Mx,mark_origin=True):
+    """
+    Return the list of values that are all the integer multiple of Dx between mx and Mx.
+
+    If <mark_origin> is True, the list includes 0 if applicable.
+    """
+    ni=ceil(float(mx)/Dx)
+    nf=floor(float(Mx)/Dx)
+    l = [i*Dx for i in range(ni,nf+1)]
+    if not mark_origin :
+        try :
+            l.remove(0)
+        except ValueError :
+            pass
+    return l
+
+
+def SubGridArray(mx,Mx,Dx,num_subX):
+    """ Provides the values between mx and Mx such that there are num_subX-1 numbers between two integer separated by Dx """
+    dx = float(Dx)/num_subX
+    valeurs = []
+    base = MultipleLower(mx,Dx)
+    for i in range(0,ceil((Mx-mx)*num_subX/Dx)+3*num_subX):     # The range is designed by purpose to be sure to be too wide
+        tentative = base + float(i)*dx
+        if (tentative < Mx) and (tentative > mx) and ( i % num_subX <> 0 ) :
+            valeurs.append(tentative)
+    return valeurs
+
+def MainGridArray(mx,Mx,Dx):
+        """
+        Return the list of number that are
+        1. integer multiple of Dy
+        2. between mx and Mx
+
+        If mx=-1.4 and Dx=0.5, the first element of the list will be -1
+        If mx=-1.5 and Dx=0.5, the first element of the list will be -1.5
+        """
+        #for y in range(MultipleBigger(self.BB.my,self.Dy),MultipleLower(self.BB.My,self.Dy)+1,self.Dy):
+        a=[]
+        m = floor(mx/Dx - 1)
+        M = ceil(Mx/Dx + 1)
+        for i in range(m,M):
+            tentative=i*Dx
+            if (tentative >= mx) and (tentative <= Mx):
+                a.append(tentative)
+        return a
+
+class CalculSage(object):
+    # I cannot merge the function for solving with respect to one or more variables because Sage returns like that:
+    # If 1 and 2 are the solutions for one variable : [x == 1,x==2]
+    # If (1,2) and (3,4) are solutions of a two variable equation : [ [x==1,y==2],[x==3,y==4] ]
+    # The list nesting structure is really different. Do I have to read the doc ?
+    def solve_one_var(self,eqs,var):
+        """
+        Solve the equations with respect to the given variable
+
+        Returns a list of numerical values.
+        """
+        liste = solve(eqs,var,explicit_solutions=True)
+        a = []
+        for soluce in liste :
+            a.append(numerical_approx(soluce.rhs()))
+        return a
+    def solve_more_vars(self,eqs,*vars):
+        """
+        Solve the equations with respect to the given variables
+
+        Returns a list like [  [1,2],[3,4] ] if the solutions are (1,2) and (3n4)
+        """
+        liste = solve(eqs,vars,explicit_solutions=True)
+        a = []
+        for soluce in liste :
+            sol = []
+            for variable in soluce :
+                sol.append( numerical_approx(variable.rhs()))
+            a.append(sol)
+        return a
+
+
+class Fichier(object):
+    def __init__ (self, filename):
+        self.NomComplet = filename
+        self.chemin = self.NomComplet
+        self.nom = os.path.basename(self.chemin)
+    def open_file(self,opt):
+        self.file = codecs.open(self.chemin,encoding="utf8",mode=opt)
+    def close_file(self):
+        self.file.close()
+    def write(self,texte,opt):
+        """ Write in a file following the option """
+        self.open_file(opt)
+        self.file.write(texte)
+        self.close_file()
+    def contenu(self):
+        r"""
+        Return the list of the lines of the file, inlcuding the \n at the end of each line.
+        """
+        self.open_file("r")
+        c = [l for l in self.file]
+        self.close_file()
+        return c
+
+
+
+def RemoveLastZeros(x,n):
+    """
+    Cut the number x to n decimals and then remove the last zeros.
+
+    If there remain no decimals, also remove the dot.
+    We only cut a given number of decimals; if the integer part has more digits, we keep them.
+    
+    The output is a string, not a number.
+
+    INPUT:
+
+    - ``x`` - a number.
+
+    - ``n`` - the number of decimals we want to keep.
+
+    OUTPUT:
+    A string.
+
+    EXAMPLES::
+
+        sage: RemoveLastZeros(1.000,4)
+        '1'
+        sage: RemoveLastZeros(3/4,1)
+        '0.7'
+        sage: RemoveLastZeros(3/4,3)
+        '0.75'
+        sage: RemoveLastZeros(3/4,4)
+        '0.75'
+        sage: RemoveLastZeros(pi,4)
+        '3.1415'
+        sage: RemoveLastZeros(130*e,2)
+        '353.37'
+
+    NOTE :
+    Part of the algorithm comes from
+    http://www.java2s.com/Code/Python/Development/StringformatFivedigitsafterdecimalinfloat.htm
+    """
+    s="%.15f"%x
+    t=s[:s.find(".")+n+1]
+    k=len(t)-1
+    while t[k]=="0":
+        k=k-1
+    u=t[:k+1]
+    if u[-1]==".":
+        return u[:-1]
+    return u
+
+def latinize(word):
+    """
+    return a "latinized" version of a string.
+
+    From a string, return something that can be used as point name, file name.
+    In particular, remove the special characters, put everything in lowercase,
+    and turn the numbers into letters.
+
+    This function is used in order to turn the script name into a
+    string that can be a filename for the LaTeX's intermediate file.
+
+    INPUT:
+
+    - ``word`` - string
+
+    OUTPUT:
+    string
+    
+    EXAMPLES::
+
+        sage: latinize("/home/MyName/.sage/my_script11.py")
+        'homeMyNameDsagemyscriptOODpy'
+
+    ::
+
+        sage: latinize("/home/MyName/.sage/my_script13.py")
+        'homeMyNameDsagemyscriptOThDpy'
+    """
+    latin = ""
+    for s in word:
+        if s.lower() in "abcdefghijklmnopqrstuvwxyz" :
+            latin = latin+s
+        if s=="1":
+            latin = latin+"O"
+        if s=="2":
+            latin = latin+"T"
+        if s=="3":
+            latin = latin+"Th"
+        if s=="4":
+            latin = latin+"F"
+        if s=="5":
+            latin = latin+"Fi"
+        if s=="6":
+            latin = latin+"S"
+        if s=="7":
+            latin = latin+"Se"
+        if s=="8":
+            latin = latin+"H"
+        if s=="9":
+            latin = latin+"N"
+        if s=="0":
+            latin = latin+"Z"
+        if s==".":
+            latin = latin+"D"
+    return latin
+
+def unify_point_name(s):
+    r"""
+    Internet s as the pstricks code of something and return a chain with
+    all the points names changed to "Xaaaa", "Xaaab" etc.
+
+    Practically, it changes the strings like "{abcd}" to "{Xaaaa}".
+
+    When "{abcd}" is found, it also replace the occurences of "(abcd)".
+    This is because the marks of points are given by example as
+    '\\rput(abcd){\\rput(0;0){$-2$}}'
+
+    This serves to build more robust doctests by providing strings in which
+    we are sure that the names of the points are the first in the list.
+
+    INPUT:
+
+    - ``s`` - a string
+
+    OUTPUT:
+    string
+
+    EXAMPLES:
+    
+    In the following example, the points name in the segment do not begin
+    by "aaaa" because of the definition of P, or even because of other doctests executed before.
+    (due to complex implementation, the names of the points are
+    more or less unpredictable and can change)
+
+    ::
+
+        sage: P=Point(3,4)
+        sage: S = Segment(Point(1,1),Point(2,2))
+        sage: print S.pstricks_code()       # random
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){aaad}
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](2.00000000000000,2.00000000000000){aaae}
+        <BLANKLINE>
+        \pstLineAB[linestyle=solid,linecolor=black]{aaad}{aaae}
+
+
+    However, using the function unify_point_name, the returned string begins with "Xaaaa" ::
+
+        sage: print unify_point_name(S.pstricks_code())
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaaa}
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](2.00000000000000,2.00000000000000){Xaaab}
+        <BLANKLINE>
+        \pstLineAB[linestyle=solid,linecolor=black]{Xaaaa}{Xaaab}
+
+    Notice that the presence of "X" is necessary in order to avoid
+    conflicts when one of the points original name is one of the new points name as in the following example ::
+
+        sage: s="{xxxx}{aaaa}{yyyy}"
+        sage: print unify_point_name(s)
+        {Xaaaa}{Xaaab}{Xaaac}
+
+    Without the additional X,
+
+    1. The first "xxxx" would be changed to "aaaa".
+    2. When changing "aaaa" into "aaab", the first one
+            would be changed too.
+
+    ::
+
+        sage: P=Point(-1,1)
+        sage: P.put_mark(0.3,90,"$A$")
+        sage: unify_point_name(P.mark.pstricks_code())
+        '\\pstGeonode[](-1.00000000000000,1.30000000000000){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$A$}}'
+    """
+    import re
+
+    point_pattern=re.compile("({[a-zA-Z]{4,4}})")
+    match = point_pattern.findall(s)
+
+    rematch=[]
+    for m in match:
+        n=m[1:-1]       # I transform "{abcd}" into "abcd"
+        if n not in rematch:
+            rematch.append(n)
+
+    names=PointsNameList()
+    for m in rematch:
+        name=names.next()
+        s=s.replace("{%s}"%m,"{X%s}"%name).replace("(%s)"%m,"(X%s)"%name)
+
+    return s
+
+def number_at_position(s,n):
+    """
+    return the number being at position `n` in `s`
+    as well as the first and last positions of that number in `s`.
+
+    Return False is the position `n` is not part of a number.
+
+    INPUT:
+
+    - ``s`` - a string.
+
+    - ``n`` - a number.
+
+    OUTPUT:
+
+    a tuple (string,integer,integer)
+
+    EXAMPLES:
+
+        sage: s="Point(-1.3427,0.1223)"
+        sage: number_at_position(s,9)
+        ('-1.3427', 6, 13)
+        sage: number_at_position(s,6)
+        ('-1.3427', 6, 13)
+
+        sage: number_at_position(s,3)
+        (False, 0, 0)
+
+        sage: s="\\begin{pspicture}(-0.375000000000000,-1.94848632812500)(3.00000000000000,1.94860839843750)"
+        sage: number_at_position(s,20)
+        ('-0.375000000000000', 18, 36)
+
+        sage: number_at_position(s,27)
+        ('-0.375000000000000', 18, 36)
+
+        sage: number_at_position(s,60)
+        ('3.00000000000000', 56, 72)
+
+        sage: number_at_position(s,80)
+        ('1.94860839843750', 73, 89)
+
+    That allows to make cool replacements. In the following, we replace
+    the occurrence of "0.12124" that is on position 4::
+
+        sage: s="Ps=0.12124 and Qs=0.12124"
+        sage: v,first,last=number_at_position(s,4)
+        sage: print s[:first]+"AAA"+s[last:]
+        Ps=AAA and Qs=0.12124
+
+    NOTE:
+
+    We cannot return the number since the aim is to substitute it *as string* in the
+    function :func:`string_number_comparison`.
+
+    The problem in returning a number is the following::
+
+        sage: SR(str('1.94848632812500'))
+        1.94848632812
+
+    """
+    digits=["0","1","2","3","4","5","6","7","8","9"]
+    number_elements = digits+["-","."]
+    s=str(s)
+    if s[n] not in number_elements :
+        return False,0,0
+    i=n
+    while s[i] in number_elements:
+        i=i-1
+    first=i+1
+    i=n
+    while s[i] in number_elements:
+        i=i+1
+    last=i
+    # When treating the string read in the test file,
+    # the string is an unicode. SR does not work with unicode
+    return str(s[first:last]),first,last
+
+def get_line(s,pos):
+    r"""
+    return the line containing `s[pos]`
+
+    INPUT:
+
+    - ``s`` - a srting.
+
+    - ``pos`` - integer.
+
+    EXAMPLES::
+
+        sage: s="Hello\n how do you do ? \n See you"
+        sage: print get_line(s,10)
+        how do you do ?
+
+    """
+    a=s.rfind("\n",0,pos)
+    b=s.find("\n",pos,len(s))
+    return s[a+1:b]
+
+
+def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
+    r"""
+    Compare two strings. 
+
+    The comparison is True is the two string differ by numbers that are `epsilon`-close.
+
+    It return a tuple of a boolean and a string. The string is a justification of the result.
+
+    INPUT:
+
+    - ``s1`` - first string.
+
+    - ``s2`` - second string.
+
+    - ``epsilon`` - tolerance.
+
+    OUTPUT:
+
+    tuple (boolean,string). The boolean says if the two strings are equal up to `epsilon`-close numbers.
+                            The string provides a short explanation.
+
+    EXAMPLES:
+
+    In the following, the comparison fails due to
+    the first number::
+
+        sage: s1="Point(-0.2,0.111)"
+        sage: s2="Point(-0.3,0.111)"
+        sage: string_number_comparison(s1,s2)
+        (False, 'Distance between -0.2 and -0.3 is larger than 0.01.')
+
+    In the following the comparison fails due to the second number::
+
+        sage: s1="Point(-0.02,1)"
+        sage: s2="Point(-0.03,2)"
+        sage: string_number_comparison(s1,s2,epsilon=0.1)
+        (False, 'd(-0.02,-0.03)=0.01\nDistance between 1 and 2 is larger than 0.100000000000000.')
+
+    Here the comparison succeed::
+
+        sage: s1="Point(1.99,1.001)"
+        sage: s2="Point(2,1.002)"
+        sage: string_number_comparison(s1,s2,epsilon=0.1)
+        (True, 'd(1.99,2)=-0.01\nd(1.001,1.002)=-0.001\n')
+
+    """
+
+    if s1 == s2:
+        return True,last_justification
+    pos=0
+    while s1[pos] == s2[pos]:
+        pos = pos+1
+    v1,first1,last1=number_at_position(s1,pos)
+    v2,first2,last2=number_at_position(s2,pos)
+
+    if v1 == False or v2 == False :
+        line1=get_line(s1,pos)
+        line2=get_line(s2,pos)
+        justification="There is a difference outside a number\nExpected:\n%s\nGot:\n %s"%(line2,line1)
+        return False,justification
+    if abs(SR(v1)-SR(v2))<epsilon:
+        justification=last_justification+"d(%s,%s)=%s\n"%(v1,v2,str(SR(v1)-SR(v2)))
+        t1=s1[:first1]+v2+s1[last1:]
+        t2=s2
+        return string_number_comparison(t1,t2,epsilon=epsilon,last_justification=justification)
+    justification=last_justification+"Distance between %s and %s is larger than %s."%(str(v1),str(v2),str(epsilon))
+    return False,justification
+
 
 def MyMinMax(dico_sage,n=3):
     """
@@ -433,4 +915,11 @@ def inner_product(v,w):
         #return simplify_degree(alpha,numbre=number,keep_max=keep_max)
     #else :
         #return simplify_degree(180*alpha/math.pi)
+
+def SubstitutionMathMaxima(exp):
+    raise DeprecationWarning
+    a = exp
+    for i in range(1,10):
+        a = a.replace("math.log"+str(i),"log("+str(i)+")^(-1)*log")
+    return a.replace("math.log","log").replace("math.tan","tan").replace("math.pi","%pi").replace("math.","")
 
