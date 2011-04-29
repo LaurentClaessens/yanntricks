@@ -25,6 +25,8 @@ This submodule contains some auxiliary computations that have to be performed
 by phystricks but that are not geometry.
 """
 
+from sage.all import *
+
 def SubstitutionMathPsTricks(fx):
     listeSubst = []
     listeSubst.append(["**","^"])

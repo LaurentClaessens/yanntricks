@@ -18,17 +18,20 @@
 # copyright (c) Laurent Claessens, 2009-2011
 # email: moky.math@gmail.com
 
-import codecs
-from phystricks import *
-from phystricks.BasicGeometricObjects import *
-from phystricks.SmallComputations import *
+
+from sage.all import *
+import codecs, sys
+import BasicGeometricObjects
+import SmallComputations
+
+from BasicGeometricObjects import BoundingBox
 
 class TestPspictLaTeXCode(object):
     def __init__(self,pspict):
         self.pspict=pspict
         self.name=pspict.name
         self.notice_text="This is a testing file containing the LaTeX code of the figure %s."%(self.name)
-        self.test_file=Fichier("test_pspict_LaTeX_%s.tmp"%(self.name))
+        self.test_file=SmallComputations.Fichier("test_pspict_LaTeX_%s.tmp"%(self.name))
     def create_test_file(self):
         """
         Write the LaTeX code of `pspict` in a file.
@@ -82,19 +85,6 @@ def newlengthName():
     return "lengthOf"+latinize(sysargvzero)
 
 
-def GenericFigure(nom):
-    """
-    This function returns a figure with some default values. It creates coherent label, file name and prints the lines to be appended in the LaTeX file to include the figure.
-    """
-    label = "LabelFig"+nom
-    caption = "\CaptionFig"+nom
-    nFich = "Fig_"+nom+".pstricks"
-    print "The result is on figure \\ref{"+label+"}."
-    print "\\newcommand{"+caption+"}{<+Type your caption here+>}"
-    print "\\input{Fig_"+nom+".pstricks}"
-
-    return  figure(caption,label,nFich)
-
 class figure(object):
     def __init__(self,caption,name,fich):
         self.caption = caption
@@ -104,7 +94,7 @@ class figure(object):
         self.code = []
         self.record_subfigure = []
         self.record_pspicture=[]
-        self.fichier = Fichier (fich)
+        self.fichier = SmallComputations.Fichier (fich)
 
         # The order of declaration is important, because it is recorded in the Separator.number attribute.
         self.separator_list=SeparatorList()
@@ -270,11 +260,11 @@ class PspictureToOtherOutputs(object):
     def __init__(self,pspict):
         self.pspict = pspict
         self.name = self.pspict.name
-        self.file_for_eps = Fichier("Picture_%s-for_eps.tex"%(self.name))
-        self.file_dvi = Fichier(self.file_for_eps.chemin.replace(".tex",".dvi"))
-        self.file_eps = Fichier(self.file_dvi.chemin.replace(".dvi",".eps"))
-        self.file_pdf = Fichier(self.file_eps.chemin.replace(".eps",".pdf"))
-        self.file_png = Fichier(self.file_eps.chemin.replace(".eps",".png"))
+        self.file_for_eps = SmallComputations.Fichier("Picture_%s-for_eps.tex"%(self.name))
+        self.file_dvi = SmallComputations.Fichier(self.file_for_eps.chemin.replace(".tex",".dvi"))
+        self.file_eps = SmallComputations.Fichier(self.file_dvi.chemin.replace(".dvi",".eps"))
+        self.file_pdf = SmallComputations.Fichier(self.file_eps.chemin.replace(".eps",".pdf"))
+        self.file_png = SmallComputations.Fichier(self.file_eps.chemin.replace(".eps",".png"))
         self.input_code_eps = "\includegraphics{%s}"%(self.file_eps.nom)
         self.input_code_pdf = "\includegraphics{%s}"%(self.file_pdf.nom)
         self.input_code_png = "\includegraphics{%s}"%(self.file_png.nom)
@@ -500,7 +490,7 @@ class pspicture(object):
 
     The name of the pspict is used to produce intermediate filesnames, and other names.
     """
-    NomPointLibre = PointsNameList()
+    NomPointLibre = BasicGeometricObjects.PointsNameList()
 
     def __init__(self,name="CAN_BE_A_PROBLEM_IF_TRY_TO_PRODUCE_EPS_OR_PDF"):
         r"""
@@ -528,7 +518,7 @@ class pspicture(object):
         #self.interWriteFile = newwriteName()+".pstricks.aux"
         self.interWriteFile = self.name+".phystricks.aux"
         self.newwriteName = "writeOfphystricks"
-        self.NomPointLibre = PointsNameList()
+        self.NomPointLibre = BasicGeometricObjects.PointsNameList()
         self.record_marks=[]
         self.record_bounding_box=[]
         self.record_draw_graph=[]
@@ -541,11 +531,11 @@ class pspicture(object):
         self.xunit = 1
         self.yunit = 1
         self.LabelSep = 1
-        self.BB = BoundingBox(Point(1000,1000),Point(-1000,-1000))
-        self.math_BB = BoundingBox(Point(1000,1000),Point(-1000,-1000))     # self.BB and self.math_BB serve to add some objects by hand.
+        self.BB = BoundingBox()
+        self.math_BB = BoundingBox()     # self.BB and self.math_BB serve to add some objects by hand.
                                             # If you need the bounding box, use self.bounding_box()
                                             # or self.math_bounding_box()
-        self.axes = Axes( Point(0,0),BoundingBox(Point(1000,1000),Point(-1000,-1000))  )
+        self.axes = BasicGeometricObjects.Axes( Point(0,0),BoundingBox()  )
         self.single_axeX=self.axes.single_axeX
         self.single_axeY=self.axes.single_axeY
         self.grid = Grid(BoundingBox())
@@ -571,6 +561,7 @@ class pspicture(object):
         self.write_and_label_separator_list=SeparatorList()
         self.write_and_label_separator_list.new_separator("WRITE_AND_LABEL")
         self.write_and_label_separator_list.new_separator("CLOSE_WRITE_AND_LABEL")
+
     @lazy_attribute
     def contenu_pstricks(self):
         r"""
@@ -1023,7 +1014,7 @@ class pspicture(object):
         This function is almost never used because most of time we want to pspicture
         to be included in a figure.
         """
-        self.fichier = Fichier(f)
+        self.fichier = SmallComputations.Fichier(f)
         self.fichier.file.write(self.contenu())
         self.fichier.file.close()
 
