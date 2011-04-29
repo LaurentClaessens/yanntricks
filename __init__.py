@@ -77,6 +77,8 @@ def PolarSegment(P,r,theta):
     alpha = radian(theta)
     return Segment(P, Point(P.x+r*math.cos(alpha),P.y+r*math.sin(alpha)) )
 
+def ParametricCurve(f1,f2,llamI=None,llamF=None)
+
 class ParametricCurve(object):
     """
     This class describes a parametric curve.
@@ -455,9 +457,10 @@ class ParametricCurve(object):
         a.append("x(t)=%s"%repr(self.f1.sage(x=t)))
         a.append("y(t)=%s"%repr(self.f2.sage(x=t)))
         return "\n".join(a)
+
 def PolarCurve(fr,ftheta=None):
     """
-    return the parametric curve (class ParametricCurve) corresponding to the 
+    return the parametric curve (:class:`ParametricCurve`) corresponding to the 
     curve of equation r=f(theta) in polar coordinates.
 
     If ftheta is not given, return the curve
