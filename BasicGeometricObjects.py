@@ -496,10 +496,10 @@ class GraphOfACircle(GraphOfAnObject):
         v.arrow_type="vector"
         return v
     # Here, angleI and angleF are given in degree while parametric_plot uses radian.
-    def get_minmax_data(self,angleI,angleF):
+    def get_minmax_data(self,angleI,angleF,n=3):
         deb = radian(angleI)
         fin = radian(angleF)
-        return MyMinMax(self.parametric_curve().get_minmax_data(deb,fin))
+        return MyMinMax(self.parametric_curve().get_minmax_data(deb,fin),n)
     def xmax(self,angleI,angleF):
         return self.get_minmax_data(angleI,angleF)['xmax']
     def xmin(self,angleI,angleF):
@@ -1405,7 +1405,7 @@ class GeometricImplicitCurve(object):
             sage: F=GeometricImplicitCurve(x-y==3)
             sage: graph=F.graph((x,-3,3),(y,-2,2))
             sage: print graph.bounding_box()
-            (1.0,-2.0),(3.0,1.88737914186e-15)
+            (1.0,-2.0),(3.0,0.0)
 
         """
         return GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
@@ -1462,7 +1462,7 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
         self.plot_points=plot_points
         self.paths=get_paths_from_implicit_plot(self.implicit_plot)
         self.parameters.color="blue"
-    def get_minmax_data(self,dict=True):
+    def get_minmax_data(self,decimals=3,dict=True):
         """
         Return a dictionary whose keys give the xmin, xmax, ymin, and ymax
         data for this graphic.
@@ -1475,10 +1475,11 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
         (x, y)
         sage: F=ImplicitCurve(x**2+y**2==sqrt(2),(x,-5,5),(y,-4,4),plot_points=300)
         sage: F.get_minmax_data()
-        {'xmin': -1.18858977066, 'ymin': -1.18845247289, 'ymax': 1.18845247289, 'xmax': 1.18858977066}
+        {'xmin': -1.1890000000000001, 'ymin': -1.1879999999999999, 'ymax': 1.1879999999999999, 'xmax': 1.1890000000000001}
         sage: F.plot_points=10
         sage: F.get_minmax_data()
-        {'xmin': -1.18858977066, 'ymin': -1.18845247289, 'ymax': 1.18845247289, 'xmax': 1.18858977066}
+        {'xmin': -1.1890000000000001, 'ymin': -1.1879999999999999, 'ymax': 1.1879999999999999, 'xmax': 1.1890000000000001}
+
         """
         tot_points=[]
         for path in self.paths :
@@ -1490,9 +1491,9 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
         ymin=min(yy)
         ymax=max(yy)
         if dict:
-            return MyMinMax({'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax})
+            return MyMinMax({'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax},decimals=decimals)
         else:
-            return xmin,xmax,ymin,ymax
+            return around(xmin,decimals),around(xmax,decimals),around(ymin,decimals),around(ymas,decimals)
     def xmin(self):
         return self.get_minmax_data()['xmin']
     def xmax(self):
@@ -1519,7 +1520,7 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
         sage: f=x**2+2*y**2
         sage: G=ImplicitCurve(f==sqrt(2),(x,-5,5),(y,-5,5),plot_points=200)
         sage: print G.bounding_box()
-        (-1.18795591533,-0.840500197448),(1.18795591533,0.840500197448)
+        (-1.188,-0.841),(1.188,0.841)
         """
         bb = BoundingBox( Point(self.xmin(),self.ymin()),Point(self.xmax(),self.ymax())  )
         return bb
@@ -2823,13 +2824,14 @@ class GraphOfAphyFunction(GraphOfAnObject):
         
             sage: f=phyFunction(x)
             sage: f.get_minmax_data(-3,pi)
-            {'xmin': -3.0, 'ymin': -3.0, 'ymax': 3.1415926535897931, 'xmax': 3.1415926535897931}
+            {'xmin': -3.0, 'ymin': -3.0, 'ymax': 3.1419999999999999, 'xmax': 3.1419999999999999}
+
 
         In the case of the sine function, the min and max are almost -1 and 1::
 
             sage: f=phyFunction(sin(x))
             sage: f.get_minmax_data(0,2*pi)
-            {'xmin': 0.0, 'ymin': -0.99996566005741139, 'ymax': 0.99999992589514664, 'xmax': 6.2831853071795862}
+            {'xmin': 0.0, 'ymin': -1.0, 'ymax': 1.0, 'xmax': 6.2830000000000004}
 
         NOTE:
 
@@ -2891,39 +2893,6 @@ class GraphOfAphyFunction(GraphOfAnObject):
         if not Mx :
             Mx=self.Mx
         return SurfaceUnderFunction(self,mx,Mx)
-    def __call__(self,xe,numerical=False):
-        """
-        return the value of the function at given point
-
-        INPUT:
-        - ``xe`` - a number. The point at which we want to evaluate the function
-        - ``numerical`` (boolean, default=False) If True, return a numerical_approximation
-
-        EXAMPLES:
-        sage: var('x')
-        x
-        sage: f=phyFunction(cos(x))
-        sage: f(1)
-        cos(1)
-        sage: f(1,numerical=True)
-        0.540302305868140
-        """
-        if numerical :
-            return numerical_approx(self.sageFast(xe))
-        else :
-            return self.sage(x=xe)
-    def __pow__(self,n):
-        return phyFunction(self.sage**n)
-    def __mul__(self,other):
-        try :
-            f=phyFunction(self.sage*other)
-        except TypeError :
-            f=phyFunction(self.sage * other.sage)
-        return f
-    def __add__(self,other):
-        return phyFunction(self.sage+other.sage)
-    def __str__(self):
-        return str(self.sage)
     def params(self):
         self.conclude_params()
         self.add_option("plotpoints=%s"%str(self.plotpoints))
@@ -2966,6 +2935,41 @@ class GraphOfAphyFunction(GraphOfAnObject):
             a.append("\psplot["+self.params()+"]{"+str(deb)+"}{"+str(fin)+"}{"+self.pstricks+"}")
         #return a               # I do not remember why it was like that. See also the change in SurfaceBetweenFunctions.pstricks_code (13005)
         return "\n".join(a)
+    def __call__(self,xe,numerical=False):
+        """
+        return the value of the function at given point
+
+        INPUT:
+        - ``xe`` - a number. The point at which we want to evaluate the function
+        - ``numerical`` (boolean, default=False) If True, return a numerical_approximation
+
+        EXAMPLES::
+
+            sage: x=var('x')
+            sage: f=phyFunction(cos(x))
+            sage: f(1)
+            cos(1)
+            sage: f(1,numerical=True)
+            0.540302305868140
+        """
+        if numerical :
+            return numerical_approx(self.sageFast(x=xe))
+        else :
+            return self.sage(x=xe)
+    def __pow__(self,n):
+        return phyFunction(self.sage**n)
+    def __mul__(self,other):
+        try :
+            f=phyFunction(self.sage*other)
+        except TypeError :
+            f=phyFunction(self.sage * other.sage)
+        return f
+    def __rmul__(self,other):
+        return self*other
+    def __add__(self,other):
+        return phyFunction(self.sage+other.sage)
+    def __str__(self):
+        return str(self.sage)
 
 def get_paths_from_plot(p):
     """
@@ -3036,7 +3040,7 @@ def get_paths_from_implicit_plot(p):
         sage: len(paths)
         4
         sage: type(paths[0][1])
-        <class 'BasicGeometricObjects.GraphOfAPoint'>
+        <class 'phystricks.BasicGeometricObjects.GraphOfAPoint'>
         sage: print paths[1][3]
         Point(4.87405534614,-4.6644295302)
     """
@@ -3150,7 +3154,8 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         sage: C=Circle(Point(0,0),1)
         sage: n=400
         sage: InterpolationCurve([C.get_point(i*SR(360)/n,advised=False) for i in range(n)]).get_minmax_data()
-        {'xmin': -1, 'ymin': -1, 'ymax': 1, 'xmax': 1}
+        {'xmin': -1.0, 'ymin': -1.0, 'ymax': 1.0, 'xmax': 1.0}
+
         """
         xmin=min([P.x for P in self.points_list])
         xmax=max([P.x for P in self.points_list])
@@ -3174,11 +3179,12 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
 
         EXAMPLES:    
         sage: print InterpolationCurve([Point(0,0),Point(1,1)]).bounding_box()
-        (0,0),(1,1)
+        (0.0,0.0),(1.0,1.0)
+
         sage: C=Circle(Point(0,0),1)
         sage: n=400
         sage: print InterpolationCurve([C.get_point(i*SR(360)/n,advised=False) for i in range(n)]).bounding_box()
-        (-1,-1),(1,1)
+        (-1.0,-1.0),(1.0,1.0)
 
         NOTE:
         Since the bounding box is computed from the give points while the curve is an interpolation,
@@ -3188,7 +3194,8 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         EXAMPLE:
         sage: F=InterpolationCurve([Point(-1,1),Point(1,1),Point(1,-1),Point(-1,-1)])
         sage: print F.bounding_box()
-        (-1,-1),(1,1)
+        (-1.0,-1.0),(1.0,1.0)
+
         """
         bb = BoundingBox( Point(self.xmin(),self.ymin()),Point(self.xmax(),self.ymax())  )
         return bb
@@ -3632,27 +3639,34 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         Oy=P.y+first.x*coefficient
         center=Point(Ox,Oy)
         return CircleOA(center,P)
-    def get_minmax_data(self,deb,fin):
+    def get_minmax_data(self,deb,fin,decimals=3):
         """
-        The difference between this and the get_minmax_data from Sage
-        if that here we cut to 3 digits. This is due to
-        the fact that we need the result to be reproducible
-        for tests.
+        Return the get_minmax_data from Sage.
 
-        WARNING: this is no more the case. See the example bellow.
+        INPUT:
+
+        - ``deb,fin`` - interval on which we are considering the function.
+        - ``decimals`` - (default=3) the number of decimals
+
+        OUTPUT:
+
+        A dictionary
 
         EXAMPLES::
-            
+
             sage: from phystricks import *
             sage: f=1.5*(1+cos(x))
             sage: cardioid=PolarCurve(f)
             sage: cardioid.get_minmax_data(0,2*pi)
-            {'xmin': -0.37499998976719928, 'ymin': -1.9484987597486128, 'ymax': 1.9482356168366479, 'xmax': 3.0}
+            {'xmin': -0.375, 'ymin': -1.948, 'ymax': 1.948, 'xmax': 3.0}
+
+        NOTE:
+
+        Cutting to 3 decimals is a way to produce more reproducible results. 
+        It turns out the Sage's get_minmax_data produce unpredictable figures.
 
         """
-        pp=parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) )
-        dico_sage = MyMinMax(parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) ).get_minmax_data())
-        return MyMinMax(dico_sage)
+        return MyMinMax(parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) ).get_minmax_data(),decimals=decimals)
     def xmax(self,deb,fin):
         return self.get_minmax_data(deb,fin)['xmax']
     def xmin(self,deb,fin):
@@ -3997,4 +4011,4 @@ class BoundingBox(object):
     def __str__(self):
         return "(%s,%s),(%s,%s)"%tuple(str(x) for x in(self.mx,self.my,self.Mx,self.My))
 
-import main    
+import phystricks.main as main

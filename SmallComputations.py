@@ -403,17 +403,38 @@ def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
     justification=last_justification+"Distance between %s and %s is larger than %s."%(str(v1),str(v2),str(epsilon))
     return False,justification
 
-
-def MyMinMax(dico_sage,n=3):
+def around(x,decimals):
     """
-    return the dictionary with numbers cut to `n` digits.
+    return `x` truncated after a certain number of decimals.
 
-    WARNING: this is no more the case. See the example below.
+    INPUT:
+
+        - ``x`` - a number
+        - ``deciamsl`` - integer
+
+        OUTPUT:
+
+        A number.
+
+        EXAMPLES::
+
+            sage: around(100.6867867,3)
+            100.687
+
+    """
+    from numpy import around as numpy_around
+    a=[x]
+    return numpy_around(a,decimals=decimals)[0]
+
+def MyMinMax(dico_sage,decimals=3):
+    """
+    return the dictionary with numbers cut to `decimals` digits.
 
     INPUT:
 
     - ``dico_sage`` - a dictionary with number values
-    - ``n`` - (default=3) the number of digits to keep
+
+    - ``decimals`` - (default=3) the number of digits after the unity to keep
 
     OUTPUT:
 
@@ -422,13 +443,11 @@ def MyMinMax(dico_sage,n=3):
     EXAMPLES:
 
         sage: d={'xmin': -0.3456475, 'ymin': -1.94565, 'ymax': 1.7895, 'xmax': 3.0000124}
-        sage: MyMinMax(d)
+        sage: MyMinMax(d,decimals=2)
         {'xmin': -0.345647500000000, 'ymin': -1.94565000000000, 'ymax': 1.78950000000000, 'xmax': 3.00001240000000}
 
     """
-    return dico_sage
-    return dict(   [ (k,numerical_approx(dico_sage[k],digits=n)) for k in dico_sage.keys()  ]   )
-
+    return dict(   [ (k,around(numerical_approx(dico_sage[k]),decimals=decimals)) for k in dico_sage.keys()  ]   )
 
 def MultipleLower(x,m):
     """ return the biggest multiple of m which is lower or equal to x"""
@@ -559,6 +578,7 @@ def PointToPolaire(P=None,x=None,y=None):
 
     You can provide a point::
 
+        sage: from phystricks import Point
         sage: print PointToPolaire(Point(1,1))
         PolarCoordinates, r=sqrt(2),degree=45,radian=1/4*pi
 

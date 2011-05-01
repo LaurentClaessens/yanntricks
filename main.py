@@ -22,7 +22,7 @@ from sage.all import *
 import codecs, sys
 
 import BasicGeometricObjects
-import SmallComputations
+import phystricks.SmallComputations as SmallComputations
 
 from phystricks import *
 

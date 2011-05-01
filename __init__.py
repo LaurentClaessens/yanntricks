@@ -59,7 +59,7 @@ from sage.all import *
 import codecs
 import math, sys, os
 
-from SmallComputations import *
+from phystricks.SmallComputations import *
 
 def EnsurephyFunction(f):
     if "sage" in dir(f):        # This tests in the same time if the type if phyFunction or GraphOfAphyFunction
@@ -235,7 +235,7 @@ def MeasureLength(seg,dist=0.1):
 
         sage: measureOA=MeasureLength(Segment(O,A),0.1)
         sage: print measureOA.mark_point()
-        Point(0.500000000000000,-0.100000000000000)
+        Point(0.5,-0.100000000000000)
 
     Horizontal line directed from left to right::
 
@@ -370,18 +370,18 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,reverse1=False,re
     the surface delimited by
 
     curve1:        A1 -> B1
-    up_segment:    B1 -> B2
+    Fsegment:    B1 -> B2
     curve2:        A2 -> B2
-    low_segment:   A2 -> A1
+    Isegment:   A2 -> A1
         
     This is wrong since the last point of each line is not the first
     point of the next line.
 
     For that reason, the second curve is, by default, reversed in order to get
     curve1:             A1 -> B1
-    up_segment:         B1 -> B2
+    Fsegment:         B1 -> B2
     curve2 (reversed):  B2 -> A2
-    low_segment:        A2 -> A1
+    Isegment:        A2 -> A1
 
     OUTPUT:
     An object ready to be draw.
@@ -392,11 +392,11 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,reverse1=False,re
         sage: curve2=ParametricCurve(x,x**3).graph(2,5)
         sage: region=SurfaceBetweenParametricCurves(curve1,curve2)
 
-    The segment "closing" the domain are available by the attributes `low_segment and up_segment`::
+    The segment "closing" the domain are available by the attributes `Isegment and Fsegment`::
 
-        sage: print region.low_segment
+        sage: print region.Isegment
         segment I=Point(2,8) F=Point(2,4)
-        sage: print region.up_segment
+        sage: print region.Fsegment
         segment I=Point(3,9) F=Point(5,125)
 
     The initial and final values of the parameters can be given in different ways.
@@ -1337,5 +1337,5 @@ if "--tests" in sys.argv :
     global_vars.perform_tests = True
 
 
-import BasicGeometricObjects 
-import main
+import phystricks.BasicGeometricObjects as BasicGeometricObjects
+import phystricks.main as main
