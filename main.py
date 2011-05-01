@@ -21,10 +21,8 @@
 from sage.all import *
 import codecs, sys
 
-from BasicGeometricObjects import BoundingBox
 import BasicGeometricObjects
 import SmallComputations
-import phystricks
 
 from phystricks import *
 
@@ -69,6 +67,7 @@ class TestPspictLaTeXCode(object):
         print justification
         print "Successful test for pspicture %s"%self.name
         print "---"
+
 sysargvzero = sys.argv[0][:]
 def counterName():
     r"""
@@ -532,14 +531,14 @@ class pspicture(object):
         self.xunit = 1
         self.yunit = 1
         self.LabelSep = 1
-        self.BB = BoundingBox()
-        self.math_BB = BoundingBox()     # self.BB and self.math_BB serve to add some objects by hand.
+        self.BB = BasicGeometricObjects.BoundingBox()
+        self.math_BB = BasicGeometricObjects.BoundingBox()     # self.BB and self.math_BB serve to add some objects by hand.
                                             # If you need the bounding box, use self.bounding_box()
                                             # or self.math_bounding_box()
-        self.axes = BasicGeometricObjects.Axes( Point(0,0),BoundingBox()  )
+        self.axes = BasicGeometricObjects.Axes( Point(0,0),BasicGeometricObjects.BoundingBox()  )
         self.single_axeX=self.axes.single_axeX
         self.single_axeY=self.axes.single_axeY
-        self.grid = Grid(BoundingBox())
+        self.grid = Grid(BasicGeometricObjects.BoundingBox())
 
         # The order of declaration is important, because it is recorded in the Separator.number attribute.
         self.separator_list = SeparatorList()
@@ -640,7 +639,7 @@ class pspicture(object):
             # If the graph is a bounding box of a mark, we recompute it
             # because a dilatation of the figure could have
             # changed the bounding box.
-            if isinstance(graph,BoundingBox):
+            if isinstance(graph,BasicGeometricObjects.BoundingBox):
                 if graph.parent:
                     if isinstance(graph.parent,Mark):
                         graph=graph.parent.bounding_box(self)
@@ -982,8 +981,12 @@ class pspicture(object):
         for graphe in [x.graph for x in self.record_draw_graph if x.take_math_BB]:
             try :
                 bb.AddBB(graphe.math_bounding_box(self))
-            except AttributeError:
+            except AttributeError,message:
                 print "Warning: it seems to me that object <%s> (type :%s) has no method math_boundig_box"%(str(graphe),type(graphe))
+                print "The error message was:"
+                print message
+                print "988", graphe
+                raise Debug
                 bb.append(graphe,self)
         return bb
     def contenu(self):              # pspicture

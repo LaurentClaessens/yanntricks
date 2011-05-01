@@ -1042,7 +1042,7 @@ class GraphOfAPoint(GraphOfAnObject):
             direction=seg.get_normal_vector()
 
         seg2=direction.fix_origin(self)
-        return phystricks.main.Intersection(seg,seg2)[0]
+        return main.Intersection(seg,seg2)[0]
 
         #if seg.vertical :
         #    return Point(seg.I.x,self.y)
@@ -2119,7 +2119,7 @@ class GraphOfASegment(GraphOfAnObject):
         sage: print a+b
         segment I=Point(1,1) F=Point(1,6)
         """
-        if isinstance(other,GeometricSegment):
+        if isinstance(other,GraphOfASegment):
             if self.I != other.I:
                 other=other.fix_origin(self.I)
             v=Vector(self.F.x-self.I.x+other.F.x-other.I.x, self.F.y-self.I.y+other.F.y-other.I.y,)
@@ -2540,29 +2540,32 @@ class GraphOfAnAngle(GraphOfAnObject,GeometricAngle):
         return "\n".join(l)
 
 class GraphOfAphyFunction(GraphOfAnObject):
+    """
+    INPUT:
+
+    - ``fun`` - sage symbolic expression that is to be interpreted as
+                a function of `x`.
+
+    - ``mx,Mx`` - the initial and end values of the variable.
+
+    NOTE :
+
+    The end-used has to use :func:`phyFunction` instead. The latter accepts more
+    types of arguments.
+    """
     def __init__(self,fun,mx,Mx):
         GraphOfAnObject.__init__(self,fun)
+        self.sage=fun
         var('x,y')
-        try:
-            # The technique to assure to have a function is taken from the
-            # answer by kcrisman in
-            # http://ask.sagemath.org/question/368/python-equivalent-of-txyxyxy
-            # Be careful : this induce the bug
-            # http://trac.sagemath.org/sage_trac/ticket/10246
-            # See the implementation of get_minmax_data
-            self.sage=symbolic_expression(fun).function(x)
-            try :
-                self.sageFast = self.sage._fast_float_
-            except (NotImplementedError,TypeError,ValueError) :    
-                # Happens when the derivative of the function is not implemented in Sage
-                # Also happens when there is a free variable,
-                # as an example
-                # F=GraphOfAVectorField(x,y)
-                self.sageFast = self.sage
-        except AttributeError,text:          # Happens when the function is given by a number like f=0  F=phyFunction(f)
-            raise AttributeError,text        # It is no more supposed to do that since I use self.sage=symbolic_expression(fun).function(x)
-            self.sage = SR(fun)
-            self.sageFast = self.sage._fast_float_(x)
+        self.sage=fun
+        try :
+            self.sageFast = self.sage._fast_float_
+        except (NotImplementedError,TypeError,ValueError) :    
+            # Happens when the derivative of the function is not implemented in Sage
+            # Also happens when there is a free variable,
+            # as an example
+            # F=GraphOfAVectorField(x,y)
+            self.sageFast = self.sage
         self.string = repr(self.sage)
         self.fx = self.string.replace("^","**").replace("x |--> ","")
         self.pstricks = SubstitutionMathPsTricks(self.fx)
@@ -2611,6 +2614,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
 
         EXAMPLES::
 
+            sage: from phystricks import *
             sage: f=phyFunction(x**2)
             sage: print f.derivative()
             x |--> 2*x
@@ -2851,12 +2855,14 @@ class GraphOfAphyFunction(GraphOfAnObject):
     def ymin(self,deb,fin):
         return self.get_minmax_data(deb,fin)['ymin']
     def maximum_global(self,mx,Mx):
+        raise DeprecationWarning, "This function was experimental."
         max = self.liste_extrema()[0]
         for p in self.liste_extrema() :
             if p.y > max.y : max = p
         return max
     # Donne le minimum de la fonction entre mx et Mx. 
     def minimum_global(self,mx,Mx):
+        raise DeprecationWarning, "This function was experimental."
         min = self.get_point(mx)
         for p in self.liste_extrema() :
             print "candidat : %s" %p.Affiche()
@@ -2874,7 +2880,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         Ag = Point( A.x-1,A.y-ca )
         return ( Segment(Ag,Ad) )
     def graph(self,mx,Mx):
-        return GraphOfAphyFunction(self,mx,Mx)
+        return GraphOfAphyFunction(self.sage,mx,Mx)
     def surface_under(self,mx=None,Mx=None):
         """
         Return the graph of a surface under the function.
@@ -3339,7 +3345,16 @@ class CustomSurface(GraphOfAnObject):
         return "\n".join(a)
 
 class GraphOfAPolygon(GraphOfAnObject):
-    def __init__(self,*args):
+    """
+    INPUT:
+
+    - ``args`` - a tuple of points.
+
+    NOTE:
+
+    This class is not intended to be used by the end-user. The latter has to use :func:`Polygon`.
+    """
+    def __init__(self,args):
         GraphOfAnObject.__init__(self,self)
         self.points_list=list(args)
         self.edges_list=[]
@@ -3971,3 +3986,5 @@ class BoundingBox(object):
         return BoundingBox(self.SW(),self.NE())
     def __str__(self):
         return "(%s,%s),(%s,%s)"%tuple(str(x) for x in(self.mx,self.my,self.Mx,self.My))
+
+import main    

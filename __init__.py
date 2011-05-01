@@ -54,23 +54,12 @@ COMMAND LINE ARGUMENTS:
                     See :class:`TestPspictLaTeXCode`
 """
 
-# __init__.py contains constructors, classes and functions to be used directly by the end-user
-# SmallComputations.py contains functions that does not requires phystricks.
-#                       these are string or number manipulations
-# main.py contains the LaTeX aspects
-# BasicGeometricObjects.py contains the code the geometry.
-#
-# Ideally, __init__.py should only contain functions that return instances of classes from BasicGeometricObjects.py
-
 #from __future__ import division
 from sage.all import *
 import codecs
 import math, sys, os
 
 from SmallComputations import *
-from constructors import *
-
-
 
 def EnsurephyFunction(f):
     if "sage" in dir(f):        # This tests in the same time if the type if phyFunction or GraphOfAphyFunction
@@ -155,10 +144,32 @@ def PolarCurve(fr,ftheta=None):
 
 def phyFunction(fun,mx=None,Mx=None):
     """
-    Represent a function
+    Represent a function.
+
+    INPUT:
+
+    - ``fun`` - a function.
+    - ``mx,Mx`` - initial and final value of the argument.
+
+    EXAMPLES::
+    
+        sage: f=phyFunction(cos(x))
+        sage: f(pi/2)
+        0
+
+        sage: g=phyFunction(2*f,0,pi)
+        sage: g(pi)
+        -2
     """
-    if isinstance(fun,BasicGeometricObjects.GraphOfAphyFunction):
-        return GraphOfAphyFunction(fun.phyFunction,mx,Mx)
+    # The first try is that the given expression is already a phyFunction.
+    try:
+        return fun.graph(mx,mX)     
+    except AttributeError:
+        pass
+    # The second try is that `fun` is something that Sage knows.
+    #fun=SR(fun)         # This manage the case of constant functions. I think that symbolic_expression is sufficient (May, 1, 2011)
+    x=var('x')
+    symbolic=symbolic_expression(fun).function(x)
     return BasicGeometricObjects.GraphOfAphyFunction(fun,mx,Mx)
 
 def MeasureLength(seg,dist=0.1):
@@ -1170,12 +1181,6 @@ def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
     return BasicGeometricObjects.GeometricVectorField(fx,fy).graph(xvalues,yvalues,draw_points)
 
 
-
-
-import BasicGeometricObjects 
-import main
-
-
 global_vars = global_variables()
 if "--eps" in sys.argv :
     global_vars.exit_format="eps"
@@ -1196,3 +1201,7 @@ if "--create-tests" in sys.argv :
     global_vars.create_formats["test"] = True
 if "--tests" in sys.argv :
     global_vars.perform_tests = True
+
+
+import BasicGeometricObjects 
+import main
