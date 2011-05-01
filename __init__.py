@@ -80,7 +80,7 @@ def PolarSegment(P,r,theta):
     returns a segment on the base point P (class Point) of length r angle theta (degree)
     """
     alpha = radian(theta)
-    return Segment(P, Point(P.x+r*math.cos(alpha),P.y+r*math.sin(alpha)) )
+    return Segment(P, Point(P.x+r*cos(alpha),P.y+r*sin(alpha)) )
 
 #def ParametricCurve(f1,f2=None,llamI=None,llamF=None):
 def ParametricCurve(*args):
