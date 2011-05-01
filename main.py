@@ -783,6 +783,10 @@ class pspicture(object):
             f=open(self.interWriteFile,"r")
         except IOError :
             print "Warning: the auxiliary file %s seems not to exist. Compile your LaTeX file."%self.interWriteFile
+            if global_vars.perform_tests :
+                raise ValueError,"I cannot say that a test succeed if I cannot determine the bounding box"
+            if global_vars.create_formats["test"] :
+                raise ValueError, "I cannot create a test file when I'm unable to compute the bounding box."
             return d
         idlist = f.read().replace('\n','').replace(' ','').replace('\\par','').split("-")
         f.close()
