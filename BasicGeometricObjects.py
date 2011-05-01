@@ -2558,7 +2558,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         var('x,y')
         self.sage=fun
         try :
-            self.sageFast = self.sage._fast_float_
+            self.sageFast = self.sage._fast_float_(x)
         except (NotImplementedError,TypeError,ValueError) :    
             # Happens when the derivative of the function is not implemented in Sage
             # Also happens when there is a free variable,
@@ -2953,7 +2953,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
             0.540302305868140
         """
         if numerical :
-            return numerical_approx(self.sageFast(x=xe))
+            return numerical_approx(self.sageFast(xe))
         else :
             return self.sage(x=xe)
     def __pow__(self,n):
