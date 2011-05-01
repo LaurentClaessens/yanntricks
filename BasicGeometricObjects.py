@@ -580,7 +580,7 @@ class GraphOfACircle(GraphOfAnObject):
             if self.angleF.degree==360:        # Because the function radian simplifies modulo 2pi.
                 alphaF=2*pi
             curve = self.parametric_curve()
-            G = GraphOfAParametricCurve(curve,alphaI,alphaF)
+            G = ParametricCurve(curve,alphaI,alphaF)
             G.add_option(self.params())
             # The two following lines are a pity. If I add some properties, I have to change by hand...
             G.parameters.style = self.parameters.style
@@ -625,9 +625,11 @@ class Waviness(object):
         self.dx = dx
         self.dy = dy
         self.obj = self.graph.obj
-        if type(self.obj) == phyFunction :
+        try:
             self.Mx = self.graph.Mx
             self.mx = self.graph.mx
+        except AttributeError :
+            pass
     def get_wavy_points(self):
         if type(self.obj) == phyFunction :
             return self.obj.get_wavy_points(self.mx,self.Mx,self.dx,self.dy)
@@ -2034,7 +2036,7 @@ class GraphOfASegment(GraphOfAnObject):
             v.arrow_type="vector"
         return self.return_deformations(v)
     def graph(self):
-        return GraphOfASegment(self)
+        return GraphOfASegment(self.I,self.F)
     def default_associated_graph_class(self):
         """Return the class which is the Graph associated type"""
         return GraphOfASegment
@@ -3082,7 +3084,7 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
                 self.Mx[i]=interval[1]
 
             if self.mx[i] == None :
-                raise ValueError, "Cannot determine the initial or final value of the parameter for %s"%str(curve[i])
+                raise ValueError, "Cannot determinate the initial or final value of the parameter for %s"%str(curve[i])
 
             if "parameters" in dir(curve[i]):
                 curve[i].parameters.replace_to(self.curve[i].parameters)
@@ -3402,7 +3404,6 @@ class GraphOfASurfaceUnderFunction(SurfaceBetweenFunctions):
     def __str__(self):
         return "SurfaceUnderFunction %s x:%s->%s"%(self.f,str(self.mx),str(self.Mx))
 
-
 class GraphOfAParametricCurve(GraphOfAnObject):
     # The derivatives of the parametric curves are stored in the
     # dictionary attribute self._derivative_dict
@@ -3649,7 +3650,8 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             {'xmin': -0.37499998976719928, 'ymin': -1.9484987597486128, 'ymax': 1.9482356168366479, 'xmax': 3.0}
 
         """
-        dico_sage = MyMinMax(parametric_plot( (self.f1,self.f2), (deb,fin) ).get_minmax_data())
+        pp=parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) )
+        dico_sage = MyMinMax(parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) ).get_minmax_data())
         return MyMinMax(dico_sage)
     def xmax(self,deb,fin):
         return self.get_minmax_data(deb,fin)['xmax']

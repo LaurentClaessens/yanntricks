@@ -82,13 +82,16 @@ def PolarSegment(P,r,theta):
     alpha = radian(theta)
     return Segment(P, Point(P.x+r*math.cos(alpha),P.y+r*math.sin(alpha)) )
 
-def ParametricCurve(f1,f2,llamI=None,llamF=None):
+#def ParametricCurve(f1,f2=None,llamI=None,llamF=None):
+def ParametricCurve(*args):
     """
     This class describes a parametric curve.
 
     INPUT:
 
     - ``f1,f2`` - functions.
+
+    Alternatively you can give a parametric curve as only argument.
 
     OUTPUT:
     an object ready to be drawn.
@@ -102,16 +105,33 @@ def ParametricCurve(f1,f2,llamI=None,llamF=None):
         sage: print F.pstricks_code()
         \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{-2.00000000000000}{3.00000000000000}{t | t^2 }
 
-    Notice that due to several `@lazy_attribute`, changing the components after creation could be buggy.
-
+    Notice that due to several `@lazy_attribute`, changing the components after creation could produce funny results.
 
     .. literalinclude:: phystricksCycloide.py
 
     .. image:: Picture_FIGLabelFigCycloidePICTCycloide-for_eps.png
 
     """
-    f1=EnsurephyFunction(f1)
-    f2=EnsurephyFunction(f2)
+    # First, we consider the case in which two functions are given
+
+    llamI=None
+    llamF=None
+    if "f2" not in dir(args[0]):
+        f1=args[0]
+        f2=args[1]
+        if len(args)>2:
+            llamI=args[2]
+            llamF=args[3]
+        f1=EnsurephyFunction(f1)
+        f2=EnsurephyFunction(f2)
+
+    # Then we consider the case in which the first argument is a parametric curve
+    else :
+        f1=EnsurephyFunction(args[0].f1)
+        f2=EnsurephyFunction(args[0].f2)
+        if len(args)>1:
+            llamI=args[1]
+            llamF=args[2]
     return BasicGeometricObjects.GraphOfAParametricCurve(f1,f2,llamI,llamF)
 
 def PolarCurve(fr,ftheta=None):
@@ -519,9 +539,31 @@ def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
     .. image:: Picture_FIGLabelFigexSurfaceBetweenFunctionPICTexSurfaceBetweenFunction-for_eps.png
 
     """
-    curve1=ParametricCurve(x,f1)
-    curve2=ParametricCurve(x,f2)
-    return SurfaceBetweenParametricCurves(curve1,curve2,interval=(mx,Mx))
+    mx1=mx
+    mx2=mx
+    Mx1=Mx
+    Mx2=Mx
+    if "mx" in dir(f1):
+        mx1=f1.mx
+        Mx1=f1.Mx
+    if "mx" in dir(f2):
+        mx2=f2.mx
+        Mx2=f2.Mx
+    # The following is a precaution because it happens that
+    # f1 has a "mx" attribute which is set to None while
+    # a mx is given here.
+    if mx1 is None:
+        mx1=mx
+    if Mx1 is None:
+        Mx1=Mx
+    if mx2 is None:
+        mx2=mx
+    if Mx2 is None:
+        Mx2=Mx
+    x=var('x')
+    curve1=ParametricCurve(x,f1,mx1,Mx1)
+    curve2=ParametricCurve(x,f2,mx2,Mx2)
+    return SurfaceBetweenParametricCurves(curve1,curve2)
 
 def Vector(*args):
     """
@@ -1188,6 +1230,90 @@ def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
         return BasicGeometricObjects.GeometricVectorField(fx,fy)
     return BasicGeometricObjects.GeometricVectorField(fx,fy).graph(xvalues,yvalues,draw_points)
 
+def unify_point_name(s):
+    r"""
+    Internet s as the pstricks code of something and return a chain with
+    all the points names changed to "Xaaaa", "Xaaab" etc.
+
+    Practically, it changes the strings like "{abcd}" to "{Xaaaa}".
+
+    When "{abcd}" is found, it also replace the occurences of "(abcd)".
+    This is because the marks of points are given by example as
+    '\\rput(abcd){\\rput(0;0){$-2$}}'
+
+    This serves to build more robust doctests by providing strings in which
+    we are sure that the names of the points are the first in the list.
+
+    INPUT:
+
+    - ``s`` - a string
+
+    OUTPUT:
+    string
+
+    EXAMPLES:
+    
+    In the following example, the points name in the segment do not begin
+    by "aaaa" because of the definition of P, or even because of other doctests executed before.
+    (due to complex implementation, the names of the points are
+    more or less unpredictable and can change)
+
+    ::
+
+        sage: P=Point(3,4)
+        sage: S = Segment(Point(1,1),Point(2,2))
+        sage: print S.pstricks_code()       # random
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){aaad}
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](2.00000000000000,2.00000000000000){aaae}
+        <BLANKLINE>
+        \pstLineAB[linestyle=solid,linecolor=black]{aaad}{aaae}
+
+
+    However, using the function unify_point_name, the returned string begins with "Xaaaa" ::
+
+        sage: print unify_point_name(S.pstricks_code())
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaaa}
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](2.00000000000000,2.00000000000000){Xaaab}
+        <BLANKLINE>
+        \pstLineAB[linestyle=solid,linecolor=black]{Xaaaa}{Xaaab}
+
+    Notice that the presence of "X" is necessary in order to avoid
+    conflicts when one of the points original name is one of the new points name as in the following example ::
+
+        sage: s="{xxxx}{aaaa}{yyyy}"
+        sage: print unify_point_name(s)
+        {Xaaaa}{Xaaab}{Xaaac}
+
+    Without the additional X,
+
+    1. The first "xxxx" would be changed to "aaaa".
+    2. When changing "aaaa" into "aaab", the first one
+            would be changed too.
+
+    ::
+
+        sage: P=Point(-1,1)
+        sage: P.put_mark(0.3,90,"$A$")
+        sage: unify_point_name(P.mark.pstricks_code())
+        '\\pstGeonode[](-1.00000000000000,1.30000000000000){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$A$}}'
+    """
+    import re
+
+    point_pattern=re.compile("({[a-zA-Z]{4,4}})")
+    match = point_pattern.findall(s)
+
+    rematch=[]
+    for m in match:
+        n=m[1:-1]       # I transform "{abcd}" into "abcd"
+        if n not in rematch:
+            rematch.append(n)
+
+    names=BasicGeometricObjects.PointsNameList()
+    for m in rematch:
+        name=names.next()
+        s=s.replace("{%s}"%m,"{X%s}"%name).replace("(%s)"%m,"(X%s)"%name)
+
+    return s
 
 global_vars = global_variables()
 if "--eps" in sys.argv :
