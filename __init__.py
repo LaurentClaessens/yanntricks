@@ -67,8 +67,24 @@ from sage.all import *
 import codecs
 import math, sys, os
 
-from main import figure
-#from BasicGeometricObjects import
+from SmallComputations import *
+from constructors import *
+
+
+
+def EnsurephyFunction(f):
+    if "sage" in dir(f):        # This tests in the same time if the type if phyFunction or GraphOfAphyFunction
+        return phyFunction(f.sage)
+    if "phyFunction" in dir(f):
+        return f.phyFunction()
+    else :
+        return phyFunction(f)
+
+def EnsureParametricCurve(curve):
+    if "parametric_curve" in dir(curve):
+        return curve.parametric_curve()
+    else :
+        return curve
 
 def PolarSegment(P,r,theta):
     """
@@ -107,9 +123,7 @@ def ParametricCurve(f1,f2,llamI=None,llamF=None):
     """
     f1=EnsurephyFunction(f1)
     f2=EnsurephyFunction(f2)
-    return GraphOfAParametricCurve(f1,f2,llamI,llamF)
-
-
+    return BasicGeometricObjects.GraphOfAParametricCurve(f1,f2,llamI,llamF)
 
 def PolarCurve(fr,ftheta=None):
     """
@@ -147,7 +161,7 @@ def phyFunction(fun,mx=None,Mx=None):
         return GraphOfAphyFunction(fun.phyFunction,mx,Mx)
     return BasicGeometricObjects.GraphOfAphyFunction(fun,mx,Mx)
 
-class MeasureLength(BasicGeometricObjects.GraphOfASegment):
+def MeasureLength(seg,dist=0.1):
     """
     When a segment exists, one wants sometimes to denote its length drawing a double-arrow parallel to the segment. This is what this class is intended to.
 
@@ -216,44 +230,10 @@ class MeasureLength(BasicGeometricObjects.GraphOfASegment):
 
     You are invited to use advised_mark_angle. If not the position of the mark
     could be unpredictable.
+    
+    return BasicGeometricObjects.GraphOfAMeasureLength(seg,dist)
+
     """
-    def __init__(self,seg,dist=0.1):
-        try :
-            self.segment=seg.segment
-        except AttributeError :
-            self.segment=seg
-        self.dist=dist
-        self.delta=seg.rotation(-90).fix_size(self.dist)
-        self.mseg=seg.translate(self.delta)
-        GraphOfASegment.__init__(self,self.mseg)
-        self.advised_mark_angle=self.delta.angle()
-        self.mI=self.mseg.I
-        self.mF=self.mseg.F
-    def math_bounding_box(self,pspict=None):
-        return GraphOfASegment(self.mseg).math_bounding_box(pspict)
-    def bounding_box(self,pspict=None):
-        bb=self.mseg.bounding_box(pspict)
-        if self.marque:
-            C=self.mseg.center()
-            C.marque=self.marque
-            C.mark=self.mark
-            C.mark.graph=C
-            bb.AddBB(C.bounding_box(pspict))
-        return bb
-    def mark_point(self):
-        return self.mseg.center()
-    def pstricks_code(self,pspict=None):
-        a=[]
-        C=self.mseg.center()
-        vI=AffineVector(C,self.mI)
-        vF=AffineVector(C,self.mF)
-        vI.parameters=self.parameters
-        vF.parameters=self.parameters
-        a.append(vI.pstricks_code())
-        a.append(vF.pstricks_code())
-        #if self.marque :
-        #    a.append(self.mark.pstricks_code(pspict))
-        return "\n".join(a)
 
 def InterpolationCurve(points_list,context_object=None):
     """
@@ -449,7 +429,7 @@ def Polygon(*args):
     .. literalinclude:: phystricksExPolygone.py
     .. image:: Picture_FIGLabelFigExPolygonePICTExPolygone-for_eps.png
     """
-    return GraphOfAPolygon(args)
+    return BasicGeometricObjects.GraphOfAPolygon(args)
 
 def CustomSurface(*args):
     """
@@ -485,7 +465,7 @@ def CustomSurface(*args):
 
     This is somewhat the more general use of the pstricks's macro \pscustom
     """
-    return GraphOfACustomSurface(args)
+    return BasicGeometricObjects.GraphOfACustomSurface(args)
 
 def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
     r"""
@@ -521,7 +501,7 @@ def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
 
     """
     #TODO: Return a SurfaceBetweenParametricCurves instead.
-    return GraphOfASurfaceBetweenFunctions(f1,f2,mx,Mx)
+    return BasicGeometricObjects.GraphOfASurfaceBetweenFunctions(f1,f2,mx,Mx)
 
 
 def Vector(*args):
@@ -567,10 +547,10 @@ def Circle(center,radius,angleI=0,angleF=360):
 
     """
     # TODO: in the last example, the radian value should be 2*pi.
-    return GraphOfACircle(center,radius)
+    return BasicGeometricObjects.GraphOfACircle(center,radius)
 
 def Rectangle(NW,SE):
-    return GraphOfARectangle(GeometricRectangle(NW,SE))
+    return BasicGeometricObjects.GraphOfARectangle(GeometricRectangle(NW,SE))
 
 def AffineVector(A=None,B=None):
     """
@@ -652,7 +632,7 @@ class Grid(object):
     """
     def __init__(self,bb):
         self.BB = bb
-        self.options = Options()
+        self.options = BasicGeometricObjects.Options()
         self.separator_name="GRID"
         self.add_option({"Dx":1,"Dy":1})        # Default values, have to be integer.
         self.Dx = self.options.DicoOptions["Dx"]
@@ -660,19 +640,19 @@ class Grid(object):
         self.num_subX = 2
         self.num_subY = 2
         self.draw_border = False
-        self.main_horizontal = GraphOfASegment(Segment(Point(0,1),Point(1,1)))  # Ce segment est bidon, c'est juste pour les options de tracé.
+        self.main_horizontal = Segment(Point(0,1),Point(1,1))
         self.main_horizontal.parameters.color="gray"
         self.main_horizontal.parameters.style = "solid"
-        self.main_vertical = GraphOfASegment(Segment(Point(0,1),Point(1,1)))
+        self.main_vertical = Segment(Point(0,1),Point(1,1))
         self.main_vertical.parameters.color="gray"
         self.main_vertical.parameters.style = "solid"
-        self.sub_vertical = GraphOfASegment(Segment(Point(0,1),Point(1,1))) 
+        self.sub_vertical = Segment(Point(0,1),Point(1,1))
         self.sub_vertical.parameters.color="gray"
         self.sub_vertical.parameters.style = "dotted"
-        self.sub_horizontal = GraphOfASegment(Segment(Point(0,1),Point(1,1)))   
+        self.sub_horizontal = Segment(Point(0,1),Point(1,1))
         self.sub_horizontal.parameters.color="gray"
         self.sub_horizontal.parameters.style = "dotted"
-        self.border = GraphOfASegment(Segment(Point(0,1),Point(1,1)))   
+        self.border = Segment(Point(0,1),Point(1,1))
         self.border.parameters.color = "gray"
         self.border.parameters.style = "dotted"
     def bounding_box(self,pspict=None):     # This method is for the sake of "Special cases aren't special enough to break the rules."
@@ -810,7 +790,7 @@ class SingleAxe(object):
         self.base=base
         self.mx=mx
         self.Mx=Mx
-        self.options=Options()
+        self.options=BasicGeometricObjects.Options()
         self.IsLabel=False
         self.axes_unit=AxesUnit(self.base.length(),"")
         self.Dx=1
@@ -888,7 +868,7 @@ class SingleAxe(object):
             for P in self.graduation_points(pspict):
                 c.append(P.pstricks_code(pspict,with_mark=True))
         h=AffineVector(self.segment())
-        c.append(h.pstricks_code(pspicture))
+        c.append(h.pstricks_code(pspict))
         return "\n".join(c)
 
 def Intersection(f,g):
@@ -1118,8 +1098,9 @@ def PolarPoint(r,theta):
 
     """
     return Point(r*cos(radian(theta)),r*sin(radian(theta)))
+
 def Segment(A,B):
-    return GraphOfASegment(GeometricSegment(A,B))
+    return BasicGeometricObjects.GraphOfASegment(A,B)
 
 def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
     """
@@ -1185,8 +1166,15 @@ def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
 
     """
     if xvalues is None and yvalues is None and draw_points is None :
-        return GeometricVectorField(fx,fy)
-    return GeometricVectorField(fx,fy).graph(xvalues,yvalues,draw_points)
+        return BasicGeometricObjects.GeometricVectorField(fx,fy)
+    return BasicGeometricObjects.GeometricVectorField(fx,fy).graph(xvalues,yvalues,draw_points)
+
+
+
+
+import BasicGeometricObjects 
+import main
+
 
 global_vars = global_variables()
 if "--eps" in sys.argv :

@@ -30,8 +30,33 @@ Rather he has to use the constructors like :func:`Point`, :func:`AffineVector` a
 
 import math
 from sage.all import *
-#import types
 
+from phystricks import *
+
+def SubstitutionMathPsTricks(fx):
+    listeSubst = []
+    listeSubst.append(["**","^"])
+    listeSubst.append(["math.exp","2.718281828459045^"])
+    listeSubst.append(["e^","2.718281828459045^"])
+    for i in range(1,10):   
+        listeSubst.append(["math.log"+str(i),str(0.43429448190325*math.log(i))+"*log"])
+    listeSubst.append(["math.log","2.302585092994046*log"])     # because \psplot[]{1}{5}{log(x)} draws the logarithm in basis 10.
+    listeSubst.append(["log","2.302585092994046*log"])  
+    # Pour rappel, la formule est log_b(x)=log_a(x)/log_a(b)
+    listeSubst.append(["math.pi","3.141592653589793"])
+    listeSubst.append(["pi","3.141516"])
+    listeSubst.append(["math.cosh","COSH"])
+    listeSubst.append(["math.tan","TAN"])
+    listeSubst.append(["math.sinh","SINH"])
+    listeSubst.append(["math.sinc","SINC"])
+    listeSubst.append(["arccos","acos"])        # See the documentation of pst-math package
+    listeSubst.append(["arcsin","asin"])
+    listeSubst.append(["arctan","atan"])
+    listeSubst.append(["math.",""])
+    a = fx
+    for s in listeSubst :
+        a = a.replace(s[0],s[1])
+    return a
 
 def PointsNameList():
     """
@@ -160,6 +185,109 @@ def _vector_pstricks_code(segment,pspict=None):
 
 
 
+def Distance_sq(P,Q):
+    """ return the squared distance between P and Q """
+    return (P.x-Q.x)**2+(P.y-Q.y)**2
+
+def Distance(P,Q):
+    """ return the distance between P and Q """
+    return sqrt(Distance_sq(P,Q))
+
+def inner_product(v,w):
+    """
+    Return the inner product of vectors v and w
+
+
+    INPUT:
+    - ``v,w`` - two vectors or points
+
+    OUTPUT:
+    a number
+
+    If the vectors are not based at (0,0), make first 
+    the translation and return the inner product.
+
+    If a point is passed, it is considered as the vector
+    from (0,0).
+
+    EXAMPLES:
+    sage: from phystricks import *
+    sage: v=Vector(1,3)
+    sage: w=Vector(-5,7)
+    sage: inner_product(v,w)
+    16
+
+    sage: v=AffineVector(Point(1,1),Point(2,2))
+    sage: w=AffineVector(Point(-2,5),Point(-1,4))
+    sage: inner_product(v,w)
+    0
+    """
+    try:
+        a=v.Point()
+    except AttributeError:
+        a=v
+    try:
+        b=w.Point()
+    except AttributeError:
+        b=w
+    return a.x*b.x+a.y*b.y
+
+
+class Options(object):
+    """
+    Describe the drawing options of pstricks objects.
+
+    ATTRIBUTES :
+        self.DicoOptions : dictionnary which contains the options
+    METHODS :
+        self.merge_options(opt) : opt is an other object of the class Options. The method merges the two in the sense that opt is not
+                        changed, but 
+                        1. if opt contains a key more, it is added to self
+                        2. if a key of opt is different of the one of self, self is changed
+    """
+    def __init__(self):
+        self.DicoOptions = {}
+    # On ajoute une des options en donnant genre
+    # LineColor=blue,LineStyle=dashed
+    # Ou alors en donnant un dictionnaire genre
+    # {"Dx":1,"Dy":3}
+    def add_option(self,opt):
+        if opt :            # If the argument is empty.
+            try:
+                for op in opt.split(","):
+                    s = op.split("=")
+                    self.DicoOptions[s[0]] = s[1]
+            except AttributeError :
+                for op in opt.keys():
+                    self.DicoOptions[op] = opt[op]
+
+    def remove_option(self,opt):
+        del(self.DicoOptions[opt])
+    def merge_options(self,opt):
+        for op in opt.DicoOptions.keys():
+            self.add_option({op:opt[op]})
+    def extend_options(self,Opt):
+        for opt in Opt.DicoOptions.keys():
+            self.add_option(opt+"="+Opt.DicoOptions[opt])
+    # Afiter est une liste de noms d'options, et cette méthode retourne une instance de Options qui a juste ces options-là, 
+    # avec les valeurs de self.
+    def sousOptions(self,AFiter):
+        O = Options()
+        for op in self.DicoOptions.keys() :
+            if op in AFiter : O.add_option(op+"="+self.DicoOptions[op])
+        return O
+    def style_ligne(self):
+        return self.sousOptions(OptionsStyleLigne())
+    def code(self):
+        a = []
+        for op in self.DicoOptions.keys():
+            a.append(op+"="+self.DicoOptions[op])
+            a.append(",")
+        del a[-1:]
+        return "".join(a)
+    def __getitem__(self,opt):
+        return self.DicoOptions[opt]
+    
 
 class GraphOfAnObject(object):
     """ This class is supposed to be used to create other "GraphOfA..." by inheritance. It is a superclass. """
@@ -207,14 +335,1233 @@ class GraphOfAnObject(object):
         return self.options.code()
 
 
-class GeometricSegment(object):
+class GraphOfACircle(GraphOfAnObject):
     """
-    Describe the geometry of a segment or a vector
+    This is a circle, or an arc of circle.
+
+    INPUT:
+
+    - ``center`` - a point, the center of the circle.
+
+    - ``radius`` - a number, the radius of the circle.
+
+    - ``self.angleI`` - (default=0) the beginning angle of the arc (degree).
+
+    - ``self.angleF`` - (default=360) the ending angle of the arc (degree).
+
+
+    OUTPUT:
+
+    A circle ready to be drawn.
+
+    EXAMPLES::
+
+        sage: circle=Circle(Point(-1,1),3)
+        sage: print unify_point_name(circle.pstricks_code())
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-4.00000000000000,1.00000000000000){Xaaaa}
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-1.00000000000000,1.00000000000000){Xaaab}
+        \pstCircleOA[linestyle=solid,linecolor=black]{Xaaab}{Xaaaa}
+    
+    If you want the same circle but between the angles 45 and 78::
+        
+        sage: other_circle=circle.graph(45,78)
+        sage: print unify_point_name(other_circle.pstricks_code())
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.12132034355964,3.12132034355964){Xaaaa}
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-0.376264927546722,3.93444280220142){Xaaab}
+        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-1.00000000000000,1.00000000000000){Xaaac}
+        \pstArcOAB[linestyle=solid,linecolor=black]{Xaaac}{Xaaaa}{Xaaab}
+
     """
+    def __init__(self,center,radius,angleI=0,angleF=360):
+        self.center = center
+        self.radius = radius
+        GraphOfAnObject.__init__(self,self)
+        self.diameter = 2*self.radius
+        self._parametric_curve=None
+        self.angleI = AngleMeasure(value_degree=angleI)
+        self.angleF = AngleMeasure(value_degree=angleF)
+
+    @lazy_attribute
+    def equation(self):
+        """
+        Return the equation of `self`.
+
+        OUTPUT:
+
+        an equation.
+
+        EXAMPLES::
+
+            sage: circle=Circle(Point(0,0),1)
+            sage: circle.equation()
+            x^2 + y^2 - 1 == 0
+
+        ::
+
+            sage: circle=CircleOA(Point(-1,-1),Point(0,0))
+            sage: circle.equation()
+            (y + 1)^2 + (x + 1)^2 - 2 == 0
+        """
+        var('x,y')
+        return (x-self.center.x)**2+(y-self.center.y)**2-self.radius**2==0
+    
+    def phyFunction(self):
+        """
+        return the function corresponding to
+        the graph of the *upper* part of the circle
+        """
+
+    def parametric_curve(self,a=None,b=None):
+
+        """
+        Return the parametric curve associated to the circle.
+
+        If optional arguments <a> and <b> are given, return the corresponding graph between the values a and b of the angle.
+
+        The parameter of the curve is the angle in radian.
+        """
+        if self._parametric_curve is None :
+            var('x')
+            f1 = phyFunction(self.center.x+self.radius*cos(x))
+            f2 = phyFunction(self.center.y+self.radius*sin(x))
+            self._parametric_curve = ParametricCurve(f1,f2)
+        curve=self._parametric_curve
+        if a == None :
+            return curve
+        else :
+            return curve.graph(a,b)
+
+    def get_point(self,theta,advised=True,numerical=False):
+        """
+        Return a point at angle <theta> (degree) on the circle. 
+        
+        INPUT:
+        - ``theta`` - the angle given in degree.
+        """
+        return self.parametric_curve().get_point(radian(theta,numerical=numerical),advised=advised)
+    def get_regular_points(self,mx,Mx,l,advised=True):
+        """
+        return regularly spaced points on the circle
+
+        INPUT:
+
+        - ``mx`` - initial angle (degree).
+        - ``Mx`` - final angle (degree).
+        - ``l`` - distance between two points (arc length).
+        - ``advised`` - (default=True) if True, compute an advised mark angle for each point
+                                        this is CPU-intensive.
+
+
+        OUTPUT:
+        a list of points
+
+        EXAMPLES::
+
+            sage: C=Circle(Point(0,0),2)
+            sage: pts=C.get_regular_points(0,90,1)
+            sage: [str(p) for p in pts]
+            ['Point(2,0)', 'Point(2*cos(1/2),2*sin(1/2))', 'Point(2*cos(1),2*sin(1))', 'Point(2*cos(3/2),2*sin(3/2))']
+
+        """
+        Dtheta=(180/pi)*(l/self.radius)
+        if Dtheta==0:
+            raise ValueError,"Dtheta is zero"
+        pts=[]
+        import numpy
+        theta=numpy.arange(mx,Mx,step=Dtheta)
+        return [self.get_point(t,advised) for t in theta]
+
+    def get_tangent_vector(self,theta):
+        return PolarPoint(1,theta+90).origin(self.get_point(theta,advised=False))
+    def get_normal_vector(self,theta):
+        """
+        Return a normal vector at the given angle 
+        
+        INPUT:
+
+        - ``theta`` - an angle in degree or :class:`AngleMeasure`.
+
+        OUTPUT:
+
+        An affine vector
+
+        EXAMPLES::
+
+            sage: C=Circle(Point(0,0),2)
+            sage: print C.get_normal_vector(45)
+            vector I=Point(sqrt(2),sqrt(2)) F=Point(3/2*sqrt(2),3/2*sqrt(2))
+
+        """
+        v = PolarPoint(1,theta).origin(self.get_point(theta,advised=False))
+        v.arrow_type="vector"
+        return v
+    # Here, angleI and angleF are given in degree while parametric_plot uses radian.
+    def get_minmax_data(self,angleI,angleF):
+        deb = radian(angleI)
+        fin = radian(angleF)
+        return MyMinMax(self.parametric_curve().get_minmax_data(deb,fin))
+    def xmax(self,angleI,angleF):
+        return self.get_minmax_data(angleI,angleF)['xmax']
+    def xmin(self,angleI,angleF):
+        return self.get_minmax_data(angleI,angleF)['xmin']
+    def ymax(self,angleI,angleF):
+        return self.get_minmax_data(angleI,angleF)['ymax']
+    def ymin(self,angleI,angleF):
+        return self.get_minmax_data(angleI,angleF)['ymin']
+    def graph(self,angleI,angleF):
+        """
+        Return a graph of the circle between the two angles given in degree
+        """
+        return GraphOfACircle(self.center,self.radius,angleI,angleF)
+    def __str__(self):
+        return "Circle, center=%s, radius=%s"%(self.center.__str__(),str(self.radius))
+    def copy(self):
+        """
+        Return a copy of the object as geometrical object.
+        
+        It only copies the center and the radius. In particular
+        the following are not copied:
+
+        - style of drawing.
+
+        - initial and final angle if `self` is an arc.
+
+        EXAMPLES:
+
+        Python copies by assignation::
+
+            sage: c1=Circle( Point(1,1),2 )
+            sage: c2=c1
+            sage: c2.center=Point(3,3)
+            sage: print c1.center
+            Point(3,3)
+
+        The method :func:`copy` pass through::
+
+            sage: c1=Circle( Point(1,1),3 )
+            sage: c2=c1.copy()
+            sage: c2.center=Point(3,3)
+            sage: print c1.center
+            Point(1,1)
+
+        NOTE:
+
+        Due to use of `lazy_attribute`, it is not recommended to change the center of
+        a circle after having defined it.
+
+        """
+        return Circle(self.center,self.radius)
+    def math_bounding_box(self,pspict=None):
+        return self.bounding_box(pspict)
+    def bounding_box(self,pspict=None):
+        a=simplify_degree(self.angleI,keep_max=True,number=True)
+        b=simplify_degree(self.angleF,keep_max=True,number=True)
+        angleI=min(a,b)
+        angleF=max(a,b)
+        pI=self.get_point(angleI)
+        pF=self.get_point(angleF)
+        bb = BoundingBox(self.center,self.center)
+        bb.append(pI,pspict)
+        bb.append(pF,pspict)
+        if angleI==0:
+            bb.AddX(self.center.x+self.radius)
+        if angleI<90 and angleF>90 :
+            bb.AddY(self.center.y+self.radius)
+        if angleI<180 and angleF>180 :
+            bb.AddX(self.center.x-self.radius)
+        if angleI<270 and angleF>270 :
+            bb.AddY(self.center.y-self.radius)
+        return bb
+    def pstricks_code(self,pspict=None):
+        if self.wavy:
+            waviness = self.waviness
+            alphaI = radian(self.angleI,number=True,keep_max=True)
+            alphaF = radian(self.angleF,number=True,keep_max=True)
+            if self.angleF.degree==360:        # Because the function radian simplifies modulo 2pi.
+                alphaF=2*pi
+            curve = self.parametric_curve()
+            G = GraphOfAParametricCurve(curve,alphaI,alphaF)
+            G.add_option(self.params())
+            # The two following lines are a pity. If I add some properties, I have to change by hand...
+            G.parameters.style = self.parameters.style
+            G.parameters.color = self.color
+            G.wave(waviness.dx,waviness.dy)
+            return G.pstricks_code()
+        else:
+            angleI=degree(self.angleI,number=True,converting=False,keep_max=True)
+            angleF=degree(self.angleF,number=True,converting=False,keep_max=True)
+            if angleI == 0 and angleF == 360 :
+                PsA = Point(self.center.x-self.radius,self.center.y)        
+                a = PsA.create_PSpoint()
+                a = a + self.center.create_PSpoint()
+                a = a + "\pstCircleOA["+self.params()+"]{"+self.center.psName+"}{"+PsA.psName+"}"
+                return a
+                # Some remarks :
+                # Besoin d'un point sur le cercle pour le tracer avec \pstCircleOA,"")
+                # La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
+                #self.add_latex_line("\pscircle["+params+"]("+Cer.center.psName+"){"+str(Cer.radius)+"}")
+            else :
+                PsA = self.get_point(angleI)
+                PsB = self.get_point(angleF)
+                a = PsA.create_PSpoint() + PsB.create_PSpoint() + self.center.create_PSpoint()
+                a = a+"\pstArcOAB[%s]{%s}{%s}{%s}"%(self.params(),self.center.psName,PsA.psName,PsB.psName)
+                return a
+
+class GeometricRectangle(object):
+    """
+    The four points of the square are designated by NW,NE,SW and SE.
+    """
+    def __init__(self,NW,SE):
+        self.NW = NW
+        self.SE = SE
+        self.SW = Point(self.NW.x,self.SE.y)
+        self.NE = Point(self.SE.x,self.NW.y)
+    def first_diagonal(self):
+        return Segment(self.NW,self.SE)
+    def second_diagonal(self):
+        return Segment(self.SW,self.NE)
+    def segment_N(self):
+        return Segment(self.NW,self.NE)
+    def segment_S(self):
+        return Segment(self.SW,self.SE)
+    def segment_E(self):
+        return Segment(self.NE,self.SE)
+    def segment_W(self):
+        return Segment(self.NW,self.SW)
+    def center(self):
+        return self.first_diagonal().center()
+    def default_associated_graph_class(self):
+        """Return the class which is the Graph associated type"""
+        return GraphOfARectangle
+
+def OptionsStyleLigne():
+    return ["linecolor","linestyle"]
+
+class Waviness(object):
+    """
+    This class contains the informations about the waviness of a curve. It takes as argument a GraphOfAphyFunction and the parameters dx, dy of the wave.
+    Waviness.get_wavy_points        returns a list of points which are disposed around the graph of the curve. These are the points to be linked
+                       by a bezier or something in order to get the wavy graph of the function.
+    """
+    def __init__(self,graph,dx,dy):
+        self.graph = graph
+        self.dx = dx
+        self.dy = dy
+        self.obj = self.graph.obj
+        if type(self.obj) == phyFunction :
+            self.Mx = self.graph.Mx
+            self.mx = self.graph.mx
+    def get_wavy_points(self):
+        if type(self.obj) == phyFunction :
+            return self.obj.get_wavy_points(self.mx,self.Mx,self.dx,self.dy)
+        if type(self.obj) == Segment :
+            return self.obj.get_wavy_points(self.dx,self.dy)
+
+class Mark(object):
+    def __init__(self,graph,dist,angle,text,automatic_place=False):
+        """
+        Describe a mark (essentially a P on a point for example)
+        angle is given in degree or AngleMeasure
+
+
+        This class should not be used by the end-user.
+
+        INPUT:
+
+        - ``graph`` - the graph that it marked. This is usually a point but it can be
+                        anything that has a `mark_point` method.
+        - ``dist`` - the distance between `graph.mark_point()` and the mark.
+        - ``angle`` - the angle
+        - ``text`` - the text to be printed on the mark. This is typically a LaTeX stuff like "$P$".
+        - ``automatic_place`` - this is a tuple (pspict,anchor) where pspict is the pspicture
+                                in which we are working and ̣`anchor` is one of "corner","N","S","W","E" 
+                                or special cases (see below).
+
+                        - "corner" will put the mark at the distance such that the corner of the 
+                          bounding box is at the (relative) position (dist;angle) instead
+                          of the center of the mark.
+
+                        - "N" will put the mark in such a way that the center of the north
+                          side of the bounding box is at the position (dist;angle).
+
+                        - "for axes". In this case we expect to have a 3-tuple `(pspict,"for axes",segment)`
+                          where `segment` is a segment (typically the segment of an axe).
+                          In this case, we suppose `self.angle` to be orthogonal to the segment.
+                          The mark will be put sufficiently far for the bounding box not to cross the segment.
+
+                          What is done is that the closest corner of the bounding box is at
+                          position (dist;angle) from the point.
+
+        """
+        self.graph = graph
+        self.parent = graph
+        self.angle = angle
+        self.dist = dist
+        self.text = text
+        self.angle = angle
+        self.automatic_place=automatic_place
+        alpha=radian(angle)
+        if isinstance(alpha,AngleMeasure):
+            self.x=self.dist*cos(alpha.radian)
+            self.y=self.dist*sin(alpha.radian)
+        else :
+            self.x=self.dist*cos(alpha)
+            self.y=self.dist*sin(alpha)
+
+    def central_point(self,pspict=None):
+        """
+        return the central point of the mark, that is the point where the mark arrives.
+
+        The central point of the mark is computed from self.graph.mark_point()
+        Thus an object that wants to accept a mark needs a method mark_point that returns the point on which the mark will be put.
+        """
+
+        default=self.graph.mark_point().get_polar_point(self.dist,self.angle,pspict)
+
+        if self.automatic_place :
+            try :
+                pspict=self.automatic_place[0]
+                position=self.automatic_place[1]
+            except TypeError :
+                pspict=self.automatic_place
+                position="corner"
+
+            dimx,dimy = pspict.get_box_size(self.text)
+            dimx=float(dimx)/pspict.xunit
+            dimy=float(dimy)/pspict.yunit
+ 
+            if position=="for axes":
+                seg=self.automatic_place[2]
+                alpha=seg.angle().radian
+                d=self.dist+0.5*max(dimx*sin(alpha),dimy*cos(alpha))
+                beta=degree(-pi/2+alpha)
+                beta=self.angle
+                return self.graph.mark_point().get_polar_point(d,beta)
+
+            if position=="corner":
+                if self.x>=0:
+                    lx=dimx*0.5
+                if self.x<0:
+                    lx=-dimx*0.5
+                if self.y>=0:
+                    ly=dimy*0.5
+                if self.y<0:
+                    ly=-dimy*0.5
+                return default.translate(lx,ly)
+            if position=="N":
+                return default.translate(0,-dimy*0.5)
+            if position=="S":
+                return default.translate(0,dimy*0.5)
+            if position=="W":
+                return default.translate(dimx*0.5,0)
+            if position=="E":
+                return default.translate(-dimx*0.5,0)
+        else :
+            return default
+    def math_bounding_box(self,pspict=None):
+        """
+        Return the mathematics bounding box of its base object.
+
+        A mark has non own math_bounding_box because we do not want the axes to fit even the marques.
+        This is the deep difference between math_bounding_box and bounding_box. We want the
+        marks to be fit in the bounding_box since if not the mark risks to be cut
+        in the pdf/png version.
+        """
+        return self.graph.math_bounding_box(pspict)
+    def bounding_box(self,pspict=None):
+        central_point=self.central_point(pspict)
+        bb=BoundingBox(central_point,central_point)
+        dimx,dimy=pspict.get_box_size(self.text)
+        try :
+            dimx=float(dimx)/pspict.xunit
+            dimy=float(dimy)/pspict.yunit
+        except AttributeError:
+            print "Try to pass a pspicture when computing the bounding box of",type(self)
+        pt1=Point(central_point.x-dimx/2,central_point.y-dimy/2) 
+        pt2=Point(central_point.x+dimx/2,central_point.y+dimy/2)
+        bb.AddPoint(pt1)
+        bb.AddPoint(pt2)
+        bb.parent=self
+        return bb
+    def pstricks_code(self,pspict=None):
+        l=[]
+        central_point=self.central_point(pspict)
+        #TODO : Use create_PSpoint instead of \pstGeonode.
+        l.append("\pstGeonode[]"+central_point.coordinates(numerical=True)+"{"+central_point.psName+"}")
+        l.append(r"\rput(%s){\rput(%s;%s){%s}}"%(central_point.psName,"0",0,str(self.text)))
+        return "\n".join(l)
+
+class FillParameters(object):
+    """
+    Represent the parameters of filling a surface.
+    """
+    def __init__(self):
+        self.color= None
+        self.style= "solid"
+    def add_to_options(self,opt):
+        """
+        add `self` to a set of options.
+
+    
+        INPUT:
+
+        - ``opt`` - an instance of :class:`Options`.
+
+        OUTPUT:
+
+        Return `opt` with added properties.
+
+        EXAMPLES::
+
+            sage: opt=Options()
+            sage: fill=FillParameters()
+            sage: fill.color="blue"
+            sage: fill.add_to_options(opt)
+            sage: opt.code()
+            'fillcolor=blue,fillstyle=solid'
+
+        ::
+
+            sage: fill.style="MyStyle"
+            sage: fill.add_to_options(opt)
+            sage: opt.code()
+            'fillcolor=blue,fillstyle=MyStyle'
+
+        """
+        if self.color :
+            opt.add_option("fillcolor=%s"%str(self.color))
+        if self.style :
+            opt.add_option("fillstyle=%s"%str(self.style))
+
+class HatchParameters(object):
+    """Same as FillParameters, but when one speaks about hatching"""
+    def __init__(self):
+        self.color = None
+        self._crossed = False
+        self.angle = -45
+    def crossed(self):
+        self._crossed=True
+    def add_to_options(self,opt):
+        opt.add_option("hatchangle=%s"%str(self.angle))
+        if self._crossed:
+            opt.add_option("fillstyle=crosshatch")
+        else:
+            opt.add_option("fillstyle=vlines")
+        if self.color :
+            opt.add_option("hatchcolor=%s"%str(self.color))
+
+class Parameters(object):
+    def __init__(self):
+        self.color = None           # I take into account in SurfaceBetweenParametricCurves that the default values are None
+        self.symbol = None
+        self.style = None
+        self.fill=FillParameters()
+        self.hatch=HatchParameters()
+        self._filled=False
+        self._hatched=False
+    def filled(self):
+        self._filled=True
+    def hatched(self):
+        self._hatched=True
+    def add_to_options(self,opt):
+        """
+        Add to the object `opt` (type Option) the different options that correspond to the parameters.
+
+        In an imaged way, this method adds `self` to the object `opt`.
+        """
+        if self.color :
+            opt.add_option("linecolor=%s"%str(self.color))
+        if self.style :
+            opt.add_option("linestyle=%s"%str(self.style))
+        if self.symbol :
+            opt.add_option("PointSymbol=%s"%str(self.symbol))
+        if self._filled:
+            self.fill.add_to_options(opt)
+        if self._hatched:
+            self.hatch.add_to_options(opt)
+    def add_to(self,parameters):
+        """
+        Add `self` to `parameters`.
+
+        Where `self` has non-trivial or non-default values, put these values to `parameters`
+
+        EXAMPLES ::
+
+            sage: p1=Parameters()
+            sage: p1.color="red"
+            sage: p1.symbol="A"
+
+            sage: p2=Parameters()
+            sage: p2.style="solid"
+            sage: p2.symbol="B"
+            sage: p2.filled()
+            sage: p2.fill.color="cyan"
+
+            sage: p2.add_to(p1)
+            sage: print p1.color,p1.style,p1.symbol,p1._filled,p1.fill.color
+            red solid A True cyan
+        """
+        for attr in parameters.__dict__.keys():
+            if parameters.__getattribute__(attr) in [None,False]:
+                parameters.__dict__[attr]=self.__getattribute__(attr)
+        parameters.fill=self.fill
+        parameters.hatch=self.hatch
+    def replace_to(self,parameters):
+        """
+        The same as :func:`add_to`, but replace also non-trivial parameters
+
+        EXAMPLES::
+
+            sage: p1=Parameters()
+            sage: p1.color="red"
+            sage: p1.symbol="A"
+
+            sage: p2=Parameters()
+            sage: p2.style="solid"
+            sage: p2.symbol="B"
+            sage: p2.filled()
+            sage: p2.fill.color="cyan"
+
+            sage: p2.replace_to(p1)
+            sage: print p1.color,p1.style,p1.symbol,p1._filled,p1.fill.color
+            red solid B True cyan
+
+        Notice that here `p1.style` is replace while it was not replaced by the function 
+        :func:`add_to`.
+        """
+        for attr in parameters.__dict__.keys():
+            candidate=self.__getattribute__(attr)
+            if candidate is not None :
+                parameters.__dict__[attr]=candidate
+        parameters.fill=self.fill
+        parameters.hatch=self.hatch
+
+
+def extract_interval_information(curve):
+    """
+    return the interval of the curve.
+
+    That is the initial and final value of the parameter
+    of `curve` if that is a :class:`ParametricCurve` and
+    the initial and final values of `x` if this the the graph
+    of a function.
+
+    INPUT:
+
+    - ``curve`` - graph of a function or a parametric curve
+
+    OUTPUT:
+
+    a tuple of numbers. If nothing is found, return (None,None).
+
+    EXAMPLES::
+
+        sage: f=phyFunction(x**2).graph(1,pi)
+        sage: extract_interval_information(f)
+        (1, pi)
+         
+        sage: a=var('a')
+        sage: curve=ParametricCurve(x,sin(x)).graph(sqrt(2),a)
+        sage: extract_interval_information(curve)
+        (sqrt(2), a)
+
+        sage: f=phyFunction(x**3)
+        sage: extract_interval_information(f)
+        (None, None)
+
+    """
+    # For parametric curves
+    if "llamI" in dir(curve):
+        return curve.llamI,curve.llamF
+    # for functions
+    if "mx" in dir(curve):
+        return curve.mx,curve.Mx
+    # for segments
+    if "I" in dir(curve) and "F" in dir(curve):
+        return 0,curve.length()
+    # for circles
+    if "angleI" in dir(curve):
+        return curve.angleI,curve.angleF
+    return None,None
+
+class GraphOfAPoint(GraphOfAnObject):
+    NomPointLibre = PointsNameList()
+
+    def __init__(self,x,y):
+        self.x=SR(x)
+        self.y=SR(y)
+        GraphOfAnObject.__init__(self,self)
+        #self.psName = point.psName      # The psName of the point is erased when running Point.__init__
+                                         # This line is no more useful (April 29 2011)
+        self.point = self.obj
+        self.add_option("PointSymbol=*")
+        self._advised_mark_angle=None
+        self.psName=GraphOfAPoint.NomPointLibre.next()
+    def projection(self,seg,direction=None):
+        """
+        Return the projection of the point on the given segment.
+
+        INPUT:
+
+        - ``seg`` - a segment
+        - ``direction`` - (default=None) a vector. If given, we use a projection parallel to
+                            `vector` instead of the orthogonal projection.
+
+        OUTPUT:
+
+        a point.
+
+        EXAMPLES:
+
+        Return a point even if the projections happens to lies outside the segment::
+
+            sage: s1=Segment( Point(0,0),Point(2,1) )
+            sage: print Point(3,-1).projection(s1)
+            Point(2,1)
+            sage: print Point(5,0).projection(s1) 
+            Point(4,2)
+
+        You can project on a vector::
+
+            sage: print Point(5,0).projection(Vector(2,1))
+            Point(4,2)
+
+        Computations are exact::
+
+            sage: v=Vector(2,1)
+            sage: print Point(sqrt(2),pi).projection(v)
+            Point(2/5*pi + 4/5*sqrt(2),1/5*pi + 2/5*sqrt(2))
+
+        """
+        try :
+            seg=seg.segment()       # allows to project onto an axe
+        except AttributeError :
+            pass
+
+        if direction is None:
+            direction=seg.get_normal_vector()
+
+        seg2=direction.fix_origin(self)
+        return phystricks.main.Intersection(seg,seg2)[0]
+
+        #if seg.vertical :
+        #    return Point(seg.I.x,self.y)
+        #if seg.horizontal :
+        #    return Point(self.x,seg.I.y)
+        #else :
+        #    Rx = (self.y*seg.slope - seg.slope*seg.independent + self.x)/(seg.slope**2 + 1)
+        #    Ry = (self.y*seg.slope**2 + self.x*seg.slope + seg.independent)/(seg.slope**2 + 1)
+        #    return Point(Rx,Ry)
+
+    def get_polar_point(self,r,theta,pspict=None):
+        """
+        Return the point located at distance r and angle theta from point self.
+
+        INPUT:
+
+        - ``r`` - A number.
+
+        - ``theta`` - the angle (degree or :class:`AngleMeasure`).
+
+        - ``pspict`` - the pspicture in which the point is supposed to live. If `pspict` is given, we compute the deformation due to the dilatation.  Be careful: in that case `r` is given as absolute value and the visual effect will not be affected by dilatations.
+
+        OUTPUT: A point.
+
+        EXAMPLES::
+
+            sage: P=Point(1,2)
+            sage: print P.get_polar_point(sqrt(2),45)
+            Point(2,3)
+
+        """
+        alpha=radian(theta,number=True)
+        if pspict:
+            A=pspict.xunit
+            B=pspict.yunit
+            xP=r*cos(alpha)/A
+            yP=r*sin(alpha)/B
+            return self.translate(Vector(xP,yP))
+        return Point(self.x+r*cos(alpha),self.y+r*sin(alpha))
+    def value_on_line(self,line):
+        """
+        Return the value of the equation of a line on `self`.
+
+        If $f(x,y)=0$ is the equation of `line`, return the number f(self.x,self.y).
+
+        NOTE:
+
+        The object `line` has to have an attribute line.equation
+
+        EXAMPLE::
+
+            sage: s=Segment(Point(0,1),Point(1,0))
+            sage: s.equation()
+            x + y - 1 == 0
+            sage: P=Point(-1,3)
+            sage: P.value_on_line(s)
+            1   
+
+        It allows to know if a point is inside or outside a circle::
+
+            sage: circle=Circle(Point(-1,2),4)
+            sage: Point(1,1).value_on_line(circle)
+            -11
+
+        ::
+
+            sage: Point(1,sqrt(2)).value_on_line(circle)
+            (sqrt(2) - 2)^2 - 12
+
+        """
+        x,y=var('x,y')
+        return line.equation.lhs()(x=self.x,y=self.y)
+    def translate(self,a,b=None):
+        """
+        translate `self`.
+
+        EXAMPLES:
+
+        You can translate by a :func:`Vector`::
+
+            sage: v=Vector(2,1)                        
+            sage: P=Point(-1,-1)
+            sage: print P.translate(v)
+            Point(1,0)
+
+        An :func:`AffineVector` is accepted::
+
+            sage: w=AffineVector( Point(1,1),Point(2,3) )
+            sage: print P.translate(w)
+            Point(0,1)
+
+        You can also directly provide the coordinates::
+
+            sage: print P.translate(10,-9)
+            Point(9,-10)
+
+        Or the :func:`Point` corresponding to the translation vector::
+
+            sage: print P.translate( Point(3,4)  )
+            Point(2,3)
+
+        Translation by minus itself produces zero::
+
+            sage: x,y=var('x,y')
+            sage: P=Point(x,y)
+            sage: print P.translate(-P)
+            Point(0,0)
+
+        """
+        if b==None :
+            v=a
+        else :
+            v=Vector(a,b)
+        return self+v
+    def origin(self,p):
+        return AffineVector(p,Point(p.x+self.x,p.y+self.y))
+    def Vector(self):
+        return AffineVector(Point(0,0),self)
+    def norm(self):
+        """
+        Return the norm of the segment between (0,0) and self.
+
+        This is the radial component in polar coordinates.
+
+        EXAMPLES:
+        sage: Point(1,1).norm()
+        sqrt(2)
+        sage: Point(-pi,sqrt(2)).norm()
+        sqrt(pi^2 + 2)
+        """
+        return Segment(Point(0,0),self).length()
+    def length(self):
+        """
+        The same as self.norm()
+
+        EXAMPLES:
+        sage: P=Point(1,1)
+        sage: P.length()
+        sqrt(2)
+        """
+        return self.norm()
+    # La méthode normalize voit le point comme un vecteur partant de zéro, et en donne le vecteur de taille 1
+    def normalize(self,l=None):
+        """
+        Return a vector of norm <l>. If <l> is not given, take 1.
+        """
+        unit = self*(1/self.norm())
+        if l :
+            return unit*l
+        return unit
+    def default_graph(self,opt):
+        """
+        Return a default Graph
+        
+        <opt> is a tuple. The first is the symbol to the point (like "*" or "none").
+        The second is a string to be passed to pstricks, like "linecolor=blue,linestyle=dashed".
+        """
+        P=self.default_associated_graph_class()(self)
+        P.parameters.symbol=opt[0]
+        P.add_option(opt[1])
+        return P
+    def default_associated_graph_class(self):
+        """Return the class which is the Graph associated type"""
+        return GraphOfAPoint             # Graph is also a method of Sage
+    def create_PSpoint(self):
+        """Return the code of creating a pstgeonode. The argument is a Point of GraphOfAPoint"""
+        P = Point(self.x,self.y)
+        P.psName = self.psName
+        P.parameters.symbol="none"
+        return P.pstricks_code(None)+"\n"
+    def polar_coordinates(self):
+        """
+        Return the polar coordinates of the point as a tuple (r,angle) where angle is given in degree.
+        """
+        r=self.norm()
+        if self.x==0:
+            radian=pi/2
+        else :
+            radian=arctan(self.y/self.x)
+        if self.x<0:
+            if self.y>0:
+                radian=pi/2-radian
+            if self.y<=0:
+                radian=pi+radian
+        angle=AngleMeasure(value_radian=radian)
+        return r,angle
+    def angle(self):
+        """
+        Return the angle of the segment from (0,0) and self
+
+        Return the result in degree
+        """
+        return self.polar_coordinates()[1]
+    def coordinates(self,numerical=False):
+        """
+        Return the coordinates of the point as a string.
+
+        When one coordinate if very small (lower than 0.0001), it is rounded to zero in order to avoid string like "0.2335e-6" in the pstricks code.
+
+        Example : 
+        sage: P=Point(1,3)
+        sage: print P.coordinates()
+        (1,3)
+        """
+        if numerical :
+            x=numerical_approx(self.x)
+            y=numerical_approx(self.y)
+        else :
+            x = self.x
+            y = self.y
+        # This precaution in order to avoid something like 0.125547e-6 because pstricks doesn't like that notation.
+        if abs(x) < 0.0001 :
+            x=0
+        if abs(y) < 0.0001 :
+            y=0
+        return "("+str(x)+","+str(y)+")"
+    def coordinatesBr(self):
+        return self.coordinates.replace("(","{").replace(")","}")
+    def Affiche(self):
+        return self.coordinates()
+    def graph_object(self):
+        return GraphOfAPoint(self)
+    def copy(self):
+        return Point(self.x,self.y)
+
+    def mark_point(self):
+        return self
+    def bounding_box(self,pspict=None):
+        """
+        return the bounding box of the point including its mark
+
+        A small box of radius 0.1 (modulo xunit,yunit[1]) is given in any case.
+        You need to provide a pspict in order to compute the size since it can vary from the place in your document you place the figure.
+
+        [1] If you dont't know what is the "bounding box", or if you don't want to fine tune it, you don't care.
+        """
+        Xradius=0.1
+        Yradius=0.1
+        try :
+            Xradius=0.1/pspict.xunit
+            Yradius=0.1/pspict.yunit
+        except :
+            print "You should consider to give a pspict as argument. Otherwise the boundig box of %s could be bad"%str(self)
+            raise TypeError
+        bb = BoundingBox(Point(self.x-Xradius,self.y-Yradius),Point(self.x+Xradius,self.y+Yradius))
+        for P in self.record_add_to_bb:
+            bb.AddPoint(P)
+        return bb
+    def math_bounding_box(self,pspict=None):
+        """Return a bounding box which include itself and that's it."""
+        return BoundingBox(self.point,self.point)
+    def pstricks_code(self,pspict=None,with_mark=False):
+        r"""
+        Return the pstricks code of the point
+
+        INPUT:
+        - ``with_mark`` - (default : False) if it is true, return the pstrick code
+                                of the mark in the same time. This is only used by the axes.
+        OUTPUT:
+        string
+
+        This function is not supposed to be used by the end-user.
+
+        When the point has a mark, the code of the mark is not included here because 
+        :func:`DrawGraph` automatically adds the mark to the list of objects
+        to be drawn.
+        However, some constructions want to include the pstricks code of points in its own
+        pstricks code. In that case we want the code of the mark to be part of the code
+        of the point.
+        This is the case of the axes. The pstricks code of the axes have to be in one block
+        including the markes. For that usage, we use with_mark=True
+        
+        EXAMPLE:
+        sage: P=Point(1,1)
+        sage: P.put_mark(0.3,45,"$P$")
+
+        By default the code of the mark does not appears in the code of the point:
+        sage: unify_point_name(P.pstricks_code())
+        '\\pstGeonode[PointSymbol=*,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaaa}'
+
+        If we specify with_mark=True, then we see the code of the mark:
+        sage: unify_point_name(P.pstricks_code(with_mark=True))
+        '\\pstGeonode[](1.21213203435596,1.21213203435596){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$P$}}\n\\pstGeonode[PointSymbol=*,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaab}'
+        """
+        l=[]
+        if self.marque and with_mark:
+            l.append(self.mark.pstricks_code(pspict))
+        l.append("\pstGeonode["+self.params()+"]"+self.coordinates(numerical=True)+"{"+self.psName+"}")
+        return "\n".join(l)
+    def __eq__(self,other):
+        """
+        return True if the coordinates of `self` and `other` are the same.
+
+        INPUT:
+        
+        - ``other`` - an other point
+
+        OUTPUT:
+
+        boolean
+
+        EXAMPLES:
+
+        The fact to change the properties of a point don't change the equality::
+
+            sage: a=Point(1,1)
+            sage: b=Point(1,1)
+            sage: b.put_mark(1,1,"$P$")
+            sage: a==b
+            True
+            sage: c=Point(0,0)
+            sage: c==a
+            False
+        """
+        if self.x == other.x and self.y==other.y :
+            return True
+        return False
+    def __add__(self,v):
+        """
+        Addition of a point with a vector is the parallel translation, while addition of a point with an other point is simply
+        the addition of coordinates.
+        """
+        try :
+            dx = v.Dx
+            dy = v.Dy
+        except AttributeError :
+            try :
+                dx = v.x
+                dy = v.y
+            except AttributeError :
+                raise TypeError, "You seem to add myself with something which is not a Point neither a Vector. Sorry, but I'm going to crash."
+        return Point(self.x+dx,self.y+dy)
+    def __sub__(self,v):
+        return self+(-v)
+    def __neg__(self):
+        return Point(-self.x,-self.y)
+    def __mul__(self,r):
+        return Point(r*self.x,r*self.y)
+    def __rmul__(self,r):
+        return self.__mul__(r)
+    def __str__(self):
+        return "Point(%s,%s)"%(str(self.x),str(self.y))
+
+class GeometricImplicitCurve(object):
+    """
+    Describe a curve given by an implicit equation.
+
+    INPUT:
+
+    - ``f`` -- a function of two variables or equation in two variables
+
+    End users should not use this class but use the constrcutor :func:`ImplicitCurve`.
+
+    EXAMPLES::
+
+        sage: f(x,y)=x**2+1/x
+        sage: F=GeometricImplicitCurve(f(x,y)==2)
+        sage: G=GeometricImplicitCurve(x+y==2)   
+
+    """
+    def __init__(self,f):
+        self.f=f
+        from sage.symbolic.expression import is_SymbolicEquation
+        if is_SymbolicEquation(f):
+            if f.operator() != operator.eq:
+                raise ValueError, "input to implicit plot must be function or equation"
+            self.f = f.lhs() - f.rhs()          # At this point self.f is the expression to be equated to zero.
+    def graph(self,xrange,yrange,plot_points=100):
+        """
+        Return the graph corresponding to the implicit curve.
+
+        INPUT:
+
+        - ``xrange`` - the X-range on which the curve will be plotted.
+
+        - ``yrange`` - the Y-range on which the curve will be plotted.
+
+        EXAMPLE ::
+    
+            sage: x,y=var('x,y')
+            sage: F=GeometricImplicitCurve(x-y==3)
+            sage: graph=F.graph((x,-3,3),(y,-2,2))
+            sage: print graph.bounding_box()
+            (1.0,-2.0),(3.0,1.88737914186e-15)
+
+        """
+        return GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
+    def __str__(self):
+        """
+        Return string representation of this implicit curve
+
+        EXAMPLE::
+
+            sage: f(x,y)=x**2+1/x
+            sage: print GeometricImplicitCurve(f(x,y)==2)
+            Implicit curve of equation x^2 + 1/x - 2 == 0
+            sage: print GeometricImplicitCurve(x+y==7)   
+            Implicit curve of equation x + y - 7 == 0
+        """
+        return "Implicit curve of equation %s == 0"%repr(self.f)
+
+class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
+    r"""
+    Describe the graph of an implicit curve.
+
+    INPUT:
+    - ``implicit_curve`` - the implicit curve to be considered
+    - ``xrange``,``yrange`` - the range on which we want to plot
+    
+
+    OPTIONAL INPUT:
+    - ``plot_points``  -- integer (default: 100); number of points to plot
+    in each direction of the grid.  
+
+    ATTRIBUTES:
+    - ``self.path`` this is a list of lists of points. Each list correspond to a path
+                    in the sense of matplotlib. Notice that here the points are given as
+                    instances of Point; not as list [x,y] as matplotlib does.
+    
+    EXAMPLES:
+    sage: var('x,y')
+    (x, y)
+    sage: implicit_curve=GeometricImplicitCurve(x**2+x==3)
+    sage: F=GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2)).pstricks_code()
+
+    NOTES:
+    the get_minmax_data is contributed by the Sage's community here :
+    http://ask.sagemath.org/question/359/get_minmax_data-on-implicit_plot
+    (thanks to DSM)
+    """
+    def __init__(self,implicit_curve,xrange,yrange,plot_points=300):
+        GraphOfAnObject.__init__(self,implicit_curve)
+        GeometricImplicitCurve.__init__(self,implicit_curve.f)
+        self.implicit_curve=implicit_curve
+        self.implicit_plot=implicit_plot(self.f,xrange,yrange)
+        self.xrange=xrange
+        self.yrange=yrange
+        self.plot_points=plot_points
+        self.paths=get_paths_from_implicit_plot(self.implicit_plot)
+        self.parameters.color="blue"
+    def get_minmax_data(self,dict=True):
+        """
+        Return a dictionary whose keys give the xmin, xmax, ymin, and ymax
+        data for this graphic.
+
+        Since the results come from the lazy_attribute function _get_minmax_data, changing the number of points
+        between two call will not change the result.
+
+        EXAMPLES
+        sage: var('x,y')
+        (x, y)
+        sage: F=ImplicitCurve(x**2+y**2==sqrt(2),(x,-5,5),(y,-4,4),plot_points=300)
+        sage: F.get_minmax_data()
+        {'xmin': -1.18858977066, 'ymin': -1.18845247289, 'ymax': 1.18845247289, 'xmax': 1.18858977066}
+        sage: F.plot_points=10
+        sage: F.get_minmax_data()
+        {'xmin': -1.18858977066, 'ymin': -1.18845247289, 'ymax': 1.18845247289, 'xmax': 1.18858977066}
+        """
+        tot_points=[]
+        for path in self.paths :
+            tot_points.extend(path)
+        xx=[P.x for P in tot_points]
+        yy=[P.y for P in tot_points]
+        xmin=min(xx)
+        xmax=max(xx)
+        ymin=min(yy)
+        ymax=max(yy)
+        if dict:
+            return MyMinMax({'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax})
+        else:
+            return xmin,xmax,ymin,ymax
+    def xmin(self):
+        return self.get_minmax_data()['xmin']
+    def xmax(self):
+        return self.get_minmax_data()['xmax']
+    def ymin(self):
+        return self.get_minmax_data()['ymin']
+    def ymax(self):
+        return self.get_minmax_data()['ymax']
+    def bounding_box(self,pspict=None):
+        """
+        Return the bounding box of the implicit curve.
+
+        This is NOT the bounding box got that one could expect
+        using Sage's plotting system
+        implicit_plot(f,xrange,yrange).get_minmax_data()
+
+        Instead the bounding box returned here only contains the points that
+        are actually plotted. In the following example, we know that the ymax
+        has to be half the sqrt of the radius (and not the 5 given in yrange).
+
+        EXAMPLES:    
+        sage: var('x,y')
+        (x, y)
+        sage: f=x**2+2*y**2
+        sage: G=ImplicitCurve(f==sqrt(2),(x,-5,5),(y,-5,5),plot_points=200)
+        sage: print G.bounding_box()
+        (-1.18795591533,-0.840500197448),(1.18795591533,0.840500197448)
+        """
+        bb = BoundingBox( Point(self.xmin(),self.ymin()),Point(self.xmax(),self.ymax())  )
+        return bb
+    def math_bounding_box(self,pspict=None):
+        return self.bounding_box(pspict)
+    def pstricks_code(self,pspict=None):
+        r"""
+        Return the pstrick code of the implicit curve.
+        """
+        code=[]
+        for path in self.paths:
+            curve=InterpolationCurve(path,context_object=self)
+            code.append(curve.pstricks_code(pspict))
+        return "\n".join(code)
+
+class GraphOfASegment(GraphOfAnObject):
     def __init__(self,A,B,arrow_type="segment"):
         self.I = A
         self.F = B
         self.arrow_type=arrow_type
+        GraphOfAnObject.__init__(self,self)
 
     @lazy_attribute
     def Dx(self):
@@ -794,1305 +2141,6 @@ class GeometricSegment(object):
             return "vector I=%s F=%s"%(str(self.I),str(self.F))
 
 
-class GraphOfACircle(GraphOfAnObject):
-    """
-    This is a circle, or an arc of circle.
-
-    INPUT:
-
-    - ``center`` - a point, the center of the circle.
-
-    - ``radius`` - a number, the radius of the circle.
-
-    - ``self.angleI`` - (default=0) the beginning angle of the arc (degree).
-
-    - ``self.angleF`` - (default=360) the ending angle of the arc (degree).
-
-
-    OUTPUT:
-
-    A circle ready to be drawn.
-
-    EXAMPLES::
-
-        sage: circle=Circle(Point(-1,1),3)
-        sage: print unify_point_name(circle.pstricks_code())
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-4.00000000000000,1.00000000000000){Xaaaa}
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-1.00000000000000,1.00000000000000){Xaaab}
-        \pstCircleOA[linestyle=solid,linecolor=black]{Xaaab}{Xaaaa}
-    
-    If you want the same circle but between the angles 45 and 78::
-        
-        sage: other_circle=circle.graph(45,78)
-        sage: print unify_point_name(other_circle.pstricks_code())
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.12132034355964,3.12132034355964){Xaaaa}
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-0.376264927546722,3.93444280220142){Xaaab}
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-1.00000000000000,1.00000000000000){Xaaac}
-        \pstArcOAB[linestyle=solid,linecolor=black]{Xaaac}{Xaaaa}{Xaaab}
-
-    """
-    def __init__(self,center,radius,angleI=0,angleF=360):
-        self.center = center
-        self.radius = radius
-        GraphOfAnObject.__init__(self,self)
-        self.diameter = 2*self.radius
-        self._parametric_curve=None
-        self.angleI = AngleMeasure(value_degree=angleI)
-        self.angleF = AngleMeasure(value_degree=angleF)
-
-    @lazy_attribute
-    def equation(self):
-        """
-        Return the equation of `self`.
-
-        OUTPUT:
-
-        an equation.
-
-        EXAMPLES::
-
-            sage: circle=Circle(Point(0,0),1)
-            sage: circle.equation()
-            x^2 + y^2 - 1 == 0
-
-        ::
-
-            sage: circle=CircleOA(Point(-1,-1),Point(0,0))
-            sage: circle.equation()
-            (y + 1)^2 + (x + 1)^2 - 2 == 0
-        """
-        var('x,y')
-        return (x-self.center.x)**2+(y-self.center.y)**2-self.radius**2==0
-    
-    def phyFunction(self):
-        """
-        return the function corresponding to
-        the graph of the *upper* part of the circle
-        """
-
-    def parametric_curve(self,a=None,b=None):
-
-        """
-        Return the parametric curve associated to the circle.
-
-        If optional arguments <a> and <b> are given, return the corresponding graph between the values a and b of the angle.
-
-        The parameter of the curve is the angle in radian.
-        """
-        if self._parametric_curve is None :
-            var('x')
-            f1 = phyFunction(self.center.x+self.radius*cos(x))
-            f2 = phyFunction(self.center.y+self.radius*sin(x))
-            self._parametric_curve = ParametricCurve(f1,f2)
-        curve=self._parametric_curve
-        if a == None :
-            return curve
-        else :
-            return curve.graph(a,b)
-
-    def get_point(self,theta,advised=True,numerical=False):
-        """
-        Return a point at angle <theta> (degree) on the circle. 
-        
-        INPUT:
-        - ``theta`` - the angle given in degree.
-        """
-        return self.parametric_curve().get_point(radian(theta,numerical=numerical),advised=advised)
-    def get_regular_points(self,mx,Mx,l,advised=True):
-        """
-        return regularly spaced points on the circle
-
-        INPUT:
-
-        - ``mx`` - initial angle (degree).
-        - ``Mx`` - final angle (degree).
-        - ``l`` - distance between two points (arc length).
-        - ``advised`` - (default=True) if True, compute an advised mark angle for each point
-                                        this is CPU-intensive.
-
-
-        OUTPUT:
-        a list of points
-
-        EXAMPLES::
-
-            sage: C=Circle(Point(0,0),2)
-            sage: pts=C.get_regular_points(0,90,1)
-            sage: [str(p) for p in pts]
-            ['Point(2,0)', 'Point(2*cos(1/2),2*sin(1/2))', 'Point(2*cos(1),2*sin(1))', 'Point(2*cos(3/2),2*sin(3/2))']
-
-        """
-        Dtheta=(180/pi)*(l/self.radius)
-        if Dtheta==0:
-            raise ValueError,"Dtheta is zero"
-        pts=[]
-        import numpy
-        theta=numpy.arange(mx,Mx,step=Dtheta)
-        return [self.get_point(t,advised) for t in theta]
-
-    def get_tangent_vector(self,theta):
-        return PolarPoint(1,theta+90).origin(self.get_point(theta,advised=False))
-    def get_normal_vector(self,theta):
-        """
-        Return a normal vector at the given angle 
-        
-        INPUT:
-
-        - ``theta`` - an angle in degree or :class:`AngleMeasure`.
-
-        OUTPUT:
-
-        An affine vector
-
-        EXAMPLES::
-
-            sage: C=Circle(Point(0,0),2)
-            sage: print C.get_normal_vector(45)
-            vector I=Point(sqrt(2),sqrt(2)) F=Point(3/2*sqrt(2),3/2*sqrt(2))
-
-        """
-        v = PolarPoint(1,theta).origin(self.get_point(theta,advised=False))
-        v.arrow_type="vector"
-        return v
-    # Here, angleI and angleF are given in degree while parametric_plot uses radian.
-    def get_minmax_data(self,angleI,angleF):
-        deb = radian(angleI)
-        fin = radian(angleF)
-        return MyMinMax(self.parametric_curve().get_minmax_data(deb,fin))
-    def xmax(self,angleI,angleF):
-        return self.get_minmax_data(angleI,angleF)['xmax']
-    def xmin(self,angleI,angleF):
-        return self.get_minmax_data(angleI,angleF)['xmin']
-    def ymax(self,angleI,angleF):
-        return self.get_minmax_data(angleI,angleF)['ymax']
-    def ymin(self,angleI,angleF):
-        return self.get_minmax_data(angleI,angleF)['ymin']
-    def graph(self,angleI,angleF):
-        """
-        Return a graph of the circle between the two angles given in degree
-        """
-        return GraphOfACircle(self.center,self.radius,angleI,angleF)
-    def __str__(self):
-        return "Circle, center=%s, radius=%s"%(self.center.__str__(),str(self.radius))
-    def copy(self):
-        """
-        Return a copy of the object as geometrical object.
-        
-        It only copies the center and the radius. In particular
-        the following are not copied:
-
-        - style of drawing.
-
-        - initial and final angle if `self` is an arc.
-
-        EXAMPLES:
-
-        Python copies by assignation::
-
-            sage: c1=Circle( Point(1,1),2 )
-            sage: c2=c1
-            sage: c2.center=Point(3,3)
-            sage: print c1.center
-            Point(3,3)
-
-        The method :func:`copy` pass through::
-
-            sage: c1=Circle( Point(1,1),3 )
-            sage: c2=c1.copy()
-            sage: c2.center=Point(3,3)
-            sage: print c1.center
-            Point(1,1)
-
-        NOTE:
-
-        Due to use of `lazy_attribute`, it is not recommended to change the center of
-        a circle after having defined it.
-
-        """
-        return Circle(self.center,self.radius)
-    def math_bounding_box(self,pspict=None):
-        return self.bounding_box(pspict)
-    def bounding_box(self,pspict=None):
-        a=simplify_degree(self.angleI,keep_max=True,number=True)
-        b=simplify_degree(self.angleF,keep_max=True,number=True)
-        angleI=min(a,b)
-        angleF=max(a,b)
-        pI=self.get_point(angleI)
-        pF=self.get_point(angleF)
-        bb = BoundingBox(self.center,self.center)
-        bb.append(pI,pspict)
-        bb.append(pF,pspict)
-        if angleI==0:
-            bb.AddX(self.center.x+self.radius)
-        if angleI<90 and angleF>90 :
-            bb.AddY(self.center.y+self.radius)
-        if angleI<180 and angleF>180 :
-            bb.AddX(self.center.x-self.radius)
-        if angleI<270 and angleF>270 :
-            bb.AddY(self.center.y-self.radius)
-        return bb
-    def pstricks_code(self,pspict=None):
-        if self.wavy:
-            waviness = self.waviness
-            alphaI = radian(self.angleI,number=True,keep_max=True)
-            alphaF = radian(self.angleF,number=True,keep_max=True)
-            if self.angleF.degree==360:        # Because the function radian simplifies modulo 2pi.
-                alphaF=2*pi
-            curve = self.parametric_curve()
-            G = GraphOfAParametricCurve(curve,alphaI,alphaF)
-            G.add_option(self.params())
-            # The two following lines are a pity. If I add some properties, I have to change by hand...
-            G.parameters.style = self.parameters.style
-            G.parameters.color = self.color
-            G.wave(waviness.dx,waviness.dy)
-            return G.pstricks_code()
-        else:
-            angleI=degree(self.angleI,number=True,converting=False,keep_max=True)
-            angleF=degree(self.angleF,number=True,converting=False,keep_max=True)
-            if angleI == 0 and angleF == 360 :
-                PsA = Point(self.center.x-self.radius,self.center.y)        
-                a = PsA.create_PSpoint()
-                a = a + self.center.create_PSpoint()
-                a = a + "\pstCircleOA["+self.params()+"]{"+self.center.psName+"}{"+PsA.psName+"}"
-                return a
-                # Some remarks :
-                # Besoin d'un point sur le cercle pour le tracer avec \pstCircleOA,"")
-                # La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
-                #self.add_latex_line("\pscircle["+params+"]("+Cer.center.psName+"){"+str(Cer.radius)+"}")
-            else :
-                PsA = self.get_point(angleI)
-                PsB = self.get_point(angleF)
-                a = PsA.create_PSpoint() + PsB.create_PSpoint() + self.center.create_PSpoint()
-                a = a+"\pstArcOAB[%s]{%s}{%s}{%s}"%(self.params(),self.center.psName,PsA.psName,PsB.psName)
-                return a
-
-class GeometricRectangle(object):
-    """
-    The four points of the square are designated by NW,NE,SW and SE.
-    """
-    def __init__(self,NW,SE):
-        self.NW = NW
-        self.SE = SE
-        self.SW = Point(self.NW.x,self.SE.y)
-        self.NE = Point(self.SE.x,self.NW.y)
-    def first_diagonal(self):
-        return Segment(self.NW,self.SE)
-    def second_diagonal(self):
-        return Segment(self.SW,self.NE)
-    def segment_N(self):
-        return Segment(self.NW,self.NE)
-    def segment_S(self):
-        return Segment(self.SW,self.SE)
-    def segment_E(self):
-        return Segment(self.NE,self.SE)
-    def segment_W(self):
-        return Segment(self.NW,self.SW)
-    def center(self):
-        return self.first_diagonal().center()
-    def default_associated_graph_class(self):
-        """Return the class which is the Graph associated type"""
-        return GraphOfARectangle
-
-def OptionsStyleLigne():
-    return ["linecolor","linestyle"]
-
-class Options(object):
-    """
-    Describe the drawing options of pstricks objects.
-
-    ATTRIBUTES :
-        self.DicoOptions : dictionnary which contains the options
-    METHODS :
-        self.merge_options(opt) : opt is an other object of the class Options. The method merges the two in the sense that opt is not
-                        changed, but 
-                        1. if opt contains a key more, it is added to self
-                        2. if a key of opt is different of the one of self, self is changed
-    """
-    def __init__(self):
-        self.DicoOptions = {}
-    # On ajoute une des options en donnant genre
-    # LineColor=blue,LineStyle=dashed
-    # Ou alors en donnant un dictionnaire genre
-    # {"Dx":1,"Dy":3}
-    def add_option(self,opt):
-        if opt :            # If the argument is empty.
-            try:
-                for op in opt.split(","):
-                    s = op.split("=")
-                    self.DicoOptions[s[0]] = s[1]
-            except AttributeError :
-                for op in opt.keys():
-                    self.DicoOptions[op] = opt[op]
-
-    def remove_option(self,opt):
-        del(self.DicoOptions[opt])
-    def merge_options(self,opt):
-        for op in opt.DicoOptions.keys():
-            self.add_option({op:opt[op]})
-    def extend_options(self,Opt):
-        for opt in Opt.DicoOptions.keys():
-            self.add_option(opt+"="+Opt.DicoOptions[opt])
-    # Afiter est une liste de noms d'options, et cette méthode retourne une instance de Options qui a juste ces options-là, 
-    # avec les valeurs de self.
-    def sousOptions(self,AFiter):
-        O = Options()
-        for op in self.DicoOptions.keys() :
-            if op in AFiter : O.add_option(op+"="+self.DicoOptions[op])
-        return O
-    def style_ligne(self):
-        return self.sousOptions(OptionsStyleLigne())
-    def code(self):
-        a = []
-        for op in self.DicoOptions.keys():
-            a.append(op+"="+self.DicoOptions[op])
-            a.append(",")
-        del a[-1:]
-        return "".join(a)
-    def __getitem__(self,opt):
-        return self.DicoOptions[opt]
-
-class Waviness(object):
-    """
-    This class contains the informations about the waviness of a curve. It takes as argument a GraphOfAphyFunction and the parameters dx, dy of the wave.
-    Waviness.get_wavy_points        returns a list of points which are disposed around the graph of the curve. These are the points to be linked
-                       by a bezier or something in order to get the wavy graph of the function.
-    """
-    def __init__(self,graph,dx,dy):
-        self.graph = graph
-        self.dx = dx
-        self.dy = dy
-        self.obj = self.graph.obj
-        if type(self.obj) == phyFunction :
-            self.Mx = self.graph.Mx
-            self.mx = self.graph.mx
-    def get_wavy_points(self):
-        if type(self.obj) == phyFunction :
-            return self.obj.get_wavy_points(self.mx,self.Mx,self.dx,self.dy)
-        if type(self.obj) == Segment :
-            return self.obj.get_wavy_points(self.dx,self.dy)
-
-class Mark(object):
-    def __init__(self,graph,dist,angle,text,automatic_place=False):
-        """
-        Describe a mark (essentially a P on a point for example)
-        angle is given in degree or AngleMeasure
-
-
-        This class should not be used by the end-user.
-
-        INPUT:
-
-        - ``graph`` - the graph that it marked. This is usually a point but it can be
-                        anything that has a `mark_point` method.
-        - ``dist`` - the distance between `graph.mark_point()` and the mark.
-        - ``angle`` - the angle
-        - ``text`` - the text to be printed on the mark. This is typically a LaTeX stuff like "$P$".
-        - ``automatic_place`` - this is a tuple (pspict,anchor) where pspict is the pspicture
-                                in which we are working and ̣`anchor` is one of "corner","N","S","W","E" 
-                                or special cases (see below).
-
-                        - "corner" will put the mark at the distance such that the corner of the 
-                          bounding box is at the (relative) position (dist;angle) instead
-                          of the center of the mark.
-
-                        - "N" will put the mark in such a way that the center of the north
-                          side of the bounding box is at the position (dist;angle).
-
-                        - "for axes". In this case we expect to have a 3-tuple `(pspict,"for axes",segment)`
-                          where `segment` is a segment (typically the segment of an axe).
-                          In this case, we suppose `self.angle` to be orthogonal to the segment.
-                          The mark will be put sufficiently far for the bounding box not to cross the segment.
-
-                          What is done is that the closest corner of the bounding box is at
-                          position (dist;angle) from the point.
-
-        """
-        self.graph = graph
-        self.parent = graph
-        self.angle = angle
-        self.dist = dist
-        self.text = text
-        self.angle = angle
-        self.automatic_place=automatic_place
-        alpha=radian(angle)
-        if isinstance(alpha,AngleMeasure):
-            self.x=self.dist*cos(alpha.radian)
-            self.y=self.dist*sin(alpha.radian)
-        else :
-            self.x=self.dist*cos(alpha)
-            self.y=self.dist*sin(alpha)
-
-    def central_point(self,pspict=None):
-        """
-        return the central point of the mark, that is the point where the mark arrives.
-
-        The central point of the mark is computed from self.graph.mark_point()
-        Thus an object that wants to accept a mark needs a method mark_point that returns the point on which the mark will be put.
-        """
-
-        default=self.graph.mark_point().get_polar_point(self.dist,self.angle,pspict)
-
-        if self.automatic_place :
-            try :
-                pspict=self.automatic_place[0]
-                position=self.automatic_place[1]
-            except TypeError :
-                pspict=self.automatic_place
-                position="corner"
-
-            dimx,dimy = pspict.get_box_size(self.text)
-            dimx=float(dimx)/pspict.xunit
-            dimy=float(dimy)/pspict.yunit
- 
-            if position=="for axes":
-                seg=self.automatic_place[2]
-                alpha=seg.angle().radian
-                d=self.dist+0.5*max(dimx*sin(alpha),dimy*cos(alpha))
-                beta=degree(-pi/2+alpha)
-                beta=self.angle
-                return self.graph.mark_point().get_polar_point(d,beta)
-
-            if position=="corner":
-                if self.x>=0:
-                    lx=dimx*0.5
-                if self.x<0:
-                    lx=-dimx*0.5
-                if self.y>=0:
-                    ly=dimy*0.5
-                if self.y<0:
-                    ly=-dimy*0.5
-                return default.translate(lx,ly)
-            if position=="N":
-                return default.translate(0,-dimy*0.5)
-            if position=="S":
-                return default.translate(0,dimy*0.5)
-            if position=="W":
-                return default.translate(dimx*0.5,0)
-            if position=="E":
-                return default.translate(-dimx*0.5,0)
-        else :
-            return default
-    def math_bounding_box(self,pspict=None):
-        """
-        Return the mathematics bounding box of its base object.
-
-        A mark has non own math_bounding_box because we do not want the axes to fit even the marques.
-        This is the deep difference between math_bounding_box and bounding_box. We want the
-        marks to be fit in the bounding_box since if not the mark risks to be cut
-        in the pdf/png version.
-        """
-        return self.graph.math_bounding_box(pspict)
-    def bounding_box(self,pspict=None):
-        central_point=self.central_point(pspict)
-        bb=BoundingBox(central_point,central_point)
-        dimx,dimy=pspict.get_box_size(self.text)
-        try :
-            dimx=float(dimx)/pspict.xunit
-            dimy=float(dimy)/pspict.yunit
-        except AttributeError:
-            print "Try to pass a pspicture when computing the bounding box of",type(self)
-        pt1=Point(central_point.x-dimx/2,central_point.y-dimy/2) 
-        pt2=Point(central_point.x+dimx/2,central_point.y+dimy/2)
-        bb.AddPoint(pt1)
-        bb.AddPoint(pt2)
-        bb.parent=self
-        return bb
-    def pstricks_code(self,pspict=None):
-        l=[]
-        central_point=self.central_point(pspict)
-        #TODO : Use create_PSpoint instead of \pstGeonode.
-        l.append("\pstGeonode[]"+central_point.coordinates(numerical=True)+"{"+central_point.psName+"}")
-        l.append(r"\rput(%s){\rput(%s;%s){%s}}"%(central_point.psName,"0",0,str(self.text)))
-        return "\n".join(l)
-
-class FillParameters(object):
-    """
-    Represent the parameters of filling a surface.
-    """
-    def __init__(self):
-        self.color= None
-        self.style= "solid"
-    def add_to_options(self,opt):
-        """
-        add `self` to a set of options.
-
-    
-        INPUT:
-
-        - ``opt`` - an instance of :class:`Options`.
-
-        OUTPUT:
-
-        Return `opt` with added properties.
-
-        EXAMPLES::
-
-            sage: opt=Options()
-            sage: fill=FillParameters()
-            sage: fill.color="blue"
-            sage: fill.add_to_options(opt)
-            sage: opt.code()
-            'fillcolor=blue,fillstyle=solid'
-
-        ::
-
-            sage: fill.style="MyStyle"
-            sage: fill.add_to_options(opt)
-            sage: opt.code()
-            'fillcolor=blue,fillstyle=MyStyle'
-
-        """
-        if self.color :
-            opt.add_option("fillcolor=%s"%str(self.color))
-        if self.style :
-            opt.add_option("fillstyle=%s"%str(self.style))
-
-class HatchParameters(object):
-    """Same as FillParameters, but when one speaks about hatching"""
-    def __init__(self):
-        self.color = None
-        self._crossed = False
-        self.angle = -45
-    def crossed(self):
-        self._crossed=True
-    def add_to_options(self,opt):
-        opt.add_option("hatchangle=%s"%str(self.angle))
-        if self._crossed:
-            opt.add_option("fillstyle=crosshatch")
-        else:
-            opt.add_option("fillstyle=vlines")
-        if self.color :
-            opt.add_option("hatchcolor=%s"%str(self.color))
-
-class Parameters(object):
-    def __init__(self):
-        self.color = None           # I take into account in SurfaceBetweenParametricCurves that the default values are None
-        self.symbol = None
-        self.style = None
-        self.fill=FillParameters()
-        self.hatch=HatchParameters()
-        self._filled=False
-        self._hatched=False
-    def filled(self):
-        self._filled=True
-    def hatched(self):
-        self._hatched=True
-    def add_to_options(self,opt):
-        """
-        Add to the object `opt` (type Option) the different options that correspond to the parameters.
-
-        In an imaged way, this method adds `self` to the object `opt`.
-        """
-        if self.color :
-            opt.add_option("linecolor=%s"%str(self.color))
-        if self.style :
-            opt.add_option("linestyle=%s"%str(self.style))
-        if self.symbol :
-            opt.add_option("PointSymbol=%s"%str(self.symbol))
-        if self._filled:
-            self.fill.add_to_options(opt)
-        if self._hatched:
-            self.hatch.add_to_options(opt)
-    def add_to(self,parameters):
-        """
-        Add `self` to `parameters`.
-
-        Where `self` has non-trivial or non-default values, put these values to `parameters`
-
-        EXAMPLES ::
-
-            sage: p1=Parameters()
-            sage: p1.color="red"
-            sage: p1.symbol="A"
-
-            sage: p2=Parameters()
-            sage: p2.style="solid"
-            sage: p2.symbol="B"
-            sage: p2.filled()
-            sage: p2.fill.color="cyan"
-
-            sage: p2.add_to(p1)
-            sage: print p1.color,p1.style,p1.symbol,p1._filled,p1.fill.color
-            red solid A True cyan
-        """
-        for attr in parameters.__dict__.keys():
-            if parameters.__getattribute__(attr) in [None,False]:
-                parameters.__dict__[attr]=self.__getattribute__(attr)
-        parameters.fill=self.fill
-        parameters.hatch=self.hatch
-    def replace_to(self,parameters):
-        """
-        The same as :func:`add_to`, but replace also non-trivial parameters
-
-        EXAMPLES::
-
-            sage: p1=Parameters()
-            sage: p1.color="red"
-            sage: p1.symbol="A"
-
-            sage: p2=Parameters()
-            sage: p2.style="solid"
-            sage: p2.symbol="B"
-            sage: p2.filled()
-            sage: p2.fill.color="cyan"
-
-            sage: p2.replace_to(p1)
-            sage: print p1.color,p1.style,p1.symbol,p1._filled,p1.fill.color
-            red solid B True cyan
-
-        Notice that here `p1.style` is replace while it was not replaced by the function 
-        :func:`add_to`.
-        """
-        for attr in parameters.__dict__.keys():
-            candidate=self.__getattribute__(attr)
-            if candidate is not None :
-                parameters.__dict__[attr]=candidate
-        parameters.fill=self.fill
-        parameters.hatch=self.hatch
-
-def EnsurephyFunction(f):
-    if "sage" in dir(f):        # This tests in the same time if the type if phyFunction or GraphOfAphyFunction
-        return phyFunction(f.sage)
-    if "phyFunction" in dir(f):
-        return f.phyFunction()
-    else :
-        return phyFunction(f)
-
-def EnsureParametricCurve(curve):
-    if "parametric_curve" in dir(curve):
-        return curve.parametric_curve()
-    else :
-        return curve
-
-
-def extract_interval_information(curve):
-    """
-    return the interval of the curve.
-
-    That is the initial and final value of the parameter
-    of `curve` if that is a :class:`ParametricCurve` and
-    the initial and final values of `x` if this the the graph
-    of a function.
-
-    INPUT:
-
-    - ``curve`` - graph of a function or a parametric curve
-
-    OUTPUT:
-
-    a tuple of numbers. If nothing is found, return (None,None).
-
-    EXAMPLES::
-
-        sage: f=phyFunction(x**2).graph(1,pi)
-        sage: extract_interval_information(f)
-        (1, pi)
-         
-        sage: a=var('a')
-        sage: curve=ParametricCurve(x,sin(x)).graph(sqrt(2),a)
-        sage: extract_interval_information(curve)
-        (sqrt(2), a)
-
-        sage: f=phyFunction(x**3)
-        sage: extract_interval_information(f)
-        (None, None)
-
-    """
-    # For parametric curves
-    if "llamI" in dir(curve):
-        return curve.llamI,curve.llamF
-    # for functions
-    if "mx" in dir(curve):
-        return curve.mx,curve.Mx
-    # for segments
-    if "I" in dir(curve) and "F" in dir(curve):
-        return 0,curve.length()
-    # for circles
-    if "angleI" in dir(curve):
-        return curve.angleI,curve.angleF
-    return None,None
-
-class GraphOfAPoint(GraphOfAnObject):
-    NomPointLibre = PointsNameList()
-
-    def __init__(self,x,y):
-        self.x=SR(x)
-        self.y=SR(y)
-        GraphOfAnObject.__init__(self,self)
-        #self.psName = point.psName      # The psName of the point is erased when running Point.__init__
-                                         # This line is no more useful (April 29 2011)
-        self.point = self.obj
-        self.add_option("PointSymbol=*")
-        self._advised_mark_angle=None
-
-    def psName(self):
-        return GeometricPoint.NomPointLibre.next()
-    def projection(self,seg,direction=None):
-        """
-        Return the projection of the point on the given segment.
-
-        INPUT:
-
-        - ``seg`` - a segment
-        - ``direction`` - (default=None) a vector. If given, we use a projection parallel to
-                            `vector` instead of the orthogonal projection.
-
-        OUTPUT:
-
-        a point.
-
-        EXAMPLES:
-
-        Return a point even if the projections happens to lies outside the segment::
-
-            sage: s1=Segment( Point(0,0),Point(2,1) )
-            sage: print Point(3,-1).projection(s1)
-            Point(2,1)
-            sage: print Point(5,0).projection(s1) 
-            Point(4,2)
-
-        You can project on a vector::
-
-            sage: print Point(5,0).projection(Vector(2,1))
-            Point(4,2)
-
-        Computations are exact::
-
-            sage: v=Vector(2,1)
-            sage: print Point(sqrt(2),pi).projection(v)
-            Point(2/5*pi + 4/5*sqrt(2),1/5*pi + 2/5*sqrt(2))
-
-        """
-        try :
-            seg=seg.segment()       # allows to project onto an axe
-        except AttributeError :
-            pass
-
-        if direction is None:
-            direction=seg.get_normal_vector()
-
-        seg2=direction.fix_origin(self)
-        return phystricks.main.Intersection(seg,seg2)[0]
-
-        #if seg.vertical :
-        #    return Point(seg.I.x,self.y)
-        #if seg.horizontal :
-        #    return Point(self.x,seg.I.y)
-        #else :
-        #    Rx = (self.y*seg.slope - seg.slope*seg.independent + self.x)/(seg.slope**2 + 1)
-        #    Ry = (self.y*seg.slope**2 + self.x*seg.slope + seg.independent)/(seg.slope**2 + 1)
-        #    return Point(Rx,Ry)
-
-    def get_polar_point(self,r,theta,pspict=None):
-        """
-        Return the point located at distance r and angle theta from point self.
-
-        INPUT:
-
-        - ``r`` - A number.
-
-        - ``theta`` - the angle (degree or :class:`AngleMeasure`).
-
-        - ``pspict`` - the pspicture in which the point is supposed to live. If `pspict` is given, we compute the deformation due to the dilatation.  Be careful: in that case `r` is given as absolute value and the visual effect will not be affected by dilatations.
-
-        OUTPUT: A point.
-
-        EXAMPLES::
-
-            sage: P=Point(1,2)
-            sage: print P.get_polar_point(sqrt(2),45)
-            Point(2,3)
-
-        """
-        alpha=radian(theta,number=True)
-        if pspict:
-            A=pspict.xunit
-            B=pspict.yunit
-            xP=r*cos(alpha)/A
-            yP=r*sin(alpha)/B
-            return self.translate(Vector(xP,yP))
-        return Point(self.x+r*cos(alpha),self.y+r*sin(alpha))
-    def value_on_line(self,line):
-        """
-        Return the value of the equation of a line on `self`.
-
-        If $f(x,y)=0$ is the equation of `line`, return the number f(self.x,self.y).
-
-        NOTE:
-
-        The object `line` has to have an attribute line.equation
-
-        EXAMPLE::
-
-            sage: s=Segment(Point(0,1),Point(1,0))
-            sage: s.equation()
-            x + y - 1 == 0
-            sage: P=Point(-1,3)
-            sage: P.value_on_line(s)
-            1   
-
-        It allows to know if a point is inside or outside a circle::
-
-            sage: circle=Circle(Point(-1,2),4)
-            sage: Point(1,1).value_on_line(circle)
-            -11
-
-        ::
-
-            sage: Point(1,sqrt(2)).value_on_line(circle)
-            (sqrt(2) - 2)^2 - 12
-
-        """
-        x,y=var('x,y')
-        return line.equation.lhs()(x=self.x,y=self.y)
-    def translate(self,a,b=None):
-        """
-        translate `self`.
-
-        EXAMPLES:
-
-        You can translate by a :func:`Vector`::
-
-            sage: v=Vector(2,1)                        
-            sage: P=Point(-1,-1)
-            sage: print P.translate(v)
-            Point(1,0)
-
-        An :func:`AffineVector` is accepted::
-
-            sage: w=AffineVector( Point(1,1),Point(2,3) )
-            sage: print P.translate(w)
-            Point(0,1)
-
-        You can also directly provide the coordinates::
-
-            sage: print P.translate(10,-9)
-            Point(9,-10)
-
-        Or the :func:`Point` corresponding to the translation vector::
-
-            sage: print P.translate( Point(3,4)  )
-            Point(2,3)
-
-        Translation by minus itself produces zero::
-
-            sage: x,y=var('x,y')
-            sage: P=Point(x,y)
-            sage: print P.translate(-P)
-            Point(0,0)
-
-        """
-        if b==None :
-            v=a
-        else :
-            v=Vector(a,b)
-        return self+v
-    def origin(self,p):
-        return AffineVector(p,Point(p.x+self.x,p.y+self.y))
-    def Vector(self):
-        return AffineVector(Point(0,0),self)
-    def norm(self):
-        """
-        Return the norm of the segment between (0,0) and self.
-
-        This is the radial component in polar coordinates.
-
-        EXAMPLES:
-        sage: Point(1,1).norm()
-        sqrt(2)
-        sage: Point(-pi,sqrt(2)).norm()
-        sqrt(pi^2 + 2)
-        """
-        return Segment(Point(0,0),self).length()
-    def length(self):
-        """
-        The same as self.norm()
-
-        EXAMPLES:
-        sage: P=Point(1,1)
-        sage: P.length()
-        sqrt(2)
-        """
-        return self.norm()
-    # La méthode normalize voit le point comme un vecteur partant de zéro, et en donne le vecteur de taille 1
-    def normalize(self,l=None):
-        """
-        Return a vector of norm <l>. If <l> is not given, take 1.
-        """
-        unit = self*(1/self.norm())
-        if l :
-            return unit*l
-        return unit
-    def default_graph(self,opt):
-        """
-        Return a default Graph
-        
-        <opt> is a tuple. The first is the symbol to the point (like "*" or "none").
-        The second is a string to be passed to pstricks, like "linecolor=blue,linestyle=dashed".
-        """
-        P=self.default_associated_graph_class()(self)
-        P.parameters.symbol=opt[0]
-        P.add_option(opt[1])
-        return P
-    def default_associated_graph_class(self):
-        """Return the class which is the Graph associated type"""
-        return GraphOfAPoint             # Graph is also a method of Sage
-    def create_PSpoint(self):
-        """Return the code of creating a pstgeonode. The argument is a Point of GraphOfAPoint"""
-        P = Point(self.x,self.y)
-        P.psName = self.psName
-        P.parameters.symbol="none"
-        return P.pstricks_code(None)+"\n"
-    def polar_coordinates(self):
-        """
-        Return the polar coordinates of the point as a tuple (r,angle) where angle is given in degree.
-        """
-        r=self.norm()
-        if self.x==0:
-            radian=pi/2
-        else :
-            radian=arctan(self.y/self.x)
-        if self.x<0:
-            if self.y>0:
-                radian=pi/2-radian
-            if self.y<=0:
-                radian=pi+radian
-        angle=AngleMeasure(value_radian=radian)
-        return r,angle
-    def angle(self):
-        """
-        Return the angle of the segment from (0,0) and self
-
-        Return the result in degree
-        """
-        return self.polar_coordinates()[1]
-    def coordinates(self,numerical=False):
-        """
-        Return the coordinates of the point as a string.
-
-        When one coordinate if very small (lower than 0.0001), it is rounded to zero in order to avoid string like "0.2335e-6" in the pstricks code.
-
-        Example : 
-        sage: P=Point(1,3)
-        sage: print P.coordinates()
-        (1,3)
-        """
-        if numerical :
-            x=numerical_approx(self.x)
-            y=numerical_approx(self.y)
-        else :
-            x = self.x
-            y = self.y
-        # This precaution in order to avoid something like 0.125547e-6 because pstricks doesn't like that notation.
-        if abs(x) < 0.0001 :
-            x=0
-        if abs(y) < 0.0001 :
-            y=0
-        return "("+str(x)+","+str(y)+")"
-    def coordinatesBr(self):
-        return self.coordinates.replace("(","{").replace(")","}")
-    def Affiche(self):
-        return self.coordinates()
-    def graph_object(self):
-        return GraphOfAPoint(self)
-    def copy(self):
-        return Point(self.x,self.y)
-    def __eq__(self,other):
-        """
-        return True if the coordinates of `self` and `other` are the same.
-
-        INPUT:
-        
-        - ``other`` - an other point
-
-        OUTPUT:
-
-        boolean
-
-        EXAMPLES:
-
-        The fact to change the properties of a point don't change the equality::
-
-            sage: a=Point(1,1)
-            sage: b=Point(1,1)
-            sage: b.put_mark(1,1,"$P$")
-            sage: a==b
-            True
-            sage: c=Point(0,0)
-            sage: c==a
-            False
-        """
-        if self.x == other.x and self.y==other.y :
-            return True
-        return False
-    def __add__(self,v):
-        """
-        Addition of a point with a vector is the parallel translation, while addition of a point with an other point is simply
-        the addition of coordinates.
-        """
-        try :
-            dx = v.Dx
-            dy = v.Dy
-        except AttributeError :
-            try :
-                dx = v.x
-                dy = v.y
-            except AttributeError :
-                raise TypeError, "You seem to add myself with something which is not a Point neither a Vector. Sorry, but I'm going to crash."
-        return Point(self.x+dx,self.y+dy)
-    def __sub__(self,v):
-        return self+(-v)
-    def __neg__(self):
-        return Point(-self.x,-self.y)
-    def __mul__(self,r):
-        return Point(r*self.x,r*self.y)
-    def __rmul__(self,r):
-        return self.__mul__(r)
-    def __str__(self):
-        return "Point(%s,%s)"%(str(self.x),str(self.y))
-
-    def mark_point(self):
-        return self
-    def bounding_box(self,pspict=None):
-        """
-        return the bounding box of the point including its mark
-
-        A small box of radius 0.1 (modulo xunit,yunit[1]) is given in any case.
-        You need to provide a pspict in order to compute the size since it can vary from the place in your document you place the figure.
-
-        [1] If you dont't know what is the "bounding box", or if you don't want to fine tune it, you don't care.
-        """
-        Xradius=0.1
-        Yradius=0.1
-        try :
-            Xradius=0.1/pspict.xunit
-            Yradius=0.1/pspict.yunit
-        except :
-            print "You should consider to give a pspict as argument. Otherwise the boundig box of %s could be bad"%str(self)
-            raise TypeError
-        bb = BoundingBox(Point(self.x-Xradius,self.y-Yradius),Point(self.x+Xradius,self.y+Yradius))
-        for P in self.record_add_to_bb:
-            bb.AddPoint(P)
-        return bb
-    def math_bounding_box(self,pspict=None):
-        """Return a bounding box which include itself and that's it."""
-        return BoundingBox(self.point,self.point)
-    def pstricks_code(self,pspict=None,with_mark=False):
-        r"""
-        Return the pstricks code of the point
-
-        INPUT:
-        - ``with_mark`` - (default : False) if it is true, return the pstrick code
-                                of the mark in the same time. This is only used by the axes.
-        OUTPUT:
-        string
-
-        This function is not supposed to be used by the end-user.
-
-        When the point has a mark, the code of the mark is not included here because 
-        :func:`DrawGraph` automatically adds the mark to the list of objects
-        to be drawn.
-        However, some constructions want to include the pstricks code of points in its own
-        pstricks code. In that case we want the code of the mark to be part of the code
-        of the point.
-        This is the case of the axes. The pstricks code of the axes have to be in one block
-        including the markes. For that usage, we use with_mark=True
-        
-        EXAMPLE:
-        sage: P=Point(1,1)
-        sage: P.put_mark(0.3,45,"$P$")
-
-        By default the code of the mark does not appears in the code of the point:
-        sage: unify_point_name(P.pstricks_code())
-        '\\pstGeonode[PointSymbol=*,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaaa}'
-
-        If we specify with_mark=True, then we see the code of the mark:
-        sage: unify_point_name(P.pstricks_code(with_mark=True))
-        '\\pstGeonode[](1.21213203435596,1.21213203435596){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$P$}}\n\\pstGeonode[PointSymbol=*,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaab}'
-        """
-        l=[]
-        if self.marque and with_mark:
-            l.append(self.mark.pstricks_code(pspict))
-        l.append("\pstGeonode["+self.params()+"]"+self.coordinates(numerical=True)+"{"+self.psName+"}")
-        return "\n".join(l)
-
-class GeometricImplicitCurve(object):
-    """
-    Describe a curve given by an implicit equation.
-
-    INPUT:
-
-    - ``f`` -- a function of two variables or equation in two variables
-
-    End users should not use this class but use the constrcutor :func:`ImplicitCurve`.
-
-    EXAMPLES::
-
-        sage: f(x,y)=x**2+1/x
-        sage: F=GeometricImplicitCurve(f(x,y)==2)
-        sage: G=GeometricImplicitCurve(x+y==2)   
-
-    """
-    def __init__(self,f):
-        self.f=f
-        from sage.symbolic.expression import is_SymbolicEquation
-        if is_SymbolicEquation(f):
-            if f.operator() != operator.eq:
-                raise ValueError, "input to implicit plot must be function or equation"
-            self.f = f.lhs() - f.rhs()          # At this point self.f is the expression to be equated to zero.
-    def graph(self,xrange,yrange,plot_points=100):
-        """
-        Return the graph corresponding to the implicit curve.
-
-        INPUT:
-
-        - ``xrange`` - the X-range on which the curve will be plotted.
-
-        - ``yrange`` - the Y-range on which the curve will be plotted.
-
-        EXAMPLE ::
-    
-            sage: x,y=var('x,y')
-            sage: F=GeometricImplicitCurve(x-y==3)
-            sage: graph=F.graph((x,-3,3),(y,-2,2))
-            sage: print graph.bounding_box()
-            (1.0,-2.0),(3.0,1.88737914186e-15)
-
-        """
-        return GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
-    def __str__(self):
-        """
-        Return string representation of this implicit curve
-
-        EXAMPLE::
-
-            sage: f(x,y)=x**2+1/x
-            sage: print GeometricImplicitCurve(f(x,y)==2)
-            Implicit curve of equation x^2 + 1/x - 2 == 0
-            sage: print GeometricImplicitCurve(x+y==7)   
-            Implicit curve of equation x + y - 7 == 0
-        """
-        return "Implicit curve of equation %s == 0"%repr(self.f)
-
-class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
-    r"""
-    Describe the graph of an implicit curve.
-
-    INPUT:
-    - ``implicit_curve`` - the implicit curve to be considered
-    - ``xrange``,``yrange`` - the range on which we want to plot
-    
-
-    OPTIONAL INPUT:
-    - ``plot_points``  -- integer (default: 100); number of points to plot
-    in each direction of the grid.  
-
-    ATTRIBUTES:
-    - ``self.path`` this is a list of lists of points. Each list correspond to a path
-                    in the sense of matplotlib. Notice that here the points are given as
-                    instances of Point; not as list [x,y] as matplotlib does.
-    
-    EXAMPLES:
-    sage: var('x,y')
-    (x, y)
-    sage: implicit_curve=GeometricImplicitCurve(x**2+x==3)
-    sage: F=GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2)).pstricks_code()
-
-    NOTES:
-    the get_minmax_data is contributed by the Sage's community here :
-    http://ask.sagemath.org/question/359/get_minmax_data-on-implicit_plot
-    (thanks to DSM)
-    """
-    def __init__(self,implicit_curve,xrange,yrange,plot_points=300):
-        GraphOfAnObject.__init__(self,implicit_curve)
-        GeometricImplicitCurve.__init__(self,implicit_curve.f)
-        self.implicit_curve=implicit_curve
-        self.implicit_plot=implicit_plot(self.f,xrange,yrange)
-        self.xrange=xrange
-        self.yrange=yrange
-        self.plot_points=plot_points
-        self.paths=get_paths_from_implicit_plot(self.implicit_plot)
-        self.parameters.color="blue"
-    def get_minmax_data(self,dict=True):
-        """
-        Return a dictionary whose keys give the xmin, xmax, ymin, and ymax
-        data for this graphic.
-
-        Since the results come from the lazy_attribute function _get_minmax_data, changing the number of points
-        between two call will not change the result.
-
-        EXAMPLES
-        sage: var('x,y')
-        (x, y)
-        sage: F=ImplicitCurve(x**2+y**2==sqrt(2),(x,-5,5),(y,-4,4),plot_points=300)
-        sage: F.get_minmax_data()
-        {'xmin': -1.18858977066, 'ymin': -1.18845247289, 'ymax': 1.18845247289, 'xmax': 1.18858977066}
-        sage: F.plot_points=10
-        sage: F.get_minmax_data()
-        {'xmin': -1.18858977066, 'ymin': -1.18845247289, 'ymax': 1.18845247289, 'xmax': 1.18858977066}
-        """
-        tot_points=[]
-        for path in self.paths :
-            tot_points.extend(path)
-        xx=[P.x for P in tot_points]
-        yy=[P.y for P in tot_points]
-        xmin=min(xx)
-        xmax=max(xx)
-        ymin=min(yy)
-        ymax=max(yy)
-        if dict:
-            return MyMinMax({'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax})
-        else:
-            return xmin,xmax,ymin,ymax
-    def xmin(self):
-        return self.get_minmax_data()['xmin']
-    def xmax(self):
-        return self.get_minmax_data()['xmax']
-    def ymin(self):
-        return self.get_minmax_data()['ymin']
-    def ymax(self):
-        return self.get_minmax_data()['ymax']
-    def bounding_box(self,pspict=None):
-        """
-        Return the bounding box of the implicit curve.
-
-        This is NOT the bounding box got that one could expect
-        using Sage's plotting system
-        implicit_plot(f,xrange,yrange).get_minmax_data()
-
-        Instead the bounding box returned here only contains the points that
-        are actually plotted. In the following example, we know that the ymax
-        has to be half the sqrt of the radius (and not the 5 given in yrange).
-
-        EXAMPLES:    
-        sage: var('x,y')
-        (x, y)
-        sage: f=x**2+2*y**2
-        sage: G=ImplicitCurve(f==sqrt(2),(x,-5,5),(y,-5,5),plot_points=200)
-        sage: print G.bounding_box()
-        (-1.18795591533,-0.840500197448),(1.18795591533,0.840500197448)
-        """
-        bb = BoundingBox( Point(self.xmin(),self.ymin()),Point(self.xmax(),self.ymax())  )
-        return bb
-    def math_bounding_box(self,pspict=None):
-        return self.bounding_box(pspict)
-    def pstricks_code(self,pspict=None):
-        r"""
-        Return the pstrick code of the implicit curve.
-        """
-        code=[]
-        for path in self.paths:
-            curve=InterpolationCurve(path,context_object=self)
-            code.append(curve.pstricks_code(pspict))
-        return "\n".join(code)
-
-class GraphOfASegment(GraphOfAnObject,GeometricSegment):
-    def __init__(self,seg):
-        GraphOfAnObject.__init__(self,seg)
-        GeometricSegment.__init__(self,seg.I,seg.F)
-        self.seg = self.obj
-        self.I = self.seg.I
-        self.F = self.seg.F
     def mark_point(self):
         """
         return the point on which a mark has to be placed if we use the method put_mark.
@@ -2136,6 +2184,45 @@ class GraphOfASegment(GraphOfAnObject,GeometricSegment):
                 a =  self.I.create_PSpoint() + self.F.create_PSpoint()
                 a=a+"\n\pstLineAB[%s]{%s}{%s}"%(self.params(),self.I.psName,self.F.psName)
                 return a
+
+class GraphOfAMeasureLength(GraphOfASegment):
+    def __init__(self,seg,dist=0.1):
+        try :
+            self.segment=seg.segment
+        except AttributeError :
+            self.segment=seg
+        self.dist=dist
+        self.delta=seg.rotation(-90).fix_size(self.dist)
+        self.mseg=seg.translate(self.delta)
+        GraphOfASegment.__init__(self,self.mseg)
+        self.advised_mark_angle=self.delta.angle()
+        self.mI=self.mseg.I
+        self.mF=self.mseg.F
+    def math_bounding_box(self,pspict=None):
+        return GraphOfASegment(self.mseg).math_bounding_box(pspict)
+    def bounding_box(self,pspict=None):
+        bb=self.mseg.bounding_box(pspict)
+        if self.marque:
+            C=self.mseg.center()
+            C.marque=self.marque
+            C.mark=self.mark
+            C.mark.graph=C
+            bb.AddBB(C.bounding_box(pspict))
+        return bb
+    def mark_point(self):
+        return self.mseg.center()
+    def pstricks_code(self,pspict=None):
+        a=[]
+        C=self.mseg.center()
+        vI=AffineVector(C,self.mI)
+        vF=AffineVector(C,self.mF)
+        vI.parameters=self.parameters
+        vF.parameters=self.parameters
+        a.append(vI.pstricks_code())
+        a.append(vF.pstricks_code())
+        #if self.marque :
+        #    a.append(self.mark.pstricks_code(pspict))
+        return "\n".join(a)
 
 class GeometricVectorField(object):
     """
@@ -2453,8 +2540,8 @@ class GraphOfAnAngle(GraphOfAnObject,GeometricAngle):
         return "\n".join(l)
 
 class GraphOfAphyFunction(GraphOfAnObject):
-    def __init__(self,f,mx,Mx):
-        GraphOfAnObject.__init__(self,f)
+    def __init__(self,fun,mx,Mx):
+        GraphOfAnObject.__init__(self,fun)
         var('x,y')
         try:
             # The technique to assure to have a function is taken from the
@@ -3296,10 +3383,20 @@ class GraphOfASurfaceUnderFunction(SurfaceBetweenFunctions):
 class GraphOfAParametricCurve(GraphOfAnObject):
     # The derivatives of the parametric curves are stored in the
     # dictionary attribute self._derivative_dict
-    def __init__(self,curve,llamI,llamF):
-        GraphOfAnObject.__init__(self,curve)
+    def __init__(self,f1,f2,llamI,llamF):
+        """
+        Use the constructor :func:`ParametricCurve`.
+
+        INPUT:
+
+            - ``f1,f2`` - two functions.
+            - ``llamI,llamF`` - initial and final values of the parameter.
+        """
+        GraphOfAnObject.__init__(self,self)
         self._derivative_dict={0:self}
-        self.curve = self.obj           # It is strange that this line does not raise a crash.
+        self.f1=f1
+        self.f2=f2
+        self.curve = self.obj
         self.llamI = llamI
         self.llamF = llamF
         self.parameters.color = "blue"
@@ -3638,8 +3735,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         g2=-sin(alpha)*self.f1+cos(alpha)*self.f2
         return ParametricCurve(g1,g2)
     def graph(self,mx,Mx):
-        #return phystricks.GraphOfAParametricCurve(self,mx,Mx)      # I do not remember why I did so (March, 2, 2011)
-        return GraphOfAParametricCurve(self,mx,Mx)
+        return ParametricCurve(self.f1,self.f2,mx,Mx)
     def __call__(self,llam,approx=False):
         return self.get_point(llam,approx)
     def __str__(self):
@@ -3758,7 +3854,7 @@ class BoundingBox(object):
     def SE(self):
         return Point(self.Mx,self.My)
     def SW(self):
-        return phystricks.Point(self.mx,self.my)
+        return Point(self.mx,self.my)
     def north_segment(self):
         return Segment( self.NW(),self.NE() )
     def south_segment(self):
@@ -3819,11 +3915,11 @@ class BoundingBox(object):
     def add_graph(self,graphe,pspict=None):
         raise DeprecationWarning,"Use self.append instead"
         self.AddBB(graphe.bounding_box(pspict))
-    def append(self,graphe,pspict=None):        # It seems to me that the method name "append" is more intuitive that "add_graph"
+    def append(self,graph,pspict=None):        # It seems to me that the method name "append" is more intuitive that "add_graph"
         try :
-            self.AddBB(graphe.bounding_box(pspict))
+            self.AddBB(graph.bounding_box(pspict))
         except (ValueError,AttributeError),msg :
-            print "Something got wrong with %s"%graphe
+            print "Something got wrong with %s"%str(graph)
             print msg
     def add_math_graph(self,graphe,pspict=None):
         try :

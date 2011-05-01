@@ -26,31 +26,7 @@ by phystricks but that are not geometry.
 """
 
 from sage.all import *
-
-def SubstitutionMathPsTricks(fx):
-    listeSubst = []
-    listeSubst.append(["**","^"])
-    listeSubst.append(["math.exp","2.718281828459045^"])
-    listeSubst.append(["e^","2.718281828459045^"])
-    for i in range(1,10):   
-        listeSubst.append(["math.log"+str(i),str(0.43429448190325*math.log(i))+"*log"])
-    listeSubst.append(["math.log","2.302585092994046*log"])     # because \psplot[]{1}{5}{log(x)} draws the logarithm in basis 10.
-    listeSubst.append(["log","2.302585092994046*log"])  
-    # Pour rappel, la formule est log_b(x)=log_a(x)/log_a(b)
-    listeSubst.append(["math.pi","3.141592653589793"])
-    listeSubst.append(["pi","3.141516"])
-    listeSubst.append(["math.cosh","COSH"])
-    listeSubst.append(["math.tan","TAN"])
-    listeSubst.append(["math.sinh","SINH"])
-    listeSubst.append(["math.sinc","SINC"])
-    listeSubst.append(["arccos","acos"])        # See the documentation of pst-math package
-    listeSubst.append(["arcsin","asin"])
-    listeSubst.append(["arctan","atan"])
-    listeSubst.append(["math.",""])
-    a = fx
-    for s in listeSubst :
-        a = a.replace(s[0],s[1])
-    return a
+import codecs
 
 def MultipleBetween(Dx,mx,Mx,mark_origin=True):
     """
@@ -851,53 +827,6 @@ simplify_degree=DegreeConversions.simplify
 simplify_radian=RadianConversions.simplify
 degree=DegreeConversions.conversion
 radian=RadianConversions.conversion
-
-def Distance_sq(P,Q):
-    """ return the squared distance between P and Q """
-    return (P.x-Q.x)**2+(P.y-Q.y)**2
-
-def Distance(P,Q):
-    """ return the distance between P and Q """
-    return sqrt(Distance_sq(P,Q))
-
-def inner_product(v,w):
-    """
-    Return the inner product of vectors v and w
-
-
-    INPUT:
-    - ``v,w`` - two vectors or points
-
-    OUTPUT:
-    a number
-
-    If the vectors are not based at (0,0), make first 
-    the translation and return the inner product.
-
-    If a point is passed, it is considered as the vector
-    from (0,0).
-
-    EXAMPLES:
-    sage: from phystricks import *
-    sage: v=Vector(1,3)
-    sage: w=Vector(-5,7)
-    sage: inner_product(v,w)
-    16
-
-    sage: v=AffineVector(Point(1,1),Point(2,2))
-    sage: w=AffineVector(Point(-2,5),Point(-1,4))
-    sage: inner_product(v,w)
-    0
-    """
-    try:
-        a=v.Point()
-    except AttributeError:
-        a=v
-    try:
-        b=w.Point()
-    except AttributeError:
-        b=w
-    return a.x*b.x+a.y*b.y
 
 # Convention : theta is in degree while alpha is in gradient.
 #def radian(theta,number=False,converting=True,keep_max=False):

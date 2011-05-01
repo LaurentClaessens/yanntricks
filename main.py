@@ -18,13 +18,15 @@
 # copyright (c) Laurent Claessens, 2009-2011
 # email: moky.math@gmail.com
 
-
 from sage.all import *
 import codecs, sys
-import BasicGeometricObjects
-import SmallComputations
 
 from BasicGeometricObjects import BoundingBox
+import BasicGeometricObjects
+import SmallComputations
+import phystricks
+
+from phystricks import *
 
 class TestPspictLaTeXCode(object):
     def __init__(self,pspict):
@@ -67,7 +69,6 @@ class TestPspictLaTeXCode(object):
         print justification
         print "Successful test for pspicture %s"%self.name
         print "---"
-    
 sysargvzero = sys.argv[0][:]
 def counterName():
     r"""
