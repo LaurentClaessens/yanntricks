@@ -611,29 +611,6 @@ class GeometricRectangle(object):
     """
     The four points of the square are designated by NW,NE,SW and SE.
     """
-    def __init__(self,NW,SE):
-        self.NW = NW
-        self.SE = SE
-        self.SW = Point(self.NW.x,self.SE.y)
-        self.NE = Point(self.SE.x,self.NW.y)
-    def first_diagonal(self):
-        return Segment(self.NW,self.SE)
-    def second_diagonal(self):
-        return Segment(self.SW,self.NE)
-    def segment_N(self):
-        return Segment(self.NW,self.NE)
-    def segment_S(self):
-        return Segment(self.SW,self.SE)
-    def segment_E(self):
-        return Segment(self.NE,self.SE)
-    def segment_W(self):
-        return Segment(self.NW,self.SW)
-    def center(self):
-        return self.first_diagonal().center()
-    def default_associated_graph_class(self):
-        """Return the class which is the Graph associated type"""
-        return GraphOfARectangle
-
 def OptionsStyleLigne():
     return ["linecolor","linestyle"]
 
@@ -2194,12 +2171,12 @@ class GraphOfAMeasureLength(GraphOfASegment):
         self.dist=dist
         self.delta=seg.rotation(-90).fix_size(self.dist)
         self.mseg=seg.translate(self.delta)
-        GraphOfASegment.__init__(self,self.mseg)
+        GraphOfASegment.__init__(self,self.mseg.I,self.mseg.F)
         self.advised_mark_angle=self.delta.angle()
         self.mI=self.mseg.I
         self.mF=self.mseg.F
     def math_bounding_box(self,pspict=None):
-        return GraphOfASegment(self.mseg).math_bounding_box(pspict)
+        return self.mseg.math_bounding_box(pspict)
     def bounding_box(self,pspict=None):
         bb=self.mseg.bounding_box(pspict)
         if self.marque:
@@ -2464,10 +2441,31 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
 
     The drawing is done by \psframe, so that, in principle, all the options are available.
     """
-    def __init__(self,rect):
-        GraphOfAnObject.__init__(self,rect)
-        GeometricRectangle.__init__(self,rect.NW,rect.SE)
+    def __init__(self,NW,SE):
+        GraphOfAnObject.__init__(self,self)
+        self.NW = NW
+        self.SE = SE
+        self.SW = Point(self.NW.x,self.SE.y)
+        self.NE = Point(self.SE.x,self.NW.y)
         self.rectangle = self.obj
+    def first_diagonal(self):
+        return Segment(self.NW,self.SE)
+    def second_diagonal(self):
+        return Segment(self.SW,self.NE)
+    def segment_N(self):
+        return Segment(self.NW,self.NE)
+    def segment_S(self):
+        return Segment(self.SW,self.SE)
+    def segment_E(self):
+        return Segment(self.NE,self.SE)
+    def segment_W(self):
+        return Segment(self.NW,self.SW)
+    def center(self):
+        return self.first_diagonal().center()
+    def default_associated_graph_class(self):
+        """Return the class which is the Graph associated type"""
+        return GraphOfARectangle
+
     def _segment(self,side):
         bare_name = "graph_"+side
         if not bare_name in self.__dict__.keys():
@@ -2486,7 +2484,13 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
         return "\psframe["+self.params()+"]"+self.rectangle.SW.coordinates(numerical=True)+self.rectangle.NE.coordinates(numerical=True)
 
 
-class GeometricAngle(object):
+class GraphOfAnAngle(GraphOfAnObject):
+    """
+    self.mark_angle is the angle at which self.mark_point will be placed. By default it is at the middle. 
+        If you want to change it, use
+        self.set_mark_angle(x).
+        It will set both the mark_angle and the advised_mark_angle to to x in the same time.
+    """
     def __init__(self,A,O,B,r=None):
         self.A=A
         self.O=O
@@ -2499,6 +2503,9 @@ class GeometricAngle(object):
         self.angleI=min(self.angleA,self.angleB)
         self.angleF=max(self.angleA,self.angleB)
         self.media=self.angleF-0.5*self.measure()
+        GraphOfAnObject.__init__(self,self)
+        self.advised_mark_angle=self.media.degree
+        self.mark_angle=self.media
     def circle(self):
         return Circle(self.O,self.r).graph(self.angleI,self.angleF)
     def measure(self):
@@ -2506,18 +2513,7 @@ class GeometricAngle(object):
     def graph(self):
         return GraphOfAnAngle(self)
 
-class GraphOfAnAngle(GraphOfAnObject,GeometricAngle):
-    """
-    self.mark_angle is the angle at which self.mark_point will be placed. By default it is at the middle. 
-        If you want to change it, use
-        self.set_mark_angle(x).
-        It will set the mark_angle to x AND the advised_mark angle too.
-    """
-    def __init__(self,angle):
-        GraphOfAnObject.__init__(self,angle)
-        GeometricAngle.__init__(self,angle.A,angle.O,angle.B,angle.r)
-        self.advised_mark_angle=self.media.degree
-        self.mark_angle=self.media
+
     def set_mark_angle(self,theta):
         """
         theta is degree or AngleMeasure
@@ -2932,8 +2928,8 @@ class GraphOfAphyFunction(GraphOfAnObject):
         return self.options.code()
     def bounding_box(self,pspict=None):
         bb = BoundingBox()
-        bb.AddY(self.f.ymin(self.mx,self.Mx))
-        bb.AddY(self.f.ymax(self.mx,self.Mx))
+        bb.AddY(self.ymin(self.mx,self.Mx))
+        bb.AddY(self.ymax(self.mx,self.Mx))
         bb.AddX(self.mx)
         bb.AddX(self.Mx)
         return bb
@@ -2965,7 +2961,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
             # The use of numerical_approx is intended to avoid strings like "2*pi" in the final pstricks code.
             deb = numerical_approx(self.mx) 
             fin = numerical_approx(self.Mx)
-            a.append("\psplot["+self.params()+"]{"+str(deb)+"}{"+str(fin)+"}{"+self.f.pstricks+"}")
+            a.append("\psplot["+self.params()+"]{"+str(deb)+"}{"+str(fin)+"}{"+self.pstricks+"}")
         #return a               # I do not remember why it was like that. See also the change in SurfaceBetweenFunctions.pstricks_code (13005)
         return "\n".join(a)
 
@@ -3052,6 +3048,14 @@ def get_paths_from_implicit_plot(p):
 
 
 
+# Since all type of surfaces have to be specializations of SurfaceBetweenParametricCurves,
+# we have to unify the names of the segments.
+# x.Isegment is the segment joining the first point of the first curve
+# c.Fsegment is the other one.
+# These names replace "Isegment", "Isegment" and so on.
+# Isegment, Isegment --> Isegment
+# May, 1, 2011
+
 class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
     def __init__(self,curve1,curve2,interval=None,reverse1=False,reverse2=True):
         GraphOfAnObject.__init__(self,self)
@@ -3073,15 +3077,16 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
                 self.mx[i],self.Mx[i]=extract_interval_information(curve[i])
                 self.curve[i]=EnsureParametricCurve(curve[i]).graph(self.mx[i],self.Mx[i])
 
+            if interval:
+                self.mx[i]=interval[0]
+                self.Mx[i]=interval[1]
+
             if self.mx[i] == None :
                 raise ValueError, "Cannot determine the initial or final value of the parameter for %s"%str(curve[i])
 
             if "parameters" in dir(curve[i]):
                 curve[i].parameters.replace_to(self.curve[i].parameters)
 
-            if interval:
-                self.mx[i]=interval[0]
-                self.Mx[i]=interval[1]
 
         self.curve1=self.curve[0]
         self.curve2=self.curve[1]
@@ -3090,8 +3095,11 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         self.Mx1=self.Mx[0]
         self.Mx2=self.Mx[1]
 
-        self.low_segment=Segment(self.curve2.get_point(self.mx2,advised=False),self.curve1.get_point(self.mx1,advised=False))
-        self.up_segment=Segment(self.curve1.get_point(self.Mx1,advised=False),self.curve2.get_point(self.Mx2,advised=False))
+        self.f1=self.curve1
+        self.f2=self.curve2
+
+        self.Isegment=Segment(self.curve2.get_point(self.mx2,advised=False),self.curve1.get_point(self.mx1,advised=False))
+        self.Fsegment=Segment(self.curve1.get_point(self.Mx1,advised=False),self.curve2.get_point(self.Mx2,advised=False))
 
         self.add_option("fillstyle=vlines") 
         self.parameters.color=None       
@@ -3113,14 +3121,14 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         if self.reverse2:
             c2=c2.reverse()
 
-        custom=CustomSurface(c1,self.up_segment,c2,self.low_segment)
+        custom=CustomSurface(c1,self.Fsegment,c2,self.Isegment)
         self.parameters.add_to(custom.parameters)     # This line is essentially dedicated to the colors
         a.append(custom.pstricks_code())
 
         a.append(self.curve1.pstricks_code(pspict))
         a.append(self.curve2.pstricks_code(pspict))
-        a.append(self.low_segment.pstricks_code(pspict))
-        a.append(self.up_segment.pstricks_code(pspict))
+        a.append(self.Isegment.pstricks_code(pspict))
+        a.append(self.Fsegment.pstricks_code(pspict))
         return "\n".join(a)
 
 class GraphOfAnInterpolationCurve(GraphOfAnObject):
@@ -3223,10 +3231,6 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         """
         return "InterpolationCurve with points %s"%(str([str(P) for P in self.points_list]))
 
-
-
-
-
 class SurfaceBetweenFunctions(GraphOfAnObject):
     # linestyle=none in self.add_option corresponds to the fact that we do not want to draw the curve.
     # No default color are given; the reason is that we want to be able  to control the color of each element separately. 
@@ -3248,12 +3252,14 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
                 print "If you do not provide `mx` and/or `Mx`, you should pass graphs and not %s and %s"%(type(f1),type(f2))
         self.f1=EnsurephyFunction(f1).graph(mx,Mx)
         self.f2=EnsurephyFunction(f2).graph(mx,Mx)
-        self.vertical_left=Segment(self.f1.get_point(mx,advised=False),self.f2.get_point(mx,advised=False))
-        self.vertical_right=Segment(self.f1.get_point(Mx,advised=False),self.f2.get_point(Mx,advised=False))
+        self.Isegment=Segment(self.f1.get_point(mx,advised=False),self.f2.get_point(mx,advised=False))
+        self.Fsegment=Segment(self.f1.get_point(Mx,advised=False),self.f2.get_point(Mx,advised=False))
         self.f1.parameters.style="none"
         self.f2.parameters.style="none"
-        self.vertical_left.parameters.style="none"
-        self.vertical_right.parameters.style="none"
+        self.curve1=self.f1
+        self.curve2=self.f2
+        self.Isegment.parameters.style="none"
+        self.Fsegment.parameters.style="none"
         self.mx=mx
         self.Mx=Mx
         self.add_option("fillstyle=vlines,linestyle=none")  
@@ -3274,8 +3280,8 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
         surface=SurfaceBetweenParametricCurves(self.f1,self.f2,interval=(mx,Mx))
         self.parameters.add_to(surface.parameters)     # This line is essentially dedicated to the colors
 
-        surface.low_segment=self.vertical_left
-        surface.up_segment=self.vertical_right
+        surface.Isegment=self.Isegment
+        surface.Fsegment=self.Fsegment
 
         a.append(surface.pstricks_code(pspict))
 
@@ -3293,20 +3299,22 @@ class SurfaceBetweenFunctions(GraphOfAnObject):
             a.append(self.f1.pstricks_code())
         if self.f2.parameters.style != "none":
             a.append(self.f2.pstricks_code())
-        if self.vertical_left.parameters.style != "none" :
-            a.append(self.vertical_left.pstricks_code())
-        if self.vertical_right.parameters.style != "none" :
-            a.append(self.vertical_right.pstricks_code())
+        if self.Isegment.parameters.style != "none" :
+            a.append(self.Isegment.pstricks_code())
+        if self.Fsegment.parameters.style != "none" :
+            a.append(self.Fsegment.pstricks_code())
         return "\n".join(a)
 
-class CustomSurface(GraphOfAnObject):
-    def __init__(self,*args):
+class GraphOfACustomSurface(GraphOfAnObject):
+    """
+    INPUT:
+
+    - args - A list or a tuple of graphs that can compose a \pscustom
+    """
+    def __init__(self,args):
         GraphOfAnObject.__init__(self,self)
-        # len(args)==1 when doing CustomSurface(list) where `list` is  a list.
-        if len(args)==1:
-            args=args[0]
-        self.graphList=list(args)
         self.add_option("fillstyle=vlines,linestyle=none")  
+        self.graphList=args
     def bounding_box(self,pspict=None):
         bb=BoundingBox()
         for obj in self.graphList :
@@ -3376,7 +3384,7 @@ class GraphOfAPolygon(GraphOfAnObject):
         return self.math_bounding_box(pspict)
     def pstricks_code(self,pspict=None):
         a=[]
-        custom=CustomSurface(tuple(self.edges_list))
+        custom=CustomSurface(self.edges_list)
         custom.parameters=self.parameters
         a.append(custom.pstricks_code(pspict))
 

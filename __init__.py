@@ -169,8 +169,14 @@ def phyFunction(fun,mx=None,Mx=None):
     # The second try is that `fun` is something that Sage knows.
     #fun=SR(fun)         # This manage the case of constant functions. I think that symbolic_expression is sufficient (May, 1, 2011)
     x=var('x')
-    symbolic=symbolic_expression(fun).function(x)
-    return BasicGeometricObjects.GraphOfAphyFunction(fun,mx,Mx)
+    sy=symbolic_expression(fun).function(x)
+    return BasicGeometricObjects.GraphOfAphyFunction(sy,mx,Mx)
+
+def CustomSurface(*args):
+    if len(args)==1:
+        args=args[0]
+    graphList=list(args)
+    return BasicGeometricObjects.GraphOfACustomSurface(graphList)
 
 def MeasureLength(seg,dist=0.1):
     """
@@ -241,10 +247,8 @@ def MeasureLength(seg,dist=0.1):
 
     You are invited to use advised_mark_angle. If not the position of the mark
     could be unpredictable.
-    
-    return BasicGeometricObjects.GraphOfAMeasureLength(seg,dist)
-
     """
+    return BasicGeometricObjects.GraphOfAMeasureLength(seg,dist)
 
 def InterpolationCurve(points_list,context_object=None):
     """
@@ -283,7 +287,7 @@ def InterpolationCurve(points_list,context_object=None):
 
     InterpolationCurve is used in order to produce implicit plot and wavy functions.
     """
-    return GraphOfAnInterpolationCurve(points_list,context_object)
+    return BasicGeometricObjects.GraphOfAnInterpolationCurve(points_list,context_object)
 
 
 def ImplicitCurve(f,xrange,yrange,plot_points=100):
@@ -323,7 +327,7 @@ def ImplicitCurve(f,xrange,yrange,plot_points=100):
     Using Sage's implicit_curve and matplotlib, a list of points "contained" in the curve is created. The bounding_box is 
     calculated from that list. The pstricsk code generated will be an interpolation curve passing trough all these points.
     """
-    return GeometricImplicitCurve(f).graph(xrange,yrange,plot_points=100)
+    return BasicGeometricObjects.GeometricImplicitCurve(f).graph(xrange,yrange,plot_points=100)
 
 
 def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,reverse1=False,reverse2=True):
@@ -408,7 +412,7 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,reverse1=False,re
     .. image:: Picture_FIGLabelFigBetweenParametricPICTBetweenParametric-for_eps.png
 
     """
-    return GraphOfASurfaceBetweenParametricCurves(curve1,curve2,interval,reverse1,reverse2)
+    return BasicGeometricObjects.GraphOfASurfaceBetweenParametricCurves(curve1,curve2,interval,reverse1,reverse2)
 
 def SurfaceUnderFunction(f,mx,Mx):
     """
@@ -430,7 +434,7 @@ def SurfaceUnderFunction(f,mx,Mx):
     .. image:: Picture_FIGLabelFigSurfaceFunctionPICTSurfaceFunction-for_eps.png
 
     """
-    return GraphOfASurfaceUnderFunction(f,mx,Mx)
+    return BasicGeometricObjects.GraphOfASurfaceUnderFunction(f,mx,Mx)
 
 
 def Polygon(*args):
@@ -476,7 +480,11 @@ def CustomSurface(*args):
 
     This is somewhat the more general use of the pstricks's macro \pscustom
     """
-    return BasicGeometricObjects.GraphOfACustomSurface(args)
+    if len(args)==1:        # This is in the case in which we give a tuple or a list directly
+        a=args[0]
+    else :
+        a=args
+    return BasicGeometricObjects.GraphOfACustomSurface(list(a))
 
 def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
     r"""
@@ -511,9 +519,9 @@ def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
     .. image:: Picture_FIGLabelFigexSurfaceBetweenFunctionPICTexSurfaceBetweenFunction-for_eps.png
 
     """
-    #TODO: Return a SurfaceBetweenParametricCurves instead.
-    return BasicGeometricObjects.GraphOfASurfaceBetweenFunctions(f1,f2,mx,Mx)
-
+    curve1=ParametricCurve(x,f1)
+    curve2=ParametricCurve(x,f2)
+    return SurfaceBetweenParametricCurves(curve1,curve2,interval=(mx,Mx))
 
 def Vector(*args):
     """
@@ -561,7 +569,7 @@ def Circle(center,radius,angleI=0,angleF=360):
     return BasicGeometricObjects.GraphOfACircle(center,radius)
 
 def Rectangle(NW,SE):
-    return BasicGeometricObjects.GraphOfARectangle(GeometricRectangle(NW,SE))
+    return BasicGeometricObjects.GraphOfARectangle(NW,SE)
 
 def AffineVector(A=None,B=None):
     """
@@ -1029,7 +1037,7 @@ def Angle(A,O,B,r=None):
     .. image:: Picture_FIGLabelFigTriangleRectanglePICTTriangleRectangle-for_eps.png
 
     """
-    return GraphOfAnAngle(GeometricAngle(A,O,B,r))
+    return BasicGeometricObjects.GraphOfAnAngle(A,O,B,r)
 
 def CircleOA(O,A):
     """

@@ -641,7 +641,7 @@ class pspicture(object):
             # changed the bounding box.
             if isinstance(graph,BasicGeometricObjects.BoundingBox):
                 if graph.parent:
-                    if isinstance(graph.parent,Mark):
+                    if isinstance(graph.parent,BasicGeometricObjects.Mark):
                         graph=graph.parent.bounding_box(self)
 
             # If the graph is a mark, then one has to recompute
@@ -985,9 +985,10 @@ class pspicture(object):
                 print "Warning: it seems to me that object <%s> (type :%s) has no method math_boundig_box"%(str(graphe),type(graphe))
                 print "The error message was:"
                 print message
-                print "988", graphe
-                raise Debug
+                print "988", graphe, type(graphe)
+                print "989", graphe.math_bounding_box(self)
                 bb.append(graphe,self)
+                raise Debug
         return bb
     def contenu(self):              # pspicture
         r"""
