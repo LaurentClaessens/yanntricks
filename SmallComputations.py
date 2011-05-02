@@ -612,6 +612,56 @@ def PointToPolaire(P=None,x=None,y=None):
         alpha = alpha +pi
     return PolarCoordinates(r,value_radian=alpha)
 
+def polar_with_dilatation(r,theta,xunit=1,yunit=1):
+    """
+    return the polar coordinated that you have to give
+    in such a way the it *visually* appears `(r,theta)`
+    when `xunit` and `yunit` are given.
+
+    The input and output angles are in radian.
+
+    INPUT:
+
+    - ``r`` - the distance you want to see.
+
+    - ``theta`` - the angle you want to see (radian).
+
+    - ``xunit`` - the dilatation factor in the `x` direction.
+
+    - ``yunit`` - the dilatation factor in the `y` direction.
+
+    OUTPUT:
+
+    a tuple `(distance,angle)`
+
+    EXAMPLES::
+
+        sage: polar_with_dilatation(2,pi,2,1)
+        (1,pi)
+        sage: polar_with_dilatation(1,pi/4,2,2)
+        (1/2, 1/4*pi)
+
+    Notice the difference between::
+
+        sage: polar_with_dilatation(1,pi/2,2,1/2)
+        (2, 1/2*pi)
+
+    and::
+
+        sage: polar_with_dilatation(1,pi/2,2,0.5)
+        (2.00000000000000, 1/2*pi)
+    """
+    if cos(theta)==0:
+        return (r/yunit,theta)
+    alpha=atan( (xunit/yunit)*tan(theta) )
+    rp=(r/xunit)*(cos(theta)/cos(alpha))
+
+    if rp < 0:
+        rp=-rp
+        alpha=alpha+pi
+    return (rp,alpha)
+    
+
 class ConversionAngles(object):
     """
     Simplify and convert angle units.

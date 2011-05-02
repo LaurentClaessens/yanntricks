@@ -899,8 +899,11 @@ class SingleAxe(object):
             P.psName="ForTheBar"   # Since this point is not supposed to
                                        # be used, all of them have the same ps name.
             if self.numbering :
-                P.put_mark(0.2,self.mark_angle,symbol,automatic_place=(pspict,"for axes",self.segment()))
-                                            # I do not understand why I don't have to multiply 0.4 by xunit or yunit
+                print "902 polaires voulues :",0.2,self.mark_angle
+                r,theta=polar_with_dilatation(0.2,radian(self.mark_angle),pspict.xunit,pspict.yunit)
+                theta=degree(theta)
+                print "903 polaires trouvées",r,theta
+                P.put_mark(r,theta,symbol,automatic_place=(pspict,"for axes",self.segment()))
             points_list.append(P)
         return points_list
     def bounding_box(self,pspict):
