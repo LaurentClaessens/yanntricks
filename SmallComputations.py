@@ -444,7 +444,8 @@ def MyMinMax(dico_sage,decimals=3):
 
         sage: d={'xmin': -0.3456475, 'ymin': -1.94565, 'ymax': 1.7895, 'xmax': 3.0000124}
         sage: MyMinMax(d,decimals=2)
-        {'xmin': -0.345647500000000, 'ymin': -1.94565000000000, 'ymax': 1.78950000000000, 'xmax': 3.00001240000000}
+        {'xmin': -0.34999999999999998, 'ymin': -1.95, 'ymax': 1.79, 'xmax': 3.0}
+
 
     """
     return dict(   [ (k,around(numerical_approx(dico_sage[k]),decimals=decimals)) for k in dico_sage.keys()  ]   )

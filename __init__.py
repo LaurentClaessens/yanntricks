@@ -183,7 +183,7 @@ def phyFunction(fun,mx=None,Mx=None):
     """
     # The first try is that the given expression is already a phyFunction.
     try:
-        return fun.graph(mx,mX)     
+        return fun.graph(mx,Mx)     
     except AttributeError:
         pass
     # The second try is that `fun` is something that Sage knows.
@@ -332,7 +332,7 @@ def ImplicitCurve(f,xrange,yrange,plot_points=100):
     sage: f(x,y)=x**2+y**2
     sage: F=ImplicitCurve(f==2,(x,-5,5),(y,-5,5))
     sage: print F.bounding_box()
-    (-1.41342281879,-1.41342281879),(1.41342281879,1.41342281879)
+    (-1.413,-1.413),(1.413,1.413)
 
     But the following will be empty :
     sage: G=ImplicitCurve(f==2,(x,-1,1),(y,-1,1))
@@ -342,7 +342,8 @@ def ImplicitCurve(f,xrange,yrange,plot_points=100):
     If you give very low value of plot_points, you get incorrect results :
     sage: H=ImplicitCurve(f==2,(x,-2,2),(y,-2,2),plot_points=3)
     sage: print H.bounding_box()
-    (-1.41411295429,-1.41411295429),(1.41411295429,1.41411295429)
+    (-1.414,-1.414),(1.414,1.414)
+
 
     Using Sage's implicit_curve and matplotlib, a list of points "contained" in the curve is created. The bounding_box is 
     calculated from that list. The pstricsk code generated will be an interpolation curve passing trough all these points.
@@ -687,11 +688,13 @@ class Grid(object):
 
     As an example, in order to have red main horizontal lines::
 
-        sage: grid=Grid( BoundingBox() )
+        sage: grid=Grid()
         sage: grid.main_horizontal.parameters.color = "red"
 
     """
-    def __init__(self,bb):
+    def __init__(self,bb=None):
+        if bb is None:
+            bb=BasicGeometricObjects.BoundingBox()
         self.BB = bb
         self.options = BasicGeometricObjects.Options()
         self.separator_name="GRID"
