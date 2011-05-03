@@ -1428,27 +1428,32 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
     Describe the graph of an implicit curve.
 
     INPUT:
-    - ``implicit_curve`` - the implicit curve to be considered
-    - ``xrange``,``yrange`` - the range on which we want to plot
+
+    - ``implicit_curve`` - the implicit curve to be considered.
+
+    - ``xrange``,``yrange`` - the range on which we want to plot.
     
 
     OPTIONAL INPUT:
-    - ``plot_points``  -- integer (default: 100); number of points to plot
-    in each direction of the grid.  
+
+    - ``plot_points``  -- integer (default: 100); number of points to plot in each direction of the grid.
 
     ATTRIBUTES:
+
     - ``self.path`` this is a list of lists of points. Each list correspond to a path
                     in the sense of matplotlib. Notice that here the points are given as
                     instances of Point; not as list [x,y] as matplotlib does.
     
-    EXAMPLES:
-    sage: var('x,y')
-    (x, y)
-    sage: implicit_curve=GeometricImplicitCurve(x**2+x==3)
-    sage: F=GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2)).pstricks_code()
+    EXAMPLES::
+
+        sage: var('x,y')
+        (x, y)
+        sage: implicit_curve=GeometricImplicitCurve(x**2+x==3)
+        sage: F=GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2)).pstricks_code()
 
     NOTES:
-    the get_minmax_data is contributed by the Sage's community here :
+
+    The get_minmax_data is contributed by the Sage's community here :
     http://ask.sagemath.org/question/359/get_minmax_data-on-implicit_plot
     (thanks to DSM)
     """
@@ -2379,25 +2384,31 @@ class GraphOfAVectorField(GraphOfAnObject,GeometricVectorField):
         The list is sorted
 
         NOTE:
-        If self was created using the optional argument draw_points,
+
+        If `self` was created using the optional argument `draw_points`,
         then the set of points on which there is a vector
-        is not equal to the product
-        self.pos_x times self.pos_y
+        is not equal to the Cartesian product `self.pos_x` times `self.pos_y`
         
         EXAMPLES:
-        The two lists created in the following example are the same :
-        sage: x,y=var('x,y')
-        sage: F=VectorField(x,y).graph(xvalues=(x,1,2,3),yvalues=(y,-2,2,3))
-        sage: [ P.coordinates() for P in F.draw_points ]
-        ['(1.0,-2.0)', '(1.0,0)', '(1.0,2.0)', '(1.5,-2.0)', '(1.5,0)', '(1.5,2.0)', '(2.0,-2.0)', '(2.0,0)', '(2.0,2.0)']
-        sage: [ (x,y) for x in F.pos_x for y in F.pos_y ]
-        [(1.0, -2.0), (1.0, 0.0), (1.0, 2.0), (1.5, -2.0), (1.5, 0.0), (1.5, 2.0), (2.0, -2.0), (2.0, 0.0), (2.0, 2.0)]
+
+        The two lists created in the following example are the same::
+
+            sage: x,y=var('x,y')
+            sage: F=VectorField(x,y).graph(xvalues=(x,1,2,3),yvalues=(y,-2,2,3))
+            sage: [ P.coordinates() for P in F.draw_points ]
+            ['(1.0,-2.0)', '(1.0,0)', '(1.0,2.0)', '(1.5,-2.0)', '(1.5,0)', '(1.5,2.0)', '(2.0,-2.0)', '(2.0,0)', '(2.0,2.0)']
+
+        and ::
+
+            sage: [ (x,y) for x in F.pos_x for y in F.pos_y ]
+            [(1.0, -2.0), (1.0, 0.0), (1.0, 2.0), (1.5, -2.0), (1.5, 0.0), (1.5, 2.0), (2.0, -2.0), (2.0, 0.0), (2.0, 2.0)]
 
 
-        But in the following, the list is not the list of points :
-        sage: G=VectorField(x,y).graph(draw_points=[Point(1,2),Point(3,4)])
-        sage: [ (x,y) for x in G.pos_x for y in G.pos_y ]
-        [(1, 2), (1, 4), (3, 2), (3, 4)]
+        But in the following, the list is not the list of points::
+
+            sage: G=VectorField(x,y).graph(draw_points=[Point(1,2),Point(3,4)])
+            sage: [ (x,y) for x in G.pos_x for y in G.pos_y ]
+            [(1, 2), (1, 4), (3, 2), (3, 4)]
 
         """
         l = []

@@ -637,7 +637,7 @@ def polar_with_dilatation(r,theta,xunit=1,yunit=1):
     EXAMPLES::
 
         sage: polar_with_dilatation(2,pi,2,1)
-        (1,pi)
+        (1, pi)
         sage: polar_with_dilatation(1,pi/4,2,2)
         (1/2, 1/4*pi)
 
