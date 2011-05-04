@@ -1343,7 +1343,20 @@ class GraphOfAPoint(GraphOfAnObject):
         """
         Addition of a point with a vector is the parallel translation, while addition of a point with an other point is simply
         the addition of coordinates.
+
+        INPUT:
+
+        - ``v`` - a vector or a tuple of size 2
+
+        OUTPUT:
+
+        a new point
         """
+        if isinstance(v,tuple) :
+            if len(v)==2:
+                return Point(self.x+v[0],self.y+v[1])
+            else :
+                raise TypeError, "Cannot sum %s with %s."%(self,v)
         try :
             dx = v.Dx
             dy = v.Dy
@@ -1355,6 +1368,11 @@ class GraphOfAPoint(GraphOfAnObject):
                 raise TypeError, "You seem to add myself with something which is not a Point neither a Vector. Sorry, but I'm going to crash."
         return Point(self.x+dx,self.y+dy)
     def __sub__(self,v):
+        if isinstance(v,tuple):
+            if len(v)==2:
+                return self+(-v[0],-v[1])
+            else :
+                raise TypeError, "Cannot sum %s with %s."%(self,v)
         return self+(-v)
     def __neg__(self):
         return Point(-self.x,-self.y)
@@ -2208,6 +2226,38 @@ class GraphOfAMeasureLength(GraphOfASegment):
         #if self.marque :
         #    a.append(self.mark.pstricks_code(pspict))
         return "\n".join(a)
+
+class GraphOfAText(GraphOfAnObject):
+    """
+    You can customize the background via the object `self.rectangle`
+    """
+    def __init__(self,P,text,hide=True):
+        GraphOfAnObject.__init__(self,self)
+        self.P=P
+        self.text=text
+        self.mark=Mark(self,0,0,self.text)
+        self.hide=hide
+
+        self.rectangle=Rectangle(Point(0,0),Point(1,1))     # This is fake; just to have an object to act on.
+        self.rectangle.parameters.filled()
+        self.rectangle.parameters.fill.color="white"
+        self.rectangle.parameters.style="none"
+    def mark_point(self):
+        return self.P
+    def math_bounding_box(self,pspict=None):
+        return self.mark.math_bounding_box(pspict)
+    def bounding_box(self,pspict=None):
+        return self.mark.bounding_box(pspict)
+    def pstricks_code(self,pspict):
+        a=[]
+        rect=Rectangle(self.mark.bounding_box(pspict))
+        rect.parameters=self.rectangle.parameters
+        if self.hide:
+            a.append(rect.pstricks_code(pspict))
+        a.append(self.mark.pstricks_code(pspict))
+        return "\n".join(a)
+
+
 
 class GeometricVectorField(object):
     """
@@ -3902,7 +3952,7 @@ class BoundingBox(object):
     def NW(self):
         return Point(self.mx,self.My)
     def SE(self):
-        return Point(self.Mx,self.My)
+        return Point(self.Mx,self.my)
     def SW(self):
         return Point(self.mx,self.my)
     def north_segment(self):

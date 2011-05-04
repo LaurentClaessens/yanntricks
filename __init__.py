@@ -611,7 +611,20 @@ def Circle(center,radius,angleI=0,angleF=360):
     # TODO: in the last example, the radian value should be 2*pi.
     return BasicGeometricObjects.GraphOfACircle(center,radius)
 
-def Rectangle(NW,SE):
+def Rectangle(*args):
+    """
+    INPUT:
+
+    - ``NW,SE`` - the North-West corner and South-East corner
+
+    Alternatively, you can pass a bounding box as unique argument.
+    """
+    if len(args)==2:
+        NW=args[0]
+        SE=args[1]
+    if len(args)==1:
+        NW=args[0].NW()
+        SE=args[0].SE()
     return BasicGeometricObjects.GraphOfARectangle(NW,SE)
 
 def AffineVector(A=None,B=None):
@@ -1166,6 +1179,23 @@ def PolarPoint(r,theta):
 
 def Segment(A,B):
     return BasicGeometricObjects.GraphOfASegment(A,B)
+
+def Text(P,text,hide=True):
+    """
+    A text.
+
+    INPUT:
+
+    - ``P`` - the point at which the center of the bounding box will lie.
+
+    - ``text`` - the text.
+
+    - ``hide`` - (default=True) When `True`, the background of the text is hidden by
+                    a rectangle. The color and style of that rectangle can be customized,
+                    see :class:`BasicGeometricObjects.GraphOfAText`
+
+    """
+    return BasicGeometricObjects.GraphOfAText(P,text,hide=hide)
 
 def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
     """
