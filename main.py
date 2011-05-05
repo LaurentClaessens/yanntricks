@@ -26,6 +26,105 @@ import phystricks.SmallComputations as SmallComputations
 
 from phystricks import *
 
+class PhystricksTestError(Exception):
+    """
+    The exception raised when testing the pspictures.
+
+    See :class:`TestPspictLaTeXCode`.
+    """
+    def __init__(self,expected_text,obtained_text,justification,pspict):
+        self.expected_text=expected_text
+        self.obtained_text=obtained_text
+        self.justification=justification
+        self.pspict=pspict
+    def __str__(self):
+        a=[]
+        a.append("Test failed")
+        a.append("Expected:")
+        a.append(self.expected_text)
+        a.append("----")
+        a.append("Got:")
+        a.append(self.obtained_text)
+        a.append("---")
+        a.append(self.justification)
+        return "\n".join(a)
+
+class FigureGenerationSuite(object):
+    """
+    Generate the figures of a list.
+
+    INPUT:
+
+    - ``test_list`` - a list of functions that are supposed to produce pspictures
+    
+    - ``first`` - the position in `test_list` at which we begin the tests
+
+    If the option `--tests` is given to the script, the attribute `failed_list` contains
+    the list of functions that produced the exception :class:`PhystricksTestError`.
+
+    ATTRIBUTES:
+
+    - ``failed_list`` - a list of tuple `(function,pspict)` where `function` is a 
+                        function that produced a :class:`PhystricksTestError` and
+                        pspict is the produced pspicture.
+
+    """
+    def __init__(self,test_list,first=0,title="My beautiful document"):
+        self.test_list=test_list
+        self.first=first
+        self.title=title
+        self.failed_list=[]
+
+    def generate(self):
+        """
+        perform the tests
+        """
+
+        print ""
+        print "********************************************"
+        print "*  This is the automatic figure generation"
+        print "*  for the %s"%self.title
+        print "********************************************"
+        print ""
+        for i in range(self.first,len(self.test_list)):
+            print "--------------------------- %s : figure %s/%s -------------------------------------"%(self.title,str(i),str(len(self.test_list)))
+            if len(self.failed_list)!=0:
+                print "---------------------------- Already failed : %s"%(str(len(self.failed_list)))
+                for a in self.failed_list:
+                    print str(a[0]),
+                print ""
+            print " ============= %s ============="%str(self.test_list[i])
+            try:
+                self.test_list[i]()
+            except PhystricksTestError,e:
+                print "The test of pspicture %s failed. %s"%(self.test_list[i],e.justification)
+                print e
+                self.failed_list.append((self.test_list[i],e.pspict))
+
+    def summary(self):
+        """
+        print the list of failed tests and try to give the 
+        lines to be included in the LaTeX file in order to
+        visualize them.
+        """
+        print "The following test failed :"
+        for a in self.failed_list:
+            print a,
+        print "\nThe lines for inclusion in your LaTeX file are :"
+        for a in self.failed_list:
+            try:
+                print a[1].figure_mother.LaTeX_lines()
+                print "\n"
+            except AttributeError:
+                print "I cannot found the LaTeX lines corresponding to ",a[1]
+        print "The list of function to test deeper :"
+        te = "deeeper_list=["
+        for a in self.failed_list:
+            te =te+a[0].__name__+","
+        te=te[:-1]
+        te=te+"]"
+        print te
+
 class TestPspictLaTeXCode(object):
     def __init__(self,pspict):
         self.pspict=pspict
@@ -55,15 +154,7 @@ class TestPspictLaTeXCode(object):
         expected_text=unify_point_name("".join(self.test_file.contenu()).replace(self.notice_text,""))
         boo,justification = string_number_comparison(obtained_text,expected_text)
         if not boo:
-            print "Test failed"
-            print "Expected:"
-            print expected_text
-            print "----"
-            print "Got:"
-            print obtained_text
-            print "---"
-            print justification
-            raise ValueError,"The test of pspicture %s failed. %s"%(str(self.name),justification)
+            raise PhystricksTestError(expected_text,obtained_text,justification,self.pspict)
         print justification
         print "Successful test for pspicture %s"%self.name
         print "---"
@@ -86,7 +177,7 @@ def newlengthName():
 
 
 class figure(object):
-    def __init__(self,caption,name,fich):
+    def __init__(self,caption,name,nFich):
         self.caption = caption
         self.name = name
         self.xunit = 1
@@ -94,7 +185,9 @@ class figure(object):
         self.code = []
         self.record_subfigure = []
         self.record_pspicture=[]
-        self.fichier = SmallComputations.Fichier (fich)
+
+        self.nFich=nFich
+        self.fichier = SmallComputations.Fichier(self.nFich)
 
         # The order of declaration is important, because it is recorded in the Separator.number attribute.
         self.separator_list=SeparatorList()
@@ -136,6 +229,7 @@ class figure(object):
             name="sub"+latinize(str(number))
         ssfig=subfigure(caption,self.name+"ss"+name)
         ssfig.mother=self
+        ssfig.figure_mother=self
         self._append_subfigure(ssfig)
         return ssfig
     def _append_subfigure(self,ssFig):      # This function was initially named AjouteSSfigure
@@ -155,6 +249,7 @@ class figure(object):
         return pspict
     def _add_pspicture(self,pspict):
         pspict.mother=self
+        pspict.figure_mother=self
         self.record_pspicture.append(pspict)
     def add_pspicture(self,pspict):
         raise DeprecationWarning,"Use fig.new_pspicture instead."
@@ -167,6 +262,16 @@ class figure(object):
         self.code[n:n]=ligne+"\n"
     def AjouteCode(self,liste_code):
         self.code.extend(liste_code)
+    def LaTeX_lines(self):
+        """
+        return the lines to be included in your LaTeX file.
+        """
+        a=[]
+        a.append("The result is on figure \\ref{"+self.name+"}.")
+        a.append("\\newcommand{"+self.caption+"}{<+Type your caption here+>}")
+        a.append("\\input{%s}"%(self.nFich))
+        
+        return "\n".join(a)
     def conclude(self):
         for pspict in self.record_pspicture :
             # Here we add the picture itself. What arrives depends on --eps, --pdf, --png, ...
@@ -234,6 +339,7 @@ class subfigure(object):
             name="sub"+latinize(str(number))
         pspict=pspicture("FIG"+self.name+"PICT"+name)
         pspict.mother=self
+        pspict.subfigure_mother=self
         self._add_pspicture(pspict)
         return pspict
     def subfigure_code(self):
@@ -512,6 +618,7 @@ class pspicture(object):
         """
         self.name = name        # self.name is used in order to name the intermediate files when one produces the eps file.
         self.mother=None
+        self.figure_mother=None
         self.pstricks_code_list = []
         self.specific_needs = ""    # See the class PspictureToOtherOutputs
         self.newwriteDone = False

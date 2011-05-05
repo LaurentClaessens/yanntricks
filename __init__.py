@@ -971,19 +971,17 @@ def Intersection(f,g):
         pts.append(Point(a,b))
     return pts
 
-
 def GenericFigure(nom):
     """
     This function returns a figure with some default values. It creates coherent label, file name and prints the lines to be appended in the LaTeX file to include the figure.
     """
-    label = "LabelFig"+nom
-    caption = "\CaptionFig"+nom
+    caption = "\CaptionFig"+nom     # This is also hard-coded in the function main.figure.LaTeX_lines
+    label = "LabelFig"+nom          # The string "LabelFig" is hard-coded in the function main.figure.LaTeX_lines
     nFich = "Fig_"+nom+".pstricks"
-    print "The result is on figure \\ref{"+label+"}."
-    print "\\newcommand{"+caption+"}{<+Type your caption here+>}"
-    print "\\input{Fig_"+nom+".pstricks}"
-    return  main.figure(caption,label,nFich)
 
+    fig=main.figure(caption,label,nFich)
+    print fig.LaTeX_lines()
+    return fig
 
 def SinglePicture(name):
     """ Return the tuple of pspicture and figure that one needs in 90% of the cases. """
@@ -1025,6 +1023,7 @@ def MultiplePictures(name,n):
     for i in range(n):
         subfigure=fig.new_subfigure("name"+str(i),"LabelSubFig"+name+str(i))
         picture=subfigure.new_pspicture(name+"pspict"+str(i))
+        picture.figure_mother=fig
         pspict.append(picture)
     return pspict,fig
 
