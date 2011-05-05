@@ -83,7 +83,7 @@ class FigureGenerationSuite(object):
         print ""
         print "********************************************"
         print "*  This is the automatic figure generation"
-        print "*  for the %s"%self.title
+        print "*  for %s"%self.title
         print "********************************************"
         print ""
         for i in range(self.first,len(self.test_list)):
@@ -103,27 +103,26 @@ class FigureGenerationSuite(object):
 
     def summary(self):
         """
-        print the list of failed tests and try to give the 
+        Print the list of failed tests and try to give the 
         lines to be included in the LaTeX file in order to
         visualize them.
         """
-        print "The following test failed :"
-        for a in self.failed_list:
-            print a,
-        print "\nThe lines for inclusion in your LaTeX file are :"
-        for a in self.failed_list:
-            try:
-                print a[1].figure_mother.LaTeX_lines()
-                print "\n"
-            except AttributeError:
-                print "I cannot found the LaTeX lines corresponding to ",a[1]
-        print "The list of function to test deeper :"
-        te = "deeeper_list=["
-        for a in self.failed_list:
-            te =te+a[0].__name__+","
-        te=te[:-1]
-        te=te+"]"
-        print te
+        if len(self.failed_list) != 0:
+            print "The following test failed :"
+            for a in self.failed_list:
+                print a,
+            print "\nThe lines for inclusion in your LaTeX file are :\n"
+            for a in self.failed_list:
+                try:
+                    print a[1].figure_mother.LaTeX_lines()
+                    print "\n"
+                except AttributeError:
+                    print "I cannot found the LaTeX lines corresponding to ",a[1]
+            print "The list of function to test deeper :"
+            print [a[0].__name__ for a in self.failed_list]
+        else:
+            print "All tests passes !"
+
 
 class TestPspictLaTeXCode(object):
     def __init__(self,pspict):
