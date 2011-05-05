@@ -3481,8 +3481,17 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 
         INPUT:
 
-            - ``f1,f2`` - two functions.
-            - ``llamI,llamF`` - initial and final values of the parameter.
+        - ``f1,f2`` - two functions.
+
+        - ``llamI,llamF`` - initial and final values of the parameter.
+
+        ATTRIBUTES:
+
+        - ``plotpoints`` - (default=1000)  number of points to be computed.
+                           If the function seems wrong, increase that number.
+                           It can happen with functions like sin(1/x) close to zero:
+                            such a function have too fast oscillations.
+
         """
         GraphOfAnObject.__init__(self,self)
         self._derivative_dict={0:self}
@@ -3494,6 +3503,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         self.parameters.color = "blue"
         self.plotstyle = "curve"
         self.plotpoints = "1000"
+        self.record_arrows=[]
     def pstricks(self,pspict=None):
         # The difficult point with pstrics is that the syntax is "f1(t) | f2(t)" with the variable t.
         #   In order to produce that, we use the Sage's function repr and the syntax f(x=t)
@@ -3553,6 +3563,28 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         else:
             self._derivative_dict[n] = self.derivative(n-1).derivative()
         return self._derivative_dict[n]
+    def put_arrow(self,*args):
+        """
+        Add a small arrow at the given positions.
+
+        The arrow is a vector of size (by default 0.01). The set of vectors
+        is stored in `self.record_arrows`. Thus they can be customized
+        as any vectors.
+
+        .. literalinclude:: phystricksContourGreen.py
+        .. image:: Picture_FIGLabelFigContourGreenPICTContourGreen-for_eps.png
+        """
+        # TODO: in the given figure, change the orientation of one arrow.
+        #       this is a good example.
+        ll=[]
+        for a in args:
+            try:
+                ll.extend(a)
+            except TypeError:
+                ll.append(a)
+        for llam in ll:
+            v=self.get_tangent_vector(llam).fix_size(0.01)
+            self.record_arrows.append(v)
     def get_point(self,llam,advised=True):
         """
         Return the point on the curve for the value llam of the parameter.
@@ -3581,19 +3613,21 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         returns the tangent vector to the curve for the value of the parameter given by llam.
            The vector is normed to 1.
 
-        INPUT:
-        - ``llam`` - the value of the parameter on which we want the tangent
-        - ``advised`` - (default = False) if True, the initial point is returned with its
-                                            advised_mark_angle. This takes quite a long time
-                                            of computation (and creates infinite loops if used
-                                            in some circumstances)
+        INPUT::
 
-        EXAMPLES:
-        sage: F=ParametricCurve(x,x**2)
-        sage: print F.get_tangent_vector(0)
-        vector I=Point(0,0) F=Point(1,0)
-        sage: print F.get_tangent_vector(1)
-        vector I=Point(1,1) F=Point(1/5*sqrt(5) + 1,2/5*sqrt(5) + 1)
+        - ``llam`` - the value of the parameter on which we want the tangent.
+
+        - ``advised`` - (default = False) if True, the initial point is returned with its
+                        advised_mark_angle. This takes quite a long time of computation
+                        (and creates infinite loops in some circumstances)
+
+        EXAMPLES::
+
+            sage: F=ParametricCurve(x,x**2)
+            sage: print F.get_tangent_vector(0)
+            vector I=Point(0,0) F=Point(1,0)
+            sage: print F.get_tangent_vector(1)
+            vector I=Point(1,1) F=Point(1/5*sqrt(5) + 1,2/5*sqrt(5) + 1)
         """
         initial = self.get_point(llam,advised)     
         return AffineVector( initial,Point(initial.x+self.derivative().f1(llam),initial.y+self.derivative().f2(llam)) ).normalize()
@@ -3879,14 +3913,18 @@ class GraphOfAParametricCurve(GraphOfAnObject):
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def pstricks_code(self,pspict=None):
+        a=[]
         if self.wavy :
             waviness = self.waviness
             curve=InterpolationCurve(self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy),context_object=self)
-            return curve.pstricks_code()
+            a.append(curve.pstricks_code())
         else:
             initial = numerical_approx(self.llamI)      # Avoid the string "pi" in the pstricks code.
             final = numerical_approx(self.llamF)
-            return "\parametricplot[%s]{%s}{%s}{%s}" %(self.params(),str(initial),str(final),self.curve.pstricks())
+            a.append("\parametricplot[%s]{%s}{%s}{%s}" %(self.params(),str(initial),str(final),self.curve.pstricks()))
+        for v in self.record_arrows:
+            a.append(v.pstricks_code(pspict))
+        return "\n".join(a)
 
 class BoundingBox(object):
     r"""

@@ -82,7 +82,6 @@ def PolarSegment(P,r,theta):
     alpha = radian(theta)
     return Segment(P, Point(P.x+r*cos(alpha),P.y+r*sin(alpha)) )
 
-#def ParametricCurve(f1,f2=None,llamI=None,llamF=None):
 def ParametricCurve(*args):
     """
     This class describes a parametric curve.
