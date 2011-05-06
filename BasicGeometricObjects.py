@@ -3631,7 +3631,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         """
         initial = self.get_point(llam,advised)     
         return AffineVector( initial,Point(initial.x+self.derivative().f1(llam),initial.y+self.derivative().f2(llam)) ).normalize()
-    def get_normal_vector(self,llam,advised=False,normalize=True):
+    def get_normal_vector(self,llam,advised=False,normalize=True,Green_convention=False):
         """
         Return the outside normal vector to the curve for the value llam of the parameter.
            The vector is normed to 1.
@@ -3642,14 +3642,38 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 
         If you want the second derivative vector, use self.get_derivative(2). This will not produce a normal vector in general.
 
-        EXAMPLES:
-        sage: F=ParametricCurve(sin(x),x**2)
-        sage: print F.get_normal_vector(0)
-        vector I=Point(0,0) F=Point(0,-1)
+        NOTE:
+
+        The normal vector will be outwards with respect to the *local* curvature only.
+
+        If you have a contour and you need a outward normal vector, you should pass the 
+        optional argument `Green_convention=True`. In that case you'll get a vector
+        that is a rotation by pi/2 of the tangent vector. In that case, you still have
+        to choose by hand if you take N or -N. But this choice is the same for all
+        normal vectors of your curve.
+
+        I do not know how could a program guess if N or -N is *globally* outwards. 
+        Let me know if you have a trick :)
+
+        EXAMPLES::
+
+            sage: F=ParametricCurve(sin(x),x**2)
+            sage: print F.get_normal_vector(0)
+            vector I=Point(0,0) F=Point(0,-1)
+
+        Tangent and outward normal vector fields to a closed path ::
+
+        .. literalinclude:: phystricksContourTgNDivergence.py
+        .. image:: Picture_FIGLabelFigContourTgNDivergencePICTContourTgNDivergence-for_eps.png
         """
+
+        # TODO: give a picture of the same contour, but taking the "local" outward normal vector.
+
         anchor=self.get_point(llam,advised=False)
         tangent=self.get_tangent_vector(llam)
         N = AffineVector(tangent.orthogonal())
+        if Green_convention :
+            return N
         # The delicate part is to decide if we want to return N or -N. We select the angle which is on the same side of the curve
         #                                           than the second derivative.
         # If v is the second derivative, either N or -N has positive inner product with v. We select the one with
@@ -3657,7 +3681,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         try :
             second=self.get_second_derivative_vector(llam)
         except :
-            print "Something got wrong with the computation of the second derivative. I return the default normal vector"
+            print "Something got wrong with the computation of the second derivative. I return the default normal vector. The latter could not be outwards."
             return N
         if inner_product(N,second) >= 0:
             v=-N
@@ -3795,16 +3819,40 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         
         """
         return numerical_integral(self.speed,mll,Mll)[0]
-    def get_regular_parameter(self,mll,Mll,dl):
+    def get_regular_parameter(self,mll,Mll,dl,initial_point=False,final_point=False):
         """ 
         returns a list of values of the parameter such that the corresponding points are equally spaced by dl.
         Here, we compute the distance using the method arc_length.
+
+        INPUT:
+
+        - ``mll,Mll`` - the initial and final values of the parameters.
+
+        - ``dl`` - the arc length distance between the points corresponding
+                    to the returned values.
+
+        - ``initial_point`` - (default=False) it True, return also the initial parameters (i.e. mll).
+
+        - ``final_point`` - (default=False) it True, return also the final parameter (i.e. Mll)
+
+        OUTPUT:
+
+            <++>
+
+            EXAMPLES::
+
+                <++>
+
         """
         prop_precision = float(dl)/100      # precision of the interval
         fp = self.derivative()
         minDll = abs(Mll-mll)/1000
         ll = mll
         PIs = []
+        if initial_point:
+            PIs.append(mll)
+        if final_point:
+            PIs.append(Mll)
         while ll < Mll :
             v = math.sqrt( (fp.f1(ll))**2+(fp.f2(ll))**2 )
             if v == 0 :
@@ -3836,6 +3884,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
                 PIs.append( ll )
         return PIs
     def get_regular_points_old(self,mll,Mll,dl):
+        raise DeprecationWarning, "use self.get_regular_point instead"          # May, 6, 2011.
         return [self.get_point(ll) for ll in self.get_regular_parameter_old(mll,Mll,dl)]
     def get_regular_points(self,mll,Mll,dl):
         """
