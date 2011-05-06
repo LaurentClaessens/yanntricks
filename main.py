@@ -32,7 +32,7 @@ class PhystricksTestError(Exception):
 
     See :class:`TestPspictLaTeXCode`.
     """
-    def __init__(self,expected_text,obtained_text,justification,pspict):
+    def __init__(self,expected_text=None,obtained_text=None,justification=None,pspict=None):
         self.expected_text=expected_text
         self.obtained_text=obtained_text
         self.justification=justification
@@ -119,7 +119,7 @@ class FigureGenerationSuite(object):
                 except AttributeError:
                     print "I cannot found the LaTeX lines corresponding to ",a[1]
             print "The list of function to test deeper :"
-            print [a[0].__name__ for a in self.failed_list]
+            print ([a[0].__name__ for a in self.failed_list]).replace("'","")
         else:
             print "All tests passes !"
 
@@ -150,7 +150,11 @@ class TestPspictLaTeXCode(object):
         print "---"
         print "Testing pspicture %s ..."%self.name
         obtained_text=unify_point_name(self.pspict.contenu_pstricks)
-        expected_text=unify_point_name("".join(self.test_file.contenu()).replace(self.notice_text,""))
+        try:
+            expected_text=unify_point_name("".join(self.test_file.contenu()).replace(self.notice_text,""))
+        except IOError :
+            print "Seems to lack of test file."
+            raise PhystricksTestError("No tests file found.",obtained_text,"No test file found; I do not know what to do.",pspict=self.pspict)
         boo,justification = string_number_comparison(obtained_text,expected_text)
         if not boo:
             raise PhystricksTestError(expected_text,obtained_text,justification,self.pspict)

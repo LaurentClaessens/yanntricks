@@ -3571,11 +3571,16 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         is stored in `self.record_arrows`. Thus they can be customized
         as any vectors.
 
+        EXAMPLES:
+
+        In the following example, notive the way one of the arrow is
+        red and backward.
+
         .. literalinclude:: phystricksContourGreen.py
         .. image:: Picture_FIGLabelFigContourGreenPICTContourGreen-for_eps.png
         """
-        # TODO: in the given figure, change the orientation of one arrow.
-        #       this is a good example.
+        # TODO: in the previous example, if I first change the color
+        # and then change the orientation of the arrow, it does not work.
         ll=[]
         for a in args:
             try:
