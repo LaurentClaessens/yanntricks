@@ -3473,8 +3473,6 @@ class GraphOfASurfaceUnderFunction(SurfaceBetweenFunctions):
         return "SurfaceUnderFunction %s x:%s->%s"%(self.f,str(self.mx),str(self.Mx))
 
 class GraphOfAParametricCurve(GraphOfAnObject):
-    # The derivatives of the parametric curves are stored in the
-    # dictionary attribute self._derivative_dict
     def __init__(self,f1,f2,llamI,llamF):
         """
         Use the constructor :func:`ParametricCurve`.
