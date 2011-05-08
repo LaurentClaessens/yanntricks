@@ -119,7 +119,8 @@ class FigureGenerationSuite(object):
                 except AttributeError:
                     print "I cannot found the LaTeX lines corresponding to ",a[1]
             print "The list of function to test deeper :"
-            print ([a[0].__name__ for a in self.failed_list]).replace("'","")
+            print ([a[0].__name__.replace("'","") for a in self.failed_list])
+            raise PhystricksTestError
         else:
             print "All tests passes !"
 
