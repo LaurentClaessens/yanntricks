@@ -34,7 +34,9 @@ From a list of number, we can generate 3 graphics
 from __future__ import division
 import commands, os, copy, math	
 from sage.all import *
-from phystricks import *
+
+from phystricks.main import pspicture
+from phystricks import Point,Segment
 
 REP = commands.getoutput("pwd")
 
@@ -121,7 +123,7 @@ class Grades(object):
 		pspict.grid.Dy = 0.1
 		pspict.grid.num_subX = 0
 		pspict.grid.num_subY = 5
-		pspict.axes.Dy = 0.1
+		pspict.axes.single_axeY.Dx = 0.1
 		pspict.DrawDefaultGrid()
 		pspict.DrawDefaultAxes()
 		pspict.dilatation_X(float(Xsize)/self.full_grade)
