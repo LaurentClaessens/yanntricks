@@ -60,7 +60,13 @@ def ListHaveMore(grades,n):
     return [p for p in grades if p>=n]
 
 def Average(cotes):
-    """return the average of the list"""
+    """
+    return the average of the list
+    
+    If the list is empty, return zero.
+    """
+    if not cotes:
+        return 0
     return float(sum(cotes))/len(cotes)
 
 def AverageBigger(cotes,n):
@@ -140,7 +146,7 @@ class Grades(object):
         for i in range(len(self.list_of_grades_list)):
             grades_list=self.list_of_grades_list[i]
             color=self.list_of_colors[i]
-            abcisses=grades_list
+            abcisses=grades_list[:]
             abcisses.extend([0,self.full_grade,self.full_grade/2])
             for x in abcisses:
                 y = AverageBigger(grades_list,x)
@@ -175,7 +181,7 @@ class Grades(object):
         for i in range(len(self.list_of_grades_list)):
             grades_list=self.list_of_grades_list[i]
             color=self.list_of_colors[i]
-            abcisses=grades_list
+            abcisses=grades_list[:]
             abcisses.extend([0,self.full_grade,self.full_grade/2])
             for x in abcisses:
                 y = ProportionBetween(grades_list,x,delta)
