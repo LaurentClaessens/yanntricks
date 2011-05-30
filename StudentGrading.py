@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 
 ###########################################################################
-#	This is part of the module phystricks
+#   This is part of the module phystricks
 #
 #   phystricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ From a list of number, we can generate 3 graphics
 """
 
 from __future__ import division
-import commands, os, copy, math	
+import commands, os, copy, math 
 from sage.all import *
 
 from phystricks.main import pspicture
@@ -41,165 +41,165 @@ from phystricks import Point,Segment
 REP = commands.getoutput("pwd")
 
 def PercentHaveMore(cotes,n):
-	return ProportionHaveMore(cotes,n)*100
+    return ProportionHaveMore(cotes,n)*100
 
 def ProportionHaveMore(cotes,n):
-	"""
-	Returns the proportion of elements in cotes that are bigger than n
-	"""
-	return HaveMore(cotes,n)/len(cotes)
+    """
+    Returns the proportion of elements in cotes that are bigger than n
+    """
+    return HaveMore(cotes,n)/len(cotes)
 
 def HaveMore(cotes,n):
-	"""
-	returns the number of elements of the list cotes that are bigger than n
-	"""
-	return len(ListHaveMore(cotes,n))
+    """
+    returns the number of elements of the list cotes that are bigger than n
+    """
+    return len(ListHaveMore(cotes,n))
 
 def ListHaveMore(grades,n):
-	""" return the list of points that are bigger than n"""
-	return [p for p in grades if p>=n]
+    """ return the list of points that are bigger than n"""
+    return [p for p in grades if p>=n]
 
 def Average(cotes):
-	"""return the average of the list"""
-	return float(sum(cotes))/len(cotes)
+    """return the average of the list"""
+    return float(sum(cotes))/len(cotes)
 
 def AverageBigger(cotes,n):
-	"""return the average of grades that are bigger than n"""
-	return Average(ListHaveMore(cotes,n))
+    """return the average of grades that are bigger than n"""
+    return Average(ListHaveMore(cotes,n))
 
 def ListBetween(cotes,n,delta):
-	"""return the list of grades in [n-delta,n+delta]"""
-	return [p for p in cotes if p>=n-delta and p<=n+delta]
+    """return the list of grades in [n-delta,n+delta]"""
+    return [p for p in cotes if p>=n-delta and p<=n+delta]
 
 def ProportionBetween(cotes,n,delta):
-	"""return the proportion of grades in [n-delta,n+delta]"""
-	a=ListBetween(cotes,n,delta)
-	return float(len(a))/len(cotes)
+    """return the proportion of grades in [n-delta,n+delta]"""
+    a=ListBetween(cotes,n,delta)
+    return float(len(a))/len(cotes)
 
 
 class Grades(object):
-	"""
+    """
     represent a list of grades
 
     INPUT :
 
-	- ``grades_list`` - the list of grades that are given.
+    - ``grades_list`` - the list of grades that are given.
 
-	- ``full_grade`` - the maximal note
-	"""
-	def __init__(self,grades_list,full_grade):
-		self.grades_list = grades_list
-		self.full_grade = float(full_grade)
-		self.media = self.full_grade/2
-		self.list_of_grades_list=[self.grades_list]
-		self.list_of_colors=["blue","green","cyan","brown"]
-	def convert_to_full_grade(self,n):
-		""" return the list of grades if the maximum is n instead of self.full_grade """
-		return Grades([c*n/self.full_grade for c in self.grades_list],n)
-	def y_is_proportion_bigger_than_x(self,pspictName,Xsize=15,Ysize=10):
-		"""
-		Return the pspict that represents the graph of the function
-		y(x) = proportion of the students that have x or more.
+    - ``full_grade`` - the maximal note
+    """
+    def __init__(self,grades_list,full_grade):
+        self.grades_list = grades_list
+        self.full_grade = float(full_grade)
+        self.media = self.full_grade/2
+        self.list_of_grades_list=[self.grades_list]
+        self.list_of_colors=["red","green","blue","purple","brown"]
+    def convert_to_full_grade(self,n):
+        """ return the list of grades if the maximum is n instead of self.full_grade """
+        return Grades([c*n/self.full_grade for c in self.grades_list],n)
+    def y_is_proportion_bigger_than_x(self,pspictName,Xsize=15,Ysize=10):
+        """
+        Return the pspict that represents the graph of the function
+        y(x) = proportion of the students that have x or more.
 
-		The intervals are X=[0,self.full_grade] and Y=[0,1]
-		"""
-		pspict=pspicture(pspictName)
+        The intervals are X=[0,self.full_grade] and Y=[0,1]
+        """
+        pspict=pspicture(pspictName)
 
-		for i in range(len(self.list_of_grades_list)):
-			grades_list=self.list_of_grades_list[i]
-			color=self.list_of_colors[i]
-			abcisses=grades_list
-			abcisses.extend([0,self.full_grade,self.full_grade/2])
-			for x in abcisses:
-				y = ProportionHaveMore(grades_list,x)
-				P = Point( x, y )
-				P.parameters.color = color
-				pspict.DrawGraph(P)
+        for i in range(len(self.list_of_grades_list)):
+            grades_list=self.list_of_grades_list[i]
+            color=self.list_of_colors[i]
+            abcisses=grades_list[:]
+            abcisses.extend([0,self.full_grade,self.full_grade/2])
+            for x in abcisses:
+                y = ProportionHaveMore(grades_list,x)
+                P = Point( x, y )
+                P.parameters.color = color
+                pspict.DrawGraph(P)
 
-		S = Segment( Point(self.media,0),Point(self.media,1) )
-		S.parameters.color = "red"
-		pspict.DrawGraph(S)
+        S = Segment( Point(self.media,0),Point(self.media,1) )
+        S.parameters.color = "red"
+        pspict.DrawGraph(S)
 
-		pspict.grid.Dy = 0.1
-		pspict.grid.num_subX = 0
-		pspict.grid.num_subY = 5
-		pspict.axes.single_axeY.Dx = 0.1
-		pspict.DrawDefaultGrid()
-		pspict.DrawDefaultAxes()
-		pspict.dilatation_X(float(Xsize)/self.full_grade)
-		pspict.dilatation_Y(Ysize)
-		return pspict
-	def average_bigger(self,pspictName,Xsize=15,Ysize=10):
-		"""
-		return the pspict that represents the graph of the function
-		y(x)=average of grades that are bigger than x
+        pspict.grid.Dy = 0.1
+        pspict.grid.num_subX = 0
+        pspict.grid.num_subY = 5
+        pspict.axes.single_axeY.Dx = 0.1
+        pspict.DrawDefaultGrid()
+        pspict.DrawDefaultAxes()
+        pspict.dilatation_X(float(Xsize)/self.full_grade)
+        pspict.dilatation_Y(Ysize)
+        return pspict
+    def average_bigger(self,pspictName,Xsize=15,Ysize=10):
+        """
+        return the pspict that represents the graph of the function
+        y(x)=average of grades that are bigger than x
 
-		The intervals are X=[0,self.full_grade] and Y=[0,self.full_grade]
-		"""
-		pspict=pspicture(pspictName)
-		for i in range(len(self.list_of_grades_list)):
-			grades_list=self.list_of_grades_list[i]
-			color=self.list_of_colors[i]
-			abcisses=grades_list
-			abcisses.extend([0,self.full_grade,self.full_grade/2])
-			for x in abcisses:
-				y = AverageBigger(grades_list,x)
-				P = Point( x, y )
-				P.parameters.color = color
-				pspict.DrawGraph(P)
+        The intervals are X=[0,self.full_grade] and Y=[0,self.full_grade]
+        """
+        pspict=pspicture(pspictName)
+        for i in range(len(self.list_of_grades_list)):
+            grades_list=self.list_of_grades_list[i]
+            color=self.list_of_colors[i]
+            abcisses=grades_list
+            abcisses.extend([0,self.full_grade,self.full_grade/2])
+            for x in abcisses:
+                y = AverageBigger(grades_list,x)
+                P = Point( x, y )
+                P.parameters.color = color
+                pspict.DrawGraph(P)
 
-		segmentH = Segment( Point(0,self.media),Point(self.full_grade,self.media) )
-		segmentH.parameters.color = "red"
-		segmentV = Segment( Point(self.media,0),Point(self.media,self.full_grade) )
-		segmentV.parameters = segmentH.parameters
-		pspict.DrawGraphs(segmentV,segmentH)
-		pspict.math_BB.AddPoint(Point(0,0))
+        segmentH = Segment( Point(0,self.media),Point(self.full_grade,self.media) )
+        segmentH.parameters.color = "red"
+        segmentV = Segment( Point(self.media,0),Point(self.media,self.full_grade) )
+        segmentV.parameters = segmentH.parameters
+        pspict.DrawGraphs(segmentV,segmentH)
+        pspict.math_BB.AddPoint(Point(0,0))
 
-		pspict.grid.Dy = 1
-		pspict.grid.num_subX = 0
-		pspict.grid.num_subY = 5
-		pspict.axes.Dy = 1
-		pspict.DrawDefaultGrid()
-		pspict.DrawDefaultAxes()
-		pspict.dilatation_X(float(Xsize)/self.full_grade)
-		pspict.dilatation_Y(float(Ysize)/self.full_grade)
-		return pspict
-	def proportion_between(self,pspictName,delta=1,Xsize=15,Ysize=10):
-		"""
-		return the pspict that represents the graph of the function
-		y(x)=proportion of students in [x-delta,x+delta].
+        pspict.grid.Dy = 1
+        pspict.grid.num_subX = 0
+        pspict.grid.num_subY = 5
+        pspict.axes.Dy = 1
+        pspict.DrawDefaultGrid()
+        pspict.DrawDefaultAxes()
+        pspict.dilatation_X(float(Xsize)/self.full_grade)
+        pspict.dilatation_Y(float(Ysize)/self.full_grade)
+        return pspict
+    def proportion_between(self,pspictName,delta=1,Xsize=15,Ysize=10):
+        """
+        return the pspict that represents the graph of the function
+        y(x)=proportion of students in [x-delta,x+delta].
 
-		The intervals are X=[0,self.full_grade] and Y=[0,1]
-		"""
-		pspict=pspicture(pspictName)
-		for i in range(len(self.list_of_grades_list)):
-			grades_list=self.list_of_grades_list[i]
-			color=self.list_of_colors[i]
-			abcisses=grades_list
-			abcisses.extend([0,self.full_grade,self.full_grade/2])
-			for x in abcisses:
-				y = ProportionBetween(grades_list,x,delta)
-				P = Point( x, y )
-				P.parameters.color = color
-				pspict.DrawGraph(P)
+        The intervals are X=[0,self.full_grade] and Y=[0,1]
+        """
+        pspict=pspicture(pspictName)
+        for i in range(len(self.list_of_grades_list)):
+            grades_list=self.list_of_grades_list[i]
+            color=self.list_of_colors[i]
+            abcisses=grades_list
+            abcisses.extend([0,self.full_grade,self.full_grade/2])
+            for x in abcisses:
+                y = ProportionBetween(grades_list,x,delta)
+                P = Point( x, y )
+                P.parameters.color = color
+                pspict.DrawGraph(P)
 
-		#pspict.math_BB.AddPoint(Point(0,0))
+        #pspict.math_BB.AddPoint(Point(0,0))
 
-		pspict.grid.Dy = 0.1
-		pspict.grid.num_subX = 0
-		pspict.grid.num_subY = 5
-		pspict.axes.Dy = 0.1
-		pspict.DrawDefaultGrid()
-		pspict.DrawDefaultAxes()
-		pspict.dilatation_X(float(Xsize)/self.full_grade)
-		pspict.dilatation_Y(Ysize)
-		return pspict
-	def all_statistics(self,name,delta=1,Xsize=15,Ysize=10):
-		"""
-		Create all the figures and write them in files.
-		"""
-		self.y_is_proportion_bigger_than_x(name+"pcb",Xsize=Xsize,Ysize=Ysize).write_the_figure_file("automatic")
-		self.average_bigger(name+"avb",Xsize=Xsize,Ysize=Ysize).write_the_figure_file("automatic")
-		self.proportion_between(name+"pbt",delta,Xsize=Xsize,Ysize=Ysize).write_the_figure_file("automatic")
-	def __str__(self):
-		return str(self.grades_list)
+        pspict.grid.Dy = 0.1
+        pspict.grid.num_subX = 0
+        pspict.grid.num_subY = 5
+        pspict.axes.Dy = 0.1
+        pspict.DrawDefaultGrid()
+        pspict.DrawDefaultAxes()
+        pspict.dilatation_X(float(Xsize)/self.full_grade)
+        pspict.dilatation_Y(Ysize)
+        return pspict
+    def all_statistics(self,name,delta=1,Xsize=15,Ysize=10):
+        """
+        Create all the figures and write them in files.
+        """
+        self.y_is_proportion_bigger_than_x(name+"pcb",Xsize=Xsize,Ysize=Ysize).write_the_figure_file("automatic")
+        self.average_bigger(name+"avb",Xsize=Xsize,Ysize=Ysize).write_the_figure_file("automatic")
+        self.proportion_between(name+"pbt",delta,Xsize=Xsize,Ysize=Ysize).write_the_figure_file("automatic")
+    def __str__(self):
+        return str(self.grades_list)
