@@ -515,6 +515,8 @@ def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
     - ``f1,f2`` - functions (sage or phyFunction). ``f1`` is considered to be the upper function while ``f2`` is the lower function.
 
     - ``mx,Mx`` - (optional) initial and end values of x. If these are not given, we suppose that `f1` and `f2` are graphs.
+                            If `f1` is a graph while `mx` is given, the value of `f1.mx` is forgotten and the given `mx`
+                            is taken into account.
 
     EXAMPLES:
 
@@ -543,10 +545,10 @@ def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
     mx2=mx
     Mx1=Mx
     Mx2=Mx
-    if "mx" in dir(f1):
+    if "mx" in dir(f1) and mx==None:
         mx1=f1.mx
         Mx1=f1.Mx
-    if "mx" in dir(f2):
+    if "mx" in dir(f2) and mx==None:
         mx2=f2.mx
         Mx2=f2.Mx
     # The following is a precaution because it happens that

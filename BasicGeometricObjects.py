@@ -3338,8 +3338,6 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
 #
 #        self.mx=mx
 #        self.Mx=Mx
-#        print "3334",self.mx
-#        print "3337",self.Mx
 #        self.add_option("fillstyle=vlines,linestyle=none")  
 #        self.parameters.color=None              
 #    def bounding_box(self,pspict=None):
