@@ -3301,79 +3301,85 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         """
         return "InterpolationCurve with points %s"%(str([str(P) for P in self.points_list]))
 
-class SurfaceBetweenFunctions(GraphOfAnObject):
-    # linestyle=none in self.add_option corresponds to the fact that we do not want to draw the curve.
-    # No default color are given; the reason is that we want to be able  to control the color of each element separately. 
-    def __init__(self,f1,f2,mx=None,Mx=None):
-        GraphOfAnObject.__init__(self,self)
-        if mx==None :
-            try:
-                if f1.mx != f2.mx :
-                    raise ValueError,"The initial values of %s and %s does not fit"%(str(f1),str(f2))
-                mx=f1.mx
-            except AttributeError :
-                print "If you do not provide `mx` and/or `Mx`, you should pass graphs and not %s and %s"%(type(f1),type(f2))
-        if Mx==None :
-            try :
-                if f1.Mx != f2.Mx :
-                    raise ValueError,"The final values of %s and %s does not fit"%(str(f1),str(f2))
-                Mx=f1.Mx
-            except AttributeError :
-                print "If you do not provide `mx` and/or `Mx`, you should pass graphs and not %s and %s"%(type(f1),type(f2))
-        self.f1=EnsurephyFunction(f1).graph(mx,Mx)
-        self.f2=EnsurephyFunction(f2).graph(mx,Mx)
-        self.Isegment=Segment(self.f1.get_point(mx,advised=False),self.f2.get_point(mx,advised=False))
-        self.Fsegment=Segment(self.f1.get_point(Mx,advised=False),self.f2.get_point(Mx,advised=False))
-        self.f1.parameters.style="none"
-        self.f2.parameters.style="none"
-        self.curve1=self.f1
-        self.curve2=self.f2
-        self.Isegment.parameters.style="none"
-        self.Fsegment.parameters.style="none"
-        self.mx=mx
-        self.Mx=Mx
-        self.add_option("fillstyle=vlines,linestyle=none")  
-        self.parameters.color=None              
-    def bounding_box(self,pspict=None):
-        bb=BoundingBox()
-        bb.append(self.f1,pspict)
-        bb.append(self.f2,pspict)
-        #bb.AddY(0)      # Really, what was that line for ??
-        return bb
-    def math_bounding_box(self,pspict=None):
-        return self.bounding_box(pspict)
-    def pstricks_code(self,pspict=None):
-        a=[]
-        mx = numerical_approx(self.mx)     # Avoid "pi" in the pstricks code
-        Mx = numerical_approx(self.Mx)
+# The class SurfaceBetweenFunctions is replaced by the functions SurfaceBetweenFunctions in __init__.py
+# (Augustus, 30, 2011)
 
-        surface=SurfaceBetweenParametricCurves(self.f1,self.f2,interval=(mx,Mx))
-        self.parameters.add_to(surface.parameters)     # This line is essentially dedicated to the colors
-
-        surface.Isegment=self.Isegment
-        surface.Fsegment=self.Fsegment
-
-        a.append(surface.pstricks_code(pspict))
-
-        #a.append("\pscustom["+self.params()+"]{")
-        #a.append("\psplot[linestyle=none]{"+str(deb)+"}{"+str(fin)+"}{"+self.f1.pstricks+"}")
-        #a.append("\psplot[linestyle=none]{"+str(fin)+"}{"+str(deb)+"}{"+self.f2.pstricks+"}")
-        #a.append("}")
-
-        # This was before a change in GraphOfAphyFunction.pstricks_code (13005)
-        #if self.f1.parameters.style != "none":
-        #   a.append("\n".join(self.f1.pstricks_code()))
-        #if self.f2.parameters.style != "none":
-        #   a.append("\n".join(self.f2.pstricks_code()))
-        if self.f1.parameters.style != "none":
-            a.append(self.f1.pstricks_code())
-        if self.f2.parameters.style != "none":
-            a.append(self.f2.pstricks_code())
-        if self.Isegment.parameters.style != "none" :
-            a.append(self.Isegment.pstricks_code())
-        if self.Fsegment.parameters.style != "none" :
-            a.append(self.Fsegment.pstricks_code())
-        return "\n".join(a)
+#class SurfaceBetweenFunctions(GraphOfAnObject):
+#    # linestyle=none in self.add_option corresponds to the fact that we do not want to draw the curve.
+#    # No default color are given; the reason is that we want to be able to control the color of each element separately. 
+#    def __init__(self,f1,f2,mx=None,Mx=None):
+#        GraphOfAnObject.__init__(self,self)
+#        if mx==None :
+#            try:
+#                if f1.mx != f2.mx :
+#                    raise ValueError,"The initial values of %s and %s does not fit"%(str(f1),str(f2))
+#                mx=f1.mx
+#            except AttributeError :
+#                print "If you do not provide `mx` and/or `Mx`, you should pass graphs and not %s and %s"%(type(f1),type(f2))
+#        if Mx==None :
+#            try :
+#                if f1.Mx != f2.Mx :
+#                    raise ValueError,"The final values of %s and %s does not fit"%(str(f1),str(f2))
+#                Mx=f1.Mx
+#            except AttributeError :
+#                print "If you do not provide `mx` and/or `Mx`, you should pass graphs and not %s and %s"%(type(f1),type(f2))
+#        self.f1=EnsurephyFunction(f1).graph(mx,Mx)
+#        self.f2=EnsurephyFunction(f2).graph(mx,Mx)
+#        self.Isegment=Segment(self.f1.get_point(mx,advised=False),self.f2.get_point(mx,advised=False))
+#        self.Fsegment=Segment(self.f1.get_point(Mx,advised=False),self.f2.get_point(Mx,advised=False))
+#        self.f1.parameters.style="none"
+#        self.f2.parameters.style="none"
+#        self.curve1=self.f1
+#        self.curve2=self.f2
+#        self.Isegment.parameters.style="none"
+#        self.Fsegment.parameters.style="none"
+#
+#        self.mx=mx
+#        self.Mx=Mx
+#        print "3334",self.mx
+#        print "3337",self.Mx
+#        self.add_option("fillstyle=vlines,linestyle=none")  
+#        self.parameters.color=None              
+#    def bounding_box(self,pspict=None):
+#        bb=BoundingBox()
+#        bb.append(self.f1,pspict)
+#        bb.append(self.f2,pspict)
+#        #bb.AddY(0)      # Really, what was that line for ??
+#        return bb
+#    def math_bounding_box(self,pspict=None):
+#        return self.bounding_box(pspict)
+#    def pstricks_code(self,pspict=None):
+#        a=[]
+#        mx = numerical_approx(self.mx)     # Avoid "pi" in the pstricks code
+#        Mx = numerical_approx(self.Mx)
+#
+#        surface=SurfaceBetweenParametricCurves(self.f1,self.f2,interval=(mx,Mx))
+#        self.parameters.add_to(surface.parameters)     # This line is essentially dedicated to the colors
+#
+#        surface.Isegment=self.Isegment
+#        surface.Fsegment=self.Fsegment
+#
+#        a.append(surface.pstricks_code(pspict))
+#
+#        #a.append("\pscustom["+self.params()+"]{")
+#        #a.append("\psplot[linestyle=none]{"+str(deb)+"}{"+str(fin)+"}{"+self.f1.pstricks+"}")
+#        #a.append("\psplot[linestyle=none]{"+str(fin)+"}{"+str(deb)+"}{"+self.f2.pstricks+"}")
+#        #a.append("}")
+#
+#        # This was before a change in GraphOfAphyFunction.pstricks_code (13005)
+#        #if self.f1.parameters.style != "none":
+#        #   a.append("\n".join(self.f1.pstricks_code()))
+#        #if self.f2.parameters.style != "none":
+#        #   a.append("\n".join(self.f2.pstricks_code()))
+#        if self.f1.parameters.style != "none":
+#            a.append(self.f1.pstricks_code())
+#        if self.f2.parameters.style != "none":
+#            a.append(self.f2.pstricks_code())
+#        if self.Isegment.parameters.style != "none" :
+#            a.append(self.Isegment.pstricks_code())
+#        if self.Fsegment.parameters.style != "none" :
+#            a.append(self.Fsegment.pstricks_code())
+#        return "\n".join(a)
 
 class GraphOfACustomSurface(GraphOfAnObject):
     """
