@@ -3119,9 +3119,11 @@ def get_paths_from_implicit_plot(p):
 # we have to unify the names of the segments.
 # x.Isegment is the segment joining the first point of the first curve
 # c.Fsegment is the other one.
-# These names replace "Isegment", "Isegment" and so on.
-# Isegment, Isegment --> Isegment
 # May, 1, 2011
+
+# For the same reason, all type of surfaces have to be functions instead of classes.
+# These functions return an object GraphOfASurfaceBetweenParametricCurves 
+# with the right particularization.
 
 class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
     def __init__(self,curve1,curve2,interval=None,reverse1=False,reverse2=True):
@@ -3469,14 +3471,14 @@ class GraphOfAPolygon(GraphOfAnObject):
         return "\n".join(a)
 
 
-class GraphOfASurfaceUnderFunction(SurfaceBetweenFunctions):
-    def __init__(self,f,mx,Mx):
-        self.f=EnsurephyFunction(f)
-        var('x')
-        f2=0
-        SurfaceBetweenFunctions.__init__(self,self.f,f2,mx,Mx)
-    def __str__(self):
-        return "SurfaceUnderFunction %s x:%s->%s"%(self.f,str(self.mx),str(self.Mx))
+#class GraphOfASurfaceUnderFunction(SurfaceBetweenFunctions):
+#    def __init__(self,f,mx,Mx):
+#        self.f=EnsurephyFunction(f)
+#        var('x')
+#        f2=0
+#        SurfaceBetweenFunctions.__init__(self,self.f,f2,mx,Mx)
+#    def __str__(self):
+#        return "SurfaceUnderFunction %s x:%s->%s"%(self.f,str(self.mx),str(self.Mx))
 
 class GraphOfAParametricCurve(GraphOfAnObject):
     def __init__(self,f1,f2,llamI,llamF):
