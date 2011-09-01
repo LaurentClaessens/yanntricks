@@ -3303,7 +3303,7 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         """
         return "InterpolationCurve with points %s"%(str([str(P) for P in self.points_list]))
 
-# The class SurfaceBetweenFunctions is replaced by the functions SurfaceBetweenFunctions in __init__.py
+# The class SurfaceBetweenFunctions is replaced by the function SurfaceBetweenFunctions in __init__.py
 # (Augustus, 30, 2011)
 
 #class SurfaceBetweenFunctions(GraphOfAnObject):

@@ -454,7 +454,8 @@ def SurfaceUnderFunction(f,mx,Mx):
     .. image:: Picture_FIGLabelFigSurfaceFunctionPICTSurfaceFunction-for_eps.png
 
     """
-    return BasicGeometricObjects.GraphOfASurfaceUnderFunction(f,mx,Mx)
+    f2=0
+    return SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
 
 
 def Polygon(*args):
