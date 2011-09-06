@@ -82,15 +82,18 @@ def PolarSegment(P,r,theta):
     alpha = radian(theta)
     return Segment(P, Point(P.x+r*cos(alpha),P.y+r*sin(alpha)) )
 
-def ParametricCurve(*args):
+def ParametricCurve(*args,**opt):
     """
     This class describes a parametric curve.
 
     INPUT:
 
-    - ``f1,f2`` - functions.
+    - ``f1,f2`` - functions that are the components of the parametric curve.
+    - ``mx,Mx`` - (optionals) Initial and final value of the parameter.
 
     Alternatively you can give a parametric curve as only argument.
+
+    If `mx` and `Mx` are given, a graph object is returned.
 
     OUTPUT:
     an object ready to be drawn.
@@ -101,8 +104,11 @@ def ParametricCurve(*args):
         sage: f1=phyFunction(x)
         sage: f2=phyFunction(x**2)
         sage: F=ParametricCurve(f1,f2).graph(-2,3)
+        sage: G=ParametricCurve(f1,f2,mx=-2,Mx=3)
         sage: print F.pstricks_code()
         \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{-2.00000000000000}{3.00000000000000}{t | t^2 }
+        sage: F.pstricks_code()==G.pstricks_code()
+        True
 
     Notice that due to several `@lazy_attribute`, changing the components after creation could produce funny results.
 
@@ -112,7 +118,6 @@ def ParametricCurve(*args):
 
     """
     # First, we consider the case in which two functions are given
-
     llamI=None
     llamF=None
     if "f2" not in dir(args[0]):
@@ -131,6 +136,9 @@ def ParametricCurve(*args):
         if len(args)>1:
             llamI=args[1]
             llamF=args[2]
+    if "mx" in opt.keys() and "Mx" in opt.keys() :
+        llamI=opt["mx"]
+        llamF=opt["Mx"]
     return BasicGeometricObjects.GraphOfAParametricCurve(f1,f2,llamI,llamF)
 
 def PolarCurve(fr,ftheta=None):
