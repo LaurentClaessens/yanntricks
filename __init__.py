@@ -885,6 +885,7 @@ class SingleAxe(object):
         self.graduation=True
         self.numbering=True
         self.mark_origin=True
+        self.mark=None
         self.mark_angle=degree(base.angle().radian-pi/2)
         #self.vertical=base.vertical
         #self.horizontal=base.horizontal
@@ -895,11 +896,16 @@ class SingleAxe(object):
         return Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
     def add_option(self,opt):
         self.options.add_option(opt)
-    def add_label(self,dist,angle,marque):
-        self.IsLabel = True
-        self.Label = marque
-        self.DistLabel = dist
-        self.AngleLabel = angle
+    def mark_point(self):
+        return self.segment().F
+    def add_label(self,dist,angle,text):
+        r,theta=polar_with_dilatation(0.2,radian(self.mark_angle),self.pspict.xunit,self.pspict.yunit)
+        theta=degree(theta)
+        self.mark=BasicGeometricObjects.Mark(self,r,theta,text,automatic_place=(self.pspict,"label",self.segment()))
+        #self.IsLabel = True
+        #self.Label = marque
+        #self.DistLabel = dist
+        #self.AngleLabel = angle
     def no_numbering(self):
         self.numbering=False
     def no_graduation(self):
@@ -949,11 +955,12 @@ class SingleAxe(object):
         #   bgx = self.BB.mx + 0.01
         #self.BB.mx = bgx
         c=[]
-        if self.IsLabel :
-            P = self.segment().F
-            P.parameters.symbol="none"
-            P.put_mark(self.DistLabel,self.AngleLabel,self.Label)
-            c.append(P.pstricks_code())
+        if self.mark :
+            #P = self.segment().F
+            #P.parameters.symbol="none"
+            #P.put_mark(self.DistLabel,self.AngleLabel,self.Label)
+            print "960"
+            c.append(self.mark.pstricks_code())
         if self.graduation :
             for P in self.graduation_points(pspict):
                 c.append(P.pstricks_code(pspict,with_mark=True))

@@ -649,6 +649,10 @@ class pspicture(object):
         self.axes = BasicGeometricObjects.Axes( Point(0,0),BasicGeometricObjects.BoundingBox()  )
         self.single_axeX=self.axes.single_axeX
         self.single_axeY=self.axes.single_axeY
+
+        self.single_axeX.pspict=self
+        self.single_axeY.pspict=self
+
         self.grid = Grid(BasicGeometricObjects.BoundingBox())
 
         # The order of declaration is important, because it is recorded in the Separator.number attribute.
