@@ -110,18 +110,6 @@ class Axes(object):
     def update(self):
         self.single_axeX.mx,self.single_axeX.Mx=self.BB.mx,self.BB.Mx
         self.single_axeY.mx,self.single_axeY.Mx=self.BB.my,self.BB.My
-    def add_label_X(self,dist,angle,marque):
-        raise DeprecationWarning,"Use self.single_axeX.add_label instead"
-        self.IsLabelX = True
-        self.LabelX = marque
-        self.DistLabelX = dist
-        self.AngleLabelX = angle
-    def add_label_Y(self,dist,angle,marque):
-        raise DeprecationWarning,"Use self.single_axeY.add_label instead"
-        self.IsLabelY = True
-        self.LabelY = marque
-        self.DistLabelY = dist
-        self.AngleLabelY = angle
     def add_option(self,opt):
         self.options.add_option(opt)
     def no_graduation(self):
@@ -131,6 +119,7 @@ class Axes(object):
         self.single_axeX.no_numbering()
         self.single_axeY.no_numbering()
     def AjusteCircle(self,Cer):
+        raise DeprecationWarning, "You should not see this :("
         self.BB.AddCircle(Cer)
     def bounding_box(self,pspict=None):
         self.update()
@@ -156,14 +145,14 @@ class Axes(object):
         sDy=RemoveLastZeros(self.Dy,10)
         self.add_option("Dx="+sDx)
         self.add_option("Dy="+sDy)
-        bgx = self.BB.mx
-        bgy = self.BB.my
-        if self.BB.mx == int(self.BB.mx):       # Avoid having end of axes on an integer coordinate for aesthetic reasons.
-            bgx = self.BB.mx + 0.01
-        if self.BB.my == int(self.BB.my):
-            bgy = self.BB.my +0.01
-        self.BB.mx = bgx
-        self.BB.my = bgy
+        #bgx = self.BB.mx
+        #bgy = self.BB.my
+        #if self.BB.mx == int(self.BB.mx):       # Avoid having end of axes on an integer coordinate for aesthetic reasons.
+        #    bgx = self.BB.mx + 0.01
+        #if self.BB.my == int(self.BB.my):
+        #    bgy = self.BB.my +0.01
+        #self.BB.mx = bgx
+        #self.BB.my = bgy
         c=[]
         self.update()
         c.append(self.single_axeX.pstricks_code(pspict))

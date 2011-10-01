@@ -1062,7 +1062,7 @@ class pspicture(object):
         self.axes.BB.AddPoint(Point(0,0))
         epsilonX=float(self.axes.Dx)/2
         epsilonY=float(self.axes.Dy)/2
-        self.axes.BB.enlarge_a_little(self.axes.Dx,self.axes.Dy,epsilonX,epsilonY)
+        #self.axes.BB.enlarge_a_little(self.axes.Dx,self.axes.Dy,epsilonX,epsilonY)
         self.axes.update()
         self.DrawGraph(self.axes)
     def DrawDefaultGrid(self):

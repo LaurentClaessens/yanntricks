@@ -910,6 +910,8 @@ class SingleAxe(object):
 
         By defaut, it is one at each multiple of self.base. If an user-defined axes_unit is given, then self.base is modified.
         """
+        # There was the enlarging of the bounding box for aesthetic reasons is made in Axes.pstricks_code
+        # An other enlarging is in main.pspicture.DrawDefaultAxes.
         if not self.graduation:
             return []
         points_list=[]
