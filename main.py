@@ -40,12 +40,12 @@ class PhystricksTestError(Exception):
     def __str__(self):
         a=[]
         a.append("Test failed")
-        a.append("Expected:")
-        a.append(self.expected_text)
-        a.append("----")
-        a.append("Got:")
-        a.append(self.obtained_text)
-        a.append("---")
+        #a.append("Expected:")
+        #a.append(self.expected_text)
+        #a.append("----")
+        #a.append("Got:")
+        #a.append(self.obtained_text)
+        #a.append("---")
         a.append(self.justification)
         return "\n".join(a)
 
@@ -124,7 +124,6 @@ class FigureGenerationSuite(object):
         else:
             print "All tests passes !"
 
-
 class TestPspictLaTeXCode(object):
     def __init__(self,pspict):
         self.pspict=pspict
@@ -158,6 +157,7 @@ class TestPspictLaTeXCode(object):
             raise PhystricksTestError("No tests file found.",obtained_text,"No test file found; I do not know what to do.",pspict=self.pspict)
         boo,justification = string_number_comparison(obtained_text,expected_text)
         if not boo:
+            #raise PhystricksTestError(expected_text,obtained_text,justification,self.pspict)
             raise PhystricksTestError(expected_text,obtained_text,justification,self.pspict)
         print justification
         print "Successful test for pspicture %s"%self.name
@@ -646,7 +646,7 @@ class pspicture(object):
         self.math_BB = BasicGeometricObjects.BoundingBox()     # self.BB and self.math_BB serve to add some objects by hand.
                                             # If you need the bounding box, use self.bounding_box()
                                             # or self.math_bounding_box()
-        self.axes = BasicGeometricObjects.Axes( Point(0,0),BasicGeometricObjects.BoundingBox()  )
+        self.axes=BasicGeometricObjects.Axes(Point(0,0),BasicGeometricObjects.BoundingBox())
         self.single_axeX=self.axes.single_axeX
         self.single_axeY=self.axes.single_axeY
 

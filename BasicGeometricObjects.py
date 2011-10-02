@@ -323,37 +323,7 @@ class GraphOfAnObject(object):
         self.conclude_params()
         return self.options.code()
 
-class SingleAxe(GraphOfAnObject):
-    """
-    Describe an axe.
-    
-    INPUT:
-
-    - ``C`` - the center of the axe. This is the point corresponding to the "zero" coordinate
-    - ``base`` - the unit of the axe. This indicates
-
-                1. the direction
-                2. the size of "1"
-
-                A mark will be added at each integer multiple of that vector (but zero) including negative.
-    - ``mx`` - the multiple of ``base`` at which the axe begins. This is typically negative
-    - ``Mx`` -  the multiple of ``base`` at which the axe ends. This is typically positive
-                    The axe goes from ``C+mx*base`` to ``C-Mx*base``. 
-
-    OTHER CONTROLS :
-
-    The default behaviour can be modified by the following attributes.
-
-    - ``self.Dx`` - (default=1) A mark is written each multiple of ``self.Dx*base``.
-    - ``self.mark_angle`` - the angle in degree under which the mark are written. By default this is orthogonal
-                        to the direction given by ``self.base``.
-
-    If an user-defined axes_unit is given, the length of ``base`` is "forgotten"
-
-    EXAMPLES::
-    
-        sage: axe = SingleAxe(Point(1,1),Vector(0,1),-2,2)
-    """
+class GraphOfASingleAxe(GraphOfAnObject):
     def __init__(self,C,base,mx,Mx):
         GraphOfAnObject.__init__(self,self)
         self.C=C
@@ -450,84 +420,6 @@ class SingleAxe(GraphOfAnObject):
         h=AffineVector(self.segment())
         c.append(h.pstricks_code(pspict))
         return "\n".join(c)
-
-def Intersection(f,g):
-    """
-    When f and g are objects with an attribute equation, return the list of points of intersections.
-
-    EXAMPLES::
-
-        sage: fun=phyFunction(x**2-5*x+6)
-        sage: droite=phyFunction(2)
-        sage: pts = Intersection(fun,droite)
-        sage: for P in pts:print P
-        Point(4,2)
-        Point(1,2)
-    """
-    var('x,y')
-    pts=[]
-    soluce=solve([f.equation,g.equation],[x,y])
-    for s in soluce:
-        a=s[0].rhs()
-        b=s[1].rhs()
-        pts.append(Point(a,b))
-    return pts
-
-def GenericFigure(nom):
-    """
-    This function returns a figure with some default values. It creates coherent label, file name and prints the lines to be appended in the LaTeX file to include the figure.
-    """
-    caption = "\CaptionFig"+nom     # This is also hard-coded in the function main.figure.LaTeX_lines
-    label = "LabelFig"+nom          # The string "LabelFig" is hard-coded in the function main.figure.LaTeX_lines
-    nFich = "Fig_"+nom+".pstricks"
-
-    fig=main.figure(caption,label,nFich)
-    print fig.LaTeX_lines()
-    return fig
-
-def SinglePicture(name):
-    """ Return the tuple of pspicture and figure that one needs in 90% of the cases. """
-    fig = GenericFigure(name)
-    pspict=fig.new_pspicture(name)
-    return pspict,fig
-
-def MultiplePictures(name,n):
-    r"""
-    return a figure with multiple subfigures. This is the other 10% of cases.
-
-    INPUT:
-
-    - `name` - the name of the figure.
-
-    - `n` - the number of subfigures.
-
-    You have to think about naming the subfigures.
-
-    EXAMPLE::
-
-        sage: pspict,fig = MultiplePictures("MyName",3)
-        The result is on figure \ref{LabelFigMyName}.
-        \newcommand{\CaptionFigMyName}{<+Type your caption here+>}
-        \input{Fig_MyName.pstricks}
-        See also the subfigure \ref{LabelFigMyNamessLabelSubFigMyName0}
-        See also the subfigure \ref{LabelFigMyNamessLabelSubFigMyName1}
-        See also the subfigure \ref{LabelFigMyNamessLabelSubFigMyName2}
-        sage: pspict[0].mother.caption="My first subfigure"
-        sage: pspict[1].mother.caption="My second subfigure"
-        sage: pspict[2].mother.caption="My third subfigure"
-
-    Notice that a caption is related to a figure or a subfigure, not to a pspicture.
-
-    See also :class:`subfigure`
-    """
-    fig = GenericFigure(name)
-    pspict=[]
-    for i in range(n):
-        subfigure=fig.new_subfigure("name"+str(i),"LabelSubFig"+name+str(i))
-        picture=subfigure.new_pspicture(name+"pspict"+str(i))
-        picture.figure_mother=fig
-        pspict.append(picture)
-    return pspict,fig
 
 class GraphOfACircle(GraphOfAnObject):
     """
