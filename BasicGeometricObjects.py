@@ -2289,7 +2289,10 @@ class GraphOfAMeasureLength(GraphOfASegment):
         self.mI=self.mseg.I
         self.mF=self.mseg.F
     def math_bounding_box(self,pspict=None):
-        return self.mseg.math_bounding_box(pspict)
+        # I return a "empty" bounding box because I don't want to
+        # take the measures in consideration when creating the axes.
+        #return self.mseg.math_bounding_box(pspict)
+        return BoundingBox()
     def bounding_box(self,pspict=None):
         bb=self.mseg.bounding_box(pspict)
         if self.marque:
@@ -4195,17 +4198,12 @@ class BoundingBox(object):
         self.AddX(bb.Mx)
         self.AddY(bb.my)
         self.AddY(bb.My)
-    def add_graph(self,graphe,pspict=None):
-        raise DeprecationWarning,"Use self.append instead"
-        self.AddBB(graphe.bounding_box(pspict))
     def append(self,graph,pspict=None):        # It seems to me that the method name "append" is more intuitive that "add_graph"
         try :
             self.AddBB(graph.bounding_box(pspict))
         except (ValueError,AttributeError),msg :
             print "Something got wrong with %s"%str(graph)
             print msg
-            print "4207" # Il faut retirer le raise ici en-dessous
-            raise
     def add_math_graph(self,graphe,pspict=None):
         try :
             self.addBB(graphe.math_bounding_box(pspict))
