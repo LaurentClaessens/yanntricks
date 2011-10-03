@@ -4204,6 +4204,8 @@ class BoundingBox(object):
         except (ValueError,AttributeError),msg :
             print "Something got wrong with %s"%str(graph)
             print msg
+            print "4207" # Il faut retirer le raise ici en-dessous
+            raise
     def add_math_graph(self,graphe,pspict=None):
         try :
             self.addBB(graphe.math_bounding_box(pspict))

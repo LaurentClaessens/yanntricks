@@ -22,7 +22,8 @@ from sage.all import *
 import codecs, sys
 
 import BasicGeometricObjects
-import phystricks.SmallComputations as SmallComputations
+import SmallComputations as SmallComputations
+#import phystricks.SmallComputations as SmallComputations
 
 from phystricks import *
 
@@ -696,7 +697,7 @@ class pspicture(object):
 
         - One has to declare the xunit,yunit before to give the bounding box.
         
-        - The value of LabelSep is the distance between an angle and the lable of the angle. It is by default 1, but if there is a dilatation, the visual effect is bad.
+        - The value of LabelSep is the distance between an angle and the label of the angle. It is by default 1, but if there is a dilatation, the visual effect is bad.
         """
         self.create_pstricks_code
         if self.LabelSep == 1 :

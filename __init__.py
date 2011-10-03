@@ -81,7 +81,7 @@ def SinglePicture(name):
 
 def MultiplePictures(name,n):
     r"""
-    return a figure with multiple subfigures. This is the other 10% of cases.
+    Return a figure with multiple subfigures. This is the other 10% of cases.
 
     INPUT:
 
@@ -115,6 +115,35 @@ def MultiplePictures(name,n):
         picture=subfigure.new_pspicture(name+"pspict"+str(i))
         picture.figure_mother=fig
         pspict.append(picture)
+    return pspict,fig
+
+def SubsetFigures(old_pspicts,old_fig,l):
+    r"""
+    Return a subset of a figure with subfigures.
+
+    If you've prepared a figure with 10 subfigure but at the end of the day,
+    you change your mind and decide to remove the subfigure 3 and 8
+    
+    EXAMPLE::
+
+    
+    .. literalinclude:: phystricksSubSetMultiple.py
+
+    .. image:: Picture_FIGLabelFigSubSetMultiplessLabelSubFigSubSetMultiple2PICTSubSetMultiplepspict2-for_eps.png
+    .. image:: Picture_FIGLabelFigSubSetMultiplessLabelSubFigSubSetMultiple3PICTSubSetMultiplepspict3-for_eps.png
+    .. image:: Picture_FIGLabelFigSubSetMultiplessLabelSubFigSubSetMultiple5PICTSubSetMultiplepspict5-for_eps.png
+
+    I'm not sure that it is still possible to use the old fig.
+    """
+    name=old_fig.name
+    fig = GenericFigure(name)
+    pspict=[]
+    for i in l:
+        subfigure=fig.new_subfigure("name"+str(i),"LabelSubFig"+name+str(i))
+        #picture=subfigure.new_pspicture(name+"pspict"+str(i))
+        subfigure._add_pspicture(old_pspicts[i])
+        old_pspicts[i].figure_mother=fig
+        pspict.append(old_pspicts[i])
     return pspict,fig
 
 def Intersection(f,g):
