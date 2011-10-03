@@ -2289,10 +2289,11 @@ class GraphOfAMeasureLength(GraphOfASegment):
         self.mI=self.mseg.I
         self.mF=self.mseg.F
     def math_bounding_box(self,pspict=None):
+        return BoundingBox()
         # I return a "empty" bounding box because I don't want to
         # take the measures in consideration when creating the axes.
         #return self.mseg.math_bounding_box(pspict)
-        return BoundingBox()
+        #return BoundingBox()
     def bounding_box(self,pspict=None):
         bb=self.mseg.bounding_box(pspict)
         if self.marque:
@@ -4194,10 +4195,11 @@ class BoundingBox(object):
         self.AddX(Cer.xmax(deb,fin))
         self.AddY(Cer.ymax(deb,fin))
     def AddBB(self,bb):
-        self.AddX(bb.mx)
-        self.AddX(bb.Mx)
-        self.AddY(bb.my)
-        self.AddY(bb.My)
+        self.mx = min(self.mx,bb.mx)
+        self.my = min(self.my,bb.my)
+        self.Mx = max(self.Mx,bb.Mx)
+        self.My = max(self.My,bb.My)
+
     def append(self,graph,pspict=None):        # It seems to me that the method name "append" is more intuitive that "add_graph"
         try :
             self.AddBB(graph.bounding_box(pspict))
