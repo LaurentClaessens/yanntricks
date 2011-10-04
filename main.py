@@ -1100,10 +1100,7 @@ class pspicture(object):
         bb = self.math_BB.copy()
         for graphe in [x.graph for x in self.record_draw_graph if x.take_math_BB]:
             try :
-                print "1103",bb
-                print "1104 ajout de",graphe, "dont la BB est",graphe.math_bounding_box(self)
                 bb.AddBB(graphe.math_bounding_box(self))
-                print "1103 je me retrouve avec",bb
             except AttributeError,message:
                 print "Warning: it seems to me that object <%s> (type :%s) has no method math_boundig_box"%(str(graphe),type(graphe))
                 print "The error message was:"
