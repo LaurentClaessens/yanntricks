@@ -120,7 +120,8 @@ class FigureGenerationSuite(object):
                 except AttributeError:
                     print "I cannot found the LaTeX lines corresponding to ",a[1]
             print "The list of function to test deeper :"
-            print ([a[0].__name__.replace("'","") for a in self.failed_list])
+            first=",".join([a[0].__name__ for a in self.failed_list])
+            print "figures_list=[",first.replace("'"," "),"]"
             raise PhystricksTestError
         else:
             print "All tests passes !"
@@ -917,7 +918,6 @@ class pspicture(object):
             f.write("%s:%s-\n"%(k,d[k]))
         f.close()
         return d
-
     def get_Id_value(self,Id,counter_name="NO NAME ?",default_value=0):
             if Id not in self.id_values_dict.keys():
                 print "Warning: the auxiliary file %s does not contain the id «%s». Compile your LaTeX file."%(self.interWriteFile,Id)
@@ -933,6 +933,12 @@ class pspicture(object):
 
         Makes LaTeX write the value of the counter in an auxiliary file, then reads the value in that file.
         (needs several compilations to work)
+
+        NOTE :
+
+        If you as for the page with for example  `page = pspict.get_counter_value("page")` the given page
+        will be the one at which LaTeX think the figure is. I recall that a figure is a floating object;
+        if you have 10 of them in a row, the page number could be incorrect.
         """
         # Make LaTeX write the value of the counter in a specific file
         interCounterId = "counter"+self.name+self.NomPointLibre.next()
@@ -940,7 +946,6 @@ class pspicture(object):
         self.add_write_line(interCounterId,r"\arabic{%s}"%counter_name)
         # Read the file and return the value
         return self.get_Id_value(interCounterId,"counter «%s»"%counter_name,default_value)
-
     def get_box_dimension(self,tex_expression,dimension_name):
         """
         Return the dimension of the LaTeX box corresponding to the LaTeX expression tex_expression.
@@ -1064,10 +1069,9 @@ class pspicture(object):
             pass            # This happens when the graph has no mark; that is most of the time.
     def DrawDefaultAxes(self):
         self.axes.BB = self.math_bounding_box()
-        #self.axes.BB.AddPoint(Point(0,0))
         self.axes.BB.add_object(Point(0,0),self)
-        epsilonX=float(self.axes.Dx)/2
-        epsilonY=float(self.axes.Dy)/2
+        #epsilonX=float(self.axes.Dx)/2
+        #epsilonY=float(self.axes.Dy)/2
         #self.axes.BB.enlarge_a_little(self.axes.Dx,self.axes.Dy,epsilonX,epsilonY)
         self.axes.update()
         self.DrawGraph(self.axes)

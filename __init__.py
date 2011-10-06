@@ -446,7 +446,7 @@ def ImplicitCurve(f,xrange,yrange,plot_points=100):
     sage: f(x,y)=x**2+y**2
     sage: F=ImplicitCurve(f==2,(x,-5,5),(y,-5,5))
     sage: print F.bounding_box()
-    (-1.413,-1.413),(1.413,1.413)
+    <BoundingBox mx=-1.413,Mx=1.413; my=-1.413,My=1.413>
 
     But the following will be empty :
     sage: G=ImplicitCurve(f==2,(x,-1,1),(y,-1,1))
@@ -456,7 +456,7 @@ def ImplicitCurve(f,xrange,yrange,plot_points=100):
     If you give very low value of plot_points, you get incorrect results :
     sage: H=ImplicitCurve(f==2,(x,-2,2),(y,-2,2),plot_points=3)
     sage: print H.bounding_box()
-    (-1.414,-1.414),(1.414,1.414)
+    <BoundingBox mx=-1.414,Mx=1.414; my=-1.414,My=1.414>
 
 
     Using Sage's implicit_curve and matplotlib, a list of points "contained" in the curve is created. The bounding_box is 

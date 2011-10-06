@@ -126,12 +126,7 @@ class Axes(object):
         BB=BoundingBox()
         BB.append(self.single_axeX.bounding_box(pspict))
         BB.append(self.single_axeY.bounding_box(pspict))
-        if max(abs(BB.Mx),abs(BB.My),abs(BB.mx),abs(BB.my)) > 500: 
-            print "Mx",BB.Mx
-            print "My",BB.My
-            print "mx",BB.mx
-            print "my",BB.my
-            raise ValueError, "The bounding box of %s seems wrong :"%self
+        BB.check_too_large()
         return BB
     def math_bounding_box(self,pspict=None):
         self.update()
@@ -1056,8 +1051,6 @@ class GraphOfAPoint(GraphOfAnObject):
     def __init__(self,x,y):
         self.x=SR(x)
         self.y=SR(y)
-        if max(abs(self.x),abs(self.y))>500:
-            raise ValueError,"I don't believe you want a point with coordinates {0},{1}".format(self.x,self.y)
         GraphOfAnObject.__init__(self,self)
         #self.psName = point.psName      # The psName of the point is erased when running Point.__init__
                                          # This line is no more useful (April 29 2011)
@@ -1065,6 +1058,13 @@ class GraphOfAPoint(GraphOfAnObject):
         self.add_option("PointSymbol=*")
         self._advised_mark_angle=None
         self.psName=GraphOfAPoint.NomPointLibre.next()
+        
+        # The following is a good test, but one cannot use it because
+        # sometimes we need the projection of a point on an axe before to compute the bounding box.
+        # In that case, the points defining the axe could still have coordinates like 1000 because it is the "default"
+        # size of a bounding box.
+        #if max(abs(self.x),abs(self.y))>500:
+        #    raise ValueError,"I don't believe you want a point with coordinates {0},{1}".format(self.x,self.y)
     def projection(self,seg,direction=None):
         """
         Return the projection of the point on the given segment.
@@ -1111,15 +1111,6 @@ class GraphOfAPoint(GraphOfAnObject):
 
         seg2=direction.fix_origin(self)
         return main.Intersection(seg,seg2)[0]
-
-        #if seg.vertical :
-        #    return Point(seg.I.x,self.y)
-        #if seg.horizontal :
-        #    return Point(self.x,seg.I.y)
-        #else :
-        #    Rx = (self.y*seg.slope - seg.slope*seg.independent + self.x)/(seg.slope**2 + 1)
-        #    Ry = (self.y*seg.slope**2 + self.x*seg.slope + seg.independent)/(seg.slope**2 + 1)
-        #    return Point(Rx,Ry)
 
     def get_polar_point(self,r,theta,pspict=None):
         """
@@ -1515,7 +1506,7 @@ class GeometricImplicitCurve(object):
             sage: F=GeometricImplicitCurve(x-y==3)
             sage: graph=F.graph((x,-3,3),(y,-2,2))
             sage: print graph.bounding_box()
-            (1.0,-2.0),(3.0,0.0)
+            <BoundingBox mx=1.0,Mx=3.0; my=-2.0,My=0.0>
 
         """
         return GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
@@ -1635,7 +1626,7 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
         sage: f=x**2+2*y**2
         sage: G=ImplicitCurve(f==sqrt(2),(x,-5,5),(y,-5,5),plot_points=200)
         sage: print G.bounding_box()
-        (-1.188,-0.841),(1.188,0.841)
+        <BoundingBox mx=-1.188,Mx=1.188; my=-0.841,My=0.841>
         """
         bb = BoundingBox( Point(self.xmin(),self.ymin()),Point(self.xmax(),self.ymax())  )
         return bb
@@ -2188,6 +2179,7 @@ class GraphOfASegment(GraphOfAnObject):
         if self.arrow_type=="segment":
             if coef<=0:
                 coef=-coef
+        P=Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef)    # Remove this line after debug
         v = Segment(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
         return self.return_deformations(v)
     def __add__(self,other):
@@ -2636,13 +2628,12 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
     def __getattr__(self,attrname):
         if "graph_" in attrname:
             return self._segment(attrname[6])
-    def bounding_box(self,pspicture=1):
+    def bounding_box(self,pspict=None):
         return BoundingBox(self.NW,self.SE)
-    def math_bounding_box(self,pspicture=1):
-        return self.bounding_box(pspicture)
+    def math_bounding_box(self,pspict=None):
+        return self.bounding_box(pspict)
     def pstricks_code(self,pspict=None):
         return "\psframe["+self.params()+"]"+self.rectangle.SW.coordinates(numerical=True)+self.rectangle.NE.coordinates(numerical=True)
-
 
 class GraphOfAnAngle(GraphOfAnObject):
     """
@@ -3338,12 +3329,12 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
 
         EXAMPLES:    
         sage: print InterpolationCurve([Point(0,0),Point(1,1)]).bounding_box()
-        (0.0,0.0),(1.0,1.0)
+        <BoundingBox mx=0.0,Mx=1.0; my=0.0,My=1.0>
 
         sage: C=Circle(Point(0,0),1)
         sage: n=400
         sage: print InterpolationCurve([C.get_point(i*SR(360)/n,advised=False) for i in range(n)]).bounding_box()
-        (-1.0,-1.0),(1.0,1.0)
+        <BoundingBox mx=-1.0,Mx=1.0; my=-1.0,My=1.0>
 
         NOTE:
         Since the bounding box is computed from the give points while the curve is an interpolation,
@@ -3353,7 +3344,7 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         EXAMPLE:
         sage: F=InterpolationCurve([Point(-1,1),Point(1,1),Point(1,-1),Point(-1,-1)])
         sage: print F.bounding_box()
-        (-1.0,-1.0),(1.0,1.0)
+        <BoundingBox mx=-1.0,Mx=1.0; my=-1.0,My=1.0>
 
         """
         bb = BoundingBox( Point(self.xmin(),self.ymin()),Point(self.xmax(),self.ymax())  )
@@ -4112,11 +4103,11 @@ class BoundingBox(object):
         sage: P.put_mark(0.3,0,"$MMM$")
         sage: bb = P.mark.bounding_box(pspict)  #random
         sage: print bb
-        (1.30000000000000,1),(1.30000000000000,1)
+        <BoundingBox mx=1.20000000000000,Mx=1.40000000000000; my=0.90000000000000002,My=1.1000000000000001>
         sage: pspict.dilatation(2)
         sage: bb = P.mark.bounding_box(pspict) #random
         sage: print bb
-        (1.15000000000000,1),(1.15000000000000,1)
+        <BoundingBox mx=1.10000000000000,Mx=1.20000000000000; my=0.94999999999999996,My=1.05>
 
     In the first call, the bounding box is not the same as in the second call.
 
@@ -4139,11 +4130,16 @@ class BoundingBox(object):
                 print "Object {0} seems not to have an attribute {1}".format(obj,fun)
                 raise
         else :
-            if max(abs(bb.mx),abs(bb.Mx),abs(bb.my),abs(bb.My))>500 :
-                raise ValueError, "I don't believe that you want a so large bounding box: {0}".format(bb)
+            bb.check_too_large()
             self.AddBB(bb)
     def add_math_object(self,obj,pspict=None):
         self.add_object(obj,pspict=pspict,fun="math_bounding_box")
+    def check_too_large(self):
+        """
+        Raise a ValueError if the bounding box is too large.
+        """
+        if self.mx<-500 or self.my<-500 or self.Mx>500 or self.My>500:
+            raise ValueError, "I don't believe that you want a bounding box as large as {0}".format(self)
     def N(self):
         return Segment(self.NW(),self.NE()).center()
     def S(self):
@@ -4272,6 +4268,6 @@ class BoundingBox(object):
     def copy(self):
         return BoundingBox(mx=self.mx,my=self.my,Mx=self.Mx,My=self.My)
     def __str__(self):
-        return "BoundingBox : mx={0},Mx={1}; my={2},My={3}".format(self.mx,self.Mx,self.my,self.My)
+        return "<BoundingBox mx={0},Mx={1}; my={2},My={3}>".format(self.mx,self.Mx,self.my,self.My)
 
 import phystricks.main as main
