@@ -126,13 +126,12 @@ class Axes(object):
         BB=BoundingBox()
         BB.append(self.single_axeX.bounding_box(pspict))
         BB.append(self.single_axeY.bounding_box(pspict))
-        if max(abs(BB.Mx),abs(BB.My),abs(BB.mx),abs(BB.my)) >= 1000: 
-            print "The bounding box of %s seems wrong :"%self
+        if max(abs(BB.Mx),abs(BB.My),abs(BB.mx),abs(BB.my)) > 500: 
             print "Mx",BB.Mx
             print "My",BB.My
             print "mx",BB.mx
             print "my",BB.my
-            raise ValueError
+            raise ValueError, "The bounding box of %s seems wrong :"%self
         return BB
     def math_bounding_box(self,pspict=None):
         self.update()
@@ -844,8 +843,10 @@ class Mark(object):
             print "Try to pass a pspicture when computing the bounding box of",type(self)
         pt1=Point(central_point.x-dimx/2,central_point.y-dimy/2) 
         pt2=Point(central_point.x+dimx/2,central_point.y+dimy/2)
-        bb.AddPoint(pt1)
-        bb.AddPoint(pt2)
+        #bb.AddPoint(pt1)
+        #bb.AddPoint(pt2)
+        bb.add_object(pt1,pspict)
+        bb.add_object(pt2,pspict)
         bb.parent=self
         return bb
     def pstricks_code(self,pspict=None):
@@ -1055,6 +1056,8 @@ class GraphOfAPoint(GraphOfAnObject):
     def __init__(self,x,y):
         self.x=SR(x)
         self.y=SR(y)
+        if max(abs(self.x),abs(self.y))>500:
+            raise ValueError,"I don't believe you want a point with coordinates {0},{1}".format(self.x,self.y)
         GraphOfAnObject.__init__(self,self)
         #self.psName = point.psName      # The psName of the point is erased when running Point.__init__
                                          # This line is no more useful (April 29 2011)
@@ -1358,7 +1361,9 @@ class GraphOfAPoint(GraphOfAnObject):
         return bb
     def math_bounding_box(self,pspict=None):
         """Return a bounding box which include itself and that's it."""
-        return BoundingBox(self.point,self.point)
+        # Here one cannot use BoundingBox(self.point,self.point) because
+        # it creates infinite loop.
+        return BoundingBox(mx=self.point.x,Mx=self.point.x,my=self.point.y,My=self.point.y)
     def pstricks_code(self,pspict=None,with_mark=False):
         r"""
         Return the pstricks code of the point
@@ -3595,6 +3600,8 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         self.curve = self.obj
         self.llamI = llamI
         self.llamF = llamF
+        self.mx = llamI
+        self.Mx = llamF
         self.parameters.color = "blue"
         self.plotstyle = "curve"
         self.plotpoints = "1000"
@@ -4114,22 +4121,29 @@ class BoundingBox(object):
     In the first call, the bounding box is not the same as in the second call.
 
     """
-    def __init__(self,dSW=None,dNE=None,parent=None):
-        if dSW :
-            self.mx=dSW.x
-            self.my=dSW.y
-        else :
-            self.mx=1000
-            self.my=1000
+    def __init__(self,P1=None,P2=None,mx=1000,Mx=-1000,my=1000,My=-1000,parent=None):
+        self.mx=mx
+        self.my=my
+        self.Mx=Mx
+        self.My=My
 
-        if dNE :
-            self.Mx=dNE.x
-            self.My=dNE.y
-        else :
-            self.Mx=-1000
-            self.My=-1000
+        self.add_math_object(P1)
+        self.add_math_object(P2)
 
         self.parent=parent
+    def add_object(self,obj,pspict=None,fun="bounding_box"):
+        try :
+            bb=obj.__getattribute__(fun)(pspict=pspict)
+        except AttributeError :
+            if obj:     # If obj is None, we are not surprised.
+                print "Object {0} seems not to have an attribute {1}".format(obj,fun)
+                raise
+        else :
+            if max(abs(bb.mx),abs(bb.Mx),abs(bb.my),abs(bb.My))>500 :
+                raise ValueError, "I don't believe that you want a so large bounding box: {0}".format(bb)
+            self.AddBB(bb)
+    def add_math_object(self,obj,pspict=None):
+        self.add_object(obj,pspict=pspict,fun="math_bounding_box")
     def N(self):
         return Segment(self.NW(),self.NE()).center()
     def S(self):
@@ -4184,12 +4198,15 @@ class BoundingBox(object):
         self.My=max(self.My,y)
         self.my=min(self.my,y)
     def AddPoint(self,P):
+        raise DeprecationWarning,"Use add_object instead"
         self.AddX(P.x)
         self.AddY(P.y)
     def AddSegment(self,seg):
+        raise DeprecationWarning,"Use add_object instead"
         self.AddPoint(seg.I)
         self.AddPoint(seg.F)
     def AddArcCircle(self,Cer,deb,fin):
+        raise DeprecationWarning,"Use add_object instead"
         self.AddX(Cer.xmin(deb,fin))
         self.AddY(Cer.ymin(deb,fin))
         self.AddX(Cer.xmax(deb,fin))
@@ -4253,8 +4270,8 @@ class BoundingBox(object):
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def copy(self):
-        return BoundingBox(self.SW(),self.NE())
+        return BoundingBox(mx=self.mx,my=self.my,Mx=self.Mx,My=self.My)
     def __str__(self):
-        return "(%s,%s),(%s,%s)"%tuple(str(x) for x in(self.mx,self.my,self.Mx,self.My))
+        return "BoundingBox : mx={0},Mx={1}; my={2},My={3}".format(self.mx,self.Mx,self.my,self.My)
 
 import phystricks.main as main

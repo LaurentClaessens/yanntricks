@@ -1064,7 +1064,8 @@ class pspicture(object):
             pass            # This happens when the graph has no mark; that is most of the time.
     def DrawDefaultAxes(self):
         self.axes.BB = self.math_bounding_box()
-        self.axes.BB.AddPoint(Point(0,0))
+        #self.axes.BB.AddPoint(Point(0,0))
+        self.axes.BB.add_object(Point(0,0),self)
         epsilonX=float(self.axes.Dx)/2
         epsilonY=float(self.axes.Dy)/2
         #self.axes.BB.enlarge_a_little(self.axes.Dx,self.axes.Dy,epsilonX,epsilonY)
@@ -1100,7 +1101,7 @@ class pspicture(object):
         bb = self.math_BB.copy()
         for graphe in [x.graph for x in self.record_draw_graph if x.take_math_BB]:
             try :
-                bb.AddBB(graphe.math_bounding_box(self))
+                bb.add_math_object(graphe,pspict=self)
             except AttributeError,message:
                 print "Warning: it seems to me that object <%s> (type :%s) has no method math_boundig_box"%(str(graphe),type(graphe))
                 print "The error message was:"
