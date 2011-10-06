@@ -290,6 +290,8 @@ class GraphOfAnObject(object):
         self.add_option("linestyle=solid")
         self.record_add_to_bb=[]         
         self.separator_name="DEFAULT"
+        self.in_math_bounding_box=True
+        self.in_bounding_box=True
     def wave(self,dx,dy):                   # dx is the wave length and dy is the amplitude
         self.wavy = True
         self.waviness = Waviness(self,dx,dy)
@@ -2253,9 +2255,15 @@ class GraphOfASegment(GraphOfAnObject):
             P=self.center().copy()
         return P
     def bounding_box(self,pspict=None):
-        return BoundingBox(self.I,self.F)       # If you change this, maybe you have to adapt math_bounding_box
+        if self.in_bounding_box:
+            return BoundingBox(self.I,self.F)       # If you change this, maybe you have to adapt math_bounding_box
+        else :
+            return BoundingBox()
     def math_bounding_box(self,pspict=None):
-        return self.bounding_box(pspict)
+        if self.in_math_bounding_box:
+            return self.bounding_box(pspict)
+        else :
+            return BoundingBox()
     def pstricks_code(self,pspict=None):
         """
         Return the pstricks's code of a Segment when is is seen as a segment
@@ -2849,7 +2857,9 @@ class GraphOfAphyFunction(GraphOfAnObject):
         return a tangent vector at the point (x,f(x))
         """
         ca = self.derivative()(x,numerical=numerical)
-        return Point(1,ca).normalize().origin(self.get_point(x,advised))
+        v = Point(1,ca).normalize().origin(self.get_point(x,advised))
+        v.in_math_bounding_box = False
+        return v
     def get_tangent_segment(self,x):
         """
         Return a tangent segment at point (x,f(x)).
