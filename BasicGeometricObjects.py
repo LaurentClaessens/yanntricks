@@ -193,7 +193,8 @@ def inner_product(v,w):
     If a point is passed, it is considered as the vector
     from (0,0).
 
-    EXAMPLES:
+    EXAMPLES::
+
     sage: from phystricks import *
     sage: v=Vector(1,3)
     sage: w=Vector(-5,7)
@@ -3676,7 +3677,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 
         EXAMPLES:
 
-        In the following example, notive the way one of the arrow is
+        In the following example, notice the way one of the arrow is
         red and backward.
 
         .. literalinclude:: phystricksContourGreen.py
