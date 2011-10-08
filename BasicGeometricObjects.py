@@ -98,10 +98,14 @@ class Axes(object):
         self.separator_name="AXES"
         self.graduation=True
         self.numbering=True
-        self.single_axeX=SingleAxe(self.C,Vector(1,0),self.BB.mx,self.BB.Mx)
+        # Since the size of the axe is given in multiple of self.base,
+        # one cannot give mx=-1000 as "minimal value".
+        #self.single_axeX=SingleAxe(self.C,Vector(1,0),self.BB.mx,self.BB.Mx)
+        self.single_axeX=SingleAxe(self.C,Vector(1,0),0,0)
         self.single_axeX.mark_origin=False
         self.single_axeX.axes_unit=AxesUnit(1,"")
-        self.single_axeY=SingleAxe(self.C,Vector(0,1),self.BB.my,self.BB.My)
+        #self.single_axeY=SingleAxe(self.C,Vector(0,1),self.BB.my,self.BB.My)
+        self.single_axeY=SingleAxe(self.C,Vector(0,1),0,0)
         self.single_axeY.mark_origin=False
         self.single_axeY.axes_unit=AxesUnit(1,"")
         self.single_axeY.mark_angle=180
@@ -572,7 +576,7 @@ class GraphOfACircle(GraphOfAnObject):
 
             sage: C=Circle(Point(0,0),2)
             sage: print C.get_normal_vector(45)
-            vector I=Point(sqrt(2),sqrt(2)) F=Point(3/2*sqrt(2),3/2*sqrt(2))
+            <vector I=<Point(sqrt(2),sqrt(2))> F=<Point(3/2*sqrt(2),3/2*sqrt(2))>>
 
         """
         v = PolarPoint(1,theta).origin(self.get_point(theta,advised=False))
@@ -597,7 +601,7 @@ class GraphOfACircle(GraphOfAnObject):
         """
         return GraphOfACircle(self.center,self.radius,angleI,angleF)
     def __str__(self):
-        return "Circle, center=%s, radius=%s"%(self.center.__str__(),str(self.radius))
+        return "<Circle, center=%s, radius=%s>"%(self.center.__str__(),str(self.radius))
     def copy(self):
         """
         Return a copy of the object as geometrical object.
@@ -1347,8 +1351,7 @@ class GraphOfAPoint(GraphOfAnObject):
             Xradius=0.1/pspict.xunit
             Yradius=0.1/pspict.yunit
         except :
-            print "You should consider to give a pspict as argument. Otherwise the boundig box of %s could be bad"%str(self)
-            raise TypeError
+            raise TypeError, "You should consider to give a pspict as argument. Otherwise the boundig box of %s could be bad"%str(self)
         bb = BoundingBox(Point(self.x-Xradius,self.y-Yradius),Point(self.x+Xradius,self.y+Yradius))
         for P in self.record_add_to_bb:
             bb.AddPoint(P)
@@ -1466,7 +1469,7 @@ class GraphOfAPoint(GraphOfAnObject):
     def __rmul__(self,r):
         return self.__mul__(r)
     def __str__(self):
-        return "Point(%s,%s)"%(str(self.x),str(self.y))
+        return "<Point(%s,%s)>"%(str(self.x),str(self.y))
 
 
 class GeometricImplicitCurve(object):
@@ -1525,7 +1528,7 @@ class GeometricImplicitCurve(object):
             sage: print GeometricImplicitCurve(x+y==7)   
             Implicit curve of equation x + y - 7 == 0
         """
-        return "Implicit curve of equation %s == 0"%repr(self.f)
+        return "<Implicit curve of equation %s == 0>"%repr(self.f)
 
 class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
     r"""
@@ -1854,7 +1857,7 @@ class GraphOfASegment(GraphOfAnObject):
         EXAMPLES:
         sage: v= Segment(Point(0,0),Point(2,0)).get_normal_vector()
         sage: print v
-        vector I=Point(1.0,0) F=Point(1.0,-1)
+        <vector I=<Point(1.0,0)> F=<Point(1.0,-1)>>
         sage: v.length()
         1
         """
@@ -1911,15 +1914,15 @@ class GraphOfASegment(GraphOfAnObject):
         sage: print v.equation
         x + 1/2*y + 1/2 == 0
         sage: print v.projection(l)
-        vector I=Point(0,1) F=Point(0,3)
+        <vector I=<Point(0,1)> F=<Point(0,3)>>
         sage: print l.projection(v)
-        segment I=Point(-2/5,-1/5) F=Point(-4/5,3/5)
+        <segment I=<Point(-2/5,-1/5)> F=<Point(-4/5,3/5)>>
 
         
         sage: l = Segment(Point(0,0),Point(1,2))
         sage: s = Segment(Point(-2,1),Point(-3,4))
         sage: print s.projection(l)
-        segment I=Point(0,0) F=Point(1,2)
+        <segment I=<Point(0,0)> F=<Point(1,2)>>
         """
         v = Segment(self.I.projection(segment),self.F.projection(segment))
         return self.return_deformations(v)
@@ -1955,9 +1958,9 @@ class GraphOfASegment(GraphOfAnObject):
             sage: v=Vector(2,3)
             sage: vx,vy = v.decomposition(Segment(Point(0,0),Point(0,1)))
             sage: print vx
-            vector I=Point(0,0) F=Point(0,3)
+            <vector I=<Point(0,0)> F=<Point(0,3)>>
             sage: print vy
-            vector I=Point(0,0) F=Point(2,0)
+            <vector I=<Point(0,0)> F=<Point(2,0)>>
 
         .. literalinclude:: phystricksExDecomposition.py
         .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition0PICTExDecompositionpspict0-for_eps.png
@@ -2089,12 +2092,12 @@ class GraphOfASegment(GraphOfAnObject):
         EXAMPLES:
         sage: S=Segment(Point(-2,-2),Point(2,2))
         sage: print S.dilatation(0.5)           
-        segment I=Point(-1.00000000000000,-1.00000000000000) F=Point(1.00000000000000,1.00000000000000)
+        <segment I=<Point(-1.00000000000000,-1.00000000000000)> F=<Point(1.00000000000000,1.00000000000000)>>
 
         But
         sage: v=AffineVector(Point(-2,-2),Point(2,2))
         sage: print v.dilatation(0.5)                
-        vector I=Point(-2,-2) F=Point(0.000000000000000,0.000000000000000)
+        <vector I=<Point(-2,-2)> F=<Point(0.000000000000000,0.000000000000000)>>
         """
         if self.arrow_type=="segment":
             d=0.5*self.length()*(coef-1)
@@ -2124,15 +2127,15 @@ class GraphOfASegment(GraphOfAnObject):
         EXAMPLES:
         sage: s=Segment(Point(0,0),Point(1,0))
         sage: print s.normalize(2)
-        segment I=Point(-0.5,0) F=Point(1.5,0)
+        <segment I=<Point(-0.5,0)> F=<Point(1.5,0)>>
         sage: print s.normalize(-1)
-        segment I=Point(0,0) F=Point(1,0)
+        <segment I=<Point(0,0)> F=<Point(1,0)>>
 
         sage: v=AffineVector(Point(1,1),Point(3,1))
         sage: print v.normalize(2)
-        vector I=Point(1,1) F=Point(3,1)
+        <vector I=<Point(1,1)> F=<Point(3,1)>>
         sage: print v.normalize(-1)
-        vector I=Point(1,1) F=Point(0,1)
+        <vector I=<Point(1,1)> F=<Point(0,1)>>
         """
         if self.arrow_type=="segment":
             if l<0 : 
@@ -2166,13 +2169,13 @@ class GraphOfASegment(GraphOfAnObject):
         EXAMPLES:
         sage: v=Vector(1,1)
         sage: print 2*v
-        vector I=Point(0,0) F=Point(2,2)
+        <vector I=<Point(0,0)> F=<Point(2,2)>>
         sage: print -2*v
-        vector I=Point(0,0) F=Point(-2,-2)
+        <vector I=<Point(0,0)> F=<Point(-2,-2)>>
 
         sage: s=Segment(Point(1,1),Point(2,2))
         sage: print 3*s
-        segment I=Point(1,1) F=Point(4,4)
+        segment <I=<Point(1,1)> F=<Point(4,4)>>
 
         The initial point stays the same (this is not the same behaviour as in self.normalize !)
         If the coefficient is negative :
@@ -2202,12 +2205,12 @@ class GraphOfASegment(GraphOfAnObject):
         sage: a=Vector(1,1)
         sage: b=Vector(2,3)
         sage: print a+b
-        vector I=Point(0,0) F=Point(3,4)
+        <vector I=<Point(0,0)> F=<Point(3,4)>>
 
         sage: a=Segment(Point(1,1),Point(3,4))
         sage: b=AffineVector(Point(1,1),Point(-1,3))
         sage: print a+b
-        segment I=Point(1,1) F=Point(1,6)
+        <segment I=<Point(1,1)> F=<Point(1,6)>>
         """
         if isinstance(other,GraphOfASegment):
             if self.I != other.I:
@@ -2226,9 +2229,9 @@ class GraphOfASegment(GraphOfAnObject):
         return self * (1/coef)
     def __str__(self):
         if self.arrow_type=="segment":
-            return "segment I=%s F=%s"%(str(self.I),str(self.F))
+            return "<segment I=%s F=%s>"%(str(self.I),str(self.F))
         if self.arrow_type=="vector":
-            return "vector I=%s F=%s"%(str(self.I),str(self.F))
+            return "<vector I=%s F=%s>"%(str(self.I),str(self.F))
 
 
     def mark_point(self):
@@ -2370,7 +2373,7 @@ class GeometricVectorField(object):
         sage: f1=phyFunction(x**2)
         sage: F = GeometricVectorField( f1,cos(x*y) )
         sage: print F(3,pi/3)
-        vector I=Point(3,1/3*pi) F=Point(12,1/3*pi - 1)
+        <vector I=<Point(3,1/3*pi)> F=<Point(12,1/3*pi> - 1)>
 
     """
     def __init__(self,fx,fy):
@@ -2478,11 +2481,11 @@ class GeometricVectorField(object):
             sage: x,y=var('x,y')
             sage: F=VectorField(x**2,y**3)
             sage: print F(1,2)
-            vector I=Point(1,2) F=Point(2,10)
+            <vector I=<Point(1,2)> F=<Point(2,10)>>
 
             sage: P=Point(3,4)
             sage: print F(P)
-            vector I=Point(3,4) F=Point(12,68)
+            <vector I=<Point(3,4)> F=<Point(12,68)>>
 
         """
         if b is not None :
@@ -2847,7 +2850,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         x
         sage: f=phyFunction(x**2)
         sage: print f.get_normal_vector(0)
-        vector I=Point(0,0) F=Point(0,-1)
+        <vector I=<Point(0,0)> F=<Point(0,-1)>>
         """
         #ca = self.derivative()(x) 
         #return Point(-ca,1).normalize().origin(self.get_point(x))       
@@ -3399,7 +3402,7 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         sage: print InterpolationCurve([Point(0,0),Point(1,1)])
         InterpolationCurve with points ['Point(0,0)', 'Point(1,1)']
         """
-        return "InterpolationCurve with points %s"%(str([str(P) for P in self.points_list]))
+        return "<InterpolationCurve with points %s>"%(str([str(P) for P in self.points_list]))
 
 # The class SurfaceBetweenFunctions is replaced by the function SurfaceBetweenFunctions in __init__.py
 # (Augustus, 30, 2011)
@@ -3734,9 +3737,9 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 
             sage: F=ParametricCurve(x,x**2)
             sage: print F.get_tangent_vector(0)
-            vector I=Point(0,0) F=Point(1,0)
+            <vector I=<Point(0,0)> F=<Point(1,0)>>
             sage: print F.get_tangent_vector(1)
-            vector I=Point(1,1) F=Point(1/5*sqrt(5) + 1,2/5*sqrt(5) + 1)
+            <vector I=<Point(1,1)> F=<Point(1/5*sqrt(5)> + 1,2/5*sqrt(5) + 1)>
         """
         initial = self.get_point(llam,advised)     
         return AffineVector( initial,Point(initial.x+self.derivative().f1(llam),initial.y+self.derivative().f2(llam)) ).normalize()
@@ -3768,7 +3771,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 
             sage: F=ParametricCurve(sin(x),x**2)
             sage: print F.get_normal_vector(0)
-            vector I=Point(0,0) F=Point(0,-1)
+            <vector I=<Point(0,0)> F=<Point(0,-1)>>
 
         Tangent and outward normal vector fields to a closed path ::
 
@@ -3819,14 +3822,14 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         Normalizing a null vector produces a warning::
 
             sage: print F.get_second_derivative_vector(0,normalize=True)
-            vector I=Point(0,0) F=Point(0,0)
+            <vector I=<Point(0,0)> F=<Point(0,0)>>
 
         ::
 
             sage: print F.get_second_derivative_vector(0,normalize=False)
-            vector I=Point(0,0) F=Point(0,0)
+            <vector I=<Point(0,0)> F=<Point(0,0)>>
             sage: print F.get_second_derivative_vector(1)
-            vector I=Point(1,1) F=Point(1,2)
+            <vector I=<Point(1,1)> F=<Point(1,2)>>
 
         Note : if the parametrization is not normal, this is not orthogonal to the tangent.
         If you want a normal vector, use self.get_normal_vector
@@ -4033,9 +4036,9 @@ class GraphOfAParametricCurve(GraphOfAnObject):
     def __str__(self):
         var('t')
         a=[]
-        a.append("The parametric curve given by")
+        a.append("<The parametric curve given by")
         a.append("x(t)=%s"%repr(self.f1.sage(x=t)))
-        a.append("y(t)=%s"%repr(self.f2.sage(x=t)))
+        a.append("y(t)=%s>"%repr(self.f2.sage(x=t)))
         return "\n".join(a)
 
     def params(self):
@@ -4083,6 +4086,22 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         for v in self.record_arrows:
             a.append(v.pstricks_code(pspict))
         return "\n".join(a)
+
+def check_too_large(obj,pspict=None):
+    try:
+        bb=obj.bounding_box(pspict)
+        mx=bb.mx
+        my=bb.my
+        Mx=bb.Mx
+        My=bb.My
+    except AttributeError:
+        print "Object {0} has no method bounding_box.".format(obj)
+        mx=obj.mx
+        my=obj.my
+        Mx=obj.Mx
+        My=obj.My
+    if mx<-100 or my<-100 or Mx>100 or My>100:
+        raise ValueError, "I don't believe that object {1} has a bounding box as large as {0}".format(bb,obj)
 
 class BoundingBox(object):
     r"""
@@ -4149,8 +4168,7 @@ class BoundingBox(object):
         """
         Raise a ValueError if the bounding box is too large.
         """
-        if self.mx<-500 or self.my<-500 or self.Mx>500 or self.My>500:
-            raise ValueError, "I don't believe that you want a bounding box as large as {0}".format(self)
+        check_too_large(self)
     def N(self):
         return Segment(self.NW(),self.NE()).center()
     def S(self):

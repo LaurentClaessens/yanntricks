@@ -1068,8 +1068,22 @@ class pspicture(object):
         except AttributeError,msg :
             pass            # This happens when the graph has no mark; that is most of the time.
     def DrawDefaultAxes(self):
-        self.axes.BB = self.math_bounding_box()
-        self.axes.BB.add_object(Point(0,0),self)
+        """
+        This function computes the bounding box of the axes and add them to the list to be drawn.
+
+        The length of the axes is computed here (via self.math_bounding_box).
+
+        Sometimes you want the axes to be slightly larger. You can impose the length of the axes.
+
+        EXAMPLE::
+
+        .. literalinclude:: phystricksEnlargeAxes.py
+        .. image:: Picture_FIGLabelFigEnlargeAxesPICTEnlargeAxes-for_eps.png
+
+        """
+        BB = self.math_bounding_box()
+        BB.add_object(Point(0,0),self)
+        self.axes.BB.add_object(BB)
         #epsilonX=float(self.axes.Dx)/2
         #epsilonY=float(self.axes.Dy)/2
         #self.axes.BB.enlarge_a_little(self.axes.Dx,self.axes.Dy,epsilonX,epsilonY)
@@ -1111,6 +1125,8 @@ class pspicture(object):
                 print "The error message was:"
                 print message
                 bb.append(graphe,self)
+        bb.add_object(self.axes.single_axeX,pspict=self)
+        bb.add_object(self.axes.single_axeY,pspict=self)
         return bb
     def contenu(self):              # pspicture
         r"""
