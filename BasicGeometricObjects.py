@@ -1117,15 +1117,15 @@ class GraphOfAPoint(GraphOfAnObject):
 
         """
         try :
-            seg1=seg.segment(projection=True)
+            seg=seg.segment(projection=True)
         except AttributeError :
             pass
 
         if direction is None:
-            direction=seg1.get_normal_vector()
+            direction=seg.get_normal_vector()
 
         seg2=direction.fix_origin(self)
-        return main.Intersection(seg1,seg2)[0]
+        return main.Intersection(seg,seg2)[0]
 
     def get_polar_point(self,r,theta,pspict=None):
         """
