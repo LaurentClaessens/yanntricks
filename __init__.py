@@ -156,8 +156,8 @@ def Intersection(f,g):
         sage: droite=phyFunction(2)
         sage: pts = Intersection(fun,droite)
         sage: for P in pts:print P
-        Point(4,2)
-        Point(1,2)
+        <Point(4,2)>
+        <Point(1,2)>
     """
     var('x,y')
     pts=[]
@@ -349,20 +349,20 @@ def MeasureLength(seg,dist=0.1):
 
         sage: measureOA=MeasureLength(Segment(O,A),0.1)
         sage: print measureOA.mark_point()
-        Point(0.5,-0.100000000000000)
+        <Point(0.5,-0.100000000000000)>
 
     Horizontal line directed from left to right::
 
         sage: measureAO=MeasureLength(Segment(A,O),0.1)
         sage: print measureAO.mark_point()
-        Point(0.5,0.100000000000000)
+        <Point(0.5,0.100000000000000)>
 
     Vertical line::
 
         sage: B=Point(0,2)
         sage: measureOB=MeasureLength(Segment(O,B),0.1)
         sage: print measureOB.mark_point()
-        Point(0.100000000000000,1.0)
+        <Point(0.100000000000000,1.0)>
 
         
 
@@ -510,9 +510,9 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,reverse1=False,re
     The segment "closing" the domain are available by the attributes `Isegment and Fsegment`::
 
         sage: print region.Isegment
-        segment I=Point(2,8) F=Point(2,4)
+        <segment I=<Point(2,8)> F=<Point(2,4)>>
         sage: print region.Fsegment
-        segment I=Point(3,9) F=Point(5,125)
+        <segment I=<Point(3,9)> F=<Point(5,125)>>
 
     The initial and final values of the parameters can be given in different ways.
     The "normal" way is to provide the curves by triples `(curve,mx,Mx)`::
@@ -755,14 +755,14 @@ def AffineVector(A=None,B=None):
     An affine vector can be given by two points::
 
         sage: print AffineVector(Point(1,1),Point(pi,sqrt(2)))
-        vector I=Point(1,1) F=Point(pi,sqrt(2))
+        <vector I=<Point(1,1)> F=<Point(pi,sqrt(2))>>
 
     It can be simply derived from a segment::
 
         sage: segment=Segment( Point(1,1),Point(2,2)  )
         sage: av=AffineVector(segment)
         sage: print av
-        vector I=Point(1,1) F=Point(2,2)
+        <vector I=<Point(1,1)> F=<Point(2,2)>>
 
     If you pass an object which has a method `segment`, the
     :func:`AffineVector` will provide the corresponding affine vector::
@@ -770,7 +770,7 @@ def AffineVector(A=None,B=None):
         sage: from phystricks.BasicGeometricObjects import SingleAxe
         sage: axe=SingleAxe(  Point(-2,2),Vector(1,1),-3,3  )
         sage: print AffineVector(axe)
-        vector I=Point(-5,-1) F=Point(1,5)
+        <vector I=<Point(-5,-1)> F=<Point(1,5)>>
 
     NOTE:
 
@@ -1057,16 +1057,16 @@ def Point(x,y):
     EXAMPLES::
 
         sage: print Point(1,1)
-        Point(1,1)
+        <Point(1,1)>
         sage: print Point(pi,sqrt(2))
-        Point(pi,sqrt(2))
+        <Point(pi,sqrt(2))>
     
     You can pass variables::
 
         sage: x=var('x')
         sage: P=Point(x**2,1)   
         sage: print P
-        Point(x^2,1)
+        <Point(x^2,1)>
 
     Notice that the coordinates of the point have to be numerical in order to be passed to pstricks at the end::
 
@@ -1091,7 +1091,7 @@ def PolarPoint(r,theta):
     EXAMPLES::
 
         sage: print PolarPoint(2,45)
-        Point(sqrt(2),sqrt(2))
+        <Point(sqrt(2),sqrt(2))>
 
 
     """
@@ -1183,7 +1183,7 @@ def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
         sage: len(F.draw_points)
         18
         sage: print F.draw_points[5]
-        Point(-1.0,5.0)
+        <Point(-1.0,5.0)>
 
     The same can be obtained using the following syntax (see the function GeometricVectorField.graph)::
 
@@ -1191,15 +1191,15 @@ def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
         sage: len(F.draw_points)
         18
         sage: print F.draw_points[5]
-        Point(-1.0,5.0)
+        <Point(-1.0,5.0)>
 
     If you want a personal list of points, use draw_points ::
 
         sage: F=VectorField(exp(x+y),x**2+y**2, draw_points=[Point(1,1),Point(5,-23)] )
         sage: print F.draw_points[0]
-        Point(1,1)    
+        <Point(1,1)>
         sage: print F.draw_points[1]
-        Point(5,-23)
+        <Point(5,-23)>
 
     A vector field with automatic management of the points to be drawn:
 

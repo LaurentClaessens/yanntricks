@@ -318,6 +318,9 @@ class figure(object):
             self.fichier.open_file("w")
             self.fichier.file.write(to_be_written)
             self.fichier.file.close()
+        print "--------------- For your LaTeX file ---------------"
+        print self.LaTeX_lines()
+        print "---------------------------------------------------"
             
 class subfigure(object):
     """
@@ -1082,7 +1085,7 @@ class pspicture(object):
 
         """
         BB = self.math_bounding_box()
-        BB.add_object(Point(0,0),self)
+        BB.add_object(self.axes.C,self)
         self.axes.BB.add_object(BB)
         #epsilonX=float(self.axes.Dx)/2
         #epsilonY=float(self.axes.Dy)/2
@@ -1125,8 +1128,15 @@ class pspicture(object):
                 print "The error message was:"
                 print message
                 bb.append(graphe,self)
-        bb.add_object(self.axes.single_axeX,pspict=self)
-        bb.add_object(self.axes.single_axeY,pspict=self)
+        # These two lines are only useful if the size of the single axes were modified by hand
+        # because the method self.math_bounding_box is called by self.DrawDefaultAxes that
+        # update the size of the singles axes later.
+        try:
+            bb.add_object(self.axes.single_axeX,pspict=self)
+            bb.add_object(self.axes.single_axeY,pspict=self)
+        except ValueError,msg:
+            if u"is not yet defined" not in msg.__unicode__():  # position 27319 see BasicGeometricObjects.GraphOfASingleAxe.segment
+                raise
         return bb
     def contenu(self):              # pspicture
         r"""

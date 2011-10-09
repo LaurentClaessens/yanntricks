@@ -13,9 +13,9 @@ def Test_Segment():
     sage: s= Segment(Point(1,1),Point(2,2))
     sage: v=s.get_normal_vector()
     sage: print v.I
-    Point(1.5,1.5)
+    <Point(1.5,1.5)>
     sage: print v.F
-    Point(1/2*sqrt(2) + 1.5,-1/2*sqrt(2) + 1.5)
+    <Point(1/2*sqrt(2) + 1.5,-1/2*sqrt(2) + 1.5)>
     sage: print v.length()
     1
 

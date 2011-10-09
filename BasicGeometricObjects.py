@@ -346,7 +346,13 @@ class GraphOfASingleAxe(GraphOfAnObject):
     
     # SingleAxe.segment cannot be a lazy attribute because we use it for some projections before
     # to compute the bounding box.
-    def segment(self):
+    def segment(self,projection=False):
+        if self.mx == 0 and self.Mx == 0 :
+            if projection :
+                return Segment(self.C,self.C+self.base)
+            else :
+                raise ValueError,"The size of {0} is not yet defined.".format(self) # this message is hard-checked at position 27319 in main.py
+                                                                                # do not change it.
         return Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
     def add_option(self,opt):
         self.options.add_option(opt)
@@ -421,6 +427,8 @@ class GraphOfASingleAxe(GraphOfAnObject):
         h=AffineVector(self.segment())
         c.append(h.pstricks_code(pspict))
         return "\n".join(c)
+    def __str__(self):
+        return "<GraphOfASingleAxe: C={0} base={1} mx={2} Mx={3}>".format(self.C,self.base,self.mx,self.Mx)
 
 class GraphOfACircle(GraphOfAnObject):
     """
@@ -547,7 +555,7 @@ class GraphOfACircle(GraphOfAnObject):
             sage: C=Circle(Point(0,0),2)
             sage: pts=C.get_regular_points(0,90,1)
             sage: [str(p) for p in pts]
-            ['Point(2,0)', 'Point(2*cos(1/2),2*sin(1/2))', 'Point(2*cos(1),2*sin(1))', 'Point(2*cos(3/2),2*sin(3/2))']
+            ['<Point(2,0)>', '<Point(2*cos(1/2),2*sin(1/2))>', '<Point(2*cos(1),2*sin(1))>', '<Point(2*cos(3/2),2*sin(3/2))>']
 
         """
         Dtheta=(180/pi)*(l/self.radius)
@@ -621,7 +629,7 @@ class GraphOfACircle(GraphOfAnObject):
             sage: c2=c1
             sage: c2.center=Point(3,3)
             sage: print c1.center
-            Point(3,3)
+            <Point(3,3)>
 
         The method :func:`copy` pass through::
 
@@ -629,7 +637,7 @@ class GraphOfACircle(GraphOfAnObject):
             sage: c2=c1.copy()
             sage: c2.center=Point(3,3)
             sage: print c1.center
-            Point(1,1)
+            <Point(1,1)>
 
         NOTE:
 
@@ -1092,32 +1100,32 @@ class GraphOfAPoint(GraphOfAnObject):
 
             sage: s1=Segment( Point(0,0),Point(2,1) )
             sage: print Point(3,-1).projection(s1)
-            Point(2,1)
+            <Point(2,1)>
             sage: print Point(5,0).projection(s1) 
-            Point(4,2)
+            <Point(4,2)>
 
         You can project on a vector::
 
             sage: print Point(5,0).projection(Vector(2,1))
-            Point(4,2)
+            <Point(4,2)>
 
         Computations are exact::
 
             sage: v=Vector(2,1)
             sage: print Point(sqrt(2),pi).projection(v)
-            Point(2/5*pi + 4/5*sqrt(2),1/5*pi + 2/5*sqrt(2))
+            <Point(2/5*pi + 4/5*sqrt(2),1/5*pi + 2/5*sqrt(2))>
 
         """
         try :
-            seg=seg.segment()       # allows to project onto an axe
+            seg1=seg.segment(projection=True)
         except AttributeError :
             pass
 
         if direction is None:
-            direction=seg.get_normal_vector()
+            direction=seg1.get_normal_vector()
 
         seg2=direction.fix_origin(self)
-        return main.Intersection(seg,seg2)[0]
+        return main.Intersection(seg1,seg2)[0]
 
     def get_polar_point(self,r,theta,pspict=None):
         """
@@ -1137,7 +1145,7 @@ class GraphOfAPoint(GraphOfAnObject):
 
             sage: P=Point(1,2)
             sage: print P.get_polar_point(sqrt(2),45)
-            Point(2,3)
+            <Point(2,3)>
 
         """
         alpha=radian(theta,number=True)
@@ -1192,30 +1200,30 @@ class GraphOfAPoint(GraphOfAnObject):
             sage: v=Vector(2,1)                        
             sage: P=Point(-1,-1)
             sage: print P.translate(v)
-            Point(1,0)
+            <Point(1,0)>
 
         An :func:`AffineVector` is accepted::
 
             sage: w=AffineVector( Point(1,1),Point(2,3) )
             sage: print P.translate(w)
-            Point(0,1)
+            <Point(0,1)>
 
         You can also directly provide the coordinates::
 
             sage: print P.translate(10,-9)
-            Point(9,-10)
+            <Point(9,-10)>
 
         Or the :func:`Point` corresponding to the translation vector::
 
             sage: print P.translate( Point(3,4)  )
-            Point(2,3)
+            <Point(2,3)>
 
         Translation by minus itself produces zero::
 
             sage: x,y=var('x,y')
             sage: P=Point(x,y)
             sage: print P.translate(-P)
-            Point(0,0)
+            <Point(0,0)>
 
         """
         if b==None :
@@ -1524,9 +1532,9 @@ class GeometricImplicitCurve(object):
 
             sage: f(x,y)=x**2+1/x
             sage: print GeometricImplicitCurve(f(x,y)==2)
-            Implicit curve of equation x^2 + 1/x - 2 == 0
+            <Implicit curve of equation x^2 + 1/x - 2 == 0>
             sage: print GeometricImplicitCurve(x+y==7)   
-            Implicit curve of equation x + y - 7 == 0
+            <Implicit curve of equation x + y - 7 == 0>
         """
         return "<Implicit curve of equation %s == 0>"%repr(self.f)
 
@@ -1789,11 +1797,11 @@ class GraphOfASegment(GraphOfAnObject):
             sage: segment=Segment(Point(0,0),Point(1,1))
             sage: curve=segment.parametric_curve()
             sage: print curve(0)
-            Point(0,0)
+            <Point(0,0)>
             sage: print curve(1)
-            Point(1/2*sqrt(2),1/2*sqrt(2))
+            <Point(1/2*sqrt(2),1/2*sqrt(2))>
             sage: print curve(segment.length())
-            Point(1,1)
+            <Point(1,1)>
         """
         x=var('x')
         l=self.length()
@@ -2175,7 +2183,7 @@ class GraphOfASegment(GraphOfAnObject):
 
         sage: s=Segment(Point(1,1),Point(2,2))
         sage: print 3*s
-        segment <I=<Point(1,1)> F=<Point(4,4)>>
+        <segment I=<Point(1,1)> F=<Point(4,4)>>
 
         The initial point stays the same (this is not the same behaviour as in self.normalize !)
         If the coefficient is negative :
@@ -2373,7 +2381,7 @@ class GeometricVectorField(object):
         sage: f1=phyFunction(x**2)
         sage: F = GeometricVectorField( f1,cos(x*y) )
         sage: print F(3,pi/3)
-        <vector I=<Point(3,1/3*pi)> F=<Point(12,1/3*pi> - 1)>
+        <vector I=<Point(3,1/3*pi)> F=<Point(12,1/3*pi - 1)>>
 
     """
     def __init__(self,fx,fy):
@@ -2445,7 +2453,7 @@ class GeometricVectorField(object):
             sage: x,y=var('x,y')
             sage: F=VectorField(x,y).graph(xvalues=(x,-2,2,3),yvalues=(y,-10,10,3),draw_points=[Point(100,100)])
             sage: print F.draw_points[0]
-            Point(100,100)
+            <Point(100,100)>
             sage: print len(F.draw_points)
             10
         """
@@ -3204,7 +3212,7 @@ def get_paths_from_implicit_plot(p):
         sage: type(paths[0][1])
         <class 'phystricks.BasicGeometricObjects.GraphOfAPoint'>
         sage: print paths[1][3]
-        Point(4.87405534614,-4.6644295302)
+        <Point(4.87405534614,-4.6644295302)>
     """
     l=[]
     for path in get_paths_from_plot(p):
@@ -3400,7 +3408,7 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
 
         EXAMPLES:
         sage: print InterpolationCurve([Point(0,0),Point(1,1)])
-        InterpolationCurve with points ['Point(0,0)', 'Point(1,1)']
+        <InterpolationCurve with points ['<Point(0,0)>', '<Point(1,1)>']>
         """
         return "<InterpolationCurve with points %s>"%(str([str(P) for P in self.points_list]))
 
@@ -3653,13 +3661,13 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             sage: f2=phyFunction(x*exp(2*x))
             sage: F=ParametricCurve(f1,f2)
             sage: print F.derivative()
-            The parametric curve given by
+            <The parametric curve given by
             x(t)=-2*sin(2*t)
-            y(t)=2*t*e^(2*t) + e^(2*t)
+            y(t)=2*t*e^(2*t) + e^(2*t)>
             sage: print F.derivative(3)
-            The parametric curve given by
+            <The parametric curve given by
             x(t)=8*sin(2*t)
-            y(t)=8*t*e^(2*t) + 12*e^(2*t)
+            y(t)=8*t*e^(2*t) + 12*e^(2*t)>
         """
         try :
             return self._derivative_dict[n]
@@ -3739,7 +3747,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             sage: print F.get_tangent_vector(0)
             <vector I=<Point(0,0)> F=<Point(1,0)>>
             sage: print F.get_tangent_vector(1)
-            <vector I=<Point(1,1)> F=<Point(1/5*sqrt(5)> + 1,2/5*sqrt(5) + 1)>
+            <vector I=<Point(1,1)> F=<Point(1/5*sqrt(5) + 1,2/5*sqrt(5) + 1)>>
         """
         initial = self.get_point(llam,advised)     
         return AffineVector( initial,Point(initial.x+self.derivative().f1(llam),initial.y+self.derivative().f2(llam)) ).normalize()
@@ -4054,9 +4062,9 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         sage: x=var('x')
         sage: curve=ParametricCurve(cos(x),sin(x)).graph(0,2*pi).reverse()
         sage: print curve
-        The parametric curve given by
+        <The parametric curve given by
         x(t)=cos(2*pi - t)
-        y(t)=sin(2*pi - t)
+        y(t)=sin(2*pi - t)>
         """
         x=var('x')
         a=self.llamI
