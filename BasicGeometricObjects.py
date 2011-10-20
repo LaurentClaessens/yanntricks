@@ -1290,6 +1290,13 @@ class GraphOfAPoint(GraphOfAnObject):
     def polar_coordinates(self):
         """
         Return the polar coordinates of the point as a tuple (r,angle) where angle is given in degree.
+
+        EXAMPLES::
+
+            sage: Point(1,1).polar_coordinates()
+            sage: Point(-1,1).polar_coordinates()
+            sage: Point(0,2).polar_coordinates()
+            sage: Point(-1,0).polar_coordinates()
         """
         r=self.norm()
         if self.x==0:
@@ -1305,9 +1312,9 @@ class GraphOfAPoint(GraphOfAnObject):
         return r,angle
     def angle(self):
         """
-        Return the angle of the segment from (0,0) and self
+        Return the angle of the segment from (0,0) and self.
 
-        Return the result in degree
+        Return the result in degree.
         """
         return self.polar_coordinates()[1]
     def coordinates(self,numerical=False):

@@ -681,6 +681,10 @@ class ConversionAngles(object):
         Simplify the angles modulo the maximum. 
 
         If what is given is a number, return a number. If what is given is a AngleMeasure, return a new AngleMeasure.
+
+        Keep the negative numbers to negative numbers. The return interval is
+        [-2 pi,2pi]
+        which could be open or closed following the `keep_max` boolean.
     
         INPUT:
 
@@ -715,6 +719,17 @@ class ConversionAngles(object):
             sage: simplify_degree(360,keep_max=True)
             360
 
+        Negative numbers are kept negative::
+
+            sage: simplify_degree(-10)
+            -10
+            sage: simplify_degree(-380)
+            -20
+            sage: simplify_degree(-360)
+            0
+            sage: simplify_degree(-360,keep_max=True)
+            -360
+
         """
         if numerical:
             number=True
@@ -724,18 +739,20 @@ class ConversionAngles(object):
         else :
             x=angle
             gotMeasure=False
-        if keep_max and x == self.max_value:
+        if keep_max and (x == self.max_value or x == -self.max_value):
             if gotMeasure and number==False:
                 return angle
             else :
                 if numerical:
-                    return numerical_approx(self.max_value)
+                    return numerical_approx(x)
                 else:
-                    return self.max_value
+                    return x
+
         while x >= self.max_value :
             x=x-self.max_value
-        while x < 0 :
+        while x <= -self.max_value :
             x=x+self.max_value
+
         if gotMeasure and number==False :
             return self.create_function(x)
         else :
@@ -743,6 +760,7 @@ class ConversionAngles(object):
                 return numerical_approx(x)
             else:
                 return x
+
     def conversion(self,theta,number=False,keep_max=False,converting=True,numerical=False):
         """
         Makes the conversion and simplify.

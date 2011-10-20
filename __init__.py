@@ -150,14 +150,16 @@ def Intersection(f,g):
     """
     When f and g are objects with an attribute equation, return the list of points of intersections.
 
+    The list of point is sorted by order of `x` coordinates.
+
     EXAMPLES::
 
         sage: fun=phyFunction(x**2-5*x+6)
         sage: droite=phyFunction(2)
         sage: pts = Intersection(fun,droite)
         sage: for P in pts:print P
-        <Point(4,2)>
         <Point(1,2)>
+        <Point(4,2)>
     """
     var('x,y')
     pts=[]
@@ -377,7 +379,7 @@ def MeasureLength(seg,dist=0.1):
 
         sage: m=MeasureLength(Segment( Point(1,1) ,Point(2,2) ),0.1)
         sage: print m.advised_mark_angle
-        AngleMeasure, degree=315.000000000000,radian=-1/4*pi
+        AngleMeasure, degree=-45.0000000000000,radian=-1/4*pi
 
     You are invited to use advised_mark_angle. If not the position of the mark
     could be unpredictable.
@@ -1007,7 +1009,7 @@ def Angle(A,O,B,r=None):
         sage: O=Point(0,0)
         sage: B=Point(1,0)
         sage: print Angle(A,O,B).measure()
-        AngleMeasure, degree=-45.0000000000000,radian=7/4*pi
+        AngleMeasure, degree=-45.0000000000000,radian=-1/4*pi
         sage: print Angle(B,O,A).measure()
         AngleMeasure, degree=45.0000000000000,radian=1/4*pi
 
