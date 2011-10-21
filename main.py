@@ -925,7 +925,7 @@ class pspicture(object):
             if Id not in self.id_values_dict.keys():
                 print "Warning: the auxiliary file %s does not contain the id «%s». Compile your LaTeX file."%(self.interWriteFile,Id)
                 if global_vars.perform_tests :
-                    raise ValueError
+                    raise ValueError, "I cannot tests a file if the auxiliary files are not yet produced."
                 if global_vars.create_formats["test"] :
                     raise ValueError, "I cannot create a test file when I'm unable to compute the bounding box."
                 return default_value
