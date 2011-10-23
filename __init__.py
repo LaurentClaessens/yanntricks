@@ -297,17 +297,35 @@ def phyFunction(fun,mx=None,Mx=None):
         sage: g=phyFunction(2*f,0,pi)
         sage: g(pi)
         -2
+
+        One can deal with probability distributions :
+        sage: C=RealDistribution('chisquared',10).distribution_function
+        sage: f=phyFunction(C)
+        sage: f(4)
+        0.0451117610789
     """
     # The first try is that the given expression is already a phyFunction.
     try:
         return fun.graph(mx,Mx)     
-    except AttributeError:
+    except AttributeError,TypeError:
         pass
+
+    # THIS BLOCK HAS TO BE REMOVED ###########
+    C=RealDistribution('chisquared',10).distribution_function
+    try:
+        f=symbolic_expression(C)
+    except :
+        raise
+    # END OF THE TO BE REMOVED BLOCK ###########
+
     # The second try is that `fun` is something that Sage knows.
-    #fun=SR(fun)         # This manage the case of constant functions. I think that symbolic_expression is sufficient (May, 1, 2011)
+    try:
+        sy=symbolic_expression(fun)
+    except TypeError:       # This deals with probability distributions for example.
+        return NonAnalyticFunction(fun,mx,Mx)
     x=var('x')
-    sy=symbolic_expression(fun).function(x)
-    return BasicGeometricObjects.GraphOfAphyFunction(sy,mx,Mx)
+    syf=sy.function(x)
+    return BasicGeometricObjects.GraphOfAphyFunction(syf,mx,Mx)
 
 def CustomSurface(*args):
     if len(args)==1:

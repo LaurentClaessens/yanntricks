@@ -2717,6 +2717,76 @@ class GraphOfAnAngle(GraphOfAnObject):
         l.append(circle.pstricks_code(pspict))
         return "\n".join(l)
 
+
+def general_funtion_get_point(fun,x,advised=True):
+        """
+        Return a point on the graph of the function with the given x, i.e. it return the point (x,f(x)).
+
+        Also set an attribute advised_mark_angle to the point. This angle is the normal exterior to the graph; 
+        visually this is usually the best place to put a mark. Typically you use this as
+        P=f.get_point(3)
+        P.mark(radius,P.advised_mark_angle,"$P$")
+
+        NOTE:
+        If you don't plan to put a mark on the point, you are invited to use advised=False
+        in order to speed up the computations.
+        """
+        P = Point(float(x),fun(x))
+        if advised :
+            try :
+                ca = fun.derivative()(x) 
+            except TypeError:       # Happens when Sage has no derivative of the function.
+                print "I'm not able to compute derivative of {0}. You should pass advised=False".format(fun)
+            else :
+                angle_n=degree(atan(ca)+pi/2)
+                if fun.derivative(2)(x) > 0:
+                    angle_n=angle_n+180
+                P.advised_mark_angle=angle_n
+        return P
+
+class NonAnalyticFunction(GraphOfAnObject):
+    """
+    Represent a function for which one has no analytic form.
+
+    As long as one can evaluate it at points, one can draw an interpolation curve.
+    """
+    def __init__(self,fun,mx,Mx):
+        GraphOfAnObject.__init__(self,fun)
+        self.mx=mx
+        self.Mx=Mx
+        self.fun=fun
+        self.plotpoints=100
+        from numpy import linspace
+        self.drawpoints=numpy.linspace(self.mx,self.Mx,self.plotpoints,endpoint=True)
+    @ lazy_attribute
+    def curve(self,drawpoints):
+        """
+        Return the interpolation curve corresponding to self.
+
+        Since it could be cpu-consuming, this is a lazy_attribute. For that reason it should not be
+        called by the end-user but only during the computation of the bounding box and the pstricks code.
+        """
+        points_list=[self.get_point(x) for x in self.draw_points]
+        return InterpolationCurve(points_list,context_object=self)
+    def get_point(self,x):
+        return general_funtion_get_point(self,x,advised=False)
+    def graph(self,mx,Mx):
+        return NonAnalyticFunction(self.fun,mx,Mx)
+    def get_minmax_data(self,mx,Mx):
+        """
+        return the xmin, xmax, ymin and ymax of the graph.
+        """
+        return MyMinMax(plot(self.fun,(mx,Mx)).get_minmax_data())
+    def math_bounding_box(self,pspict=None):
+        pass
+    def bounding_box(self,pspict=None):
+        return self.math_bounding_box(pspict)
+    def pstricks_code(self,pspict=None):
+        return self.curve(self.draw_points).pstricks_code(pspict)
+    def __call__(self,x):
+        return self.fun(x)
+
+
 class GraphOfAphyFunction(GraphOfAnObject):
     """
     INPUT:
@@ -2761,9 +2831,6 @@ class GraphOfAphyFunction(GraphOfAnObject):
         self.plotpoints = 100                   # We draw 100 points as default.
         self.parameters.color = "blue"              # Modification with respect to the attribute in GraphOfAnObject
 
-    def eval(self,xe):
-        raise AttributeError,"Use the syntax f(x) instead of f.eval(x)"
-        return numerical_approx(self.sageFast(xe))
     def parametric_curve(self):
         """
         return a parametric curve with the same graph as `self`.
@@ -2829,29 +2896,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
     #    """
     #    return phyFunction(self.sage.diff(v))
     def get_point(self,x,advised=True):        
-        """
-        Return a point on the graph of the function with the given x, i.e. it return the point (x,f(x)).
-
-        Also set an attribute advised_mark_angle to the point. This angle is the normal exterior to the graph; 
-        visually this is usually the best place to put a mark. Typically you use this as
-        P=f.get_point(3)
-        P.mark(radius,P.advised_mark_angle,"$P$")
-
-        NOTE:
-        If you don't plan to put a mark on the point, you are invited to use advised=False
-        in order to speed up the computations.
-        """
-        P = Point(float(x),self(x))
-        if advised :
-            try :
-                ca = self.derivative()(x) 
-                angle_n=degree(atan(ca)+pi/2)
-                if self.derivative(2)(x) > 0:
-                    angle_n=angle_n+180
-                P.advised_mark_angle=angle_n
-            except TypeError :      # Happens when Sage has no derivative of the function.
-                pass
-        return P
+        return general_funtion_get_point(self,x,advised)
     def get_normal_vector(self,xx):
         """ 
         return a normalized normal vector to the graph of the function at xx
@@ -3026,7 +3071,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
             if self.sage==x:
                 return MyMinMax(plot(x,mx,Mx).get_minmax_data())
             else :
-                raise ValueError,"This is a strange case. Maybe to be reported to ticker 10246"
+                raise ValueError,"This is a strange case. Maybe to be reported to ticket 10246"
     def xmax(self,deb,fin):
         return self.get_minmax_data(deb,fin)['xmax']
     def xmin(self,deb,fin):
