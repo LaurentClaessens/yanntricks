@@ -54,7 +54,9 @@ COMMAND LINE ARGUMENTS:
                     See :class:`TestPspictLaTeXCode`
 """
 
-#from __future__ import division
+from __future__ import division
+from __future__ import unicode_literals
+
 from sage.all import *
 import codecs
 import math, sys, os
@@ -307,22 +309,14 @@ def phyFunction(fun,mx=None,Mx=None):
     # The first try is that the given expression is already a phyFunction.
     try:
         return fun.graph(mx,Mx)     
-    except AttributeError,TypeError:
+    except (AttributeError,TypeError):
         pass
-
-    # THIS BLOCK HAS TO BE REMOVED ###########
-    C=RealDistribution('chisquared',10).distribution_function
-    try:
-        f=symbolic_expression(C)
-    except :
-        raise
-    # END OF THE TO BE REMOVED BLOCK ###########
 
     # The second try is that `fun` is something that Sage knows.
     try:
         sy=symbolic_expression(fun)
     except TypeError:       # This deals with probability distributions for example.
-        return NonAnalyticFunction(fun,mx,Mx)
+        return BasicGeometricObjects.NonAnalyticFunction(fun,mx,Mx)
     x=var('x')
     syf=sy.function(x)
     return BasicGeometricObjects.GraphOfAphyFunction(syf,mx,Mx)

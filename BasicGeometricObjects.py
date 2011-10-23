@@ -28,6 +28,9 @@ The end-user should not use the functions whose name begin with ``GraphOf`` or `
 Rather he has to use the constructors like :func:`Point`, :func:`AffineVector` and so on.
 """
 
+from __future__ import division
+from __future__ import unicode_literals
+
 import math
 from sage.all import *
 
@@ -562,8 +565,8 @@ class GraphOfACircle(GraphOfAnObject):
         if Dtheta==0:
             raise ValueError,"Dtheta is zero"
         pts=[]
-        import numpy
-        theta=numpy.arange(mx,Mx,step=Dtheta)
+        from numpy import arange
+        theta=arange(mx,Mx,step=Dtheta)
         return [self.get_point(t,advised) for t in theta]
 
     def get_tangent_vector(self,theta):
@@ -2471,15 +2474,15 @@ class GeometricVectorField(object):
         if draw_points is None:
             draw_points=[]
         if xvalues is not None:
-            import numpy
             mx=xvalues[1]
             Mx=xvalues[2]
             nx=xvalues[3]
             my=yvalues[1]
             My=yvalues[2]
             ny=yvalues[3]
-            pos_x=numpy.linspace(mx,Mx,nx)
-            pos_y=numpy.linspace(my,My,ny)
+            from numpy import linspace
+            pos_x=linspace(mx,Mx,nx)
+            pos_y=linspace(my,My,ny)
             for xx in pos_x:
                 for yy in pos_y:
                     draw_points.append(Point(xx,yy))
@@ -2750,15 +2753,18 @@ class NonAnalyticFunction(GraphOfAnObject):
 
     As long as one can evaluate it at points, one can draw an interpolation curve.
     """
-    def __init__(self,fun,mx,Mx):
+    def __init__(self,fun,mx=None,Mx=None):
         GraphOfAnObject.__init__(self,fun)
         self.mx=mx
         self.Mx=Mx
         self.fun=fun
         self.plotpoints=100
+        self.old_mx=None    # Will be used in order to simulate a lazy_attribute in self.get_minmax_data
+        self.old_Mx=None
+        self.minmax_result=None
         from numpy import linspace
-        self.drawpoints=numpy.linspace(self.mx,self.Mx,self.plotpoints,endpoint=True)
-    @ lazy_attribute
+        if self.mx is not None and self.Mx is not None:
+            self.drawpoints=linspace(self.mx,self.Mx,self.plotpoints,endpoint=True)
     def curve(self,drawpoints):
         """
         Return the interpolation curve corresponding to self.
@@ -2766,7 +2772,7 @@ class NonAnalyticFunction(GraphOfAnObject):
         Since it could be cpu-consuming, this is a lazy_attribute. For that reason it should not be
         called by the end-user but only during the computation of the bounding box and the pstricks code.
         """
-        points_list=[self.get_point(x) for x in self.draw_points]
+        points_list=[self.get_point(x) for x in self.drawpoints]
         return InterpolationCurve(points_list,context_object=self)
     def get_point(self,x):
         return general_funtion_get_point(self,x,advised=False)
@@ -2776,13 +2782,19 @@ class NonAnalyticFunction(GraphOfAnObject):
         """
         return the xmin, xmax, ymin and ymax of the graph.
         """
-        return MyMinMax(plot(self.fun,(mx,Mx)).get_minmax_data())
+        if self.old_mx!=mx or self.old_Mx!=Mx or not self.minmax_result:
+            self.minmax_result = MyMinMax(plot(self.fun,(mx,Mx)).get_minmax_data())
+        return self.minmax_result
     def math_bounding_box(self,pspict=None):
-        pass
+        xmin=self.get_minmax_data(self.mx,self.Mx)["xmin"]
+        xmax=self.get_minmax_data(self.mx,self.Mx)["xmax"]
+        ymin=self.get_minmax_data(self.mx,self.Mx)["ymin"]
+        ymax=self.get_minmax_data(self.mx,self.Mx)["ymax"]
+        return BoundingBox(mx=xmin,Mx=xmax,my=ymin,My=ymax)
     def bounding_box(self,pspict=None):
         return self.math_bounding_box(pspict)
     def pstricks_code(self,pspict=None):
-        return self.curve(self.draw_points).pstricks_code(pspict)
+        return self.curve(self.drawpoints).pstricks_code(pspict)
     def __call__(self,x):
         return self.fun(x)
 
@@ -4219,10 +4231,12 @@ class BoundingBox(object):
     def add_object(self,obj,pspict=None,fun="bounding_box"):
         try :
             bb=obj.__getattribute__(fun)(pspict=pspict)
-        except AttributeError :
+        except AttributeError,message :
             if obj:     # If obj is None, we are not surprised.
-                print "Object {0} seems not to have an attribute {1}".format(obj,fun)
-                raise
+                print "The attribute {1} of the object {0} seems to have problems".format(obj,fun)
+                print "The message was :"
+                print message
+                raise main.NoMathBoundingBox(obj,fun)
         else :
             bb.check_too_large()
             self.AddBB(bb)
@@ -4312,11 +4326,13 @@ class BoundingBox(object):
         except (ValueError,AttributeError),msg :
             print "Something got wrong with %s"%str(graph)
             print msg
+            print "If you want to debug me, you should add a raise here."
+            raise
     def add_math_graph(self,graphe,pspict=None):
         try :
             self.addBB(graphe.math_bounding_box(pspict))
-        except AttributeError :
-            print "%s seems not to have a method math_bounding_box. I add its bounding_box instead"%str(graphe)
+        except NoMathBoundingBox,message :
+            print message
             self.addBB(graphe.bounding_box(pspict))
     def AddCircleBB(self,Cer,xunit,yunit):
         """

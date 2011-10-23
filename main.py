@@ -18,6 +18,10 @@
 # copyright (c) Laurent Claessens, 2009-2011
 # email: moky.math@gmail.com
 
+
+from __future__ import division
+from __future__ import unicode_literals
+
 from sage.all import *
 import codecs, sys
 
@@ -49,6 +53,10 @@ class PhystricksTestError(Exception):
         #a.append("---")
         a.append(self.justification)
         return "\n".join(a)
+
+class NoMathBoundingBox(Exception):
+    def __init__(self,obj,fun):
+        self.message = "Object {0} from class {1} has no attribute {2}".format(obj,type(obj),fun)
 
 class FigureGenerationSuite(object):
     """
@@ -384,7 +392,11 @@ class PspictureToOtherOutputs(object):
         self.input_code_pdf = "\includegraphics{%s}"%(self.file_pdf.nom)
         self.input_code_png = "\includegraphics{%s}"%(self.file_png.nom)
     def latex_code_for_eps(self):
-        code = ["\documentclass{article}\n","\usepackage{pstricks,pst-eucl,pstricks-add}\n","\usepackage{pst-plot}\n","\usepackage{pst-eps}\n","\pagestyle{empty}\n\usepackage{calc}\n\usepackage{catchfile}"]
+        text = r"""\documentclass{article}
+        \\usepackage{pstricks,pst-eucl,pstricks-add,pst-plot,pst-eps,calc,catchfile}
+        \pagestyle{empty}
+        """     # For some reasons with unicode_literals, not even the raw string can contain \u
+        code=text.slip("\n")
         # Allows to add some lines, like packages or macro definitions required. This is useful when one adds formulas in the picture
         # that need packages of personal commands.
         code.append(self.pspict.specific_needs)
@@ -544,7 +556,7 @@ class SeparatorList(object):
         """
         One can call a separator by its title or its number.
         """
-        if isinstance(i,str):
+        if isinstance(i,basestring):    # Test unicode and str in the same time
             for separator in self.separator_list :
                 if separator.title == i :
                     return separator
@@ -1123,10 +1135,7 @@ class pspicture(object):
         for graphe in [x.graph for x in self.record_draw_graph if x.take_math_BB]:
             try :
                 bb.add_math_object(graphe,pspict=self)
-            except AttributeError,message:
-                print "Warning: it seems to me that object <%s> (type :%s) has no method math_boundig_box"%(str(graphe),type(graphe))
-                print "The error message was:"
-                print message
+            except NoMathBoundingBox,message:
                 bb.append(graphe,self)
         # These two lines are only useful if the size of the single axes were modified by hand
         # because the method self.math_bounding_box is called by self.DrawDefaultAxes that
