@@ -557,6 +557,8 @@ class AngleMeasure(object):
                 return 0
     def __str__(self):
         return "AngleMeasure, degree=%s,radian=%s"%(str(numerical_approx(self.degree)),str(self.radian))
+    def __repr__(self):
+        return self.__str__()
 
 class PolarCoordinates(object):
     def __init__(self,r,value_degree=None,value_radian=None):

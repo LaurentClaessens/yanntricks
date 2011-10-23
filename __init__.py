@@ -168,6 +168,7 @@ def Intersection(f,g):
         a=s[0].rhs()
         b=s[1].rhs()
         pts.append(Point(a,b))
+    pts.sort(lambda P,Q:cmp(P.x,Q.x))
     return pts
 
 def EnsurephyFunction(f):

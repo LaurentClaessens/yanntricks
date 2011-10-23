@@ -1294,9 +1294,13 @@ class GraphOfAPoint(GraphOfAnObject):
         EXAMPLES::
 
             sage: Point(1,1).polar_coordinates()
+            (sqrt(2), AngleMeasure, degree=45.0000000000000,radian=1/4*pi)
             sage: Point(-1,1).polar_coordinates()
+            (sqrt(2), AngleMeasure, degree=135.000000000000,radian=3/4*pi)
             sage: Point(0,2).polar_coordinates()
+            (2, AngleMeasure, degree=90.0000000000000,radian=1/2*pi)
             sage: Point(-1,0).polar_coordinates()
+            (1, AngleMeasure, degree=180.000000000000,radian=pi)
         """
         r=self.norm()
         if self.x==0:
