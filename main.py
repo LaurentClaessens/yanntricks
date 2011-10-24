@@ -392,11 +392,11 @@ class PspictureToOtherOutputs(object):
         self.input_code_pdf = "\includegraphics{%s}"%(self.file_pdf.nom)
         self.input_code_png = "\includegraphics{%s}"%(self.file_png.nom)
     def latex_code_for_eps(self):
-        text = r"""\documentclass{article}
+        text = """\documentclass{article}
         \\usepackage{pstricks,pst-eucl,pstricks-add,pst-plot,pst-eps,calc,catchfile}
         \pagestyle{empty}
         """     # For some reasons with unicode_literals, not even the raw string can contain \u
-        code=text.slip("\n")
+        code=text.split("\n")
         # Allows to add some lines, like packages or macro definitions required. This is useful when one adds formulas in the picture
         # that need packages of personal commands.
         code.append(self.pspict.specific_needs)
@@ -1097,7 +1097,9 @@ class pspicture(object):
 
         """
         BB = self.math_bounding_box()
-        BB.add_object(self.axes.C,self)
+        BB.add_object(self.axes.C,self,fun="math_bounding_box")     # If you add the no-math bounding box, it adds 0.1
+                                                                    # and it becomes ugly when dilating
+                                                                    # Notice that we pass here too early to use self.xunit,self.yunit
         self.axes.BB.add_object(BB)
         #epsilonX=float(self.axes.Dx)/2
         #epsilonY=float(self.axes.Dy)/2

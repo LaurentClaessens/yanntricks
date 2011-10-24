@@ -266,7 +266,7 @@ def PolarCurve(fr,ftheta=None):
     x(t)=fr(t)cos( ftheta(t) )
     y(t)=fr(t)sin( ftheta(t) )
 
-    EXAMPLES:
+    EXAMPLES::
     
     .. literalinclude:: phystricksCardioid.py
     .. image:: Picture_FIGLabelFigCardioidPICTCardioid-for_eps.png
@@ -305,6 +305,17 @@ def phyFunction(fun,mx=None,Mx=None):
         sage: f=phyFunction(C)
         sage: f(4)
         0.0451117610789
+
+    EXAMPLES with function for which one don't know analytic form
+
+    .. literalinclude:: phystricksChiSquared.py
+    .. image:: Picture_FIGLabelFigChiSquaredPICTChiSquared-for_eps.png
+
+    OTHER EXAMPLE
+
+    .. literalinclude:: phystricksNonAnalyticOne.py
+    .. image:: Picture_FIGLabelFigNonAnalyticOnePICTNonAnalyticOne-for_eps.png
+
     """
     # The first try is that the given expression is already a phyFunction.
     try:
@@ -318,8 +329,7 @@ def phyFunction(fun,mx=None,Mx=None):
     except TypeError:       # This deals with probability distributions for example.
         return BasicGeometricObjects.NonAnalyticFunction(fun,mx,Mx)
     x=var('x')
-    syf=sy.function(x)
-    return BasicGeometricObjects.GraphOfAphyFunction(syf,mx,Mx)
+    return BasicGeometricObjects.GraphOfAphyFunction(sy.function(x),mx,Mx)
 
 def CustomSurface(*args):
     if len(args)==1:

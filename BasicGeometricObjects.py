@@ -1346,7 +1346,7 @@ class GraphOfAPoint(GraphOfAnObject):
             x=0
         if abs(y) < 0.0001 :
             y=0
-        return "("+str(x)+","+str(y)+")"
+        return str("("+str(x)+","+str(y)+")")
     def coordinatesBr(self):
         return self.coordinates.replace("(","{").replace(")","}")
     def Affiche(self):
@@ -2516,6 +2516,12 @@ class GeometricVectorField(object):
             P=a
         vx=self.fx(x=P.x,y=P.y)
         vy=self.fy(x=P.x,y=P.y)
+        print "2519 ---"
+        print vx,type(vx)
+        print P.x,type(P.x)
+        rep=P.x+vx
+        print rep,type(rep)
+        print "2519 ---"
         return AffineVector(P,Point(P.x+vx,P.y+vy))
 
 class GraphOfAVectorField(GraphOfAnObject,GeometricVectorField):
@@ -2572,12 +2578,14 @@ class GraphOfAVectorField(GraphOfAnObject,GeometricVectorField):
 
         and ::
 
+            sage: x,y=var('x,y')
             sage: [ (x,y) for x in F.pos_x for y in F.pos_y ]
             [(1.0, -2.0), (1.0, 0.0), (1.0, 2.0), (1.5, -2.0), (1.5, 0.0), (1.5, 2.0), (2.0, -2.0), (2.0, 0.0), (2.0, 2.0)]
 
 
         But in the following, the list is not the list of points::
 
+            sage: x,y=var('x,y')
             sage: G=VectorField(x,y).graph(draw_points=[Point(1,2),Point(3,4)])
             sage: [ (x,y) for x in G.pos_x for y in G.pos_y ]
             [(1, 2), (1, 4), (3, 2), (3, 4)]
@@ -2765,6 +2773,7 @@ class NonAnalyticFunction(GraphOfAnObject):
         from numpy import linspace
         if self.mx is not None and self.Mx is not None:
             self.drawpoints=linspace(self.mx,self.Mx,self.plotpoints,endpoint=True)
+        self.parameters.color="blue"
     def curve(self,drawpoints):
         """
         Return the interpolation curve corresponding to self.
@@ -2816,7 +2825,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
     def __init__(self,fun,mx,Mx):
         GraphOfAnObject.__init__(self,fun)
         self.sage=fun
-        var('x,y')
+        x,y=var('x,y')
         self.sage=fun
         try :
             self.sageFast = self.sage._fast_float_(x)
