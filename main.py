@@ -27,7 +27,9 @@ import codecs, sys
 
 import BasicGeometricObjects
 import SmallComputations as SmallComputations
-#import phystricks.SmallComputations as SmallComputations
+
+from phystricks import WrapperStr
+var=WrapperStr(var)
 
 from phystricks import *
 
@@ -96,12 +98,7 @@ class FigureGenerationSuite(object):
         print "********************************************"
         print ""
         for i in range(self.first,len(self.test_list)):
-            print "--------------------------- %s : figure %s/%s -------------------------------------"%(self.title,str(i),str(len(self.test_list)))
-            if len(self.failed_list)!=0:
-                print "---------------------------- Already failed : %s"%(str(len(self.failed_list)))
-                for a in self.failed_list:
-                    print str(a[0]),
-                print ""
+            print "--------------------------- %s : figure %s/%s (failed: %s) -------------------------------------"%(self.title,str(i),str(len(self.test_list)),str(len(self.failed_list)))
             print " ============= %s ============="%str(self.test_list[i])
             try:
                 self.test_list[i]()
@@ -109,6 +106,34 @@ class FigureGenerationSuite(object):
                 print "The test of pspicture %s failed. %s"%(self.test_list[i],e.justification)
                 print e
                 self.failed_list.append((self.test_list[i],e.pspict))
+
+    def latex_portion(self):
+        from latex_to_be import pseudo_caption
+        portion=[]
+        num=0
+        for a in self.failed_list:
+            try:
+                base=a[1].figure_mother.LaTeX_lines()
+                text=base.replace(pseudo_caption,str(a[0]))
+                portion.append()
+            except AttributeError:
+                print "I cannot found the LaTeX lines corresponding to ",a[1]
+            else :
+                num=num+1
+                if num==5:
+                    portion.append("\clearpage\n")
+                    num=0
+        return "\n".join(portion)
+
+    def create_to_be_checked_latex_file(self):
+        from latex_to_be import to_be_checked_general_latex
+        general_text=to_be_checked_general_latex
+        text=general_text.replace("XXXXXX",self.latex_portion())
+        filename="to_be_checked.tex"
+        check_file=open(filename,"w")
+        print "The file {0} is created for you.".format(filename)
+        check_file.write(text)
+        check_file.close()
 
     def summary(self):
         """
@@ -120,16 +145,16 @@ class FigureGenerationSuite(object):
             print "The following test failed :"
             for a in self.failed_list:
                 print a,
+
             print "\nThe lines for inclusion in your LaTeX file are :\n"
-            for a in self.failed_list:
-                try:
-                    print a[1].figure_mother.LaTeX_lines()
-                    print "\n"
-                except AttributeError:
-                    print "I cannot found the LaTeX lines corresponding to ",a[1]
+            print self.latex_portion()
+
             print "The list of function to test deeper :"
             first=",".join([a[0].__name__ for a in self.failed_list])
             print "figures_list=[",first.replace("'"," "),"]"
+
+            self.create_to_be_checked_latex_file()
+
             raise PhystricksTestError
         else:
             print "All tests passes !"
@@ -281,8 +306,9 @@ class figure(object):
         return the lines to be included in your LaTeX file.
         """
         a=[]
+        from latex_to_be import pseudo_caption
         a.append("The result is on figure \\ref{"+self.name+"}.")
-        a.append("\\newcommand{"+self.caption+"}{<+Type your caption here+>}")
+        a.append("\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
         a.append("\\input{%s}"%(self.nFich))
         
         return "\n".join(a)

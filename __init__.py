@@ -58,6 +58,30 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from sage.all import *
+
+"""
+TEST :
+
+    The following piece of code testes my WrapperStr
+
+    sage: x=var('x')
+    sage: f(x)=x**2
+    sage: f(3)
+    9
+    sage: f(x=3)
+    9
+"""
+
+class WrapperStr(object):
+    def __init__(self,fun):
+        self.fun=fun
+    def __call__(self,arg):
+        self.fun(arg)
+        return self.fun(str(arg))
+
+var=WrapperStr(var)
+
+
 import codecs
 import math, sys, os
 
@@ -163,7 +187,7 @@ def Intersection(f,g):
         <Point(1,2)>
         <Point(4,2)>
     """
-    var('x,y')
+    x,y=var('x,y')
     pts=[]
     soluce=solve([f.equation,g.equation],[x,y])
     for s in soluce:
@@ -402,7 +426,7 @@ def MeasureLength(seg,dist=0.1):
 
         sage: m=MeasureLength(Segment( Point(1,1) ,Point(2,2) ),0.1)
         sage: print m.advised_mark_angle
-        AngleMeasure, degree=-45.0000000000000,radian=-1/4*pi
+        AngleMeasure, degree=315.000000000000,radian=7/4*pi
 
     You are invited to use advised_mark_angle. If not the position of the mark
     could be unpredictable.
@@ -466,8 +490,7 @@ def ImplicitCurve(f,xrange,yrange,plot_points=100):
     EXAMPLES:
     We know that the curve x^2+y^2=2 is a circle of radius sqrt(2). Thus even if you ask a range of size 5, 
     you will only get the bounding box of size sqrt(2)
-    sage: var('x,y')
-    (x, y)
+    sage: x,y=var('x,y')
     sage: f(x,y)=x**2+y**2
     sage: F=ImplicitCurve(f==2,(x,-5,5),(y,-5,5))
     sage: print F.bounding_box()
@@ -1307,7 +1330,7 @@ def unify_point_name(s):
         sage: P=Point(-1,1)
         sage: P.put_mark(0.3,90,"$A$")
         sage: unify_point_name(P.mark.pstricks_code())
-        '\\pstGeonode[](-1.00000000000000,1.30000000000000){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$A$}}'
+        u'\\pstGeonode[](-1.00000000000000,1.30000000000000){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$A$}}'
     """
     import re
 

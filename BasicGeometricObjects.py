@@ -35,6 +35,7 @@ import math
 from sage.all import *
 
 from phystricks import *
+var=WrapperStr(var)
 
 def SubstitutionMathPsTricks(fx):
     listeSubst = []
@@ -72,9 +73,9 @@ def PointsNameList():
     
         sage: x=PointsNameList()
         sage: x.next()
-        'aaaa'
+        u'aaaa'
         sage: x.next()
-        'aaab'
+        u'aaab'
     """
     # The fact that this function return 4 character strings is hard-coded here 
     #   and that 4 is hard-coded in the function unify_point_name
@@ -500,7 +501,7 @@ class GraphOfACircle(GraphOfAnObject):
             sage: circle.equation()
             (y + 1)^2 + (x + 1)^2 - 2 == 0
         """
-        var('x,y')
+        x,y=var('x,y')
         return (x-self.center.x)**2+(y-self.center.y)**2-self.radius**2==0
     
     def phyFunction(self):
@@ -519,7 +520,7 @@ class GraphOfACircle(GraphOfAnObject):
         The parameter of the curve is the angle in radian.
         """
         if self._parametric_curve is None :
-            var('x')
+            x=var('x')
             f1 = phyFunction(self.center.x+self.radius*cos(x))
             f2 = phyFunction(self.center.y+self.radius*sin(x))
             self._parametric_curve = ParametricCurve(f1,f2)
@@ -897,14 +898,14 @@ class FillParameters(object):
             sage: fill.color="blue"
             sage: fill.add_to_options(opt)
             sage: opt.code()
-            'fillcolor=blue,fillstyle=solid'
+            u'fillcolor=blue,fillstyle=solid'
 
         ::
 
             sage: fill.style="MyStyle"
             sage: fill.add_to_options(opt)
             sage: opt.code()
-            'fillcolor=blue,fillstyle=MyStyle'
+            u'fillcolor=blue,fillstyle=MyStyle'
 
         """
         if self.color :
@@ -1410,11 +1411,11 @@ class GraphOfAPoint(GraphOfAnObject):
 
         By default the code of the mark does not appears in the code of the point:
         sage: unify_point_name(P.pstricks_code())
-        '\\pstGeonode[PointSymbol=*,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaaa}'
+        u'\\pstGeonode[PointSymbol=*,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaaa}'
 
         If we specify with_mark=True, then we see the code of the mark:
         sage: unify_point_name(P.pstricks_code(with_mark=True))
-        '\\pstGeonode[](1.21213203435596,1.21213203435596){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$P$}}\n\\pstGeonode[PointSymbol=*,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaab}'
+        u'\\pstGeonode[](1.21213203435596,1.21213203435596){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$P$}}\n\\pstGeonode[PointSymbol=*,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaab}'
         """
         l=[]
         if self.marque and with_mark:
@@ -1506,6 +1507,7 @@ class GeometricImplicitCurve(object):
 
     EXAMPLES::
 
+        sage: x,y=var('x,y')
         sage: f(x,y)=x**2+1/x
         sage: F=GeometricImplicitCurve(f(x,y)==2)
         sage: G=GeometricImplicitCurve(x+y==2)   
@@ -1544,6 +1546,7 @@ class GeometricImplicitCurve(object):
 
         EXAMPLE::
 
+            sage: x,y=var('x,y')
             sage: f(x,y)=x**2+1/x
             sage: print GeometricImplicitCurve(f(x,y)==2)
             <Implicit curve of equation x^2 + 1/x - 2 == 0>
@@ -1575,8 +1578,7 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
     
     EXAMPLES::
 
-        sage: var('x,y')
-        (x, y)
+        sage: x,y=var('x,y')
         sage: implicit_curve=GeometricImplicitCurve(x**2+x==3)
         sage: F=GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2)).pstricks_code()
 
@@ -1605,8 +1607,7 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
         between two call will not change the result.
 
         EXAMPLES
-        sage: var('x,y')
-        (x, y)
+        sage: x,y=var('x,y')
         sage: F=ImplicitCurve(x**2+y**2==sqrt(2),(x,-5,5),(y,-4,4),plot_points=300)
         sage: F.get_minmax_data()
         {'xmin': -1.1890000000000001, 'ymin': -1.1879999999999999, 'ymax': 1.1879999999999999, 'xmax': 1.1890000000000001}
@@ -1625,7 +1626,7 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
         ymin=min(yy)
         ymax=max(yy)
         if dict:
-            return MyMinMax({'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax},decimals=decimals)
+            return MyMinMax({str('xmin'):xmin, str('xmax'):xmax,str('ymin'):ymin, str('ymax'):ymax},decimals=decimals)
         else:
             return around(xmin,decimals),around(xmax,decimals),around(ymin,decimals),around(ymas,decimals)
     def xmin(self):
@@ -1649,8 +1650,7 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
         has to be half the sqrt of the radius (and not the 5 given in yrange).
 
         EXAMPLES:    
-        sage: var('x,y')
-        (x, y)
+        sage: x,y=var('x,y')
         sage: f=x**2+2*y**2
         sage: G=ImplicitCurve(f==sqrt(2),(x,-5,5),(y,-5,5),plot_points=200)
         sage: print G.bounding_box()
@@ -1766,7 +1766,7 @@ class GraphOfASegment(GraphOfAnObject):
             self.coefs = [0,1,-self.I.y]
         if not (self.vertical or self.horizontal) :
             self.coefs = [1,-1/self.slope,self.independent/self.slope]
-        var('x,y')
+        x,y=var('x,y')
         return self.coefs[0]*x+self.coefs[1]*y+self.coefs[2] == 0
  
     @lazy_attribute
@@ -1790,12 +1790,12 @@ class GraphOfASegment(GraphOfAnObject):
         if self.horizontal:
             # The trick to define a constant function is explained here:
             # http://groups.google.fr/group/sage-support/browse_thread/thread/e5e8775dd79459e8?hl=fr?hl=fr
-            var('x')
+            x=var('x')
             fi = SR(A.y).function(x)
             return phyFunction(fi)
         if not (self.vertical or self.horizontal) :
             parms = [self.slope,(A.y*B.x-A.x*B.y)/(A.x-B.x)]
-            var('x')
+            x=var('x')
             return phyFunction( self.slope*x+self.independent )
         
     def parametric_curve(self):
@@ -1894,7 +1894,8 @@ class GraphOfASegment(GraphOfAnObject):
         """
         return the angle of the segment.
 
-        This is the angle between the segment and the horizontal axe.
+        This is the angle between the segment and the horizontal axe. 
+        The returned angle is positive.
 
         EXAMPLES:
         sage: S=Segment(Point(1,1),Point(2,2))
@@ -1905,11 +1906,15 @@ class GraphOfASegment(GraphOfAnObject):
         sage: S.angle().radian
         1/4*pi
 
+        sage: S=Segment(Point(1,1),Point(2,0))
+        sage: S.angle().degree
+        315
+
         sage: v=AffineVector(Point(2,3),Point(2-4/sqrt(3),-1))
         sage: v.angle().radian.simplify_trig()
         4/3*pi
         """
-        return self.polaires().measure
+        return self.polaires().measure.positive()
     def origin(self,P):
         """
         return a vector (in affine space) whose origin is P.
@@ -2167,7 +2172,7 @@ class GraphOfASegment(GraphOfAnObject):
             L=self.length()
             if L==0:
                 return self.copy()
-            v = l*self/L
+            v = (l*self).__div__(L)       # Simply write l*self/L does not work.
             v.arrow_type="vector"
         return self.return_deformations(v)
     def graph(self):
@@ -2516,12 +2521,6 @@ class GeometricVectorField(object):
             P=a
         vx=self.fx(x=P.x,y=P.y)
         vy=self.fy(x=P.x,y=P.y)
-        print "2519 ---"
-        print vx,type(vx)
-        print P.x,type(P.x)
-        rep=P.x+vx
-        print rep,type(rep)
-        print "2519 ---"
         return AffineVector(P,Point(P.x+vx,P.y+vy))
 
 class GraphOfAVectorField(GraphOfAnObject,GeometricVectorField):
@@ -2705,8 +2704,6 @@ class GraphOfAnAngle(GraphOfAnObject):
         return AngleMeasure(value_degree=self.angleF.degree-self.angleI.degree)
     def graph(self):
         return GraphOfAnAngle(self)
-
-
     def set_mark_angle(self,theta):
         """
         theta is degree or AngleMeasure
@@ -2723,8 +2720,6 @@ class GraphOfAnAngle(GraphOfAnObject):
         circle=self.circle()
         circle.parameters=self.parameters
         l=[]
-        #if self.marque:
-        #    l.append(self.mark.pstricks_code(pspict))
         l.append(circle.pstricks_code(pspict))
         return "\n".join(l)
 
@@ -2862,7 +2857,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
     def inverse(self,y):
         """ returns a list of values x such that f(x)=y """
         listeInverse = []
-        var('x')
+        x=var('x')
         eq = self.sage(x) == y
         return CalculSage().solve_one_var([eq],x)
     def PointsNiveau(self,y):
@@ -2890,6 +2885,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
             sage: print [g.derivative(i) for i in range(0,5)]
             [x |--> cos(x), x |--> -sin(x), x |--> -cos(x), x |--> sin(x), x |--> cos(x)]
         """
+        x=var('x')
         if n==0 :
             try :
                 return self.f
@@ -2931,14 +2927,14 @@ class GraphOfAphyFunction(GraphOfAnObject):
         a vector
 
         EXAMPLES:
-        sage: var('x')
-        x
+        sage: x=var('x')
         sage: f=phyFunction(x**2)
         sage: print f.get_normal_vector(0)
         <vector I=<Point(0,0)> F=<Point(0,-1)>>
         """
         #ca = self.derivative()(x) 
         #return Point(-ca,1).normalize().origin(self.get_point(x))       
+        x=var('x')
         F=ParametricCurve(x,self)
         return F.get_normal_vector(xx)
     def get_tangent_vector(self,x,advised=False,numerical=False):
@@ -2979,7 +2975,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
             sage: g.tangent_phyFunction(pi/2)(1)
             1/2*pi - 1
         """
-        var('x')
+        x=var('x')
         ca=self.derivative()(x0)
         h0=self.get_point(x0).y
         return phyFunction(h0+ca*(x-x0))
@@ -3008,7 +3004,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         Even if it is not clear from these expressions, these are almos the points (-1,0),(0,1), and (1,2).
 
         """
-        var('x')
+        x=var('x')
         f1 = phyFunction(x)
         try :
             f2 = self.f     # Here, self can be of type «GraphOfAphyFunction»
@@ -3038,7 +3034,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
     # La méthode phyFunction.extrema_analytique() ajoute les solutions de f'(x)=0 à self.listeExtrema
     def extrema_analytique(self):
         print "Analytique"
-        var('x')
+        x=var('x')
         a = []
         listeSymbolicEquation = solve( [self.sage.diff(x)==0],[x] )
         for sol in listeSymbolicEquation :
@@ -3161,7 +3157,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
 
             sage: f=phyFunction(x*sin(1/x)).graph(-5,5)
             sage: f.pstricks_code()      
-            '\\psplot[linestyle=solid,plotpoints=100,linecolor=blue]{-5.00000000000000}{5.00000000000000}{x*sin(1/x)}'
+            u'\\psplot[linestyle=solid,plotpoints=100,linecolor=blue]{-5.00000000000000}{5.00000000000000}{x*sin(1/x)}'
         """
         a = []
         if self.marque :
@@ -3230,8 +3226,7 @@ def get_paths_from_plot(p):
     - ``p`` - a plot object
 
     EXAMPLES:
-    sage: var('x,y')
-    (x, y)
+    sage: x,y=var('x,y')
     sage: F=implicit_plot(x**2+y**2==2,(x,-5,5),(y,-5,5))
     sage: g=get_paths_from_plot(F)
     sage: print type(g[0])
@@ -3699,7 +3694,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
     def pstricks(self,pspict=None):
         # The difficult point with pstrics is that the syntax is "f1(t) | f2(t)" with the variable t.
         #   In order to produce that, we use the Sage's function repr and the syntax f(x=t)
-        var('t')
+        t=var('t')
         return "%s | %s "%(SubstitutionMathPsTricks(repr(self.f1.sage(x=t)).replace("pi","3.1415")),  SubstitutionMathPsTricks(repr(self.f2.sage(x=t)).replace("pi","3.1415")) )
 
     @lazy_attribute
@@ -3732,8 +3727,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 
         EXAMPLES::
         
-            sage: var('x')
-            x
+            sage: x=var('x')
             sage: f1=phyFunction(cos(2*x))
             sage: f2=phyFunction(x*exp(2*x))
             sage: F=ParametricCurve(f1,f2)
@@ -4119,7 +4113,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
     def __call__(self,llam,approx=False):
         return self.get_point(llam,approx)
     def __str__(self):
-        var('t')
+        t=var('t')
         a=[]
         a.append("<The parametric curve given by")
         a.append("x(t)=%s"%repr(self.f1.sage(x=t)))

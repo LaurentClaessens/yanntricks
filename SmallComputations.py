@@ -28,6 +28,10 @@ by phystricks but that are not geometry.
 from sage.all import *
 import codecs
 
+from phystricks import WrapperStr
+
+var=WrapperStr(var)
+
 def MultipleBetween(Dx,mx,Mx,mark_origin=True):
     """
     Return the list of values that are all the integer multiple of Dx between mx and Mx.
@@ -438,7 +442,7 @@ def MyMinMax(dico_sage,decimals=3):
 
     OUTPUT:
 
-    A dictionary
+    A dictionary. The keys are `str`, not unicode.
 
     EXAMPLES:
 
@@ -448,7 +452,7 @@ def MyMinMax(dico_sage,decimals=3):
 
 
     """
-    return dict(   [ (k,around(numerical_approx(dico_sage[k]),decimals=decimals)) for k in dico_sage.keys()  ]   )
+    return dict(   [ (str(k),around(numerical_approx(dico_sage[k]),decimals=decimals)) for k in dico_sage.keys()  ]   )
 
 def MultipleLower(x,m):
     """ return the biggest multiple of m which is lower or equal to x"""
@@ -521,6 +525,20 @@ class AngleMeasure(object):
         self.radian=value_radian
         if self.degree==None or self.radian==None:
             raise ValueError,"Something wrong"
+    def positive(self):
+        """
+        If the angle is negative, return the corresponding positive angle.
+
+        EXAMPLES::
+
+            sage: a=AngleMeasure(value_degree=-30)
+            sage: a.positive().degree
+            330
+        """
+        if self.degree >= 0 :
+            return self
+        if self.degree < 0 :
+            return AngleMeasure(value_degree=360+self.degree)
     def __mul__(self,coef):
         return AngleMeasure(value_radian=coef*self.radian)
     def __rmul__(self,coef):
