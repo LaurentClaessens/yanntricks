@@ -115,7 +115,7 @@ class FigureGenerationSuite(object):
             try:
                 base=a[1].figure_mother.LaTeX_lines()
                 text=base.replace(pseudo_caption,str(a[0]))
-                portion.append()
+                portion.append(text)
             except AttributeError:
                 print "I cannot found the LaTeX lines corresponding to ",a[1]
             else :
