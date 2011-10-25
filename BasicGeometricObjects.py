@@ -479,7 +479,6 @@ class GraphOfACircle(GraphOfAnObject):
         self._parametric_curve=None
         self.angleI = AngleMeasure(value_degree=angleI)
         self.angleF = AngleMeasure(value_degree=angleF)
-
     @lazy_attribute
     def equation(self):
         """
@@ -937,6 +936,7 @@ class Parameters(object):
         self.style = None
         self.fill=FillParameters()
         self.hatch=HatchParameters()
+        self.interesting_attributes=["color","symbol","style","_filled","fill","_hatched","hatch"]
         self._filled=False
         self._hatched=False
     def filled(self):
@@ -985,7 +985,7 @@ class Parameters(object):
         If `force` is True, it fills all.
         """
         for attr in parameters.interesting_attributes:
-            if (parameters.__getattribute__(attr) in [None,False]) or force=True :
+            if (parameters.__getattribute__(attr) in [None,False]) or force :
                 parameters.__dict__[attr]=self.__getattribute__(attr)
         parameters.fill=self.fill
         parameters.hatch=self.hatch
@@ -3430,6 +3430,9 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         self.mx2=mx2
         self.Mx1=Mx1
         self.Mx2=Mx2
+        for attr in [self.mx1,self.mx2,self.Mx1,self.Mx2]:
+            if attr == None:
+                raise TypeError,"At this point, initial and final values have to be already chosen"
 
         self.Isegment=Segment(self.curve2.get_point(self.mx2,advised=False),self.curve1.get_point(self.mx1,advised=False))
         self.Fsegment=Segment(self.curve1.get_point(self.Mx1,advised=False),self.curve2.get_point(self.Mx2,advised=False))
@@ -3778,8 +3781,12 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         self.plotstyle = "curve"
         self.plotpoints = "1000"
         self.record_arrows=[]
-        self.I=self.get_point(llamI)
-        self.F=self.get_point(llamF)
+        #TODO: if I remove the protection "if self.llamI", sometimes it 
+        # tries to make self.get_point(self.llamI) with self.llamI==None
+        # In that case the crash is interesting since it is a segfault instead of an exception.
+        if self.llamI != None:
+            self.I=self.get_point(self.llamI,advised=False)   
+            self.F=self.get_point(self.llamF,advised=False)
     def pstricks(self,pspict=None):
         # The difficult point with pstrics is that the syntax is "f1(t) | f2(t)" with the variable t.
         #   In order to produce that, we use the Sage's function repr and the syntax f(x=t)

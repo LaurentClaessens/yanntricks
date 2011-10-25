@@ -264,7 +264,6 @@ def ParametricCurve(*args,**opt):
             llamF=args[3]
         f1=EnsurephyFunction(f1)
         f2=EnsurephyFunction(f2)
-
     # Then we consider the case in which the first argument is a parametric curve
     else :
         f1=EnsurephyFunction(args[0].f1)
@@ -272,6 +271,7 @@ def ParametricCurve(*args,**opt):
         if len(args)>1:
             llamI=args[1]
             llamF=args[2]
+            print "275"
     if "mx" in opt.keys() and "Mx" in opt.keys() :
         llamI=opt["mx"]
         llamF=opt["Mx"]
@@ -609,7 +609,7 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,reverse1=False,re
             curve[i]=EnsureParametricCurve(curve[i]).graph(mx[i],Mx[i])
         if interval:
             mx[i]=interval[0]
-            Mx[i]=interval
+            Mx[i]=interval[1]
         if mx[i] == None :
             raise ValueError, "Cannot determinate the initial or final value of the parameter for %s"%str(curve[i])
         if "parameters" in dir(curve[i]):
