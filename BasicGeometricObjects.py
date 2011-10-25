@@ -984,8 +984,8 @@ class Parameters(object):
         By default, it only fills the "empty" slots (None and False). 
         If `force` is True, it fills all.
         """
-        for attr in parameters.__dict__.keys():
-            if (parameters.__getattribute__(attr) in [None,False]) or force:
+        for attr in parameters.interesting_attributes:
+            if (parameters.__getattribute__(attr) in [None,False]) or force=True :
                 parameters.__dict__[attr]=self.__getattribute__(attr)
         parameters.fill=self.fill
         parameters.hatch=self.hatch
