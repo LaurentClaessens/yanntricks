@@ -595,7 +595,33 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,reverse1=False,re
     .. image:: Picture_FIGLabelFigBetweenParametricPICTBetweenParametric-for_eps.png
 
     """
-    return BasicGeometricObjects.GraphOfASurfaceBetweenParametricCurves(curve1,curve2,interval,reverse1,reverse2)
+
+    curve=[curve1,curve2]
+    mx=[None,None]
+    Mx=[None,None]
+    for i in [0,1]:
+        if isinstance(curve[i],tuple) :
+            mx[i]=curve[i][1]
+            Mx[i]=curve[i][2]
+            curve[i]=EnsureParametricCurve(curve[i][0]).graph(mx[i],Mx[i])
+        else :
+            mx[i],Mx[i]=BasicGeometricObjects.extract_interval_information(curve[i])
+            curve[i]=EnsureParametricCurve(curve[i]).graph(mx[i],Mx[i])
+        if interval:
+            mx[i]=interval[0]
+            Mx[i]=interval
+        if mx[i] == None :
+            raise ValueError, "Cannot determinate the initial or final value of the parameter for %s"%str(curve[i])
+        if "parameters" in dir(curve[i]):
+            curve[i].parameters.replace_to(curve[i].parameters)
+    curve1=curve[0]
+    curve2=curve[1]
+    mx1=mx[0]
+    mx2=mx[1]
+    Mx1=Mx[0]
+    Mx2=Mx[1]
+
+    return BasicGeometricObjects.GraphOfASurfaceBetweenParametricCurves(curve1,curve2,mx1,mx2,Mx1,Mx2,reverse1,reverse2)
 
 def SurfaceUnderFunction(f,mx,Mx):
     """
@@ -616,9 +642,17 @@ def SurfaceUnderFunction(f,mx,Mx):
     .. literalinclude:: phystricksSurfaceFunction.py
     .. image:: Picture_FIGLabelFigSurfaceFunctionPICTSurfaceFunction-for_eps.png
 
+    
+    .. literalinclude:: phystricksChiSquaresQuantile.py
+    .. image:: Picture_FIGLabelFigChiSquaresQuantilePICTChiSquaresQuantile-for_eps.png
+
     """
+    if isinstance(f,BasicGeometricObjects.NonAnalyticFunction):
+       line1=Segment(Point(mx,0),Point(Mx,0))
+       line2=f.parametric_curve(mx,Mx)
+       return BasicGeometricObjects.SurfaceBetweenLines(line1,line2)
     f2=0
-    return SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
+    return BasicGeometricObjects.SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
 
 
 def Polygon(*args):

@@ -959,7 +959,7 @@ class Parameters(object):
             self.fill.add_to_options(opt)
         if self._hatched:
             self.hatch.add_to_options(opt)
-    def add_to(self,parameters):
+    def add_to(self,parameters,force=False):
         """
         Add `self` to `parameters`.
 
@@ -980,9 +980,12 @@ class Parameters(object):
             sage: p2.add_to(p1)
             sage: print p1.color,p1.style,p1.symbol,p1._filled,p1.fill.color
             red solid A True cyan
+
+        By default, it only fills the "empty" slots (None and False). 
+        If `force` is True, it fills all.
         """
         for attr in parameters.__dict__.keys():
-            if parameters.__getattribute__(attr) in [None,False]:
+            if (parameters.__getattribute__(attr) in [None,False]) or force:
                 parameters.__dict__[attr]=self.__getattribute__(attr)
         parameters.fill=self.fill
         parameters.hatch=self.hatch
@@ -2750,6 +2753,44 @@ def general_funtion_get_point(fun,x,advised=True):
                 P.advised_mark_angle=angle_n
         return P
 
+class NonAnalyticParametricCurve(GraphOfAnObject):
+    def __init__(self,f1,f2,mx,Mx):
+        GraphOfAnObject.__init__(self,self)
+        self.f1=f1
+        self.f2=f2
+        self.mx=mx
+        self.Mx=Mx
+        self.I=self.get_point(mx)
+        self.F=self.get_point(Mx)
+
+        self.plotpoints=100
+
+        from numpy import linspace
+        if self.mx is not None and self.Mx is not None:
+            self.drawpoints=linspace(self.mx,self.Mx,self.plotpoints,endpoint=True)
+    def curve(self):
+        interpolation = InterpolationCurve([self.get_point(x) for x in self.drawpoints])
+        self.parameters.add_to(interpolation.parameters,force=True)     # This curve is essentially dedicated to the colors
+        return interpolation
+    def get_point(self,x,advised=False):
+        return Point(self.f1(x),self.f2(x))
+    def reverse(self):
+        """
+        Return the curve [mx,Mx] -> R^2 that makes
+        the inverse path.
+        """
+        f1=lambda x:self.f1(self.mx+self.Mx-x)
+        f2=lambda x:self.f2(self.mx+self.Mx-x)
+        return NonAnalyticParametricCurve(f1,f2,self.mx,self.Mx)
+    def math_bounding_box(self,pspict=None):
+        return self.curve().math_bounding_box(pspict)
+    def bounding_box(self,pspict=None):
+        return self.curve().bounding_box(pspict)
+    def pstricks_code(self,pspict=None):
+        return self.curve().pstricks_code(pspict)
+    def __call__(self,x):
+        return self.get_point(x)
+
 class NonAnalyticFunction(GraphOfAnObject):
     """
     Represent a function for which one has no analytic form.
@@ -2769,6 +2810,16 @@ class NonAnalyticFunction(GraphOfAnObject):
         if self.mx is not None and self.Mx is not None:
             self.drawpoints=linspace(self.mx,self.Mx,self.plotpoints,endpoint=True)
         self.parameters.color="blue"
+    def parametric_curve(self,mx=None,Mx=None):
+        if mx == None:
+            mx=self.mx
+        if Mx == None:
+            Mx=self.Mx
+        x=var('x')
+        return NonAnalyticParametricCurve(x,self,mx,Mx)
+    def reverse(self):
+        new = lambda x: self.fun(self.Mx+self.mx-x)
+        return NonAnalyticFunction(new,self.mx,self.Mx)
     def curve(self,drawpoints):
         """
         Return the interpolation curve corresponding to self.
@@ -2801,7 +2852,6 @@ class NonAnalyticFunction(GraphOfAnObject):
         return self.curve(self.drawpoints).pstricks_code(pspict)
     def __call__(self,x):
         return self.fun(x)
-
 
 class GraphOfAphyFunction(GraphOfAnObject):
     """
@@ -3294,7 +3344,64 @@ def get_paths_from_implicit_plot(p):
         l.append(pp)
     return l
 
+class SurfaceBetweenLines(GraphOfAnObject):
+    def __init__(self,curve1,curve2):
+        """
+        Give the graph of the surface between the two lines.
 
+        The lines are needed to have a starting and ending point
+        that will be joined by straight lines.
+        """
+        # By convention, the first line goes from left to right and the second one to right to left.
+
+        GraphOfAnObject.__init__(self,self)
+
+        if curve1.I.x > curve1.F.x:
+            curve1=curve1.reverse()
+        if curve2.I.x > curve2.F.x:
+            curve2=curve2.reverse()
+
+        self.curve1=curve1
+        self.curve2=curve2
+
+        self.I1=curve1.I
+        self.I2=curve2.I
+
+        self.F1=curve1.F
+        self.F2=curve2.F
+
+        self.Isegment=Segment(self.I1,self.I2)
+        self.Fsegment=Segment(self.F1,self.F2)
+    def bounding_box(self,pspict=None):
+        bb=BoundingBox()
+        bb.append(self.curve1,pspict)
+        bb.append(self.curve2,pspict)
+        return bb
+    def math_bounding_box(self,pspict):
+        return self.bounding_box(pspict)
+    def pstricks_code(self,pspict):
+        a=[]
+       
+        c1=self.curve1
+        c2=self.curve2.reverse()
+
+        custom=CustomSurface(c1,self.Fsegment,c2,self.Isegment)
+        self.parameters.add_to(custom.parameters)     # This curve is essentially dedicated to the colors
+        
+        a.append("%--- begin of Surface between lines ---")
+        a.append("% Custom surface")
+        a.append(custom.pstricks_code())
+
+        a.append("% Curve 1")
+        a.append(self.curve1.pstricks_code(pspict))
+        a.append("% Curve 2")
+        a.append(self.curve2.pstricks_code(pspict))
+        a.append("% Isegment")
+        a.append(self.Isegment.pstricks_code(pspict))
+        a.append("% Fsegment")
+        a.append(self.Fsegment.pstricks_code(pspict))
+        a.append("%--- end of Surface between lines ---")
+        return "\n".join(a)
 
 # Since all type of surfaces have to be specializations of SurfaceBetweenParametricCurves,
 # we have to unify the names of the segments.
@@ -3307,46 +3414,22 @@ def get_paths_from_implicit_plot(p):
 # with the right particularization.
 
 class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
-    def __init__(self,curve1,curve2,interval=None,reverse1=False,reverse2=True):
+    def __init__(self,curve1,curve2, mx1, mx2,Mx1,Mx2,reverse1=False,reverse2=True):
+        # TODO: I think that the parameters reverse1 and reverse2 are no more useful
+        #   since I enforce the condition curve1 : left -> right by hand.
         GraphOfAnObject.__init__(self,self)
 
-        curve=[curve1,curve2]
-        self.curve=[None,None]
-        self.mx=[None,None]
-        self.Mx=[None,None]
 
-        self.reverse1=reverse1
-        self.reverse2=reverse2
+        self.curve1=curve1
+        self.curve2=curve2
 
-        for i in [0,1]:
-            if isinstance(curve[i],tuple) :
-                self.mx[i]=curve[i][1]
-                self.Mx[i]=curve[i][2]
-                self.curve[i]=EnsureParametricCurve(curve[i][0]).graph(self.mx[i],self.Mx[i])
-            else :
-                self.mx[i],self.Mx[i]=extract_interval_information(curve[i])
-                self.curve[i]=EnsureParametricCurve(curve[i]).graph(self.mx[i],self.Mx[i])
+        self.f1=self.curve1       # TODO: Soon or later, one will have to fusion these two
+        self.f2=self.curve2        
 
-            if interval:
-                self.mx[i]=interval[0]
-                self.Mx[i]=interval[1]
-
-            if self.mx[i] == None :
-                raise ValueError, "Cannot determinate the initial or final value of the parameter for %s"%str(curve[i])
-
-            if "parameters" in dir(curve[i]):
-                curve[i].parameters.replace_to(self.curve[i].parameters)
-
-
-        self.curve1=self.curve[0]
-        self.curve2=self.curve[1]
-        self.mx1=self.mx[0]
-        self.mx2=self.mx[1]
-        self.Mx1=self.Mx[0]
-        self.Mx2=self.Mx[1]
-
-        self.f1=self.curve1
-        self.f2=self.curve2
+        self.mx1=mx1
+        self.mx2=mx2
+        self.Mx1=Mx1
+        self.Mx2=Mx2
 
         self.Isegment=Segment(self.curve2.get_point(self.mx2,advised=False),self.curve1.get_point(self.mx1,advised=False))
         self.Fsegment=Segment(self.curve1.get_point(self.Mx1,advised=False),self.curve2.get_point(self.Mx2,advised=False))
@@ -3366,9 +3449,13 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
        
         c1=self.curve1.graph(self.mx1,self.Mx1)
         c2=self.curve2.graph(self.mx2,self.Mx2)
-        if self.reverse1:
+
+        # By convention, the first line goes from left to right and the second one to right to left.
+        # The same is followed in SurfaceBetweenLines
+
+        if c1.I.x > c1.F.x:
             c1=c1.reverse()
-        if self.reverse2:
+        if c2.I.x < c2.F.x:
             c2=c2.reverse()
 
         custom=CustomSurface(c1,self.Fsegment,c2,self.Isegment)
@@ -3691,6 +3778,8 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         self.plotstyle = "curve"
         self.plotpoints = "1000"
         self.record_arrows=[]
+        self.I=self.get_point(llamI)
+        self.F=self.get_point(llamF)
     def pstricks(self,pspict=None):
         # The difficult point with pstrics is that the syntax is "f1(t) | f2(t)" with the variable t.
         #   In order to produce that, we use the Sage's function repr and the syntax f(x=t)
