@@ -80,10 +80,10 @@ class NewtonMethodStep():
 	def __init__(self,newton,xn):
 		self.A = Point(xn,0)
 		self.P = newton.f.get_point(xn)
-		xnn = xn - (self.P.y)/newton.f.derivative().eval(xn)			# The Newton's iteration formula is here
+		xnn = xn - (self.P.y)/newton.f.derivative()(xn)			# The Newton's iteration formula is here
 		self.B = Point(xnn,0)
 		self.vertical_segment = Segment(self.A,self.P)
-		self.diagonal_segment = Segment(self.P,self.B).dilate(1.5)
+		self.diagonal_segment = Segment(self.P,self.B).dilatation(1.5)
 
 class NewtonMethod():
 	def __init__(self,f):
