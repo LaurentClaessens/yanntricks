@@ -4382,7 +4382,12 @@ class BoundingBox(object):
         return self.Mx-self.mx
     def ysize(self):
         return self.My-self.my
-
+    def addX(self,x):
+        self.mx=min(self.mx,x)
+        self.Mx=max(self.Mx,x)
+    def addY(self,y):
+        self.my=min(self.my,y)
+        self.My=max(self.My,y)
     def extraX_left(self,l):
         """Enlarge the bounding box of a length l on the left"""
         self.mx=self.mx-l

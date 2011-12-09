@@ -961,7 +961,8 @@ class pspicture(object):
         return d
     def get_Id_value(self,Id,counter_name="NO NAME ?",default_value=0):
             if Id not in self.id_values_dict.keys():
-                print "Warning: the auxiliary file %s does not contain the id «%s». Compile your LaTeX file."%(self.interWriteFile,Id)
+                if not global_vars.silent:
+                    print "Warning: the auxiliary file %s does not contain the id «%s». Compile your LaTeX file."%(self.interWriteFile,Id)
                 if global_vars.perform_tests :
                     raise ValueError, "I cannot tests a file if the auxiliary files are not yet produced."
                 if global_vars.create_formats["test"] :

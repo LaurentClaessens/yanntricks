@@ -35,6 +35,8 @@ COMMAND LINE ARGUMENTS:
                          See :class:`TestPspictLaTeXCode` and the function :func:`create_png_file`
                          in :class:`PspictureToOtherOutputs`
 
+    - ``--silent`` - do not print the warning about missing auxiliary file
+
     NOTES:
 
         - Here we are really speaking about pspicture. There will be one file of one 
@@ -1054,6 +1056,7 @@ class global_variables(object):
         self.create_formats={"eps":False,"pdf":False,"png":False,"test":False}
         self.exit_format="pstricks"
         self.perform_tests = False
+        self.silent=False
     def special_exit(self):
         for sortie in self.create_formats.values():
             if sortie:
@@ -1384,6 +1387,8 @@ def unify_point_name(s):
     return s
 
 global_vars = global_variables()
+if "--silent" in sys.argv :
+    global_vars.silent=True
 if "--eps" in sys.argv :
     global_vars.exit_format="eps"
     global_vars.create_formats["eps"] = True

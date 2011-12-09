@@ -159,7 +159,8 @@ class Grades(object):
         segmentV = Segment( Point(self.media,0),Point(self.media,self.full_grade) )
         segmentV.parameters = segmentH.parameters
         pspict.DrawGraphs(segmentV,segmentH)
-        pspict.math_BB.AddPoint(Point(0,0))
+        pspict.math_BB.addX(0)
+        pspict.math_BB.addY(0)
 
         pspict.grid.Dy = 1
         pspict.grid.num_subX = 0
