@@ -3135,10 +3135,14 @@ class GraphOfAphyFunction(GraphOfAnObject):
         try :
             return MyMinMax(plot(self.sage,(mx,Mx)).get_minmax_data())
         except ValueError :
-            if self.sage==x:
-                return MyMinMax(plot(x,mx,Mx).get_minmax_data())
-            else :
-                raise ValueError,"This is a strange case. Maybe to be reported to ticket 10246"
+            try:
+                if self.sage==x:
+                    return MyMinMax(plot(x,mx,Mx).get_minmax_data())
+            except NameError:
+                if repr(self.sage)=="x |--> x":
+                    return MyMinMax(plot(x,mx,Mx).get_minmax_data())
+        else :
+            raise ValueError,"This is a strange case. Maybe related to ticket 10246"
     def xmax(self,deb,fin):
         return self.get_minmax_data(deb,fin)['xmax']
     def xmin(self,deb,fin):
