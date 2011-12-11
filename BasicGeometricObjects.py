@@ -3140,6 +3140,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
                     return MyMinMax(plot(x,mx,Mx).get_minmax_data())
             except NameError:
                 if repr(self.sage)=="x |--> x":
+                    x=var('x')
                     return MyMinMax(plot(x,mx,Mx).get_minmax_data())
         else :
             raise ValueError,"This is a strange case. Maybe related to ticket 10246"
