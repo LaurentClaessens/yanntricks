@@ -2685,6 +2685,23 @@ class GraphOfAnAngle(GraphOfAnObject):
         If you want to change it, use
         self.set_mark_angle(x).
         It will set both the mark_angle and the advised_mark_angle to to x in the same time.
+
+        We have to make a choice between the two angles that can be deduced from 3 points. Here the choice the
+        the angle from the first given point to the second one.
+
+        EXAMPLES ::
+
+            sage: R=2
+            sage: theta=-10     # Notice the negative number
+            sage: sigma=60
+            sage: O=Point(0,0)
+            sage: C=Circle(O,R)
+    
+            sage: P=C.get_point(theta)
+            sage: Q=C.get_point(sigma)
+            sage: angle=Angle(P,O,Q)
+            sage: numerical_approx(angle.advised_mark_angle)
+            25
     """
     def __init__(self,A,O,B,r=None):
         self.A=A
@@ -2695,11 +2712,15 @@ class GraphOfAnAngle(GraphOfAnObject):
         self.r=r
         self.angleA=AffineVector(O,A).angle()
         self.angleB=AffineVector(O,B).angle()
+        a=self.angleA.degree
+        b=self.angleB.degree
+        if a > b:
+            a=a-360
         self.angleI=min(self.angleA,self.angleB)
         self.angleF=max(self.angleA,self.angleB)
-        self.media=self.angleF-0.5*self.measure()
+        self.media=AngleMeasure(value_degree=(b+a)/2)
         GraphOfAnObject.__init__(self,self)
-        self.advised_mark_angle=self.media.degree
+        self.advised_mark_angle=self.media.degree       # see the choice of angle in the docstring
         self.mark_angle=self.media
     def circle(self):
         return Circle(self.O,self.r).graph(self.angleI,self.angleF)
@@ -3424,7 +3445,6 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         #   since I enforce the condition curve1 : left -> right by hand.
         GraphOfAnObject.__init__(self,self)
 
-
         self.curve1=curve1
         self.curve2=curve2
 
@@ -3466,14 +3486,17 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         if c2.I.x < c2.F.x:
             c2=c2.reverse()
 
-        custom=CustomSurface(c1,self.Fsegment,c2,self.Isegment)
+        reFsegment=Segment(c1.F,c2.I)
+        reIsegment=Segment(c2.F,c1.I)
+
+        custom=CustomSurface(c1,reFsegment,c2,reIsegment)
         self.parameters.add_to(custom.parameters)     # This line is essentially dedicated to the colors
         a.append(custom.pstricks_code())
 
         a.append(self.curve1.pstricks_code(pspict))
         a.append(self.curve2.pstricks_code(pspict))
-        a.append(self.Isegment.pstricks_code(pspict))
-        a.append(self.Fsegment.pstricks_code(pspict))
+        a.append(reIsegment.pstricks_code(pspict))
+        a.append(reFsegment.pstricks_code(pspict))
         return "\n".join(a)
 
 class GraphOfAnInterpolationCurve(GraphOfAnObject):
