@@ -481,36 +481,43 @@ def ImplicitCurve(f,xrange,yrange,plot_points=100):
 
     This is a constructor for the class GraphOfAnImplicitCurve
     INPUT:
+
     - ``f`` -- a function of two variables or equation in two variables
 
     - ``xrange,yrange`` - the range on which we want to compute the implicit curve.
     
     OPTIONAL INPUT:
+
     - ``plot_points`` - (defautl : 100) the number of points that will be calculated in each direction. 
 
     The resulting bounding box will not be in general xrange x yrange. 
+
     EXAMPLES:
-    We know that the curve x^2+y^2=2 is a circle of radius sqrt(2). Thus even if you ask a range of size 5, 
-    you will only get the bounding box of size sqrt(2)
+
+    We know that the curve x^2+y^2=2 is a circle of radius sqrt(2). Thus even if you ask a range of size 5,  you will only get the bounding box of size sqrt(2).
+
+    EXAMPLES::
+
     sage: x,y=var('x,y')
     sage: f(x,y)=x**2+y**2
     sage: F=ImplicitCurve(f==2,(x,-5,5),(y,-5,5))
     sage: print F.bounding_box()
     <BoundingBox mx=-1.413,Mx=1.413; my=-1.413,My=1.413>
 
-    But the following will be empty :
+    But the following will be empty::
+
     sage: G=ImplicitCurve(f==2,(x,-1,1),(y,-1,1))
     sage: print G.paths
     []
 
-    If you give very low value of plot_points, you get incorrect results :
+    If you give very low value of plot_points, you get incorrect results::
+
     sage: H=ImplicitCurve(f==2,(x,-2,2),(y,-2,2),plot_points=3)
     sage: print H.bounding_box()
     <BoundingBox mx=-1.414,Mx=1.414; my=-1.414,My=1.414>
 
 
-    Using Sage's implicit_curve and matplotlib, a list of points "contained" in the curve is created. The bounding_box is 
-    calculated from that list. The pstricsk code generated will be an interpolation curve passing trough all these points.
+    Using Sage's implicit_curve and matplotlib, a list of points "contained" in the curve is created. The bounding_box is calculated from that list. The pstricsk code generated will be an interpolation curve passing trough all these points.
     """
     return BasicGeometricObjects.GeometricImplicitCurve(f).graph(xrange,yrange,plot_points=100)
 
