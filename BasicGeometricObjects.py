@@ -2701,7 +2701,7 @@ class GraphOfAnAngle(GraphOfAnObject):
             sage: Q=C.get_point(sigma)
             sage: angle=Angle(P,O,Q)
             sage: numerical_approx(angle.advised_mark_angle)
-            25
+            25.0000000000000
     """
     def __init__(self,A,O,B,r=None):
         self.A=A
