@@ -1155,6 +1155,8 @@ class GraphOfAPoint(GraphOfAnObject):
             <Point(2,3)>
 
         """
+        if isinstance(r,SmallComputations.AngleMeasure):
+            raise TypeError, "This should not happen"
         alpha=radian(theta,number=True)
         if pspict:
             A=pspict.xunit
