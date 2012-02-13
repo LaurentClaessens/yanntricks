@@ -78,7 +78,6 @@ class WrapperStr(object):
     def __init__(self,fun):
         self.fun=fun
     def __call__(self,arg):
-        self.fun(arg)
         return self.fun(str(arg))
 
 var=WrapperStr(var)
