@@ -7,6 +7,7 @@ This file contains only doctests with output too long or not sufficiently intere
 
 def Test_Segment():
     """
+    sage: from phystricks import *
     sage: v = Segment(Point(0,0),Point(2,0)).get_normal_vector()
     sage: print v.arrow_type
     vector
@@ -27,6 +28,7 @@ def Test_Segment():
 
 def Test_VectorField():
     """"
+    sage: from phystricks import *
     sage: x,y=var('x,y')
     sage: F=VectorField(x,y).graph(xvalues=(x,1,2,3),yvalues=(y,-2,2,3))
     sage: unify_point_name(F.pstricks_code())
@@ -40,6 +42,7 @@ def Test_VectorField():
 
 def Test_Dilatation():
     r"""
+    sage: from phystricks import *
     sage: A = Point(1,1)
     sage: B = Point(-4,-1)
     sage: v=AffineVector(A,B)
@@ -60,6 +63,7 @@ def Test_Dilatation():
 
 def Test_Measure():
     r"""
+    sage: from phystricks import *
     sage: O=Point(0,0)
     sage: A=Point(0.3,0)
     sage: U=Point(1,0)

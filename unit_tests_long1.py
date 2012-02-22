@@ -4,6 +4,7 @@ from phystricks import *
 
 This file contains a unit test for ImplicitCurve.
 
+sage: from phystricks import *
 sage: x,y=var('x,y')
 sage: f(x,y)=sin(x)
 sage: curve=ImplicitCurve(f==1/2,(x,-pi,pi),(y,-pi,pi))

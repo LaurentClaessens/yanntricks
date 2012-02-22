@@ -205,6 +205,7 @@ def inner_product(v,w):
     EXAMPLES::
 
     sage: from phystricks import *
+    sage: from phystricks.BasicGeometricObjects import *
     sage: v=Vector(1,3)
     sage: w=Vector(-5,7)
     sage: inner_product(v,w)
@@ -1538,7 +1539,7 @@ class GeometricImplicitCurve(object):
 
     EXAMPLES::
 
-        sage: from phystricks import *
+        sage: from phystricks.BasicGeometricObjects import *
         sage: x,y=var('x,y')
         sage: f(x,y)=x**2+1/x
         sage: F=GeometricImplicitCurve(f(x,y)==2)
@@ -1564,7 +1565,7 @@ class GeometricImplicitCurve(object):
 
         EXAMPLE ::
     
-            sage: from phystricks import *
+            sage: from phystricks.BasicGeometricObjects import *
             sage: x,y=var('x,y')
             sage: F=GeometricImplicitCurve(x-y==3)
             sage: graph=F.graph((x,-3,3),(y,-2,2))
@@ -1579,7 +1580,7 @@ class GeometricImplicitCurve(object):
 
         EXAMPLE::
 
-            sage: from phystricks import *
+            sage: from phystricks.BasicGeometricObjects import *
             sage: x,y=var('x,y')
             sage: f(x,y)=x**2+1/x
             sage: print GeometricImplicitCurve(f(x,y)==2)
@@ -1612,7 +1613,7 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
     
     EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from phystricks.BasicGeometricObjects import *
             sage: x,y=var('x,y')
             sage: implicit_curve=GeometricImplicitCurve(x**2+x==3)
             sage: F=GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2)).pstricks_code()
@@ -1742,15 +1743,18 @@ class GraphOfASegment(GraphOfAnObject):
         OUTPUT:
         a number
 
-        EXAMPLES:
-        sage: Segment(Point(0,0),Point(1,1)).slope
-        1
-        sage: Segment(Point(1,1),Point(0,0)).slope
-        1
-        sage: Segment(Point(1,2),Point(-1,8)).slope
-        -3
+        EXAMPLES::
+
+            sage: from phystricks import *
+            sage: Segment(Point(0,0),Point(1,1)).slope
+            1
+            sage: Segment(Point(1,1),Point(0,0)).slope
+            1
+            sage: Segment(Point(1,2),Point(-1,8)).slope
+            -3
 
         NOTE:
+
         If the line is vertical, raise a ZeroDivisionError
         """
         return SR(self.Dy)/self.Dx
@@ -1795,11 +1799,13 @@ class GraphOfASegment(GraphOfAnObject):
         return the equation of the line under the form
         x + by + c = 0
 
-        EXAMPLES:
-        sage: Segment(Point(0,0),Point(1,1)).equation
-        x - y == 0
-        sage: Segment(Point(1,0),Point(0,1)).equation
-        x + y - 1 == 0
+        EXAMPLES::
+
+            sage: from phystricks import *
+            sage: Segment(Point(0,0),Point(1,1)).equation
+            x - y == 0
+            sage: Segment(Point(1,0),Point(0,1)).equation
+            x + y - 1 == 0
         """
         if self.vertical :
             self.coefs = [1,0,-self.I.x]
@@ -1815,9 +1821,12 @@ class GraphOfASegment(GraphOfAnObject):
         """
         return the length of the segment
 
-        EXAMPLES:
-        sage: Segment(Point(1,1),Point(2,2)).length
-        sqrt(2)
+        EXAMPLES::
+
+
+            sage: from phystricks import *
+            sage: Segment(Point(1,1),Point(2,2)).length
+            sqrt(2)
 
         """
         return Distance(self.I,self.F)
@@ -1849,6 +1858,7 @@ class GraphOfASegment(GraphOfAnObject):
 
         EXAMPLES::
 
+            sage: from phystricks import *
             sage: segment=Segment(Point(0,0),Point(1,1))
             sage: curve=segment.parametric_curve()
             sage: print curve(0)
@@ -1917,12 +1927,14 @@ class GraphOfASegment(GraphOfAnObject):
         OUTPUT:
         A vector
 
-        EXAMPLES:
-        sage: v= Segment(Point(0,0),Point(2,0)).get_normal_vector()
-        sage: print v
-        <vector I=<Point(1.0,0)> F=<Point(1.0,-1)>>
-        sage: v.length()
-        1
+        EXAMPLES::
+
+            sage: from phystricks import *
+            sage: v= Segment(Point(0,0),Point(2,0)).get_normal_vector()
+            sage: print v
+            <vector I=<Point(1.0,0)> F=<Point(1.0,-1)>>
+            sage: v.length()
+            1
         """
         if self.vertical :
             return Point(-1,0).Vector().origin(self.center())
@@ -1938,22 +1950,24 @@ class GraphOfASegment(GraphOfAnObject):
         This is the angle between the segment and the horizontal axe. 
         The returned angle is positive.
 
-        EXAMPLES:
-        sage: S=Segment(Point(1,1),Point(2,2))
-        sage: type(S.angle())
-        <class 'phystricks.SmallComputations.AngleMeasure'>
-        sage: S.angle().degree
-        45
-        sage: S.angle().radian
-        1/4*pi
+        EXAMPLES::
 
-        sage: S=Segment(Point(1,1),Point(2,0))
-        sage: S.angle().degree
-        315
+            sage: from phystricks import *
+            sage: S=Segment(Point(1,1),Point(2,2))
+            sage: type(S.angle())
+            <class 'phystricks.SmallComputations.AngleMeasure'>
+            sage: S.angle().degree
+            45
+            sage: S.angle().radian
+            1/4*pi
 
-        sage: v=AffineVector(Point(2,3),Point(2-4/sqrt(3),-1))
-        sage: v.angle().radian.simplify_trig()
-        4/3*pi
+            sage: S=Segment(Point(1,1),Point(2,0))
+            sage: S.angle().degree
+            315
+
+            sage: v=AffineVector(Point(2,3),Point(2-4/sqrt(3),-1))
+            sage: v.angle().radian.simplify_trig()
+            4/3*pi
         """
         return self.polaires().measure.positive()
     def origin(self,P):
@@ -1976,21 +1990,23 @@ class GraphOfASegment(GraphOfAnObject):
         INPUT:
         - ``segment`` - the line on which we want to project
 
-        EXAMPLES:
-        sage: l = Segment(Point(0,0),Point(0,1))
-        sage: v = AffineVector(Point(-1,1),Point(-2,3))
-        sage: print v.equation
-        x + 1/2*y + 1/2 == 0
-        sage: print v.projection(l)
-        <vector I=<Point(0,1)> F=<Point(0,3)>>
-        sage: print l.projection(v)
-        <segment I=<Point(-2/5,-1/5)> F=<Point(-4/5,3/5)>>
+        EXAMPLES::
+
+            sage: from phystricks import *
+            sage: l = Segment(Point(0,0),Point(0,1))
+            sage: v = AffineVector(Point(-1,1),Point(-2,3))
+            sage: print v.equation
+            x + 1/2*y + 1/2 == 0
+            sage: print v.projection(l)
+            <vector I=<Point(0,1)> F=<Point(0,3)>>
+            sage: print l.projection(v)
+            <segment I=<Point(-2/5,-1/5)> F=<Point(-4/5,3/5)>>
 
         
-        sage: l = Segment(Point(0,0),Point(1,2))
-        sage: s = Segment(Point(-2,1),Point(-3,4))
-        sage: print s.projection(l)
-        <segment I=<Point(0,0)> F=<Point(1,2)>>
+            sage: l = Segment(Point(0,0),Point(1,2))
+            sage: s = Segment(Point(-2,1),Point(-3,4))
+            sage: print s.projection(l)
+            <segment I=<Point(0,0)> F=<Point(1,2)>>
         """
         v = Segment(self.I.projection(segment),self.F.projection(segment))
         return self.return_deformations(v)
@@ -2023,6 +2039,7 @@ class GraphOfASegment(GraphOfAnObject):
 
         EXAMPLES::
 
+            sage: from phystricks import *
             sage: v=Vector(2,3)
             sage: vx,vy = v.decomposition(Segment(Point(0,0),Point(0,1)))
             sage: print vx
@@ -2063,6 +2080,7 @@ class GraphOfASegment(GraphOfAnObject):
     
         We can fix the orignin by giving the coordinates of the new origin::
 
+            sage: from phystricks import *
             sage: v=AffineVector( Point(1,1),Point(2,2) )
             sage: w=v.fix_origin(3,5)
             sage: w.I.coordinates(),w.F.coordinates()
@@ -2157,15 +2175,18 @@ class GraphOfASegment(GraphOfAnObject):
         OUTPUT:
         a new vector or segment
 
-        EXAMPLES:
-        sage: S=Segment(Point(-2,-2),Point(2,2))
-        sage: print S.dilatation(0.5)           
-        <segment I=<Point(-1.00000000000000,-1.00000000000000)> F=<Point(1.00000000000000,1.00000000000000)>>
+        EXAMPLES::
 
-        But
-        sage: v=AffineVector(Point(-2,-2),Point(2,2))
-        sage: print v.dilatation(0.5)                
-        <vector I=<Point(-2,-2)> F=<Point(0.000000000000000,0.000000000000000)>>
+            sage: from phystricks import *
+            sage: S=Segment(Point(-2,-2),Point(2,2))
+            sage: print S.dilatation(0.5)           
+            <segment I=<Point(-1.00000000000000,-1.00000000000000)> F=<Point(1.00000000000000,1.00000000000000)>>
+
+        But ::
+
+            sage: v=AffineVector(Point(-2,-2),Point(2,2))
+            sage: print v.dilatation(0.5)                
+            <vector I=<Point(-2,-2)> F=<Point(0.000000000000000,0.000000000000000)>>
         """
         if self.arrow_type=="segment":
             d=0.5*self.length()*(coef-1)
@@ -2192,18 +2213,20 @@ class GraphOfASegment(GraphOfAnObject):
         OUTPUT:
         A segment or a vector
 
-        EXAMPLES:
-        sage: s=Segment(Point(0,0),Point(1,0))
-        sage: print s.normalize(2)
-        <segment I=<Point(-0.5,0)> F=<Point(1.5,0)>>
-        sage: print s.normalize(-1)
-        <segment I=<Point(0,0)> F=<Point(1,0)>>
+        EXAMPLES::
 
-        sage: v=AffineVector(Point(1,1),Point(3,1))
-        sage: print v.normalize(2)
-        <vector I=<Point(1,1)> F=<Point(3,1)>>
-        sage: print v.normalize(-1)
-        <vector I=<Point(1,1)> F=<Point(0,1)>>
+            sage: from phystricks import *
+            sage: s=Segment(Point(0,0),Point(1,0))
+            sage: print s.normalize(2)
+            <segment I=<Point(-0.5,0)> F=<Point(1.5,0)>>
+            sage: print s.normalize(-1)
+            <segment I=<Point(0,0)> F=<Point(1,0)>>
+
+            sage: v=AffineVector(Point(1,1),Point(3,1))
+            sage: print v.normalize(2)
+            <vector I=<Point(1,1)> F=<Point(3,1)>>
+            sage: print v.normalize(-1)
+            <vector I=<Point(1,1)> F=<Point(0,1)>>
         """
         if self.arrow_type=="segment":
             if l<0 : 
@@ -2234,16 +2257,18 @@ class GraphOfASegment(GraphOfAnObject):
         OUTPUT:
         A new segment or vector.
 
-        EXAMPLES:
-        sage: v=Vector(1,1)
-        sage: print 2*v
-        <vector I=<Point(0,0)> F=<Point(2,2)>>
-        sage: print -2*v
-        <vector I=<Point(0,0)> F=<Point(-2,-2)>>
+        EXAMPLES::
 
-        sage: s=Segment(Point(1,1),Point(2,2))
-        sage: print 3*s
-        <segment I=<Point(1,1)> F=<Point(4,4)>>
+            sage: from phystricks import *
+            sage: v=Vector(1,1)
+            sage: print 2*v
+            <vector I=<Point(0,0)> F=<Point(2,2)>>
+            sage: print -2*v
+            <vector I=<Point(0,0)> F=<Point(-2,-2)>>
+
+            sage: s=Segment(Point(1,1),Point(2,2))
+            sage: print 3*s
+            <segment I=<Point(1,1)> F=<Point(4,4)>>
 
         The initial point stays the same (this is not the same behaviour as in self.normalize !)
         If the coefficient is negative :
@@ -2269,16 +2294,18 @@ class GraphOfASegment(GraphOfAnObject):
         OUTPUT:
         A new vector or segment that has the same origin as `self`.
 
-        EXAMPLES:
-        sage: a=Vector(1,1)
-        sage: b=Vector(2,3)
-        sage: print a+b
-        <vector I=<Point(0,0)> F=<Point(3,4)>>
+        EXAMPLES::
 
-        sage: a=Segment(Point(1,1),Point(3,4))
-        sage: b=AffineVector(Point(1,1),Point(-1,3))
-        sage: print a+b
-        <segment I=<Point(1,1)> F=<Point(1,6)>>
+            sage: from phystricks import *
+            sage: a=Vector(1,1)
+            sage: b=Vector(2,3)
+            sage: print a+b
+            <vector I=<Point(0,0)> F=<Point(3,4)>>
+
+            sage: a=Segment(Point(1,1),Point(3,4))
+            sage: b=AffineVector(Point(1,1),Point(-1,3))
+            sage: print a+b
+            <segment I=<Point(1,1)> F=<Point(1,6)>>
         """
         if isinstance(other,GraphOfASegment):
             if self.I != other.I:
@@ -2308,18 +2335,21 @@ class GraphOfASegment(GraphOfAnObject):
 
         If we have a segment, the mark is at center while if it is a vector the mark
         has to be placed on the extremity.
-        EXAMPLES:
-        sage: v=Vector(1,1)
-        sage: v.mark_point().coordinates()
-        '(1,1)'
-        sage: v.advised_mark_angle.radian
-        3/4*pi
 
-        sage: S=Segment(Point(1,2),Point(3,5))
-        sage: S.mark_point().coordinates()
-        '(2.0,3.5)'
-        sage: S.advised_mark_angle.radian
-        1/2*pi + arctan(3/2)
+        EXAMPLES::
+
+            sage: from phystricks import *
+            sage: v=Vector(1,1)
+            sage: v.mark_point().coordinates()
+            '(1,1)'
+            sage: v.advised_mark_angle.radian
+            3/4*pi
+
+            sage: S=Segment(Point(1,2),Point(3,5))
+            sage: S.mark_point().coordinates()
+            '(2.0,3.5)'
+            sage: S.advised_mark_angle.radian
+            1/2*pi + arctan(3/2)
         """
         if self.arrow_type == "vector" :
             P=self.F.copy()
@@ -2437,6 +2467,8 @@ class GeometricVectorField(object):
 
     EXAMPLES::
 
+
+        sage: from phystricks.BasicGeometricObjects import *
         sage: x,y=var('x,y')
         sage: f1=phyFunction(x**2)
         sage: F = GeometricVectorField( f1,cos(x*y) )
@@ -2467,6 +2499,7 @@ class GeometricVectorField(object):
 
         EXAMPLES::
 
+            sage: from phystricks.BasicGeometricObjects import *
             sage: x,y=var('x,y')
             sage: F = GeometricVectorField( x , y )
             sage: F.divergence()
@@ -2510,6 +2543,7 @@ class GeometricVectorField(object):
         
         EXAMPLES::
 
+            sage: from phystricks.BasicGeometricObjects import *
             sage: x,y=var('x,y')
             sage: F=VectorField(x,y).graph(xvalues=(x,-2,2,3),yvalues=(y,-10,10,3),draw_points=[Point(100,100)])
             sage: print F.draw_points[0]
@@ -2546,6 +2580,7 @@ class GeometricVectorField(object):
 
         EXAMPLES::
 
+            sage: from phystricks import *
             sage: x,y=var('x,y')
             sage: F=VectorField(x**2,y**3)
             sage: print F(1,2)
@@ -2611,6 +2646,7 @@ class GraphOfAVectorField(GraphOfAnObject,GeometricVectorField):
 
         The two lists created in the following example are the same::
 
+            sage: from phystricks import *
             sage: x,y=var('x,y')
             sage: F=VectorField(x,y).graph(xvalues=(x,1,2,3),yvalues=(y,-2,2,3))
             sage: [ P.coordinates() for P in F.draw_points ]
@@ -2729,6 +2765,7 @@ class GraphOfAnAngle(GraphOfAnObject):
 
         EXAMPLES ::
 
+            sage: from phystricks import *
             sage: R=2
             sage: theta=-10     # Notice the negative number
             sage: sigma=60
