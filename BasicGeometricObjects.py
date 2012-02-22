@@ -71,6 +71,7 @@ def PointsNameList():
 
     EXAMPLES::
     
+        sage: from phystricks import *
         sage: x=PointsNameList()
         sage: x.next()
         u'aaaa'
