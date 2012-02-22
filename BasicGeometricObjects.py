@@ -1049,6 +1049,7 @@ def extract_interval_information(curve):
     EXAMPLES::
 
         sage: from phystricks import *
+        sage: from phystricks.BasicGeometricObjects import *
         sage: f=phyFunction(x**2).graph(1,pi)
         sage: extract_interval_information(f)
         (1, pi)
@@ -1356,10 +1357,12 @@ class GraphOfAPoint(GraphOfAnObject):
 
         When one coordinate if very small (lower than 0.0001), it is rounded to zero in order to avoid string like "0.2335e-6" in the pstricks code.
 
-        Example : 
-        sage: P=Point(1,3)
-        sage: print P.coordinates()
-        (1,3)
+        EXAMPLE::
+
+            sage: from phystricks import *
+            sage: P=Point(1,3)
+            sage: print P.coordinates()
+            (1,3)
         """
         if numerical :
             x=numerical_approx(self.x)
@@ -1535,6 +1538,7 @@ class GeometricImplicitCurve(object):
 
     EXAMPLES::
 
+        sage: from phystricks import *
         sage: x,y=var('x,y')
         sage: f(x,y)=x**2+1/x
         sage: F=GeometricImplicitCurve(f(x,y)==2)
@@ -1575,6 +1579,7 @@ class GeometricImplicitCurve(object):
 
         EXAMPLE::
 
+            sage: from phystricks import *
             sage: x,y=var('x,y')
             sage: f(x,y)=x**2+1/x
             sage: print GeometricImplicitCurve(f(x,y)==2)
@@ -1636,14 +1641,16 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
         Since the results come from the lazy_attribute function _get_minmax_data, changing the number of points
         between two call will not change the result.
 
-        EXAMPLES
-        sage: x,y=var('x,y')
-        sage: F=ImplicitCurve(x**2+y**2==sqrt(2),(x,-5,5),(y,-4,4),plot_points=300)
-        sage: F.get_minmax_data()
-        {'xmin': -1.1890000000000001, 'ymin': -1.1879999999999999, 'ymax': 1.1879999999999999, 'xmax': 1.1890000000000001}
-        sage: F.plot_points=10
-        sage: F.get_minmax_data()
-        {'xmin': -1.1890000000000001, 'ymin': -1.1879999999999999, 'ymax': 1.1879999999999999, 'xmax': 1.1890000000000001}
+        EXAMPLES::
+
+            sage: from phystricks import *
+            sage: x,y=var('x,y')
+            sage: F=ImplicitCurve(x**2+y**2==sqrt(2),(x,-5,5),(y,-4,4),plot_points=300)
+            sage: F.get_minmax_data()
+            {'xmin': -1.1890000000000001, 'ymin': -1.1879999999999999, 'ymax': 1.1879999999999999, 'xmax': 1.1890000000000001}
+            sage: F.plot_points=10
+            sage: F.get_minmax_data()
+            {'xmin': -1.1890000000000001, 'ymin': -1.1879999999999999, 'ymax': 1.1879999999999999, 'xmax': 1.1890000000000001}
 
         """
         tot_points=[]
@@ -1679,12 +1686,14 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
         are actually plotted. In the following example, we know that the ymax
         has to be half the sqrt of the radius (and not the 5 given in yrange).
 
-        EXAMPLES:    
-        sage: x,y=var('x,y')
-        sage: f=x**2+2*y**2
-        sage: G=ImplicitCurve(f==sqrt(2),(x,-5,5),(y,-5,5),plot_points=200)
-        sage: print G.bounding_box()
-        <BoundingBox mx=-1.188,Mx=1.188; my=-0.841,My=0.841>
+        EXAMPLES::
+
+            sage: from phystricks import *
+            sage: x,y=var('x,y')
+            sage: f=x**2+2*y**2
+            sage: G=ImplicitCurve(f==sqrt(2),(x,-5,5),(y,-5,5),plot_points=200)
+            sage: print G.bounding_box()
+            <BoundingBox mx=-1.188,Mx=1.188; my=-0.841,My=0.841>
         """
         bb = BoundingBox( Point(self.xmin(),self.ymin()),Point(self.xmax(),self.ymax())  )
         return bb
@@ -1754,10 +1763,12 @@ class GraphOfASegment(GraphOfAnObject):
 
         If the line is vertical, raise an ZeroDivisionError
 
-        EXAMPLES:
-        sage: s = Segment(Point(0,3),Point(6,-1))
-        sage: s.independent
-        3
+        EXAMPLES::
+
+            sage: from phystricks import *
+            sage: s = Segment(Point(0,3),Point(6,-1))
+            sage: s.independent
+            3
 
         sage: Segment(Point(1,2),Point(-1,1)).independent
         3/2
