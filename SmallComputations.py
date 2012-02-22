@@ -156,6 +156,7 @@ def RemoveLastZeros(x,n):
 
     EXAMPLES::
 
+        sage: from phystricks.SmallComputations import *
         sage: RemoveLastZeros(1.000,4)
         '1'
         sage: RemoveLastZeros(3/4,1)
@@ -203,11 +204,13 @@ def latinize(word):
     
     EXAMPLES::
 
+        sage: from phystricks.SmallComputations import *
         sage: latinize("/home/MyName/.sage/my_script11.py")
         'homeMyNameDsagemyscriptOODpy'
 
     ::
 
+        sage: from phystricks.SmallComputations import *
         sage: latinize("/home/MyName/.sage/my_script13.py")
         'homeMyNameDsagemyscriptOThDpy'
     """
@@ -259,6 +262,7 @@ def number_at_position(s,n):
 
     EXAMPLES:
 
+        sage: from phystricks.SmallComputations import *
         sage: s="Point(-1.3427,0.1223)"
         sage: number_at_position(s,9)
         ('-1.3427', 6, 13)
@@ -329,6 +333,7 @@ def get_line(s,pos):
 
     EXAMPLES::
 
+        sage: from phystricks.SmallComputations import *
         sage: s="Hello\n how do you do ? \n See you"
         sage: print get_line(s,10)
         how do you do ?
@@ -365,6 +370,7 @@ def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
     In the following, the comparison fails due to
     the first number::
 
+        sage: from phystricks.SmallComputations import *
         sage: s1="Point(-0.2,0.111)"
         sage: s2="Point(-0.3,0.111)"
         sage: string_number_comparison(s1,s2)
@@ -422,6 +428,7 @@ def around(x,decimals):
 
         EXAMPLES::
 
+            sage: from phystricks.SmallComputations import *
             sage: around(100.6867867,3)
             100.687
 
@@ -446,6 +453,7 @@ def MyMinMax(dico_sage,decimals=3):
 
     EXAMPLES:
 
+        sage: from phystricks.SmallComputations import *
         sage: d={'xmin': -0.3456475, 'ymin': -1.94565, 'ymax': 1.7895, 'xmax': 3.0000124}
         sage: MyMinMax(d,decimals=2)
         {'xmin': -0.34999999999999998, 'ymin': -1.95, 'ymax': 1.79, 'xmax': 3.0}
@@ -495,6 +503,7 @@ class AngleMeasure(object):
 
     EXAMPLES::
 
+        sage: from phystricks.SmallComputations import *
         sage: x=AngleMeasure(value_radian=pi/2)
         sage: x()
         90
@@ -531,6 +540,7 @@ class AngleMeasure(object):
 
         EXAMPLES::
 
+            sage: from phystricks.SmallComputations import *
             sage: a=AngleMeasure(value_degree=-30)
             sage: a.positive().degree
             330
@@ -551,6 +561,7 @@ class AngleMeasure(object):
 
         EXAMPLES::
 
+            sage: from phystricks.SmallComputations import *
             sage: a=AngleMeasure(value_degree=45)
             sage: b=AngleMeasure(value_radian=pi/3)
             sage: a.degree,a.radian
@@ -600,6 +611,7 @@ def PointToPolaire(P=None,x=None,y=None):
     You can provide a point::
 
         sage: from phystricks import Point
+        sage: from phystricks.SmallComputations import *
         sage: print PointToPolaire(Point(1,1))
         PolarCoordinates, r=sqrt(2),degree=45,radian=1/4*pi
 
@@ -656,6 +668,7 @@ def polar_with_dilatation(r,theta,xunit=1,yunit=1):
 
     EXAMPLES::
 
+        sage: from phystricks.SmallComputations import *
         sage: polar_with_dilatation(2,pi,2,1)
         (1, pi)
         sage: polar_with_dilatation(1,pi/4,2,2)
@@ -728,6 +741,7 @@ class ConversionAngles(object):
 
         EXAMPLES::
 
+            sage: from phystricks.SmallComputations import *
             sage: simplify_degree=ConversionAngles(180/pi,360).simplify
             sage: simplify_degree(400)
             40
@@ -800,6 +814,7 @@ class ConversionAngles(object):
 
         For converting 7 radian into degree, make the following::
 
+            sage: from phystricks.SmallComputations import *
             sage: degree=ConversionAngles(180/pi,360).conversion
             sage: degree(7)     
             1260/pi - 360

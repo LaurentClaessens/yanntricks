@@ -71,7 +71,7 @@ def PointsNameList():
 
     EXAMPLES::
     
-        sage: from phystricks import *
+        sage: from phystricks.BasicGeometricObjects import *
         sage: x=PointsNameList()
         sage: x.next()
         u'aaaa'
@@ -456,6 +456,7 @@ class GraphOfACircle(GraphOfAnObject):
 
     EXAMPLES::
 
+        sage: from phystricks import *
         sage: circle=Circle(Point(-1,1),3)
         sage: print unify_point_name(circle.pstricks_code())
         \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-4.00000000000000,1.00000000000000){Xaaaa}
@@ -491,6 +492,7 @@ class GraphOfACircle(GraphOfAnObject):
 
         EXAMPLES::
 
+            sage: from phystricks import *
             sage: circle=Circle(Point(0,0),1)
             sage: circle.equation()
             x^2 + y^2 - 1 == 0
@@ -556,6 +558,7 @@ class GraphOfACircle(GraphOfAnObject):
 
         EXAMPLES::
 
+            sage: from phystricks import *
             sage: C=Circle(Point(0,0),2)
             sage: pts=C.get_regular_points(0,90,1)
             sage: [str(p) for p in pts]
@@ -586,6 +589,7 @@ class GraphOfACircle(GraphOfAnObject):
 
         EXAMPLES::
 
+            sage: from phystricks import *
             sage: C=Circle(Point(0,0),2)
             sage: print C.get_normal_vector(45)
             <vector I=<Point(sqrt(2),sqrt(2))> F=<Point(3/2*sqrt(2),3/2*sqrt(2))>>
@@ -629,6 +633,7 @@ class GraphOfACircle(GraphOfAnObject):
 
         Python copies by assignation::
 
+            sage: from phystricks import *
             sage: c1=Circle( Point(1,1),2 )
             sage: c2=c1
             sage: c2.center=Point(3,3)
@@ -893,6 +898,7 @@ class FillParameters(object):
 
         EXAMPLES::
 
+            sage: from phystricks.BasicGeometricObjects import *
             sage: opt=Options()
             sage: fill=FillParameters()
             sage: fill.color="blue"
@@ -968,6 +974,7 @@ class Parameters(object):
 
         EXAMPLES ::
 
+            sage: from phystricks.BasicGeometricObjects import *
             sage: p1=Parameters()
             sage: p1.color="red"
             sage: p1.symbol="A"
@@ -996,6 +1003,7 @@ class Parameters(object):
 
         EXAMPLES::
 
+            sage: from phystricks.BasicGeometricObjects import *
             sage: p1=Parameters()
             sage: p1.color="red"
             sage: p1.symbol="A"
@@ -1040,10 +1048,12 @@ def extract_interval_information(curve):
 
     EXAMPLES::
 
+        sage: from phystricks import *
         sage: f=phyFunction(x**2).graph(1,pi)
         sage: extract_interval_information(f)
         (1, pi)
          
+        sage: from phystricks.BasicGeometricObjects import *
         sage: a=var('a')
         sage: curve=ParametricCurve(x,sin(x)).graph(sqrt(2),a)
         sage: extract_interval_information(curve)
@@ -1106,6 +1116,7 @@ class GraphOfAPoint(GraphOfAnObject):
 
         Return a point even if the projections happens to lies outside the segment::
 
+            sage: from phystricks import *
             sage: s1=Segment( Point(0,0),Point(2,1) )
             sage: print Point(3,-1).projection(s1)
             <Point(2,1)>
@@ -1151,6 +1162,7 @@ class GraphOfAPoint(GraphOfAnObject):
 
         EXAMPLES::
 
+            sage: from phystricks import *
             sage: P=Point(1,2)
             sage: print P.get_polar_point(sqrt(2),45)
             <Point(2,3)>
@@ -1178,6 +1190,7 @@ class GraphOfAPoint(GraphOfAnObject):
 
         EXAMPLE::
 
+            sage: from phystricks import *
             sage: s=Segment(Point(0,1),Point(1,0))
             sage: s.equation()
             x + y - 1 == 0
@@ -1203,10 +1216,11 @@ class GraphOfAPoint(GraphOfAnObject):
         """
         translate `self`.
 
-        EXAMPLES:
+        EXAMPLES::
 
         You can translate by a :func:`Vector`::
 
+            sage: from phystricks import *
             sage: v=Vector(2,1)                        
             sage: P=Point(-1,-1)
             sage: print P.translate(v)
@@ -1251,7 +1265,9 @@ class GraphOfAPoint(GraphOfAnObject):
 
         This is the radial component in polar coordinates.
 
-        EXAMPLES:
+        EXAMPLES::
+
+        sage: from phystricks import *
         sage: Point(1,1).norm()
         sqrt(2)
         sage: Point(-pi,sqrt(2)).norm()
@@ -1262,10 +1278,12 @@ class GraphOfAPoint(GraphOfAnObject):
         """
         The same as self.norm()
 
-        EXAMPLES:
-        sage: P=Point(1,1)
-        sage: P.length()
-        sqrt(2)
+        EXAMPLES::
+
+            sage: from phystricks import *
+            sage: P=Point(1,1)
+            sage: P.length()
+            sqrt(2)
         """
         return self.norm()
     # La méthode normalize voit le point comme un vecteur partant de zéro, et en donne le vecteur de taille 1
@@ -1303,6 +1321,7 @@ class GraphOfAPoint(GraphOfAnObject):
 
         EXAMPLES::
 
+            sage: from phystricks import *
             sage: Point(1,1).polar_coordinates()
             (sqrt(2), AngleMeasure, degree=45.0000000000000,radian=1/4*pi)
             sage: Point(-1,1).polar_coordinates()
@@ -1411,9 +1430,11 @@ class GraphOfAPoint(GraphOfAnObject):
         This is the case of the axes. The pstricks code of the axes have to be in one block
         including the markes. For that usage, we use with_mark=True
         
-        EXAMPLE:
-        sage: P=Point(1,1)
-        sage: P.put_mark(0.3,45,"$P$")
+        EXAMPLE::
+
+            sage: from phystricks import *
+            sage: P=Point(1,1)
+            sage: P.put_mark(0.3,45,"$P$")
 
         By default the code of the mark does not appears in the code of the point:
         sage: unify_point_name(P.pstricks_code())
@@ -1444,6 +1465,7 @@ class GraphOfAPoint(GraphOfAnObject):
 
         The fact to change the properties of a point don't change the equality::
 
+            sage: from phystricks import *
             sage: a=Point(1,1)
             sage: b=Point(1,1)
             sage: b.put_mark(1,1,"$P$")
@@ -1538,6 +1560,7 @@ class GeometricImplicitCurve(object):
 
         EXAMPLE ::
     
+            sage: from phystricks import *
             sage: x,y=var('x,y')
             sage: F=GeometricImplicitCurve(x-y==3)
             sage: graph=F.graph((x,-3,3),(y,-2,2))
@@ -1584,9 +1607,10 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
     
     EXAMPLES::
 
-        sage: x,y=var('x,y')
-        sage: implicit_curve=GeometricImplicitCurve(x**2+x==3)
-        sage: F=GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2)).pstricks_code()
+            sage: from phystricks import *
+            sage: x,y=var('x,y')
+            sage: implicit_curve=GeometricImplicitCurve(x**2+x==3)
+            sage: F=GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2)).pstricks_code()
 
     NOTES:
 
@@ -3001,6 +3025,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         a vector
 
         EXAMPLES:
+        sage: from phystricks import *
         sage: x=var('x')
         sage: f=phyFunction(x**2)
         sage: print f.get_normal_vector(0)
@@ -3043,6 +3068,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
 
         EXAMPLE::
 
+            sage: from phystricks import *
             sage: g=phyFunction(cos(x))
             sage: print g.tangent_phyFunction(pi/2)
             x |--> 1/2*pi - x
@@ -3071,6 +3097,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
             
         EXAMPLES::
         
+            sage: from phystricks import *
             sage: f=phyFunction(x+1)
             sage: print [P.coordinates() for P in f.get_regular_points(-2,2,sqrt(2))]
             ['(0.70434464532253749*sqrt(2) - 2,0.70434464532253749*sqrt(2) - 1)', '(1.408689290645075*sqrt(2) - 2,1.408689290645075*sqrt(2) - 1)', '(2.1130339359676125*sqrt(2) - 2,2.1130339359676125*sqrt(2) - 1)', '(2.81737858129015*sqrt(2) - 2,2.81737858129015*sqrt(2) - 1)']
@@ -3139,6 +3166,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
 
         EXAMPLES::
         
+            sage: from phystricks import *
             sage: f=phyFunction(x)
             sage: f.get_minmax_data(-3,pi)
             {'xmin': -3.0, 'ymin': -3.0, 'ymax': 3.1419999999999999, 'xmax': 3.1419999999999999}
@@ -3146,6 +3174,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
 
         In the case of the sine function, the min and max are almost -1 and 1::
 
+            sage: from phystricks import *
             sage: f=phyFunction(sin(x))
             sage: f.get_minmax_data(0,2*pi)
             {'xmin': 0.0, 'ymin': -1.0, 'ymax': 1.0, 'xmax': 6.2830000000000004}
@@ -3234,6 +3263,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
 
         EXAMPLES::
 
+            sage: from phystricks import *
             sage: f=phyFunction(x*sin(1/x)).graph(-5,5)
             sage: f.pstricks_code()      
             u'\\psplot[linestyle=solid,plotpoints=100,linecolor=blue]{-5.00000000000000}{5.00000000000000}{x*sin(1/x)}'
@@ -3267,6 +3297,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
 
         EXAMPLES::
 
+            sage: from phystricks import *
             sage: x=var('x')
             sage: f=phyFunction(cos(x))
             sage: f(1)
@@ -3305,6 +3336,8 @@ def get_paths_from_plot(p):
     - ``p`` - a plot object
 
     EXAMPLES:
+    sage: from phystricks import *
+    sage: from phystricks.BasicGeometricObjects import *
     sage: x,y=var('x,y')
     sage: F=implicit_plot(x**2+y**2==2,(x,-5,5),(y,-5,5))
     sage: g=get_paths_from_plot(F)
@@ -3349,6 +3382,8 @@ def get_paths_from_implicit_plot(p):
 
     The length of the list can be quite long::
 
+        sage: from phystricks import *
+        sage: from phystricks.BasicGeometricObjects import *
         sage: x,y=var('x,y')
         sage: F=implicit_plot(x**2+y**2==2,(x,-5,5),(y,-5,5))
         sage: len(get_paths_from_implicit_plot(F)[0])
@@ -3515,7 +3550,9 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         Return a dictionary whose keys give the xmin, xmax, ymin, and ymax
         data for this graphic.
 
-        EXAMPLES:
+        EXAMPLES::
+
+        sage: from phystricks import *
         sage: C=Circle(Point(0,0),1)
         sage: n=400
         sage: InterpolationCurve([C.get_point(i*SR(360)/n,advised=False) for i in range(n)]).get_minmax_data()
@@ -3542,7 +3579,9 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         """
         Return the bounding box of the interpolation curve
 
-        EXAMPLES:    
+        EXAMPLES::
+
+        sage: from phystricks import *
         sage: print InterpolationCurve([Point(0,0),Point(1,1)]).bounding_box()
         <BoundingBox mx=0.0,Mx=1.0; my=0.0,My=1.0>
 
@@ -3551,7 +3590,8 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         sage: print InterpolationCurve([C.get_point(i*SR(360)/n,advised=False) for i in range(n)]).bounding_box()
         <BoundingBox mx=-1.0,Mx=1.0; my=-1.0,My=1.0>
 
-        NOTE:
+        NOTE::
+
         Since the bounding box is computed from the give points while the curve is an interpolation,
         this bounding box is incorrect to the extend that \pscurve does not remains in the convex hull
         of the given points.
@@ -3575,8 +3615,9 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         """
         return the pstricks code of the interpolation curve trough the given points
 
-        EXAMPLES:
+        EXAMPLES::
 
+        sage: from phystricks import *
         sage: C=Circle(Point(0,0),1)
         sage: F=InterpolationCurve([Point(0,0),Point(1,1)])
         sage: print F.pstricks_code()
@@ -3599,7 +3640,10 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         """
         Return a string representation
 
-        EXAMPLES:
+        EXAMPLES::
+
+
+        sage: from phystricks.BasicGeometricObjects import *
         sage: print InterpolationCurve([Point(0,0),Point(1,1)])
         <InterpolationCurve with points ['<Point(0,0)>', '<Point(1,1)>']>
         """
@@ -3833,6 +3877,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 
         EXAMPLES::
 
+            sage: from phystricks import *
             sage: curve=ParametricCurve(cos(x),sin(2*x))
             sage: print curve.speed
             x |--> sqrt(sin(x)^2 + 4*cos(2*x)^2)
@@ -3854,6 +3899,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 
         EXAMPLES::
         
+            sage: from phystricks import *
             sage: x=var('x')
             sage: f1=phyFunction(cos(2*x))
             sage: f2=phyFunction(x*exp(2*x))
@@ -3941,6 +3987,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 
         EXAMPLES::
 
+            sage: from phystricks import *
             sage: F=ParametricCurve(x,x**2)
             sage: print F.get_tangent_vector(0)
             <vector I=<Point(0,0)> F=<Point(1,0)>>
@@ -3975,6 +4022,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 
         EXAMPLES::
 
+            sage: from phystricks import *
             sage: F=ParametricCurve(sin(x),x**2)
             sage: print F.get_normal_vector(0)
             <vector I=<Point(0,0)> F=<Point(0,-1)>>
@@ -4023,6 +4071,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 
         EXAMPLES::
 
+            sage: from phystricks import *
             sage: F=ParametricCurve(x,x**3)
 
         Normalizing a null vector produces a warning::
@@ -4131,6 +4180,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         The length of the circle of radius `sqrt(2)` in the first quadrant. We check that we 
         get the correct result up to 0.01::
 
+            sage: from phystricks import *
             sage: curve=ParametricCurve(x,sqrt(2-x**2))
             sage: bool( abs(pi*sqrt(2)/2) - curve.arc_length(0,sqrt(2)) <0.01) 
             True
@@ -4256,7 +4306,9 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         """
         return the curve in the inverse sense but on the same interval
 
-        EXAMPLE:
+        EXAMPLE::
+
+        sage: from phystricks import *
         sage: x=var('x')
         sage: curve=ParametricCurve(cos(x),sin(x)).graph(0,2*pi).reverse()
         sage: print curve
@@ -4334,6 +4386,7 @@ class BoundingBox(object):
 
     EXAMPLE::
 
+        sage: from phystricks import *
         sage: pspict,fig = SinglePicture("DefinitionCartesiennes")  #random
         sage: P=Point(1,1)
         sage: P.put_mark(0.3,0,"$MMM$")

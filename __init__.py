@@ -120,6 +120,7 @@ def MultiplePictures(name,n):
 
     EXAMPLE::
 
+        sage: from phystricks import *
         sage: pspict,fig = MultiplePictures("MyName",3)
         The result is on figure \ref{LabelFigMyName}.
         \newcommand{\CaptionFigMyName}{<+Type your caption here+>}
@@ -181,6 +182,7 @@ def Intersection(f,g):
 
     EXAMPLES::
 
+        sage: from phystricks import *
         sage: fun=phyFunction(x**2-5*x+6)
         sage: droite=phyFunction(2)
         sage: pts = Intersection(fun,droite)
@@ -237,6 +239,7 @@ def ParametricCurve(*args,**opt):
 
     EXAMPLES::
 
+        sage: from phystricks import *
         sage: x=var('x')
         sage: f1=phyFunction(x)
         sage: f2=phyFunction(x**2)
@@ -317,6 +320,7 @@ def phyFunction(fun,mx=None,Mx=None):
 
     EXAMPLES::
     
+        sage: from phystricks import *
         sage: f=phyFunction(cos(x))
         sage: f(pi/2)
         0
@@ -391,6 +395,7 @@ def MeasureLength(seg,dist=0.1):
     In order to check the position of the arrow line,
     we check the position of the mark_point::
 
+        sage: from phystricks import *
         sage: O=Point(0,0)
         sage: A=Point(1,0)
 
@@ -454,6 +459,7 @@ def InterpolationCurve(points_list,context_object=None):
 
     This example is valid, but will not plot the expected line (this is a feature of `\pscurve`)::
 
+        sage: from phystricks import *
         sage: F=InterpolationCurve([Point(0,0),Point(1,1)])
 
     If you want to plot the small segment, you have to add a point in the center::
@@ -497,6 +503,7 @@ def ImplicitCurve(f,xrange,yrange,plot_points=100):
 
     EXAMPLES::
 
+    sage: from phystricks import *
     sage: x,y=var('x,y')
     sage: f(x,y)=x**2+y**2
     sage: F=ImplicitCurve(f==2,(x,-5,5),(y,-5,5))
@@ -559,6 +566,7 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,reverse1=False,re
 
     EXAMPLES::
 
+        sage: from phystricks import *
         sage: curve1=ParametricCurve(x,x**2).graph(2,3)
         sage: curve2=ParametricCurve(x,x**3).graph(2,5)
         sage: region=SurfaceBetweenParametricCurves(curve1,curve2)
@@ -684,6 +692,7 @@ def CustomSurface(*args):
     The following describes the surface between the circle of radius 1 and 
     the square of length 1::
     
+        sage: from phystricks import *
         sage: C=Circle(Point(0,0),1)
         sage: arc=C.parametric_curve(0,pi/2)
         sage: h=Segment(Point(0,1),Point(1,1))
@@ -728,6 +737,7 @@ def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
 
     If you want the surface to be blue ::
 
+        sage: from phystricks import *
         sage: surf=SurfaceBetweenFunctions(sin(x)+3,cos(x),0,2*pi)
         sage: surf.parameters.color="blue"
 
@@ -808,6 +818,7 @@ def Circle(center,radius,angleI=0,angleF=360):
 
     The following describes the usual trigonometric circle::
 
+            sage: from phystricks import *
             sage: circle=Circle(Point(0,0),1)
             sage: print circle.angleI
             AngleMeasure, degree=0.000000000000000,radian=0
@@ -844,6 +855,7 @@ def AffineVector(A=None,B=None):
         
     An affine vector can be given by two points::
 
+        sage: from phystricks import *
         sage: print AffineVector(Point(1,1),Point(pi,sqrt(2)))
         <vector I=<Point(1,1)> F=<Point(pi,sqrt(2))>>
 
@@ -908,6 +920,7 @@ class Grid(object):
 
     As an example, in order to have red main horizontal lines::
 
+        sage: from phystricks import *
         sage: grid=Grid()
         sage: grid.main_horizontal.parameters.color = "red"
 
@@ -1094,6 +1107,7 @@ def Angle(A,O,B,r=None):
 
     Notice the difference between AOB and BOA::
 
+        sage: from phystricks import *
         sage: A=Point(1,1)
         sage: O=Point(0,0)
         sage: B=Point(1,0)
@@ -1125,6 +1139,7 @@ def CircleOA(O,A):
 
     EXAMPLES::
 
+        sage: from phystricks import *
         sage: A=Point(2,1)
         sage: O=Point(0,0)
         sage: circle=CircleOA(O,A)
@@ -1147,6 +1162,7 @@ def Point(x,y):
 
     EXAMPLES::
 
+        sage: from phystricks import *
         sage: print Point(1,1)
         <Point(1,1)>
         sage: print Point(pi,sqrt(2))
@@ -1181,6 +1197,7 @@ def PolarPoint(r,theta):
 
     EXAMPLES::
 
+        sage: from phystricks import *
         sage: print PolarPoint(2,45)
         <Point(sqrt(2),sqrt(2))>
 
@@ -1217,6 +1234,7 @@ def SingleAxe(C,base,mx,Mx):
 
     EXAMPLES::
     
+        sage: from phystricks import *
         sage: axe = SingleAxe(Point(1,1),Vector(0,1),-2,2)
     """
     return BasicGeometricObjects.GraphOfASingleAxe(C,base,mx,Mx)
@@ -1262,6 +1280,7 @@ def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
 
     EXAMPLES::
 
+        sage: from phystricks import *
         sage: x,y=var('x,y')
         sage: F=VectorField(x*y,cos(x)+y)
         sage: F.divergence()
@@ -1338,6 +1357,7 @@ def unify_point_name(s):
 
     ::
 
+        sage: from phystricks import *
         sage: P=Point(3,4)
         sage: S = Segment(Point(1,1),Point(2,2))
         sage: print S.pstricks_code()       # random
