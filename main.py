@@ -873,11 +873,18 @@ class pspicture(object):
                 }
                 \makeatother"""%(self.newwriteName,self.newwriteName)
             self.add_latex_line(code,"WRITE_AND_LABEL")
-            code="""\CatchFileDef \phystricksContent {%s}{\endlinechar=10 }
-                \immediate\openout\%s=%s
-                \immediate\write\%s{\phystricksContent}
-                """%(self.interWriteFile,self.newwriteName,self.interWriteFile,self.newwriteName)
+
+            # The following lines were creating the "TeX capacities exceeded" error.
+
+            #code="""\CatchFileDef \phystricksContent {%s}{\endlinechar=10 }
+            #    \immediate\openout\%s=%s
+            #    \immediate\write\%s{\phystricksContent}
+            #    """%(self.interWriteFile,self.newwriteName,self.interWriteFile,self.newwriteName)
+            #self.add_latex_line(code,"WRITE_AND_LABEL")
+
+            code="\immediate\openout\%s=%s"%(self.newwriteName,self.interWriteFile)
             self.add_latex_line(code,"WRITE_AND_LABEL")
+
 
             code=r"""\immediate\closeout\%s"""%self.newwriteName
             self.add_latex_line(code,"CLOSE_WRITE_AND_LABEL")
@@ -903,8 +910,6 @@ class pspicture(object):
                 f=open(self.interWriteFile,"w")
                 f.write("a:b-")
                 f.close()
-
-
     def initialize_counter(self):
         if not self.counterDone:
             code = r""" \makeatletter
@@ -1194,9 +1199,14 @@ class pspicture(object):
             if create_dico[k] :
                 to_other.__getattribute__("create_%s_file"%k)()
         # return the LaTeX code of self
-        if global_vars.exit_format=="pstricks":
-            return self.contenu_pstricks
-        return to_other.__getattribute__("input_code_"+global_vars.exit_format)
+
+        # This is for png or eps
+        if global_vars.exit_formats not in ["pstricks","pdf"]:
+            return to_other.__getattribute__("input_code_"+global_vars.exit_format)
+    
+        # This is for pdf and pstricks.
+        return "\ifpdf {0}\n \else {1}\n \\fi".format(to_other.input_code_pdf,self.contenu_pstricks,self.)
+
 
     def write_the_file(self,f):
         """
