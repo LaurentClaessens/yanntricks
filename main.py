@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2011
+# copyright (c) Laurent Claessens, 2009-2012
 # email: moky.math@gmail.com
 
 
@@ -805,7 +805,6 @@ class pspicture(object):
             # If the graph is a mark, then one has to recompute
             # its position because of possible xunit,yunit.
             #if isinstance(graph,Mark):
-            #    print "1651 central point",graph.central
             #    if graph.parent:
             #        graph = Mark(graph.parent,graph.dist,graph.angle,graph.text,graph.automatic_place)
 

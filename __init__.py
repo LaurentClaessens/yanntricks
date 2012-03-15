@@ -35,8 +35,6 @@ COMMAND LINE ARGUMENTS:
                          See :class:`TestPspictLaTeXCode` and the function :func:`create_png_file`
                          in :class:`PspictureToOtherOutputs`
 
-    - ``--pdflatex`` - Use pdflatex instead of latex for compilation
-
     - ``--silent`` - do not print the warning about missing auxiliary file
 
     NOTES:
@@ -1078,7 +1076,6 @@ class global_variables(object):
         self.exit_format="pstricks"
         self.perform_tests = False
         self.silent=False
-        self.pdflatex=False
     def special_exit(self):
         for sortie in self.create_formats.values():
             if sortie:
@@ -1416,8 +1413,6 @@ def unify_point_name(s):
 global_vars = global_variables()
 if "--silent" in sys.argv :
     global_vars.silent=True
-if "--pdflatex" in sys.argv :
-    global_vars.pdflatex=True
 if "--eps" in sys.argv :
     global_vars.exit_format="eps"
     global_vars.create_formats["eps"] = True

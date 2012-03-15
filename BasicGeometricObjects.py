@@ -357,8 +357,19 @@ class GraphOfASingleAxe(GraphOfAnObject):
             if projection :
                 return Segment(self.C,self.C+self.base)
             else :
-                raise ValueError,"The size of {0} is not yet defined.".format(self) # this message is hard-checked at position 27319 in main.py
-                                                                                # do not change it.
+                return Segment(self.C-self.base,self.C+self.base)       # This is the default axe if there is nothing in that direction
+
+                # raising an error here makes impossible to draw pictures with only vertical stuff. As an example, the following 
+                # was crashing :
+
+                #P=Point(0,0)
+                #pspict.DrawGraphs(P)
+                #pspict.DrawDefaultAxes()
+                #pspict.dilatation(1)
+                #fig.conclude()
+
+                #raise ValueError,"The size of {0} is not yet defined.".format(self) # this message is hard-checked at position 27319 in main.py
+                                                                                    # do not change it.
         return Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
     def add_option(self,opt):
         self.options.add_option(opt)
@@ -4556,7 +4567,9 @@ class BoundingBox(object):
         self.Mx = max(self.Mx,bb.Mx)
         self.My = max(self.My,bb.My)
 
-    def append(self,graph,pspict=None):        # It seems to me that the method name "append" is more intuitive that "add_graph"
+    def append(self,graph,pspict=None):
+        #if isinstance(graph,Axes):
+        #    raise TypeError
         try :
             self.AddBB(graph.bounding_box(pspict))
         except (ValueError,AttributeError),msg :
