@@ -23,7 +23,7 @@ A collection of tools for building LaTeX-pstricks figures with python.
 
 COMMAND LINE ARGUMENTS:
 
-    - ``--pdf`` - the picture arrives as an \includegraphics of a pdf. It also creates the `pdf` file.
+    - ``--pdf`` - Create the PDF files of the pictures
 
     - ``--eps`` - the picture arrives as an \includegraphics of a eps. It also creates the `eps` file.
 
@@ -34,6 +34,8 @@ COMMAND LINE ARGUMENTS:
                          
                          See :class:`TestPspictLaTeXCode` and the function :func:`create_png_file`
                          in :class:`PspictureToOtherOutputs`
+
+    - ``--pdflatex`` - Use pdflatex instead of latex for compilation
 
     - ``--silent`` - do not print the warning about missing auxiliary file
 
@@ -1076,13 +1078,12 @@ class global_variables(object):
         self.exit_format="pstricks"
         self.perform_tests = False
         self.silent=False
+        self.pdflatex=False
     def special_exit(self):
         for sortie in self.create_formats.values():
             if sortie:
                 return True
         return False
-
-
 
 def Angle(A,O,B,r=None):
     """
@@ -1415,6 +1416,8 @@ def unify_point_name(s):
 global_vars = global_variables()
 if "--silent" in sys.argv :
     global_vars.silent=True
+if "--pdflatex" in sys.argv :
+    global_vars.pdflatex=True
 if "--eps" in sys.argv :
     global_vars.exit_format="eps"
     global_vars.create_formats["eps"] = True

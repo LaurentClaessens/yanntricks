@@ -1201,11 +1201,11 @@ class pspicture(object):
         # return the LaTeX code of self
 
         # This is for png or eps
-        if global_vars.exit_formats not in ["pstricks","pdf"]:
+        if global_vars.exit_format not in ["pstricks","pdf"]:
             return to_other.__getattribute__("input_code_"+global_vars.exit_format)
     
         # This is for pdf and pstricks.
-        return "\ifpdf {0}\n \else {1}\n \\fi".format(to_other.input_code_pdf,self.contenu_pstricks,self.)
+        return "\ifpdf {0}\n \else {1}\n \\fi".format(to_other.input_code_pdf,self.contenu_pstricks)
 
 
     def write_the_file(self,f):
