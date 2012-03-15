@@ -1909,13 +1909,16 @@ class GraphOfASegment(GraphOfAnObject):
         PIs.extend( [  PI[i]+normal*(-1)**i for i in range(1,len(PI))  ] )
         PIs.append(self.F)
         return PIs
-    def proportion(self,p):
+    def proportion(self,p,advised=True):
         """
         returns a point on the segment which is at the position
         (p-1)*I+p*F
         if I and F denote the initial and final point of the segment.
         """
-        return self.I*(1-p) + self.F*p
+        P = self.I*(1-p) + self.F*p
+        if advised:
+            P.advised_mark_angle=self.angle().degree+90
+        return P
     def Point(self):
         """
         Return the point X such that as free vector, 0->X == self
@@ -1925,8 +1928,7 @@ class GraphOfASegment(GraphOfAnObject):
         return self.F-self.I
 
     def center(self):
-        P = self.proportion(0.5)
-        P.advised_mark_angle=self.angle().degree+90
+        P = self.proportion(0.5,advised=True)
         return P
 
     def AffineVector(self):
