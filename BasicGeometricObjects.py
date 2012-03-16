@@ -1954,6 +1954,13 @@ class GraphOfASegment(GraphOfAnObject):
         else :
             P = Point(self.slope,-1)
             return P.Vector().normalize().origin(self.center())
+    def get_tangent_vector(self):
+        """
+        return a tangent vector at center of the segment
+        """
+        C=self.center()
+        v=self.AffineVector()
+        return v.origin(self.center()).fix_size(1)
     def polaires(self):
         return PointToPolaire(self.Point())
     def angle(self):
