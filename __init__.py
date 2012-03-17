@@ -18,6 +18,10 @@
 # copyright (c) Laurent Claessens, 2009-2012
 # email: moky.math@gmail.com
 
+# The documentation is compiled by
+# sage -sh
+# make html
+
 """
 A collection of tools for building LaTeX-pstricks figures with python.
 

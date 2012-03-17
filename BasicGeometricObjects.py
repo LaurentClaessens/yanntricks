@@ -352,12 +352,12 @@ class GraphOfASingleAxe(GraphOfAnObject):
     
     # SingleAxe.segment cannot be a lazy attribute because we use it for some projections before
     # to compute the bounding box.
-    def segment(self,projection=False):
+    def segment(self,projection=False,pspict=None):
         if self.mx == 0 and self.Mx == 0 :
             if projection :
                 return Segment(self.C,self.C+self.base)
             else :
-                return Segment(self.C-self.base,self.C+self.base)       # This is the default axe if there is nothing in that direction
+                return Segment(self.C-self.base.visual_length(1,pspict=pspict),self.C+self.base.visual_length(1,pspict=pspict))       # This is the default axe if there is nothing in that direction
 
                 # raising an error here makes impossible to draw pictures with only vertical stuff. As an example, the following 
                 # was crashing :
@@ -421,7 +421,7 @@ class GraphOfASingleAxe(GraphOfAnObject):
                 BB.append(P.mark,pspict)
         return BB
     def math_bounding_box(self,pspict):
-        return self.segment().bounding_box(pspict)
+        return self.segment(pspict=pspict).bounding_box(pspict)
     def pstricks_code(self,pspict=None):
         """
         Return the pstricks code of the axe.
@@ -2138,6 +2138,11 @@ class GraphOfASegment(GraphOfAnObject):
         """
         v = PolarSegment(self.I,self.polaires().r,self.polaires().degree+angle)
         return self.return_deformations(v)
+    def visual_length(self,l,xunit=None,yunit=None,pspict=None):
+        """
+        return a segment with the same initial point, but with visual length  `l`
+        """
+        return SmallComputations.visual_length(self,l,xunit,yunit,pspict)
     def add_size_extemity(self,l):
         """
         Add a length <l> at the extremity of the segment. Return a new object.
@@ -2256,7 +2261,7 @@ class GraphOfASegment(GraphOfAnObject):
             L=self.length()
             if L==0:
                 return self.copy()
-            v = (l*self).__div__(L)       # Simply write l*self/L does not work.
+            v = (l*self).__div__(L)     
             v.arrow_type="vector"
         return self.return_deformations(v)
     def graph(self):
@@ -2340,6 +2345,8 @@ class GraphOfASegment(GraphOfAnObject):
         return self*coef
     def __neg__(self):
         return self*(-1)
+    def __div__(self,coef):
+        return self * (1/coef)
     def __div__(self,coef):
         return self * (1/coef)
     def __str__(self):

@@ -911,3 +911,35 @@ def SubstitutionMathMaxima(exp):
         a = a.replace("math.log"+str(i),"log("+str(i)+")^(-1)*log")
     return a.replace("math.log","log").replace("math.tan","tan").replace("math.pi","%pi").replace("math.","")
 
+def visual_length(v,l,xunit=None,yunit=None,pspict=None):
+    """
+    Return a vector in the direction of v that has *visual* length l taking xunit and yunit into accout.
+
+    In the following example, the cyan vectors are deformed the the X-dilatation while the
+    brown vectors are of length 2.
+
+    .. literalinclude:: phystrickstestVisualLength.py
+    .. image:: Picture_FIGLabelFigtestVisualLengthPICTtestVisualLength-for_eps.png
+
+    """
+    if pspict:
+        xunit=pspict.xunit
+        yunit=pspict.yunit
+    Dx=v.Dx
+    Dy=v.Dy
+    if not v.vertical :
+        slope=v.slope
+        x=l/sqrt(xunit**2+slope**2*yunit**2)
+        if Dx<0:
+            x=-x
+        y=slope*x
+    else:
+        x=0
+        y=l/yunit
+    if hasattr(v,"I"):
+        from phystricks import AffineVector
+        from phystricks import Vector
+        return AffineVector(v.I,v.I+Vector(x,y))
+    else:
+        from phystricks import Vector
+        return Vector(x,y)
