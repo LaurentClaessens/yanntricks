@@ -428,15 +428,8 @@ class GraphOfASingleAxe(GraphOfAnObject):
         """
         sDx=RemoveLastZeros(self.Dx,10)
         self.add_option("Dx="+sDx)
-        #bgx = self.BB.mx
-        #if self.BB.mx == int(self.BB.mx):      # Avoid having end of axes on an integer coordinate for aesthetic reasons.
-        #   bgx = self.BB.mx + 0.01
-        #self.BB.mx = bgx
         c=[]
         if self.mark :
-            #P = self.segment().F
-            #P.parameters.symbol="none"
-            #P.put_mark(self.DistLabel,self.AngleLabel,self.Label)
             c.append(self.mark.pstricks_code(pspict))
         if self.graduation :
             for P in self.graduation_points(pspict):
@@ -4616,6 +4609,7 @@ class BoundingBox(object):
         self.AddPoint( axes.BB.SW() )
         self.AddPoint( axes.BB.NE() )
     def enlarge_a_little(self,Dx,Dy,epsilonX,epsilonY):
+        raise DeprecationWarning
         """
         Essentially intended to the bounding box of a axis coordinate. 
         The aim is to make the axis slightly larger than the picture in such a way that all the numbers are written
