@@ -357,6 +357,8 @@ class GraphOfASingleAxe(GraphOfAnObject):
             if projection :
                 return Segment(self.C,self.C+self.base)
             else :
+                print "360"
+                print pspict
                 return Segment(self.C-self.base.visual_length(1,pspict=pspict),self.C+self.base.visual_length(1,pspict=pspict))       # This is the default axe if there is nothing in that direction
 
                 # raising an error here makes impossible to draw pictures with only vertical stuff. As an example, the following 
@@ -377,25 +379,32 @@ class GraphOfASingleAxe(GraphOfAnObject):
         return self.segment().F
     def add_label(self,dist,angle,text):
         raise DeprecationWarning, "Use put_mark instead"
-        #r,theta=polar_with_dilatation(0.2,radian(self.mark_angle),self.pspict.xunit,self.pspict.yunit)
-        #theta=degree(theta)
-        self.mark=BasicGeometricObjects.Mark(self,dist/self.pspict.yunit,angle,text,automatic_place=self.pspict)
-        #self.IsLabel = True
-        #self.Label = marque
-        #self.DistLabel = dist
-        #self.AngleLabel = angle
     def no_numbering(self):
         self.numbering=False
     def no_graduation(self):
         self.graduation=False
+    def enlarge_a_little(self,l,xunit=None,yunit=None,pspict=None):
+        """
+        Enlarge the axe by `l` visuals centimeters.
+        """
+        if pspict:
+            xunit=pspict.xunit
+            yunit=pspict.yunit
+        print "393UULLdp"
+        print self.segment(pspict=pspict)
+        print l
+        print xunit
+        print yunit
+        print self.segment(pspict=pspict).F+SmallComputations.visual_length(self.segment(pspict=pspict),l,xunit,yunit)
     def graduation_points(self,pspict):
         """
         Return the list of points that makes the graduation of the axes
 
         By defaut, it is one at each multiple of self.base. If an user-defined axes_unit is given, then self.base is modified.
+
+        This function also enlarge the axe by half a *visual* centimeter.
         """
-        # There was the enlarging of the bounding box for aesthetic reasons is made in Axes.pstricks_code
-        # An other enlarging is in main.pspicture.DrawDefaultAxes.
+        self.enlarge_a_little(0.5,pspict=pspict)
         if not self.graduation:
             return []
         points_list=[]
@@ -404,7 +413,6 @@ class GraphOfASingleAxe(GraphOfAnObject):
             P=(x*self.base).F
             P.parameters.symbol="|"
             P.add_option("dotangle=%s"%str(bar_angle))
-            #P.psName=P.psName+pspict.name+latinize(str(numerical_approx(x)))   # Make the point name unique.
             P.psName="ForTheBar"   # Since this point is not supposed to
                                        # be used, all of them have the same ps name.
             if self.numbering :
@@ -2131,10 +2139,31 @@ class GraphOfASegment(GraphOfAnObject):
         """
         v = PolarSegment(self.I,self.polaires().r,self.polaires().degree+angle)
         return self.return_deformations(v)
+    def get_visual_length(self,xunit=None,yunit=None,pspict=None):
+        """
+        Return the visual length of self. That is the length taking xunit and  yunit into account
+        """
+        if pspict:
+            xunit=pspict.xunit
+            yunit=pspict.yunit
+        Dx=(self.F.x-self.I.x)*xunit
+        Dy=(self.F.y-self.I.y)*yunit
+        if self.vertical:
+            return Dy
+        else: 
+            return sqrt(Dx**2+Dy**2)
+
     def visual_length(self,l,xunit=None,yunit=None,pspict=None):
         """
         return a segment with the same initial point, but with visual length  `l`
         """
+        if pspict:
+            xunit=pspict.xunit
+            yunit=pspict.yunit
+        print "2142"
+        print l
+        print xunit
+        print yunit
         return SmallComputations.visual_length(self,l,xunit,yunit,pspict)
     def add_size_extemity(self,l):
         """
