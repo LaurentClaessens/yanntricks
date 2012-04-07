@@ -347,6 +347,8 @@ class GraphOfASingleAxe(GraphOfAnObject):
         self.mark_origin=True
         self.mark=None
         self.mark_angle=degree(base.angle().radian-pi/2)
+        self.already_enlarged=False
+        self.enlarge_size=0.5
         #self.vertical=base.vertical
         #self.horizontal=base.horizontal
     
@@ -357,9 +359,7 @@ class GraphOfASingleAxe(GraphOfAnObject):
             if projection :
                 return Segment(self.C,self.C+self.base)
             else :
-                print "360"
-                print pspict
-                return Segment(self.C-self.base.visual_length(1,pspict=pspict),self.C+self.base.visual_length(1,pspict=pspict))       # This is the default axe if there is nothing in that direction
+                return Segment(self.C-self.base.visual_length(1,pspict=pspict),self.C+self.base.visual_length(1,pspict=pspict))      
 
                 # raising an error here makes impossible to draw pictures with only vertical stuff. As an example, the following 
                 # was crashing :
@@ -387,21 +387,19 @@ class GraphOfASingleAxe(GraphOfAnObject):
         """
         Enlarge the axe by `l` visuals centimeters.
         """
+        if self.already_enlarged:
+            return None
         if pspict:
             xunit=pspict.xunit
             yunit=pspict.yunit
-        print "393UULLdp"
-        print self.segment(pspict=pspict)
-        print l
-        print xunit
-        print yunit
-        print self.base,type(self.base)
         seg=self.segment(pspict=pspict)
         # The aim is to find the multiple of the base vector that has length `l`.
         vx=self.base.F.x
         vy=self.base.F.y
         k=l/sqrt(  (vx*xunit)**2+(vy*yunit)**2  )
         self.Mx=self.Mx+k
+        self.mx=self.mx-k
+        self.already_enlarged=True
     def graduation_points(self,pspict):
         """
         Return the list of points that makes the graduation of the axes
@@ -410,7 +408,6 @@ class GraphOfASingleAxe(GraphOfAnObject):
 
         This function also enlarge the axe by half a *visual* centimeter.
         """
-        self.enlarge_a_little(0.5,pspict=pspict)
         if not self.graduation:
             return []
         points_list=[]
@@ -445,6 +442,7 @@ class GraphOfASingleAxe(GraphOfAnObject):
         c=[]
         if self.mark :
             c.append(self.mark.pstricks_code(pspict))
+        self.enlarge_a_little(self.enlarge_size,pspict=pspict)
         if self.graduation :
             for P in self.graduation_points(pspict):
                 c.append(P.pstricks_code(pspict,with_mark=True))
@@ -2166,10 +2164,6 @@ class GraphOfASegment(GraphOfAnObject):
         if pspict:
             xunit=pspict.xunit
             yunit=pspict.yunit
-        print "2142"
-        print l
-        print xunit
-        print yunit
         return SmallComputations.visual_length(self,l,xunit,yunit,pspict)
     def add_size_extemity(self,l):
         """

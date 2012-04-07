@@ -810,14 +810,18 @@ class pspicture(object):
 
             separator_name=x.separator_name
             try :
-                self.BB.append(graph,self)
                 self.add_latex_line(graph.pstricks_code(self),separator_name)
+                self.BB.append(graph,self)          # See comment ehCPDg below
                 list_used_separators.append(separator_name)
             except AttributeError,data:
                 if not "pstricks_code" in dir(graph):
                     print "phystricks error: object %s has no pstricks_code method"%(str(graph))
                 raise
         self.separator_list.fusion(list_used_separators,"PSTRICKS CODE")
+
+        # Comment ehCPDg:
+        #  The bounding box has to be added after the latex code since the bounding box of the axes
+        # is computed in the same time as the latex code. This is for enlarging reasons.
 
     @lazy_attribute
     def pstricks_code(self):
@@ -1132,9 +1136,6 @@ class pspicture(object):
                                                                     # and it becomes ugly when dilating
                                                                     # Notice that we pass here too early to use self.xunit,self.yunit
         self.axes.BB.add_object(BB)
-        #epsilonX=float(self.axes.Dx)/2
-        #epsilonY=float(self.axes.Dy)/2
-        #self.axes.BB.enlarge_a_little(self.axes.Dx,self.axes.Dy,epsilonX,epsilonY)
         self.axes.update()
         self.DrawGraph(self.axes)
     def DrawDefaultGrid(self):
