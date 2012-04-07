@@ -395,7 +395,13 @@ class GraphOfASingleAxe(GraphOfAnObject):
         print l
         print xunit
         print yunit
-        print self.segment(pspict=pspict).F+SmallComputations.visual_length(self.segment(pspict=pspict),l,xunit,yunit)
+        print self.base,type(self.base)
+        seg=self.segment(pspict=pspict)
+        # The aim is to find the multiple of the base vector that has length `l`.
+        vx=self.base.F.x
+        vy=self.base.F.y
+        k=l/sqrt(  (vx*xunit)**2+(vy*yunit)**2  )
+        self.Mx=self.Mx+k
     def graduation_points(self,pspict):
         """
         Return the list of points that makes the graduation of the axes

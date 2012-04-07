@@ -475,6 +475,7 @@ def enlarge_a_little_up(x,m,epsilon):
     see the description of the function enlarge_a_little of the class BoundingBox.
     This function makes the job for one number.
     """
+    raise DeprecationWarning
     if int(x/m) == x/m:
         return x+epsilon
     else : 
@@ -485,6 +486,7 @@ def enlarge_a_little_low(x,m,epsilon):
     see the description of the function enlarge_a_little of the class BoundingBox.
     This function makes the job for one number.
     """
+    raise DeprecationWarning
     if int(x/m) == x/m:
         return x-epsilon
     else : 
