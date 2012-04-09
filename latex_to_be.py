@@ -9,6 +9,7 @@ to_be_checked_general_latex=r"""
 \usepackage{amsthm}
 \usepackage{amssymb}
 \usepackage{bbm}		
+\usepackage[cdot,thinqspace,amssymb]{SIunits}
 
 \usepackage{eso-pic}
 \usepackage{pstricks}
@@ -39,7 +40,8 @@ to_be_checked_general_latex=r"""
 \def\eR{\mathbbm{R}}
 \def\eZ{\mathbbm{Z}}
 \newcommand{\mtu}{\mathbbm{1}}
-	\DeclareMathOperator{\SO}{SO}
+\DeclareMathOperator{\SO}{SO}
+\DeclareMathOperator{\pr}{\texttt{proj}}
 
 
 \begin{document}

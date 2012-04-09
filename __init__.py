@@ -279,7 +279,6 @@ def ParametricCurve(*args,**opt):
         if len(args)>1:
             llamI=args[1]
             llamF=args[2]
-            print "275"
     if "mx" in opt.keys() and "Mx" in opt.keys() :
         llamI=opt["mx"]
         llamF=opt["Mx"]
@@ -1207,7 +1206,7 @@ def PolarPoint(r,theta):
     """
     return Point(r*cos(radian(theta)),r*sin(radian(theta)))
 
-def SingleAxe(C,base,mx,Mx):
+def SingleAxe(C,base,mx,Mx,pspict=None):
     """
     Return an axe.
     
@@ -1239,7 +1238,7 @@ def SingleAxe(C,base,mx,Mx):
         sage: from phystricks import *
         sage: axe = SingleAxe(Point(1,1),Vector(0,1),-2,2)
     """
-    return BasicGeometricObjects.GraphOfASingleAxe(C,base,mx,Mx)
+    return BasicGeometricObjects.GraphOfASingleAxe(C,base,mx,Mx,pspict)
 
 def Segment(A,B):
     return BasicGeometricObjects.GraphOfASegment(A,B)

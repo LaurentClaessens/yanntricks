@@ -244,10 +244,6 @@ class figure(object):
 
         self.add_latex_line("\\begin{figure}[ht]","BEFORE SUBFIGURES")
         self.add_latex_line("\centering","BEFORE SUBFIGURES")
-    def new_separator(self,title):
-        raise DeprecationWarning
-        self.separator_number = self.separator_number + 1
-        self.separator_dico[title]=Separator(title,self.separator_number)
     def dilatation_X(self,fact):
         """ Makes a dilatation of the whole picture in the X direction. A contraction if the coefficient is lower than 1 """
         self.xunit = self.xunit * fact
@@ -290,15 +286,6 @@ class figure(object):
         pspict.mother=self
         pspict.figure_mother=self
         self.record_pspicture.append(pspict)
-    def add_pspicture(self,pspict):
-        raise DeprecationWarning,"Use fig.new_pspicture instead."
-    def append_subfigure(self,pspict):
-        raise DeprecationWarning,"Use fig.new_subfigure instead."
-    def add_latex_line(self,ligne,separator_name="DEFAULT"):
-        self.separator_list[separator_name].add_latex_line(ligne)
-    def IncrusteLigne(self,ligne,n):
-        raise DeprecationWarning, "The method picture.IncrusteLigne() is depreciated."
-        self.code[n:n]=ligne+"\n"
     def AjouteCode(self,liste_code):
         self.code.extend(liste_code)
     def LaTeX_lines(self):
@@ -317,6 +304,7 @@ class figure(object):
             # Here we add the picture itself. What arrives depends on --eps, --pdf, --png, ...
             self.add_latex_line(pspict.contenu(),"PSPICTURE")
 
+
             # What has to be written in the WRITE_AND_LABEL part of the picture is written now
             # This has to be done _after_ having called pspict.contenu().
             self.add_latex_line(pspict.write_and_label_separator_list["WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
@@ -332,6 +320,7 @@ class figure(object):
             self.add_latex_line("\label{%s}"%f.name,"SUBFIGURES")
             self.add_latex_line("}                  % Closing subfigure "+str(self.record_subfigure.index(f)+1),"SUBFIGURES")
             self.add_latex_line("%","SUBFIGURES")
+
 
             for pspict in f.record_pspicture:
                 self.add_latex_line(pspict.write_and_label_separator_list["WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
@@ -392,8 +381,6 @@ class subfigure(object):
         return "\n".join(a)
     def _add_pspicture(self,pspicture):
         self.record_pspicture.append(pspicture)
-    def add_pspicture(self,pspicture):
-        raise DeprecationWarning,"use subfigure.new_pspicture instead"
 
 class PspictureToOtherOutputs(object):
     """
@@ -487,16 +474,6 @@ def add_latex_line_entete(truc,position=""):
     truc.add_latex_line("% http://student.ulb.ac.be/~lclaesse/phystricks-documentation/_build/html/index.html ",position)
     truc.add_latex_line("% and the projects phystricks and phystricks-doc at ",position)
     truc.add_latex_line("% http://gitorious.org/~moky\n",position)
-
-def DicoSeparatorToCode(separator_dico):
-    raise DeprecationWarning,"Everything should use SeparatorList"
-    """"takes a dictionary of Separator as argument and return the glued code"""
-    list_separator = separator_dico.values()
-    list_separator.sort()
-    a = []
-    for sep in list_separator :
-        a.append(sep.code())
-    return "".join(a)
 
 class SeparatorList(object):
     """
@@ -676,6 +653,7 @@ class pspicture(object):
         self.record_marks=[]
         self.record_bounding_box=[]
         self.record_draw_graph=[]
+        self.record_draw_bb=[]
         self.record_force_math_bounding_box=[]
         #self.record_math_BB=[]
         #self.record_BB=[]
@@ -685,16 +663,17 @@ class pspicture(object):
         self.xunit = 1
         self.yunit = 1
         self.LabelSep = 1
-        self.BB = BasicGeometricObjects.BoundingBox()
+        self.BB = BasicGeometricObjects.BoundingBox(parent=self)
         self.math_BB = BasicGeometricObjects.BoundingBox()     # self.BB and self.math_BB serve to add some objects by hand.
                                             # If you need the bounding box, use self.bounding_box()
                                             # or self.math_bounding_box()
-        self.axes=BasicGeometricObjects.Axes(Point(0,0),BasicGeometricObjects.BoundingBox())
+        self.axes=BasicGeometricObjects.Axes(Point(0,0),BasicGeometricObjects.BoundingBox(),pspict=self)
         self.single_axeX=self.axes.single_axeX
         self.single_axeY=self.axes.single_axeY
-
         self.single_axeX.pspict=self
         self.single_axeY.pspict=self
+        self.draw_default_axes=False
+        self._bounding_box=None
 
         self.grid = Grid(BasicGeometricObjects.BoundingBox())
 
@@ -745,14 +724,20 @@ class pspicture(object):
         if self.LabelSep == 1 :
             self.LabelSep = 2/(self.xunit+self.yunit)
         add_latex_line_entete(self)
+
+
         self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+",LabelSep="+str(self.LabelSep)+"}","BEFORE PSPICTURE")
         self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}\n","BEFORE PSPICTURE")
         self.add_latex_line("\\begin{pspicture}%s%s\n"%(self.bounding_box(self).SW().coordinates(numerical=True),self.bounding_box(self).NE().coordinates(numerical=True)),"BEGIN PSPICTURE")
+
+
         self.add_latex_line("\end{pspicture}\n","END PSPICTURE")
         self.add_latex_line(self.pstricks_code_list,"OTHER STUFF")
 
+
         self.xsize=self.bounding_box(self).xsize()
         self.ysize=self.bounding_box(self).ysize()
+
 
         return self.separator_list.code()
 
@@ -774,54 +759,64 @@ class pspicture(object):
         # TODO : take it into account.
 
         # Creating the bounding box
-        list_to_be_drawn = [a.graph for a in self.record_draw_graph if a.take_graph]
-        for graph in list_to_be_drawn:
-            try :
-                if graph.draw_bounding_box:
-                    raise AttributeError,"I don't think that the attribute `draw_bounding_box` still exists"
-                    # It seems to me that we can safely remove all this part. March, 29, 2011.
-                    bb=graph.bounding_box(self)
-                    rect = Rectangle(bb.SW(),bb.NE())
-                    rect.parameters.color="cyan"
-                    self.DrawGraph(rect)
-            except AttributeError :
-                pass
-
+        #list_to_be_drawn = [a.graph for a in self.record_draw_graph if a.take_graph]
         list_to_be_drawn = [a for a in self.record_draw_graph if a.take_graph]
 
-        # Produce the code in the sense that if writes everything in the separators.
         list_used_separators=[]
+        # STEP : update the bounding box
+        for x in list_to_be_drawn :
+            self.BB.append(x.graph,self)
+            if not isinstance(x.graph,BasicGeometricObjects.Mark):
+                self.math_BB.append(x.graph,self)
+        # STEP : add the axes
+        if self.draw_default_axes:
+            self.axes.add_bounding_box(self.math_BB,self)     # Here the axes take into account the content of pspict.
+            graph=self.axes
+            self.axes.enlarge_a_little(self.axes.enlarge_size,pspict=self)  # This should be the only call to enlarge_a_little
+
+            separator_name=graph.separator_name
+            self.add_latex_line(graph.pstricks_code(self),separator_name)
+            list_used_separators.append(separator_name)
+
+            self.BB.append(self.axes,pspict=self)                   # Here the pspict take into account the enlarging of the axes
+
+            for single in [self.axes.single_axeX,self.axes.single_axeY]:
+                if single.marque:
+                    self.BB.append(single.mark,self)                     # Here the marks on the axes are taken into account in
+                                                                    # the bounding box of the pspicture.
+
+        # STEP : release the bounding box
+        self._bounding_box=self.BB      # At this point the bounding box of the pspict is known.
+
+        # STEP : add the LaTeX code of each element
         for x in list_to_be_drawn:
             graph=x.graph
 
             # If the graph is a bounding box of a mark, we recompute it
             # because a dilatation of the figure could have
             # changed the bounding box.
+            # Same for the bounding box of the pspicture, since it is not know before now
             if isinstance(graph,BasicGeometricObjects.BoundingBox):
                 if graph.parent:
-                    if isinstance(graph.parent,BasicGeometricObjects.Mark):
-                        graph=graph.parent.bounding_box(self)
+                    print "rjFdMA I'm drawing the bounding box of ",graph.parent
+                    graph=graph.parent.bounding_box(self)
+                    #if isinstance(graph.parent,BasicGeometricObjects.Mark):
+
 
             # If the graph is a mark, then one has to recompute
             # its position because of possible xunit,yunit.
             #if isinstance(graph,Mark):
             #    if graph.parent:
             #        graph = Mark(graph.parent,graph.dist,graph.angle,graph.text,graph.automatic_place)
-
             separator_name=x.separator_name
             try :
                 self.add_latex_line(graph.pstricks_code(self),separator_name)
-                self.BB.append(graph,self)          # See comment ehCPDg below
                 list_used_separators.append(separator_name)
             except AttributeError,data:
                 if not "pstricks_code" in dir(graph):
                     print "phystricks error: object %s has no pstricks_code method"%(str(graph))
                 raise
         self.separator_list.fusion(list_used_separators,"PSTRICKS CODE")
-
-        # Comment ehCPDg:
-        #  The bounding box has to be added after the latex code since the bounding box of the axes
-        # is computed in the same time as the latex code. This is for enlarging reasons.
 
     @lazy_attribute
     def pstricks_code(self):
@@ -864,10 +859,6 @@ class pspicture(object):
         fig=self.default_figure(name+self.name)
         fig.conclude()
         fig.write_the_file()
-    def new_separator(self,title):
-        raise DeprecationWarning
-        self.separator_number = self.separator_number + 1
-        self.separator_dico[title]=Separator(title,self.separator_number)
     def initialize_newwrite(self):
         if not self.newwriteDone :
             code = r""" \makeatletter
@@ -1054,10 +1045,15 @@ class pspicture(object):
     def AddPoint(self,P):
         self.add_latex_line(self.CodeAddPoint(P))
     def bounding_box(self,pspict=None):
-        bb=self.BB
-        for a in [x.graph.bounding_box(self) for x in self.record_draw_graph if x.take_math_BB or x.take_BB] :
-            bb.AddBB(a)
-        return bb
+        if not self._bounding_box:
+            print "Warning : this will be an approximation. Inparticular the enlarging of the axes will not be taken into account"
+            # the bounding box of the figure is not know before the end of `create_pstricks_code`
+            # because we have to know the content of the pspicture and the enlarging of the axes.
+            bb=self.BB
+            for a in [x.graph.bounding_box(self) for x in self.record_draw_graph if x.take_math_BB or x.take_BB] :
+                bb.AddBB(a)
+            return bb
+        return self._bounding_box
     def DrawBB(self):
         self.DrawBoundingBox(self.BB)
     def DrawBoundingBox(self,obj=None,color="cyan"):
@@ -1069,17 +1065,6 @@ class pspicture(object):
         if not obj:
             obj=self
         self.record_bounding_box.append(obj)
-    #def TraceNuage_de_Points(self,nuage,symbol,params):
-    #   self.add_latex_line("% ---------Nuage de point--------")
-    #   for P in nuage.listePoints :
-    #       self.DrawPoint(P,symbol,params)
-
-    def MarqueAngle(self,A,B,C,label,params):
-        self.add_latex_line("\pstMarkAngle["+params+"]{"+A.psName+"}{"+B.psName+"}{"+C.psName+"}{"+label+"}")
-    def TraceCourbeParametrique(self,f,mx,Mx,params):
-        raise AttributeError,"The method TraceCourbeParametrique is depreciated"
-        self.BB.AddParametricCurve(f,mx,Mx)
-        self.add_latex_line("\parametricplot[%s]{%s}{%s}{%s}" %(params,str(mx),str(Mx),f.pstricks()))
     def DrawGraphs(self,*args):
         for gr in args:
             try :
@@ -1136,15 +1121,20 @@ class pspicture(object):
                                                                     # and it becomes ugly when dilating
                                                                     # Notice that we pass here too early to use self.xunit,self.yunit
         self.axes.BB.add_object(BB)
-        self.axes.update()
-        self.DrawGraph(self.axes)
+        #self.axes.update()     # Removed on April, 8, 2012
+        #self.DrawGraph(self.axes)
+        self.draw_default_axes=True
     def DrawDefaultGrid(self):
-        self.grid.BB = self.math_bounding_box()
+        bb=self.math_bounding_box()
+        self.grid.BB = bb
         Dx=self.grid.Dx
         Dy=self.grid.Dy
-        epsilonX=0
-        epsilonY=0
-        self.grid.BB.enlarge_a_little(Dx,Dy,epsilonX,epsilonY)  # Make the grid end on its "big" subdivisions.
+        # Make the grid end on its "big" subdivisions.
+        self.grid.BB.mx=SmallComputations.MultipleLower(self.grid.BB.mx,Dx)
+        self.grid.BB.Mx=SmallComputations.MultipleBigger(self.grid.BB.Mx,Dx)
+
+        self.grid.BB.my=SmallComputations.MultipleLower(self.grid.BB.my,Dy)
+        self.grid.BB.My=SmallComputations.MultipleBigger(self.grid.BB.My,Dy)
         self.DrawGraph(self.grid)
     def add_latex_line(self,ligne,separator_name="DEFAULT"):
         """
@@ -1206,8 +1196,6 @@ class pspicture(object):
     
         # This is for pdf and pstricks.
         return "\ifpdf {0}\n \else {1}\n \\fi".format(to_other.input_code_pdf,self.contenu_pstricks)
-
-
     def write_the_file(self,f):
         """
         Writes the LaTeX code of the pspict.
@@ -1218,4 +1206,3 @@ class pspicture(object):
         self.fichier = SmallComputations.Fichier(f)
         self.fichier.file.write(self.contenu())
         self.fichier.file.close()
-

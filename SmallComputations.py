@@ -25,6 +25,9 @@ This submodule contains some auxiliary computations that have to be performed
 by phystricks but that are not geometry.
 """
 
+
+from __future__ import division # Used in MultipleBigger and MultipleLower
+
 from sage.all import *
 import codecs
 
@@ -110,7 +113,6 @@ class CalculSage(object):
             a.append(sol)
         return a
 
-
 class Fichier(object):
     def __init__ (self, filename):
         self.NomComplet = filename
@@ -133,8 +135,6 @@ class Fichier(object):
         c = [l for l in self.file]
         self.close_file()
         return c
-
-
 
 def RemoveLastZeros(x,n):
     """
@@ -467,7 +467,15 @@ def MultipleLower(x,m):
     return floor(x/m)*m
 
 def MultipleBigger(x,m):
-    """ return the lower multiple of m which is bigger or equal to x"""
+    """
+    Return the lower multiple of m which is bigger or equal to x
+    
+    EXAMPLES ::
+
+        sage: from phystricks.SmallComputations import *
+        sage: MultipleBigger(11.0,2)
+        12
+    """
     return ceil(x/m)*m
 
 def enlarge_a_little_up(x,m,epsilon):

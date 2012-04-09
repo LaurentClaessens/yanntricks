@@ -93,9 +93,12 @@ class Axes(object):
 
     By default they are orthogonal.
     """
-    def __init__(self,C,bb):
+    def __init__(self,C,bb,pspict=None):
+        # if a pspicture is passed, these axes will be considered as the default axes system of `pspict`.
+        # This has an influence in the computation of the bounding box.
         self.C = C                      
         self.BB = bb.copy()
+        self.pspict=pspict
         self.options = Options()
         self.Dx = 1
         self.Dy = 1
@@ -106,19 +109,53 @@ class Axes(object):
         # Since the size of the axe is given in multiple of self.base,
         # one cannot give mx=-1000 as "minimal value".
         #self.single_axeX=SingleAxe(self.C,Vector(1,0),self.BB.mx,self.BB.Mx)
-        self.single_axeX=SingleAxe(self.C,Vector(1,0),0,0)
+        self.single_axeX=SingleAxe(self.C,Vector(1,0),0,0,pspict=self.pspict)
         self.single_axeX.mark_origin=False
         self.single_axeX.axes_unit=AxesUnit(1,"")
         #self.single_axeY=SingleAxe(self.C,Vector(0,1),self.BB.my,self.BB.My)
-        self.single_axeY=SingleAxe(self.C,Vector(0,1),0,0)
+        self.single_axeY=SingleAxe(self.C,Vector(0,1),0,0,pspict=self.pspict)
         self.single_axeY.mark_origin=False
         self.single_axeY.axes_unit=AxesUnit(1,"")
         self.single_axeY.mark_angle=180
         self.single_axeX.Dx=self.Dx
         self.single_axeY.Dx=self.Dy
-    def update(self):
-        self.single_axeX.mx,self.single_axeX.Mx=self.BB.mx,self.BB.Mx
-        self.single_axeY.mx,self.single_axeY.Mx=self.BB.my,self.BB.My
+        self.already_enlarged=False
+        self.enlarge_size=0.5
+
+    # April, 8, 2012
+    # I do not know how work that version of update
+    #def update(self):
+    #    raise DeprecationWarning, "This BB is not updated ??" 
+    #    self.single_axeX.mx,self.single_axeX.Mx=self.BB.mx,self.BB.Mx
+    #    self.single_axeY.mx,self.single_axeY.Mx=self.BB.my,self.BB.My
+
+    def enlarge_a_little(self,l,pspict):
+        if self.already_enlarged :
+            print "PHOtTy J'ai déjà donné"
+            raise
+            return None
+        self.already_enlarged=True
+        mx,Mx=self.single_axeX.enlarge_a_little(l,pspict=pspict)
+        self.single_axeX.mx=mx
+        self.single_axeX.Mx=Mx
+        mx,Mx=self.single_axeY.enlarge_a_little(l,pspict=pspict)
+        self.single_axeY.mx=mx
+        self.single_axeY.Mx=Mx
+
+    def add_bounding_box(self,BB,pspict):
+        """
+        Modify the mx and Mx of each single axes X and Y in order to fit the given BB.
+
+        This is only supposed to work with automatic axes because if assumes that these are
+        vertical and horizontal.
+        """
+        axeX=self.single_axeX
+        axeY=self.single_axeY
+        axeX.mx=min((BB.mx-axeX.C.x)/axeX.base.F.x,axeX.mx)
+        axeX.Mx=max((BB.Mx-axeX.C.x)/axeX.base.F.x,axeX.Mx)
+
+        axeY.mx=min((BB.my-axeY.C.y)/axeY.base.F.y,axeY.mx)
+        axeY.Mx=max((BB.My-axeY.C.y)/axeY.base.F.y,axeY.Mx)
     def add_option(self,opt):
         self.options.add_option(opt)
     def no_graduation(self):
@@ -127,37 +164,38 @@ class Axes(object):
     def no_numbering(self):
         self.single_axeX.no_numbering()
         self.single_axeY.no_numbering()
-    def AjusteCircle(self,Cer):
-        raise DeprecationWarning, "You should not see this :("
-        self.BB.AddCircle(Cer)
     def bounding_box(self,pspict=None):
-        self.update()
+        """
+        return the bounding box of the axes.
+
+        If `self` is a default axe, it take into account the content of the pspicture
+        and update the mx,my of the single axes X and Y.
+        """
+        #self.update()  # removed on April, 8, 2012
         BB=BoundingBox()
         BB.append(self.single_axeX.bounding_box(pspict))
         BB.append(self.single_axeY.bounding_box(pspict))
+
+        if self.pspict :
+            BB.append(self.pspict.math_bounding_box())
+        self.add_bounding_box(BB,pspict)                       # This line updates the single axes taking the content of pspict into account.
         BB.check_too_large()
         return BB
     def math_bounding_box(self,pspict=None):
-        self.update()
+        #self.update()      # removed on April, 8, 2012
         BB=BoundingBox()
         BB.append(self.single_axeX.math_bounding_box(pspict))
         BB.append(self.single_axeY.math_bounding_box(pspict))
         return BB
     def pstricks_code(self,pspict=None):
+        if pspict == None :
+            raise TypeError
         sDx=RemoveLastZeros(self.Dx,10)
         sDy=RemoveLastZeros(self.Dy,10)
         self.add_option("Dx="+sDx)
         self.add_option("Dy="+sDy)
-        #bgx = self.BB.mx
-        #bgy = self.BB.my
-        #if self.BB.mx == int(self.BB.mx):       # Avoid having end of axes on an integer coordinate for aesthetic reasons.
-        #    bgx = self.BB.mx + 0.01
-        #if self.BB.my == int(self.BB.my):
-        #    bgy = self.BB.my +0.01
-        #self.BB.mx = bgx
-        #self.BB.my = bgy
         c=[]
-        self.update()
+        #self.update()  # Removed on April, 8, 2012
         c.append(self.single_axeX.pstricks_code(pspict))
         c.append(self.single_axeY.pstricks_code(pspict))
         return "\n".join(c)
@@ -331,12 +369,13 @@ class GraphOfAnObject(object):
         return self.options.code()
 
 class GraphOfASingleAxe(GraphOfAnObject):
-    def __init__(self,C,base,mx,Mx):
+    def __init__(self,C,base,mx,Mx,pspict=None):
         GraphOfAnObject.__init__(self,self)
         self.C=C
         self.base=base
         self.mx=mx
         self.Mx=Mx
+        self.pspict=pspict
         self.options=Options()
         self.IsLabel=False
         self.axes_unit=AxesUnit(self.base.length(),"")
@@ -347,10 +386,8 @@ class GraphOfASingleAxe(GraphOfAnObject):
         self.mark_origin=True
         self.mark=None
         self.mark_angle=degree(base.angle().radian-pi/2)
-        self.already_enlarged=False
+        #self.already_enlarged=False
         self.enlarge_size=0.5
-        #self.vertical=base.vertical
-        #self.horizontal=base.horizontal
     
     # SingleAxe.segment cannot be a lazy attribute because we use it for some projections before
     # to compute the bounding box.
@@ -377,18 +414,15 @@ class GraphOfASingleAxe(GraphOfAnObject):
         self.options.add_option(opt)
     def mark_point(self):
         return self.segment().F
-    def add_label(self,dist,angle,text):
-        raise DeprecationWarning, "Use put_mark instead"
     def no_numbering(self):
         self.numbering=False
     def no_graduation(self):
         self.graduation=False
     def enlarge_a_little(self,l,xunit=None,yunit=None,pspict=None):
         """
-        Enlarge the axe by `l` visuals centimeters.
+        return the tuple (mx,Mx) that correspond to axes of length `l` more than self
+        (in both directions)
         """
-        if self.already_enlarged:
-            return None
         if pspict:
             xunit=pspict.xunit
             yunit=pspict.yunit
@@ -397,9 +431,9 @@ class GraphOfASingleAxe(GraphOfAnObject):
         vx=self.base.F.x
         vy=self.base.F.y
         k=l/sqrt(  (vx*xunit)**2+(vy*yunit)**2  )
-        self.Mx=self.Mx+k
-        self.mx=self.mx-k
-        self.already_enlarged=True
+        mx=self.mx-k
+        Mx=self.Mx+k
+        return mx,Mx
     def graduation_points(self,pspict):
         """
         Return the list of points that makes the graduation of the axes
@@ -425,6 +459,9 @@ class GraphOfASingleAxe(GraphOfAnObject):
             points_list.append(P)
         return points_list
     def bounding_box(self,pspict):
+        # One cannot take into account the small enlarging here because
+        # we do not know if this is the vertical or horizontal axe,
+        # so we cannot make the fit of the drawn objects.
         BB=self.math_bounding_box(pspict)
         for P in self.graduation_points(pspict):
             BB.append(P,pspict)
@@ -432,6 +469,8 @@ class GraphOfASingleAxe(GraphOfAnObject):
                 BB.append(P.mark,pspict)
         return BB
     def math_bounding_box(self,pspict):
+        # The math_bounding box does not take into account the things that are inside the picture
+        # (not even if this are default axes)
         return self.segment(pspict=pspict).bounding_box(pspict)
     def pstricks_code(self,pspict=None):
         """
@@ -442,11 +481,10 @@ class GraphOfASingleAxe(GraphOfAnObject):
         c=[]
         if self.mark :
             c.append(self.mark.pstricks_code(pspict))
-        self.enlarge_a_little(self.enlarge_size,pspict=pspict)
         if self.graduation :
             for P in self.graduation_points(pspict):
                 c.append(P.pstricks_code(pspict,with_mark=True))
-        h=AffineVector(self.segment())
+        h=AffineVector(self.segment(pspict))
         c.append(h.pstricks_code(pspict))
         return "\n".join(c)
     def __str__(self):
@@ -1413,13 +1451,10 @@ class GraphOfAPoint(GraphOfAnObject):
 
         [1] If you dont't know what is the "bounding box", or if you don't want to fine tune it, you don't care.
         """
-        Xradius=0.1
-        Yradius=0.1
-        try :
-            Xradius=0.1/pspict.xunit
-            Yradius=0.1/pspict.yunit
-        except :
+        if pspict==None:
             raise TypeError, "You should consider to give a pspict as argument. Otherwise the boundig box of %s could be bad"%str(self)
+        Xradius=0.1/pspict.xunit
+        Yradius=0.1/pspict.yunit
         bb = BoundingBox(Point(self.x-Xradius,self.y-Yradius),Point(self.x+Xradius,self.y+Yradius))
         for P in self.record_add_to_bb:
             bb.AddPoint(P)
@@ -2164,6 +2199,8 @@ class GraphOfASegment(GraphOfAnObject):
         if pspict:
             xunit=pspict.xunit
             yunit=pspict.yunit
+        if xunit==None or yunit==None:
+            raise TypeError,"When you are here, you have to furnish xunit,yunit or a pspict."
         return SmallComputations.visual_length(self,l,xunit,yunit,pspict)
     def add_size_extemity(self,l):
         """
@@ -2291,9 +2328,6 @@ class GraphOfASegment(GraphOfAnObject):
     def default_associated_graph_class(self):
         """Return the class which is the Graph associated type"""
         return GraphOfASegment
-    def Affiche(self):
-        raise DeprecationWarning,"use print instead"
-        return str(self.equation[0])+" x + "+str(self.equation[1])+" y + "+str(self.equation[2])
     def __mul__(self,coef):
         """
         multiply the segment by a coefficient.
@@ -3197,9 +3231,9 @@ class GraphOfAphyFunction(GraphOfAnObject):
             sage: from phystricks import *
             sage: f=phyFunction(x+1)
             sage: print [P.coordinates() for P in f.get_regular_points(-2,2,sqrt(2))]
-            ['(0.70434464532253749*sqrt(2) - 2,0.70434464532253749*sqrt(2) - 1)', '(1.408689290645075*sqrt(2) - 2,1.408689290645075*sqrt(2) - 1)', '(2.1130339359676125*sqrt(2) - 2,2.1130339359676125*sqrt(2) - 1)', '(2.81737858129015*sqrt(2) - 2,2.81737858129015*sqrt(2) - 1)']
+            ['(0.704344645322537*sqrt(2) - 2,0.704344645322537*sqrt(2) - 1)', '(1.40868929064507*sqrt(2) - 2,1.40868929064507*sqrt(2) - 1)', '(2.11303393596761*sqrt(2) - 2,2.11303393596761*sqrt(2) - 1)', '(2.81737858129015*sqrt(2) - 2,2.81737858129015*sqrt(2) - 1)']
 
-        Even if it is not clear from these expressions, these are almos the points (-1,0),(0,1), and (1,2).
+        Even if it is not clear from these expressions, these are almost the points (-1,0),(0,1), and (1,2).
 
         """
         x=var('x')
@@ -3302,26 +3336,11 @@ class GraphOfAphyFunction(GraphOfAnObject):
         return self.get_minmax_data(deb,fin)['ymax']
     def ymin(self,deb,fin):
         return self.get_minmax_data(deb,fin)['ymin']
-    def maximum_global(self,mx,Mx):
-        raise DeprecationWarning, "This function was experimental."
-        max = self.liste_extrema()[0]
-        for p in self.liste_extrema() :
-            if p.y > max.y : max = p
-        return max
-    # Donne le minimum de la fonction entre mx et Mx. 
-    def minimum_global(self,mx,Mx):
-        raise DeprecationWarning, "This function was experimental."
-        min = self.get_point(mx)
-        for p in self.liste_extrema() :
-            print "candidat : %s" %p.Affiche()
-            if p.y < min.y : min = p
-        print min.Affiche()
-        return min
     def tangente(self,x):
         """
         This should no more be used.
         """
-        raise
+        raise DeprecationWarning # April 2012
         ca = self.derivative()(x)
         A = self.get_point(x)
         Ad = Point( A.x+1,A.y+ca )
@@ -4300,14 +4319,6 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 
         - ``final_point`` - (default=False) it True, return also the final parameter (i.e. Mll)
 
-        OUTPUT:
-
-            <++>
-
-            EXAMPLES::
-
-                <++>
-
         """
         prop_precision = float(dl)/100      # precision of the interval
         fp = self.derivative()
@@ -4319,9 +4330,9 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         if final_point:
             PIs.append(Mll)
         while ll < Mll :
-            v = math.sqrt( (fp.f1(ll))**2+(fp.f2(ll))**2 )
+            # Here if one remove numerical=True, we got a segfault in some cases
+            v = sqrt( (fp.f1(ll,numerical=True))**2+(fp.f2(ll,numerical=True))**2 )
             if v == 0 :
-                print "v=0"
                 Dll = minDll
             Zoom = 1
             Dll = dl/v
@@ -4516,6 +4527,7 @@ class BoundingBox(object):
                 print "The attribute {1} of the object {0} seems to have problems".format(obj,fun)
                 print "The message was :"
                 print message
+                raise
                 raise main.NoMathBoundingBox(obj,fun)
         else :
             bb.check_too_large()
@@ -4549,16 +4561,6 @@ class BoundingBox(object):
         return Segment( self.NW(),self.SW() )
     def coordinates(self):
         return self.SW().coordinates()+self.NE().coordinates()
-    def Affiche(self):
-        raise DeprecationWarning
-        return self.coordinates()
-    def tailleX(self):
-        raise DeprecationWarning,"Use xsize instead"
-        return self.Mx-self.mx
-    def tailleY(self):
-        raise DeprecationWarning,"Use ysize instead"
-        return self.My-self.my
-
     def xsize(self):
         return self.Mx-self.mx
     def ysize(self):
@@ -4585,29 +4587,12 @@ class BoundingBox(object):
     def AddY(self,y):
         self.My=max(self.My,y)
         self.my=min(self.my,y)
-    def AddPoint(self,P):
-        raise DeprecationWarning,"Use add_object instead"
-        self.AddX(P.x)
-        self.AddY(P.y)
-    def AddSegment(self,seg):
-        raise DeprecationWarning,"Use add_object instead"
-        self.AddPoint(seg.I)
-        self.AddPoint(seg.F)
-    def AddArcCircle(self,Cer,deb,fin):
-        raise DeprecationWarning,"Use add_object instead"
-        self.AddX(Cer.xmin(deb,fin))
-        self.AddY(Cer.ymin(deb,fin))
-        self.AddX(Cer.xmax(deb,fin))
-        self.AddY(Cer.ymax(deb,fin))
     def AddBB(self,bb):
         self.mx = min(self.mx,bb.mx)
         self.my = min(self.my,bb.my)
         self.Mx = max(self.Mx,bb.Mx)
         self.My = max(self.My,bb.My)
-
     def append(self,graph,pspict=None):
-        #if isinstance(graph,Axes):
-        #    raise TypeError
         try :
             self.AddBB(graph.bounding_box(pspict))
         except (ValueError,AttributeError),msg :
@@ -4637,23 +4622,6 @@ class BoundingBox(object):
     def AddAxes(self,axes):
         self.AddPoint( axes.BB.SW() )
         self.AddPoint( axes.BB.NE() )
-    def enlarge_a_little(self,Dx,Dy,epsilonX,epsilonY):
-        raise DeprecationWarning
-        """
-        Essentially intended to the bounding box of a axis coordinate. 
-        The aim is to make the axis slightly larger than the picture in such a way that all the numbers are written
-
-        1. If a coordinate is integer multiple of epsilon, (say n), we enlarge to n+epsilon, so that the number n appears on the axis.
-
-        2. If a coordinate is non integer multiple, we enlarge to the next integer multiple (plus epsilon) so that the axis still has a number written
-            further than the limit of the picture.
-
-        The aim is to make the axes slightly bigger than their (Dx,Dy) in order the last graduation to be visible.
-        """
-        self.mx = enlarge_a_little_low(self.mx,Dx,epsilonX)
-        self.my = enlarge_a_little_low(self.my,Dy,epsilonY)
-        self.Mx = enlarge_a_little_up(self.Mx,Dx,epsilonX)
-        self.My = enlarge_a_little_up(self.My,Dy,epsilonY)
     def pstricks_code(self,pspict=None):
         rect=Rectangle(self.SW(),self.NE())
         rect.parameters.color="cyan"
@@ -4668,3 +4636,4 @@ class BoundingBox(object):
         return "<BoundingBox mx={0},Mx={1}; my={2},My={3}>".format(self.mx,self.Mx,self.my,self.My)
 
 import phystricks.main as main
+import phystricks.SmallComputations as SmallComputations
