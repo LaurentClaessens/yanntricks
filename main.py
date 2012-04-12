@@ -282,6 +282,8 @@ class figure(object):
             pspict=pspicture("FIG"+self.name+"PICT"+name)
         self._add_pspicture(pspict)
         return pspict
+    def add_latex_line(self,ligne,separator_name="DEFAULT"):
+        self.separator_list[separator_name].add_latex_line(ligne)
     def _add_pspicture(self,pspict):
         pspict.mother=self
         pspict.figure_mother=self
