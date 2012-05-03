@@ -866,7 +866,7 @@ class pspicture(object):
             code = r""" \makeatletter
                 \@ifundefined{%s}
                 {\newwrite{\%s}
-                }
+                }{}
                 \makeatother"""%(self.newwriteName,self.newwriteName)
             self.add_latex_line(code,"WRITE_AND_LABEL")
 
@@ -910,7 +910,7 @@ class pspicture(object):
         if not self.counterDone:
             code = r""" \makeatletter
                 \@ifundefined{c@%s}
-                {\newcounter{%s}}
+                {\newcounter{%s}}{}
                 \makeatother
                 """%(counterName(),counterName())           # make LaTeX test if the counter exist before to create it.
             self.add_latex_line(code,"WRITE_AND_LABEL")
@@ -919,7 +919,7 @@ class pspicture(object):
         if not self.newlengthDone :
             code =r"""
             \makeatletter
-            \@ifundefined{%s}{\newlength{\%s}}
+            \@ifundefined{%s}{\newlength{\%s}}{}
             \makeatother
             """%(newlengthName(),newlengthName())
             self.add_latex_line(code,"WRITE_AND_LABEL")
