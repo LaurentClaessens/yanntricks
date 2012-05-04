@@ -44,6 +44,8 @@ class PhystricksTestError(Exception):
         self.obtained_text=obtained_text
         self.justification=justification
         self.pspict=pspict
+        if pspict==None:
+            raise ValueError
     def __str__(self):
         a=[]
         a.append("Test failed")
@@ -106,7 +108,6 @@ class FigureGenerationSuite(object):
                 print "The test of pspicture %s failed. %s"%(self.test_list[i],e.justification)
                 print e
                 self.failed_list.append((self.test_list[i],e.pspict))
-
     def latex_portion(self):
         from latex_to_be import pseudo_caption
         portion=[]
@@ -124,16 +125,15 @@ class FigureGenerationSuite(object):
                     portion.append("\clearpage\n")
                     num=0
         return "\n".join(portion)
-
     def create_to_be_checked_latex_file(self):
         from latex_to_be import to_be_checked_general_latex
         general_text=to_be_checked_general_latex
         text=general_text.replace("XXXXXX",self.latex_portion())
         filename="to_be_checked.tex"
         check_file=open(filename,"w")
-        print "The file {0} is created for you.".format(filename)
         check_file.write(text)
         check_file.close()
+        print "The file {0} is created for you.".format(filename)
 
     def summary(self):
         """
@@ -965,7 +965,8 @@ class pspicture(object):
                 if not global_vars.silent:
                     print "Warning: the auxiliary file %s does not contain the id «%s». Compile your LaTeX file."%(self.interWriteFile,Id)
                 if global_vars.perform_tests :
-                    raise ValueError, "I cannot test a file if the auxiliary files are not yet produced."
+                    #raise ValueError, "I cannot test a file if the auxiliary files are not yet produced."
+                    raise PhystricksTestError(justification="No tests file found.",pspict=self)
                 if global_vars.create_formats["test"] :
                     raise ValueError, "I cannot create a test file when I'm unable to compute the bounding box."
                 return default_value

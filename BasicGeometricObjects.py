@@ -743,7 +743,7 @@ class GraphOfACircle(GraphOfAnObject):
             G.add_option(self.params())
             # The two following lines are a pity. If I add some properties, I have to change by hand...
             G.parameters.style = self.parameters.style
-            G.parameters.color = self.color
+            G.parameters.color = self.parameters.color  # May,3,2012  : before it was ...=self.color
             G.wave(waviness.dx,waviness.dy)
             return G.pstricks_code()
         else:
