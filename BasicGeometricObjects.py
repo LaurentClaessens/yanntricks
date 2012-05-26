@@ -4065,6 +4065,11 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         for llam in ll:
             v=self.get_tangent_vector(llam).fix_size(0.01)
             self.record_arrows.append(v)
+    def middle_point(self):
+        """
+        return the middle point of the curve (respect to the arc length)
+        """
+        l=self.arc_length()
     def get_point(self,llam,advised=True):
         """
         Return the point on the curve for the value llam of the parameter.
@@ -4280,9 +4285,11 @@ class GraphOfAParametricCurve(GraphOfAnObject):
     def get_normal_point(self,x,dy):
         vecteurNormal =  self.get_normal_vector(x)
         return self.get_point(x).translate(self.get_normal_vector.fix_size(dy))
-    def arc_length(self,mll,Mll):
+    def arc_length(self,mll=None,Mll=None):
         """
-        numerically returns the arc length on the curve between two bounds of the parameters
+        numerically returns the arc length on the curve between two bounds of the parameters.
+
+        If no parameters are given, return the total length.
         
         INPUT:
 
@@ -4302,7 +4309,17 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             True
         
         """
+        if mll==None :
+            mll=self.llamI
+        if Mll==None :
+            Mll=self.llamF
         return numerical_integral(self.speed,mll,Mll)[0]
+    def get_parameter_at_length(self,l):
+        """
+        return the value of the parameter corresponding to the given arc length.
+        """
+        # TODO : create this function
+        pass 
     def get_regular_parameter(self,mll,Mll,dl,initial_point=False,final_point=False):
         """ 
         returns a list of values of the parameter such that the corresponding points are equally spaced by dl.
@@ -4359,9 +4376,6 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             if ll < Mll :
                 PIs.append( ll )
         return PIs
-    def get_regular_points_old(self,mll,Mll,dl):
-        raise DeprecationWarning, "use self.get_regular_point instead"          # May, 6, 2011.
-        return [self.get_point(ll) for ll in self.get_regular_parameter_old(mll,Mll,dl)]
     def get_regular_points(self,mll,Mll,dl):
         """
         Return a list of points regularly spaced (with respect to the arc length) by dl. 
