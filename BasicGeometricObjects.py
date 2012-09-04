@@ -108,11 +108,9 @@ class Axes(object):
         self.numbering=True
         # Since the size of the axe is given in multiple of self.base,
         # one cannot give mx=-1000 as "minimal value".
-        #self.single_axeX=SingleAxe(self.C,Vector(1,0),self.BB.mx,self.BB.Mx)
         self.single_axeX=SingleAxe(self.C,Vector(1,0),0,0,pspict=self.pspict)
         self.single_axeX.mark_origin=False
         self.single_axeX.axes_unit=AxesUnit(1,"")
-        #self.single_axeY=SingleAxe(self.C,Vector(0,1),self.BB.my,self.BB.My)
         self.single_axeY=SingleAxe(self.C,Vector(0,1),0,0,pspict=self.pspict)
         self.single_axeY.mark_origin=False
         self.single_axeY.axes_unit=AxesUnit(1,"")
