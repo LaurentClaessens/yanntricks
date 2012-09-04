@@ -774,7 +774,8 @@ class pspicture(object):
         if self.draw_default_axes:
             self.axes.add_bounding_box(self.math_BB,self)     # Here the axes take into account the content of pspict.
             graph=self.axes
-            self.axes.enlarge_a_little(self.axes.enlarge_size,pspict=self)  # This should be the only call to enlarge_a_little
+            if self.axes.do_enlarge :
+                self.axes.enlarge_a_little(self.axes.enlarge_size,pspict=self)  # This should be the only call to enlarge_a_little
 
             separator_name=graph.separator_name
             self.add_latex_line(graph.pstricks_code(self),separator_name)

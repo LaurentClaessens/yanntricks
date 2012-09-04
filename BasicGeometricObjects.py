@@ -121,6 +121,7 @@ class Axes(object):
         self.single_axeY.Dx=self.Dy
         self.already_enlarged=False
         self.enlarge_size=0.5
+        self.do_enlarge=True
 
     # April, 8, 2012
     # I do not know how work that version of update

@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2011
+# copyright (c) Laurent Claessens, 2010-2012
 # email: moky.math@gmai.com
 
 """
@@ -130,6 +130,7 @@ class Grades(object):
         pspict.grid.num_subX = 0
         pspict.grid.num_subY = 5
         pspict.axes.single_axeY.Dx = 0.1
+        pspict.axes.do_enlarge=False
         pspict.DrawDefaultGrid()
         pspict.DrawDefaultAxes()
         pspict.dilatation_X(float(Xsize)/self.full_grade)
@@ -166,6 +167,7 @@ class Grades(object):
         pspict.grid.num_subX = 0
         pspict.grid.num_subY = 5
         pspict.axes.Dy = 1
+        pspict.axes.do_enlarge=False
         pspict.DrawDefaultGrid()
         pspict.DrawDefaultAxes()
         pspict.dilatation_X(float(Xsize)/self.full_grade)
@@ -196,6 +198,7 @@ class Grades(object):
         pspict.grid.num_subX = 0
         pspict.grid.num_subY = 5
         pspict.axes.Dy = 0.1
+        pspict.axes.do_enlarge=False
         pspict.DrawDefaultGrid()
         pspict.DrawDefaultAxes()
         pspict.dilatation_X(float(Xsize)/self.full_grade)
