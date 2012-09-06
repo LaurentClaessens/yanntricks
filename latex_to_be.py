@@ -10,6 +10,7 @@ to_be_checked_general_latex=r"""
 \usepackage{amssymb}
 \usepackage{bbm}		
 \usepackage[cdot,thinqspace,amssymb]{SIunits}
+\usepackage{pdfsync}
 
 \usepackage{eso-pic}
 \usepackage{pstricks}
@@ -25,7 +26,7 @@ to_be_checked_general_latex=r"""
 \usepackage{graphicx}
 
 
-\usepackage[ps2pdf]{hyperref}
+\usepackage{hyperref}
 \hypersetup{colorlinks=true,linkcolor=blue}
 
 \usepackage{textcomp}
@@ -45,6 +46,8 @@ to_be_checked_general_latex=r"""
 
 
 \begin{document}
+
+% Remember that launching the phystricks script with --tests do not create the .pstricks file.
 
 Here are the figures to be manually checked.
 

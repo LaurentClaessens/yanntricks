@@ -142,18 +142,19 @@ class FigureGenerationSuite(object):
         visualize them.
         """
         if len(self.failed_list) != 0:
-            print "The following test failed :"
-            for a in self.failed_list:
-                print a,
+            #print "The following test failed :"
+            #for a in self.failed_list:
+            #    print a,
 
-            print "\nThe lines for inclusion in your LaTeX file are :\n"
-            print self.latex_portion()
+            #print "\nThe lines for inclusion in your LaTeX file are :\n"
+            #print self.latex_portion()
 
             print "The list of function to test deeper :"
             first=",".join([a[0].__name__ for a in self.failed_list])
             print "figures_list=[",first.replace("'"," "),"]"
 
             self.create_to_be_checked_latex_file()
+            #self.create_to_be_checked_python_file()
 
             raise PhystricksTestError
         else:
@@ -181,6 +182,11 @@ class TestPspictLaTeXCode(object):
         """
         text=unify_point_name(self.notice_text+self.pspict.contenu_pstricks)
         self.test_file.write(text,"w")
+    def test_if_test_file_is_present(self):
+        if os.path.isfile(self.test_file.filename):
+            return True
+        else :
+            return False
     def test(self):
         print "---"
         print "Testing pspicture %s ..."%self.name
@@ -192,7 +198,6 @@ class TestPspictLaTeXCode(object):
             raise PhystricksTestError("No tests file found.",obtained_text,"No test file found; I do not know what to do.",pspict=self.pspict)
         boo,justification = string_number_comparison(obtained_text,expected_text)
         if not boo:
-            #raise PhystricksTestError(expected_text,obtained_text,justification,self.pspict)
             raise PhystricksTestError(expected_text,obtained_text,justification,self.pspict)
         print justification
         print "Successful test for pspicture %s"%self.name
@@ -299,8 +304,11 @@ class figure(object):
         a.append("The result is on figure \\ref{"+self.name+"}.")
         a.append("\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
         a.append("\\input{%s}"%(self.nFich))
+        text = "\n".join(a)
+        # If we want to perform tests and if the test file is not present, we do not continue.
+        if global_vars.perform_tests:
+            TestPspictLaTeXCode(pspict).test()
         
-        return "\n".join(a)
     def conclude(self):
         for pspict in self.record_pspicture :
             # Here we add the picture itself. What arrives depends on --eps, --pdf, --png, ...

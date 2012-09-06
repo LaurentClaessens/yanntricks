@@ -118,6 +118,7 @@ class Fichier(object):
         self.NomComplet = filename
         self.chemin = self.NomComplet
         self.nom = os.path.basename(self.chemin)
+        self.filename=filename
     def open_file(self,opt):
         self.file = codecs.open(self.chemin,encoding="utf8",mode=opt)
     def close_file(self):

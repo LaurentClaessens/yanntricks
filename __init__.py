@@ -51,7 +51,7 @@ COMMAND LINE ARGUMENTS:
           customizations (e.g. fonts) will not be taken into account. 
           See `pspict.specific_needs`
 
-    - ``--create_tests`` - create a `tmp` file in which the pspicture is written.
+    - ``--create-tests`` - create a `tmp` file in which the pspicture is written.
 
     - ``--tests`` - compares the produced pspicture with the corresponding `tmp` file and
                     raises a ValueError if it does not correspond.
