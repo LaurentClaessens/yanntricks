@@ -39,11 +39,17 @@ class PhystricksTestError(Exception):
 
     See :class:`TestPspictLaTeXCode`.
     """
-    def __init__(self,expected_text=None,obtained_text=None,justification=None,pspict=None):
+    def __init__(self,expected_text=None,obtained_text=None,justification=None,pspict=None,code=1):
+        """
+        code is 1 or 2.
+        code==1 indicates that the figure has to be visually checked.
+        code==2 indicates that the figure has to be recompiled (LaTeX)
+        """
         self.expected_text=expected_text
         self.obtained_text=obtained_text
         self.justification=justification
         self.pspict=pspict
+        self.code=code
         if pspict==None:
             raise ValueError
     def __str__(self):
@@ -87,6 +93,7 @@ class FigureGenerationSuite(object):
         self.first=first
         self.title=title
         self.failed_list=[]
+        self.to_be_recompiled_list=[]
 
     def generate(self):
         """
@@ -108,64 +115,70 @@ class FigureGenerationSuite(object):
                 print "The test of pspicture %s failed. %s"%(self.test_list[i],e.justification)
                 print e
                 self.failed_list.append((self.test_list[i],e.pspict))
-    def latex_portion(self):
+                if e.code==2:
+                    self.to_be_recompiled_list.append((self.test_list[i],e.pspict))
+    def latex_portion(self,failed_list):
         from latex_to_be import pseudo_caption
         portion=[]
         num=0
-        for a in self.failed_list:
+        for a in failed_list:
             try:
                 base=a[1].figure_mother.LaTeX_lines()
+            except AttributeError,e:
+                print "I cannot found the LaTeX lines corresponding to ",a[1]
+                print e
+            else :
                 text=base.replace(pseudo_caption,str(a[0]))
                 portion.append(text)
-            except AttributeError:
-                print "I cannot found the LaTeX lines corresponding to ",a[1]
-            else :
                 num=num+1
                 if num==5:
                     portion.append("\clearpage\n")
                     num=0
         return "\n".join(portion)
-    def create_to_be_checked_latex_file(self):
+    def create_to_be_latex_file(self,failed_list,name="checked"):
+        """
+        This function produce the LaTeX file that serves to continue the tests. 
+        This can be either the figures to be visually checked , either the figures that have to be recompiled.
+        """
         from latex_to_be import to_be_checked_general_latex
         general_text=to_be_checked_general_latex
-        text=general_text.replace("XXXXXX",self.latex_portion())
-        filename="to_be_checked.tex"
+        text=general_text.replace("XXXXXX",self.latex_portion(failed_list))
+        filename="to_be_{0}.tex".format(name)
         check_file=open(filename,"w")
         check_file.write(text)
         check_file.close()
         print "The file {0} is created for you.".format(filename)
-
+    def function_list_to_figures_list(self,function_list):
+        first=",".join([a[0].__name__ for a in function_list])
+        return "figures_list=[{0}]".format(first.replace("'"," "))
     def summary(self):
         """
         Print the list of failed tests and try to give the 
         lines to be included in the LaTeX file in order to
         visualize them.
         """
+        all_tests_passed = True
         if len(self.failed_list) != 0:
-            #print "The following test failed :"
-            #for a in self.failed_list:
-            #    print a,
-
-            #print "\nThe lines for inclusion in your LaTeX file are :\n"
-            #print self.latex_portion()
-
-            print "The list of function to test deeper :"
-            first=",".join([a[0].__name__ for a in self.failed_list])
-            print "figures_list=[",first.replace("'"," "),"]"
-
-            self.create_to_be_checked_latex_file()
-            #self.create_to_be_checked_python_file()
-
-            raise PhystricksTestError
-        else:
+            print "The list of function to visually checked :"
+            print self.function_list_to_figures_list(self.failed_list)
+            self.create_to_be_latex_file(self.failed_list)
+            all_tests_passed = False
+        if len(self.to_be_recompiled_list) != 0:
+            print "The list of function to recompiled :"
+            print self.function_list_to_figures_list(self.to_be_recompiled_list)
+            self.create_to_be_latex_file(self.to_be_recompiled_list,name="recompiled")
+            all_tests_passed = False
+        if all_tests_passed :
             print "All tests passes !"
+        else:
+            raise PhystricksTestError
 
 class TestPspictLaTeXCode(object):
     def __init__(self,pspict):
         self.pspict=pspict
         self.name=pspict.name
         self.notice_text="This is a testing file containing the LaTeX code of the figure %s."%(self.name)
-        self.test_file=SmallComputations.Fichier("test_pspict_LaTeX_%s.tmp"%(self.name))
+        self.test_file=SmallComputations.Fichier("test_pspict_LaTeX_%s.tmp"%(self.pspict.name))
     def create_test_file(self):
         """
         Write the LaTeX code of `pspict` in a file.
@@ -183,19 +196,15 @@ class TestPspictLaTeXCode(object):
         text=unify_point_name(self.notice_text+self.pspict.contenu_pstricks)
         self.test_file.write(text,"w")
     def test_if_test_file_is_present(self):
-        if os.path.isfile(self.test_file.filename):
-            return True
-        else :
-            return False
+        return os.path.isfile(self.test_file.filename)
     def test(self):
         print "---"
         print "Testing pspicture %s ..."%self.name
         obtained_text=unify_point_name(self.pspict.contenu_pstricks)
-        try:
-            expected_text=unify_point_name("".join(self.test_file.contenu()).replace(self.notice_text,""))
-        except IOError :
+        if not self.test_if_test_file_is_present():
             print "Seems to lack of test file."
             raise PhystricksTestError("No tests file found.",obtained_text,"No test file found; I do not know what to do.",pspict=self.pspict)
+        expected_text=unify_point_name("".join(self.test_file.contenu()).replace(self.notice_text,""))
         boo,justification = string_number_comparison(obtained_text,expected_text)
         if not boo:
             raise PhystricksTestError(expected_text,obtained_text,justification,self.pspict)
@@ -218,7 +227,6 @@ def newlengthName():
     This has the same use of newwriteName, for the same reason of limitation.
     """
     return "lengthOf"+latinize(sysargvzero)
-
 
 class figure(object):
     def __init__(self,caption,name,nFich):
@@ -272,12 +280,11 @@ class figure(object):
         ssfig.figure_mother=self
         self._append_subfigure(ssfig)
         return ssfig
-    def _append_subfigure(self,ssFig):      # This function was initially named AjouteSSfigure
+    def _append_subfigure(self,ssFig):
         self.record_subfigure.append(ssFig)
         suffixe = "ssFig"+str(len(self.record_subfigure))
         if not ssFig.name:
             ssFig.name=self.name+suffixe
-        #ssFig.pspicture.name=self.name+"pspict"+suffixe    (no more useful 15 oct 2010)
         print r"See also the subfigure \ref{%s}"%ssFig.name
     def new_pspicture(self,name=None,pspict=None):
         if name==None:
@@ -285,6 +292,7 @@ class figure(object):
             name="sub"+latinize(str(number))
         if pspict==None:
             pspict=pspicture("FIG"+self.name+"PICT"+name)
+        pspict.figure_mother=self
         self._add_pspicture(pspict)
         return pspict
     def add_latex_line(self,ligne,separator_name="DEFAULT"):
@@ -305,15 +313,12 @@ class figure(object):
         a.append("\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
         a.append("\\input{%s}"%(self.nFich))
         text = "\n".join(a)
-        # If we want to perform tests and if the test file is not present, we do not continue.
-        if global_vars.perform_tests:
-            TestPspictLaTeXCode(pspict).test()
+        return text
         
     def conclude(self):
         for pspict in self.record_pspicture :
             # Here we add the picture itself. What arrives depends on --eps, --pdf, --png, ...
             self.add_latex_line(pspict.contenu(),"PSPICTURE")
-
 
             # What has to be written in the WRITE_AND_LABEL part of the picture is written now
             # This has to be done _after_ having called pspict.contenu().
@@ -381,6 +386,7 @@ class subfigure(object):
             name="sub"+latinize(str(number))
         pspict=pspicture("FIG"+self.name+"PICT"+name)
         pspict.mother=self
+        pspict.figure_mother=self.mother    # The mother of a pspict inside a subfigure is the figure (not the subfigure)
         pspict.subfigure_mother=self
         self._add_pspicture(pspict)
         return pspict
@@ -809,10 +815,8 @@ class pspicture(object):
             # Same for the bounding box of the pspicture, since it is not know before now
             if isinstance(graph,BasicGeometricObjects.BoundingBox):
                 if graph.parent:
-                    print "rjFdMA I'm drawing the bounding box of ",graph.parent
+                    print "I'm drawing the bounding box of ",graph.parent
                     graph=graph.parent.bounding_box(self)
-                    #if isinstance(graph.parent,BasicGeometricObjects.Mark):
-
 
             # If the graph is a mark, then one has to recompute
             # its position because of possible xunit,yunit.
@@ -973,8 +977,8 @@ class pspicture(object):
             if Id not in self.id_values_dict.keys():
                 if not global_vars.silent:
                     print "Warning: the auxiliary file %s does not contain the id «%s». Compile your LaTeX file."%(self.interWriteFile,Id)
+                    raise PhystricksTestError(justification="id not found; Compile your LaTeX file.",pspict=self,code=2)
                 if global_vars.perform_tests :
-                    #raise ValueError, "I cannot test a file if the auxiliary files are not yet produced."
                     raise PhystricksTestError(justification="No tests file found.",pspict=self)
                 if global_vars.create_formats["test"] :
                     raise ValueError, "I cannot create a test file when I'm unable to compute the bounding box."
@@ -1183,6 +1187,9 @@ class pspicture(object):
             if u"is not yet defined" not in msg.__unicode__():  # position 27319 see BasicGeometricObjects.GraphOfASingleAxe.segment
                 raise
         return bb
+    def test_if_test_file_is_present(self):
+        test_file=SmallComputations.Fichier("test_pspict_LaTeX_%s.tmp"%(self.name))
+        return os.path.isfile(test_file.filename)
     def contenu(self):              # pspicture
         r"""
         return the LaTeX code of the pspicture

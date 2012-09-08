@@ -101,6 +101,7 @@ def GenericFigure(nom):
     nFich = "Fig_"+nom+".pstricks"
 
     fig=main.figure(caption,label,nFich)
+    fig.figure_mother=fig   # I'm not sure that this line is useful.
     print fig.LaTeX_lines()
     return fig
 
