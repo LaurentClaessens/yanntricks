@@ -27,7 +27,9 @@ A collection of tools for building LaTeX-pstricks figures with python.
 
 COMMAND LINE ARGUMENTS:
 
-    - ``--pdf`` - Create the PDF files of the pictures
+    - ``--pdf`` - Create the PDF files of the pictures. This is default
+
+    - ``--dvi`` - Create the DVI files only.
 
     - ``--eps`` - the picture arrives as an \includegraphics of a eps. It also creates the `eps` file.
 
@@ -1075,9 +1077,12 @@ class global_variables(object):
     Notice that `create_formats` is a plural while `exit_format` is a singlular. This is
     not a joke ;)
     """
+    # pdf output is default from September, 9, 2012.
     def __init__(self):
         self.create_formats={"eps":False,"pdf":False,"png":False,"test":False}
-        self.exit_format="pstricks"
+        #self.exit_format="pstricks"
+        self.exit_format="pdf"
+        self.create_formats["pdf"] = True
         self.perform_tests = False
         self.silent=False
     def special_exit(self):
@@ -1417,15 +1422,15 @@ def unify_point_name(s):
 global_vars = global_variables()
 if "--silent" in sys.argv :
     global_vars.silent=True
+if "--dvi" in sys.argv :
+    global_vars.exit_format="pstricks"
+    global_vars.create_formats["pdf"] = False
 if "--eps" in sys.argv :
     global_vars.exit_format="eps"
     global_vars.create_formats["eps"] = True
 if "--png" in sys.argv :
     global_vars.exit_format="png"
     global_vars.create_formats["png"] = True
-if "--pdf" in sys.argv :
-    global_vars.exit_format="pdf"
-    global_vars.create_formats["pdf"] = True
 if "--create-png" in sys.argv :
     global_vars.create_formats["png"] = True
 if "--create-pdf" in sys.argv :
