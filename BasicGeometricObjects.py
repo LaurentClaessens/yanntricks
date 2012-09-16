@@ -120,6 +120,10 @@ class Axes(object):
         self.already_enlarged=False
         self.enlarge_size=0.5
         self.do_enlarge=True
+        self.do_mx_enlarge=True
+        self.do_my_enlarge=True
+        self.do_Mx_enlarge=True
+        self.do_My_enlarge=True
 
     # April, 8, 2012
     # I do not know how work that version of update
@@ -130,16 +134,18 @@ class Axes(object):
 
     def enlarge_a_little(self,l,pspict):
         if self.already_enlarged :
-            print "PHOtTy J'ai déjà donné"
-            raise
-            return None
+            raise ValueError,"I'm already enlarged"
         self.already_enlarged=True
         mx,Mx=self.single_axeX.enlarge_a_little(l,pspict=pspict)
-        self.single_axeX.mx=mx
-        self.single_axeX.Mx=Mx
-        mx,Mx=self.single_axeY.enlarge_a_little(l,pspict=pspict)
-        self.single_axeY.mx=mx
-        self.single_axeY.Mx=Mx
+        if self.do_mx_enlarge:
+            self.single_axeX.mx=mx
+        if self.do_Mx_enlarge :
+            self.single_axeX.Mx=Mx
+        my,My=self.single_axeY.enlarge_a_little(l,pspict=pspict)
+        if self.do_my_enlarge :
+            self.single_axeY.mx=my
+        if self.do_My_enlarge :
+            self.single_axeY.Mx=My
 
     def add_bounding_box(self,BB,pspict):
         """
@@ -462,6 +468,7 @@ class GraphOfASingleAxe(GraphOfAnObject):
             P.psName="ForTheBar"   # Since this point is not supposed to
                                        # be used, all of them have the same ps name.
             if self.numbering :
+                # The 0.2 here is hard coded in Histogram, see 71011299
                 r,theta=polar_with_dilatation(0.2,radian(self.mark_angle),pspict.xunit,pspict.yunit)
                 theta=degree(theta)
                 P.put_mark(r,theta,symbol,automatic_place=(pspict,"for axes",self.segment()))
@@ -4495,6 +4502,7 @@ class HistogramBox(GraphOfAnObject):
         self.n=n
         self.histo=histo
         self.size=self.d_xmax-self.d_xmin
+        self.th_height=self.n/self.size
         self.length=None
         self.height=None
     @lazy_attribute
@@ -4502,10 +4510,8 @@ class HistogramBox(GraphOfAnObject):
         xmin=self.histo.xscale*self.d_xmin
         xmax=self.histo.xscale*self.d_xmax
         ymin=0
-        ymax=self.histo.yscale*self.n
-        print "FuYysu",xmin,xmax,ymin,ymax
+        ymax=self.histo.yscale*self.th_height
         rect=Rectangle(mx=xmin,Mx=xmax,my=ymin,My=ymax)
-        print "GjQfmB",rect.mx,rect.Mx,rect.my,rect.My
         rect.parameters=self.parameters
         return rect
     def bounding_box(self,pspict=None):
@@ -4524,15 +4530,28 @@ class GraphOfAnHistogram(GraphOfAnObject):
         for t in self.tuple_box_list:
             self.box_list.append(HistogramBox(t[0],t[1],t[2],self))
         self.n=sum( [b.n for b in self.box_list] )
-        self.length=10  # Visual length (in centimeter) of the histogram
-        self.height=10  # Visual height (in centimeter) of the histogram
+        self.length=12  # Visual length (in centimeter) of the histogram
+        self.height=6  # Visual height (in centimeter) of the histogram
         self.d_xmin=min([b.d_xmin for b in self.box_list])       # min and max of the data
         self.d_xmax=max([b.d_xmax for b in self.box_list])
         self.d_ymax=max([b.n for b in self.box_list])       # max of the data ordinate.
         self.xsize=self.d_xmax-self.d_xmin
         self.ysize=self.d_ymax              # d_ymin is zero (implicitly)
+        # TODO : For sure one can sort it easier.
+        # The problem is that is sevaral differences x.th_height-y.th_height are small, 
+        # int(...) always returns 1 (or -1), so that the sorting gets wrong.
         self.xscale=self.length/self.xsize
-        self.yscale=self.height/self.ysize
+        classement = self.box_list[:]
+        facteur=10
+        for x in classement :
+            for y in classement :
+                try :
+                    facteur=max(facteur,10/(x.th_height-y.th_height))
+                except ZeroDivisionError :
+                    pass
+        classement.sort(lambda x,y:int((x.th_height-y.th_height)*facteur))
+        self.yscale=self.height/classement[-1].th_height
+        self.height/self.ysize
     def IF_x(self):
         """
         return the list of I and F points without repetitions.
@@ -4549,13 +4568,27 @@ class GraphOfAnHistogram(GraphOfAnObject):
         return x_list
     def action_on_pspict(self,pspict):
         pspict.axes.no_graduation()
-        for xx in self.IF_x():
+        pspict.axes.do_mx_enlarge=False
+        pspict.axes.do_my_enlarge=False
+        # The construction of the list 'values' is created in such a way not to have '1.0' instead of '1'.
+        # By the way, you have to know that the values in numpy.arange are type numpy.float64
+        import numpy
+        un=numpy.arange(self.d_xmin,self.d_xmax+0.1,step=int(self.xsize/10))
+        values=[]
+        for xx in un :
+            if int(xx)==xx:
+                values.append(int(xx))
+            else :
+                values.append(xx)
+        for xx in values:
             P=Point(xx*self.xscale,0)
             P.parameters.symbol="|"
-            P.put_mark(0.1,-90,str(xx),automatic_place=(pspict,"N"))
+            P.put_mark(0.2,-90,str(xx),automatic_place=(pspict,"N"))    # see 71011299 before to change this 0.2
             pspict.DrawGraph(P)
     def bounding_box(self,pspict=None):
         bb=BoundingBox()
+        for b in self.box_list:
+            bb.append(b)
         return bb
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict=pspict)
