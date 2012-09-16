@@ -59,6 +59,8 @@ COMMAND LINE ARGUMENTS:
                     raises a ValueError if it does not correspond.
                     If this option is set, nothing is written on the disk.
 
+                    The pdf is not created.
+
                     See :class:`TestPspictLaTeXCode`
 """
 
@@ -835,13 +837,15 @@ def Circle(center,radius,angleI=0,angleF=360):
     # TODO: in the last example, the radian value should be 2*pi.
     return BasicGeometricObjects.GraphOfACircle(center,radius)
 
-def Rectangle(*args):
+def Rectangle(*args,**arg):
     """
     INPUT:
 
     - ``NW,SE`` - the North-West corner and South-East corner
 
     Alternatively, you can pass a bounding box as unique argument.
+
+    Still alternatively, you can pass xmin,ymin,xmax,ymax
     """
     if len(args)==2:
         NW=args[0]
@@ -849,6 +853,12 @@ def Rectangle(*args):
     if len(args)==1:
         NW=args[0].NW()
         SE=args[0].SE()
+    if "mx" in arg.keys() :
+        bb=BasicGeometricObjects.BoundingBox(mx=arg["mx"],my=arg["my"],Mx=arg["Mx"],My=arg["My"])
+        # TODO : I should be able to pass directly the dictionary to BoundingBox
+        NW=bb.NW()
+        SE=bb.SE()
+
     return BasicGeometricObjects.GraphOfARectangle(NW,SE)
 
 def AffineVector(A=None,B=None):
@@ -1246,6 +1256,9 @@ def SingleAxe(C,base,mx,Mx,pspict=None):
     """
     return BasicGeometricObjects.GraphOfASingleAxe(C,base,mx,Mx,pspict)
 
+def Histogram(tuple_box_list):
+    return BasicGeometricObjects.GraphOfAnHistogram(tuple_box_list)
+
 def Segment(A,B):
     return BasicGeometricObjects.GraphOfASegment(A,B)
 
@@ -1439,8 +1452,10 @@ if "--create-eps" in sys.argv :
     global_vars.create_formats["eps"] = True
 if "--create-tests" in sys.argv :
     global_vars.create_formats["test"] = True
+    global_vars.create_formats["pdf"] = False
 if "--tests" in sys.argv :
     global_vars.perform_tests = True
+    global_vars.create_formats["pdf"] = False
 
 
 import phystricks.BasicGeometricObjects as BasicGeometricObjects

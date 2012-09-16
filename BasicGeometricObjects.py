@@ -344,6 +344,10 @@ class GraphOfAnObject(object):
         self.wavy = True
         self.waviness = Waviness(self,dx,dy)
     def put_mark(self,dist,angle,text,automatic_place=False):
+        """
+        If you want to put a mark under a point :
+        P.put_mark(0.1,-90,"text",automatic_place=(pspict,"N"))
+        """
         self.marque = True
         self.mark = Mark(self,dist,angle,text,automatic_place)
     def add_option(self,opt):
@@ -382,6 +386,7 @@ class GraphOfASingleAxe(GraphOfAnObject):
         self.arrows="->"
         self.graduation=True
         self.numbering=True
+        self.imposed_graduation=[]
         self.mark_origin=True
         self.mark=None
         self.mark_angle=degree(base.angle().radian-pi/2)
@@ -439,8 +444,13 @@ class GraphOfASingleAxe(GraphOfAnObject):
 
         By defaut, it is one at each multiple of self.base. If an user-defined axes_unit is given, then self.base is modified.
 
-        This function also enlarge the axe by half a *visual* centimeter.
+        This function also enlarges the axe by half a *visual* centimeter.
         """
+        # It seems that this 'imposed_graduation' does not work because
+        # the so-created points do not appear in the auxiliary file.
+        if self.imposed_graduation :
+            print "zFQyJU",self.imposed_graduation
+            return self.imposed_graduation
         if not self.graduation:
             return []
         points_list=[]
@@ -2799,6 +2809,10 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
         self.SE = SE
         self.SW = Point(self.NW.x,self.SE.y)
         self.NE = Point(self.SE.x,self.NW.y)
+        self.mx=self.NW.x
+        self.Mx=self.SE.x
+        self.my=self.SE.y
+        self.My=self.NW.y
         self.rectangle = self.obj
     def first_diagonal(self):
         return Segment(self.NW,self.SE)
@@ -2828,6 +2842,7 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
     def __getattr__(self,attrname):
         if "graph_" in attrname:
             return self._segment(attrname[6])
+        raise AttributeError
     def bounding_box(self,pspict=None):
         return BoundingBox(self.NW,self.SE)
     def math_bounding_box(self,pspict=None):
@@ -4466,6 +4481,89 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             a.append(v.pstricks_code(pspict))
         return "\n".join(a)
 
+class HistogramBox(GraphOfAnObject):
+    """
+    describes a box in an histogram.
+    """
+    def __init__(self,a,b,n,histo):
+        """
+        It is given by the initial value, the final value and the "surrounding" histogram
+        """
+        GraphOfAnObject.__init__(self,self)
+        self.d_xmin=a
+        self.d_xmax=b
+        self.n=n
+        self.histo=histo
+        self.size=self.d_xmax-self.d_xmin
+        self.length=None
+        self.height=None
+    @lazy_attribute
+    def rectangle(self):
+        xmin=self.histo.xscale*self.d_xmin
+        xmax=self.histo.xscale*self.d_xmax
+        ymin=0
+        ymax=self.histo.yscale*self.n
+        print "FuYysu",xmin,xmax,ymin,ymax
+        rect=Rectangle(mx=xmin,Mx=xmax,my=ymin,My=ymax)
+        print "GjQfmB",rect.mx,rect.Mx,rect.my,rect.My
+        rect.parameters=self.parameters
+        return rect
+    def bounding_box(self,pspict=None):
+        return self.rectangle.bounding_box(pspict)
+    def pstricks_code(self,pspict=None):
+        return self.rectangle.pstricks_code(pspict)
+
+class GraphOfAnHistogram(GraphOfAnObject):
+    """
+    An histogram is given by a list of tuple '(a,b,n)' where 'a' and 'b' are the extremal values of the box and 'n' is the number of elements in the box.
+    """
+    def __init__(self,tuple_box_list):
+        GraphOfAnObject.__init__(self,self)
+        self.tuple_box_list=tuple_box_list
+        self.box_list=[]
+        for t in self.tuple_box_list:
+            self.box_list.append(HistogramBox(t[0],t[1],t[2],self))
+        self.n=sum( [b.n for b in self.box_list] )
+        self.length=10  # Visual length (in centimeter) of the histogram
+        self.height=10  # Visual height (in centimeter) of the histogram
+        self.d_xmin=min([b.d_xmin for b in self.box_list])       # min and max of the data
+        self.d_xmax=max([b.d_xmax for b in self.box_list])
+        self.d_ymax=max([b.n for b in self.box_list])       # max of the data ordinate.
+        self.xsize=self.d_xmax-self.d_xmin
+        self.ysize=self.d_ymax              # d_ymin is zero (implicitly)
+        self.xscale=self.length/self.xsize
+        self.yscale=self.height/self.ysize
+    def IF_x(self):
+        """
+        return the list of I and F points without repetitions.
+
+        This is the list of "physical values" (i.e. the ones of the histogram), not the ones
+        of the pspict coordinates.
+        """
+        x_list=[]
+        for b in self.box_list:
+            if b.d_xmin not in x_list :
+                x_list.append(b.d_xmin)
+            if b.d_xmax not in x_list :
+                x_list.append(b.d_xmax)
+        return x_list
+    def action_on_pspict(self,pspict):
+        pspict.axes.no_graduation()
+        for xx in self.IF_x():
+            P=Point(xx*self.xscale,0)
+            P.parameters.symbol="|"
+            P.put_mark(0.1,-90,str(xx),automatic_place=(pspict,"N"))
+            pspict.DrawGraph(P)
+    def bounding_box(self,pspict=None):
+        bb=BoundingBox()
+        return bb
+    def math_bounding_box(self,pspict=None):
+        return self.bounding_box(pspict=pspict)
+    def pstricks_code(self,pspict=None):
+        a=["% Histogram"]
+        a.extend([x.pstricks_code(pspict) for x in self.box_list])
+        return "\n".join(a)
+
 def check_too_large(obj,pspict=None):
     try:
         bb=obj.bounding_box(pspict)
@@ -4528,8 +4626,9 @@ class BoundingBox(object):
         self.Mx=Mx
         self.My=My
 
-        self.add_math_object(P1)
-        self.add_math_object(P2)
+        if P1 :
+            self.add_math_object(P1)
+            self.add_math_object(P2)
 
         self.parent=parent
     def add_object(self,obj,pspict=None,fun="bounding_box"):
@@ -4607,7 +4706,8 @@ class BoundingBox(object):
         self.My = max(self.My,bb.My)
     def append(self,graph,pspict=None):
         try :
-            self.AddBB(graph.bounding_box(pspict))
+            bb=graph.bounding_box(pspict)
+            self.AddBB(bb)
         except (ValueError,AttributeError),msg :
             print "Something got wrong with %s"%str(graph)
             print msg

@@ -51,18 +51,20 @@ class PhystricksTestError(Exception):
         self.pspict=pspict
         self.code=code
         if pspict==None:
-            raise ValueError
+            #raise ValueError
+            print "Warning : this error is provided without pspict. Maybe something is wrong."
     def __str__(self):
         a=[]
         a.append("Test failed")
+        a.append(self.justification)
+        return "\n".join(a)
+
         #a.append("Expected:")
         #a.append(self.expected_text)
         #a.append("----")
         #a.append("Got:")
         #a.append(self.obtained_text)
         #a.append("---")
-        a.append(self.justification)
-        return "\n".join(a)
 
 class NoMathBoundingBox(Exception):
     def __init__(self,obj,fun):
@@ -776,6 +778,8 @@ class pspicture(object):
 
         # Creating the bounding box
         #list_to_be_drawn = [a.graph for a in self.record_draw_graph if a.take_graph]
+
+
         list_to_be_drawn = [a for a in self.record_draw_graph if a.take_graph]
 
         list_used_separators=[]
@@ -974,16 +978,18 @@ class pspicture(object):
         f.close()
         return d
     def get_Id_value(self,Id,counter_name="NO NAME ?",default_value=0):
-            if Id not in self.id_values_dict.keys():
-                if not global_vars.silent:
-                    print "Warning: the auxiliary file %s does not contain the id «%s». Compile your LaTeX file."%(self.interWriteFile,Id)
-                    raise PhystricksTestError(justification="id not found; Compile your LaTeX file.",pspict=self,code=2)
-                if global_vars.perform_tests :
-                    raise PhystricksTestError(justification="No tests file found.",pspict=self)
-                if global_vars.create_formats["test"] :
-                    raise ValueError, "I cannot create a test file when I'm unable to compute the bounding box."
-                return default_value
-            return self.id_values_dict[Id]
+        if Id not in self.id_values_dict.keys():
+            if not global_vars.silent:
+                print "Warning: the auxiliary file %s does not contain the id «%s». Compile your LaTeX file."%(self.interWriteFile,Id)
+                # I removed the following raise because if was preventing \setlength to be written in the pstricks file.
+                # September, 15, 2012
+                #raise PhystricksTestError(justification="id not found; Compile your LaTeX file.",pspict=self,code=2)
+            if global_vars.perform_tests :
+                raise PhystricksTestError(justification="No tests file found.",pspict=self)
+            if global_vars.create_formats["test"] :
+                raise ValueError, "I cannot create a test file when I'm unable to compute the bounding box."
+            return default_value
+        return self.id_values_dict[Id]
     def get_counter_value(self,counter_name,default_value=0):
         """
         return the value of the (LaTeX) counter <name> at this point of the LaTeX file
@@ -1043,6 +1049,7 @@ class pspicture(object):
 
         This functionality creates an intermediate file.
         """
+
         height = self.get_box_dimension(tex_expression,"totalheightof")
         width = self.get_box_dimension(tex_expression,"widthof")
         return width,height
@@ -1118,6 +1125,13 @@ class pspicture(object):
                 self.record_draw_graph.append(x)
         except AttributeError,msg :
             pass            # This happens when the graph has no mark; that is most of the time.
+        
+        #make the object act on the pspicture (up to now this is only used
+        #                                     by the histogram in order to custom the axes)
+        # One cannot make try ... except AttributeError since this will catch silently eventual real AttributeError
+        # inside the implementation of action_on_pspict
+        if "action_on_pspict" in dir(graph):
+            graph.action_on_pspict(self)
     def DrawDefaultAxes(self):
         """
         This function computes the bounding box of the axes and add them to the list to be drawn.
@@ -1179,7 +1193,7 @@ class pspicture(object):
                 bb.append(graphe,self)
         # These two lines are only useful if the size of the single axes were modified by hand
         # because the method self.math_bounding_box is called by self.DrawDefaultAxes that
-        # update the size of the singles axes later.
+        # updates the size of the singles axes later.
         try:
             bb.add_object(self.axes.single_axeX,pspict=self)
             bb.add_object(self.axes.single_axeY,pspict=self)
