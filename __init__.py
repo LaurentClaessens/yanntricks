@@ -1021,7 +1021,7 @@ class Grid(object):
         # ++++++++++++ Principal horizontal lines ++++++++ 
         for y in MainGridArray(self.BB.my,self.BB.My,self.Dy) :
             S = Segment( Point(self.BB.mx,y),Point(self.BB.Mx,y) )
-            S.merge_options(self.main_vertical)
+            S.merge_options(self.main_horizontal)
             a.append(S)
         # ++++++++++++ Principal vertical lines ++++++++
         for x in MainGridArray(self.BB.mx,self.BB.Mx,self.Dx) :
