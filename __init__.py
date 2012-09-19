@@ -96,6 +96,9 @@ import math, sys, os
 
 from phystricks.SmallComputations import *
 
+# TODO :    f=phyFunction(x**2+3*x-10), then  g=f/3 does not work.
+
+
 def GenericFigure(nom):
     """
     This function returns a figure with some default values. It creates coherent label, file name and prints the lines to be appended in the LaTeX file to include the figure.
