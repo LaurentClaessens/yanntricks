@@ -149,7 +149,7 @@ class FigureGenerationSuite(object):
         check_file=open(filename,"w")
         check_file.write(text)
         check_file.close()
-        print "The file {0} is created for you.".format(filename)
+        print "The file {0} is created for you".format(filename)
     def function_list_to_figures_list(self,function_list):
         first=",".join([a[0].__name__ for a in function_list])
         return "figures_list=[{0}]".format(first.replace("'"," "))
