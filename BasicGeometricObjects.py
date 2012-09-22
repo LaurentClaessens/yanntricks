@@ -3461,6 +3461,13 @@ class GraphOfAphyFunction(GraphOfAnObject):
     def __str__(self):
         return str(self.sage)
 
+# TODO : the following should work
+#    f=phyFunction(2*x**2-x-1).graph(-0.8,1.3)
+#    a=f.coefficient(x,2)
+#    b=f.coefficient(x,1)
+#    c=f.coefficient(x,0)
+# when an attribute is not found, GraphOfAphyFunction should try the attribute of self.sage
+
 def get_paths_from_plot(p):
     """
     return the paths (in the sense of matplotlib) contained in the plot object p.
