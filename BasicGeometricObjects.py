@@ -205,7 +205,7 @@ class Axes(object):
         #self.update()  # Removed on April, 8, 2012
         if self.draw_single_axeX :
             c.append(self.single_axeX.pstricks_code(pspict))
-        if self.draw_single_axeX :
+        if self.draw_single_axeY :
             c.append(self.single_axeY.pstricks_code(pspict))
         return "\n".join(c)
 
