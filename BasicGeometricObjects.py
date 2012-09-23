@@ -111,10 +111,12 @@ class Axes(object):
         self.single_axeX=SingleAxe(self.C,Vector(1,0),0,0,pspict=self.pspict)
         self.single_axeX.mark_origin=False
         self.single_axeX.axes_unit=AxesUnit(1,"")
+        self.draw_single_axeX=True
         self.single_axeY=SingleAxe(self.C,Vector(0,1),0,0,pspict=self.pspict)
         self.single_axeY.mark_origin=False
         self.single_axeY.axes_unit=AxesUnit(1,"")
         self.single_axeY.mark_angle=180
+        self.draw_single_axeY=True
         self.single_axeX.Dx=self.Dx
         self.single_axeY.Dx=self.Dy
         self.already_enlarged=False
@@ -201,8 +203,10 @@ class Axes(object):
         self.add_option("Dy="+sDy)
         c=[]
         #self.update()  # Removed on April, 8, 2012
-        c.append(self.single_axeX.pstricks_code(pspict))
-        c.append(self.single_axeY.pstricks_code(pspict))
+        if self.draw_single_axeX :
+            c.append(self.single_axeX.pstricks_code(pspict))
+        if self.draw_single_axeX :
+            c.append(self.single_axeY.pstricks_code(pspict))
         return "\n".join(c)
 
 def _vector_pstricks_code(segment,pspict=None):
