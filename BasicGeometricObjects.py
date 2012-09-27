@@ -2825,18 +2825,21 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
         self.my=self.SE.y
         self.My=self.NW.y
         self.rectangle = self.obj
+
+        self.segment_N=Segment(self.NW,self.NE)
+        self.segment_S=Segment(self.SW,self.SE)
+        self.segment_E=Segment(self.NE,self.SE)
+        self.segment_W=Segment(self.NW,self.SW)
+        self.segments=[self.segment_N,self.segment_S,self.segment_E,self.segment_W]
+        for s in self.segments:
+            s.parameters=None
+
     def first_diagonal(self):
         return Segment(self.NW,self.SE)
+
     def second_diagonal(self):
         return Segment(self.SW,self.NE)
-    def segment_N(self):
-        return Segment(self.NW,self.NE)
-    def segment_S(self):
-        return Segment(self.SW,self.SE)
-    def segment_E(self):
-        return Segment(self.NE,self.SE)
-    def segment_W(self):
-        return Segment(self.NW,self.SW)
+
     def center(self):
         return self.first_diagonal().center()
     def default_associated_graph_class(self):
@@ -2859,7 +2862,18 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def pstricks_code(self,pspict=None):
-        return "\psframe["+self.params()+"]"+self.rectangle.SW.coordinates(numerical=True)+self.rectangle.NE.coordinates(numerical=True)
+        """
+        We are drawing the psframe AND the segments.
+        The aim is to be able to use the frame for filling, being still able to customise separately the edges.
+        """
+        for s in self.segments:
+            if s.parameters==None:
+                s.parameters=self.parameters
+        a=[]
+        a.append("\psframe["+self.params()+"]"+self.rectangle.SW.coordinates(numerical=True)+self.rectangle.NE.coordinates(numerical=True))
+        for s in self.segments :
+            a.append(s.pstricks_code(pspict))
+        return "\n".join(a)
 
 class GraphOfAnAngle(GraphOfAnObject):
     """
@@ -4528,6 +4542,7 @@ class HistogramBox(GraphOfAnObject):
     def bounding_box(self,pspict=None):
         return self.rectangle.bounding_box(pspict)
     def pstricks_code(self,pspict=None):
+        # The put_mark can only be done here (and not in self.rectangle()) because one needs the pspict.
         return self.rectangle.pstricks_code(pspict)
 
 class GraphOfAnHistogram(GraphOfAnObject):
@@ -4548,6 +4563,7 @@ class GraphOfAnHistogram(GraphOfAnObject):
         self.d_ymax=max([b.n for b in self.box_list])       # max of the data ordinate.
         self.xsize=self.d_xmax-self.d_xmin
         self.ysize=self.d_ymax              # d_ymin is zero (implicitly)
+        self.legnde=None
         # TODO : For sure one can sort it easier.
         # The problem is that is sevaral differences x.th_height-y.th_height are small, 
         # int(...) always returns 1 (or -1), so that the sorting gets wrong.
@@ -4581,6 +4597,10 @@ class GraphOfAnHistogram(GraphOfAnObject):
         pspict.axes.no_graduation()
         pspict.axes.do_mx_enlarge=False
         pspict.axes.do_my_enlarge=False
+        if self.legende :
+            pspict.axes.single_axeX.put_mark(0.5,-90,self.legende,automatic_place=(pspict,"N"))
+        else :
+            print "Are you sure that you don't want a legend on your histogram ?"
         # The construction of the list 'values' is created in such a way not to have '1.0' instead of '1'.
         # By the way, you have to know that the values in numpy.arange are type numpy.float64
         import numpy
@@ -4595,6 +4615,11 @@ class GraphOfAnHistogram(GraphOfAnObject):
             P=Point(xx*self.xscale,0)
             P.parameters.symbol="|"
             P.put_mark(0.2,-90,str(xx),automatic_place=(pspict,"N"))    # see 71011299 before to change this 0.2
+            pspict.DrawGraph(P)
+        for box in self.box_list :
+            P=box.rectangle.segment_N.mark_point()
+            P.put_mark(0.2,90,"$"+str(box.n)+"$",automatic_place=(pspict,"S"))
+            P.parameters.symbol="none"
             pspict.DrawGraph(P)
     def bounding_box(self,pspict=None):
         bb=BoundingBox()
