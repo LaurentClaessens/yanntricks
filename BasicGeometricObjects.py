@@ -3476,6 +3476,8 @@ class GraphOfAphyFunction(GraphOfAnObject):
         return self*other
     def __add__(self,other):
         return phyFunction(self.sage+other.sage)
+    def __neg__(self):
+        return phyFunction(-self.sage).graph(self.mx,self.Mx)
     def __str__(self):
         return str(self.sage)
 
