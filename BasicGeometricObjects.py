@@ -3745,6 +3745,8 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         return self.get_minmax_data()['ymin']
     def ymax(self):
         return self.get_minmax_data()['ymax']
+    def mark_point(self):
+        return self.points_list[-1]
     def bounding_box(self,pspict=None):
         """
         Return the bounding box of the interpolation curve
@@ -4033,7 +4035,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             self.I=self.get_point(self.llamI,advised=False)   
             self.F=self.get_point(self.llamF,advised=False)
     def pstricks(self,pspict=None):
-        # The difficult point with pstrics is that the syntax is "f1(t) | f2(t)" with the variable t.
+        # One difficult point with pstrics is that the syntax is "f1(t) | f2(t)" with the variable t.
         #   In order to produce that, we use the Sage's function repr and the syntax f(x=t)
         t=var('t')
         return "%s | %s "%(SubstitutionMathPsTricks(repr(self.f1.sage(x=t)).replace("pi","3.1415")),  SubstitutionMathPsTricks(repr(self.f2.sage(x=t)).replace("pi","3.1415")) )
