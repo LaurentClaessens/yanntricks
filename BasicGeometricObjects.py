@@ -3291,10 +3291,12 @@ class GraphOfAphyFunction(GraphOfAnObject):
         Ps.append(self.get_point(Mx))   
         return Ps
     def liste_extrema(self):
+        raise DeprecationWarning            # September 29, 2012
         if self.listeExtrema == []:
             self.extrema_analytique()
         return self.listeExtrema
     def ToutExtrema(self,mx,Mx,dx):
+        raise DeprecationWarning            # September 29, 2012
         min = self.get_point(mx)
         max = self.get_point(mx)
         for ex in list(xsrange(mx,Mx,dx,include_endpoint=true)):
@@ -3304,6 +3306,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         self.listeExtrema.extend([min,max])
     # La méthode phyFunction.extrema_analytique() ajoute les solutions de f'(x)=0 à self.listeExtrema
     def extrema_analytique(self):
+        raise DeprecationWarning            # September 29, 2012
         print "Analytique"
         x=var('x')
         a = []
@@ -3316,6 +3319,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         self.listeExtrema.extend(a)
     # Donne les extrema connus entre mx et Mx
     def extrema(self,mx,Mx):
+        raise DeprecationWarning            # September 29, 2012
         a = []
         for p in self.liste_extrema() :
             if p.x >= mx and p.x <= Mx :
@@ -3412,6 +3416,8 @@ class GraphOfAphyFunction(GraphOfAnObject):
         return bb
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
+    def mark_point(self):
+        return self.get_point(self.Mx)
     def pstricks_code(self,pspict=None):
         """
         return the pstricks code of the function
@@ -4565,7 +4571,7 @@ class GraphOfAnHistogram(GraphOfAnObject):
         self.d_ymax=max([b.n for b in self.box_list])       # max of the data ordinate.
         self.xsize=self.d_xmax-self.d_xmin
         self.ysize=self.d_ymax              # d_ymin is zero (implicitly)
-        self.legnde=None
+        self.legende=None
         # TODO : For sure one can sort it easier.
         # The problem is that is sevaral differences x.th_height-y.th_height are small, 
         # int(...) always returns 1 (or -1), so that the sorting gets wrong.
