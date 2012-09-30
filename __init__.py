@@ -460,6 +460,38 @@ def LagrangePolynomial(points_list):
     f = R.lagrange_polynomial([   (float(P.x),float(P.y)) for P in points_list  ])
     return phyFunction(f)
 
+def HermiteInterpolation(points_list):
+    """
+    return a polynomial that pass trough the given points with the given derivatives.
+
+    Each element of points_list is a triple
+    (x,y,d)
+    and the given polynomial satisfies P(x)=y and P'(x)=d
+
+    EXAMPLES :
+
+    sage : P=HermiteInterpolation( [  (1,14,7),(3,64,51),(-2,-16,31)    ] )
+    sage: P.simplify_full()
+    2*x^3 - x^2 + 3*x + 10
+
+    """
+    x=var('x')
+    n=len(points_list)
+    xx={ i:points_list[i][0] for i in range(0,n) }
+    y={ i:points_list[i][1] for i in range(0,n) }
+    d={ i:points_list[i][2] for i in range(0,n) }
+
+    b={ i:(x-xx[i])**2 for i in range(0,n) }
+
+    Q={}
+    for j in range(0,n):
+        Q[j]=prod(    [  b[i] for i in range(0,n) if i <> j  ]   )
+    P={}
+    for j in range(0,n):
+        parenthese=1-(x-xx[j])*Q[j].diff(x)(xx[j])/Q[j](xx[j])
+        P[j]=(Q[j](x)/Q[j](xx[j]))*(    parenthese*y[j]+(x-xx[j])*d[j]      )
+    return phyFunction(sum(P.values()))
+
 def InterpolationCurve(points_list,context_object=None):
     """
     determine an interpolation curve from a list of points.

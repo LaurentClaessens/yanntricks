@@ -459,7 +459,6 @@ class GraphOfASingleAxe(GraphOfAnObject):
         # It seems that this 'imposed_graduation' does not work because
         # the so-created points do not appear in the auxiliary file.
         if self.imposed_graduation :
-            print "zFQyJU",self.imposed_graduation
             return self.imposed_graduation
         if not self.graduation:
             return []
@@ -4744,7 +4743,11 @@ class BoundingBox(object):
             bb.check_too_large()
             self.AddBB(bb)
     def add_math_object(self,obj,pspict=None):
-        self.add_object(obj,pspict=pspict,fun="math_bounding_box")
+        try :
+            self.add_object(obj,pspict=pspict,fun="math_bounding_box")
+        except TypeError :
+            print obj,type(obj)
+            raise
     def check_too_large(self):
         """
         Raise a ValueError if the bounding box is too large.

@@ -1112,6 +1112,9 @@ class pspicture(object):
         More precisely, it does not draw the object now, but it add it (and its mark if applicable) to ``self.record_draw_graph``
         which is the list of objects to be drawn. Thus it is still possible to modify the object later (even if discouraged).
         """
+        if isinstance(graph,BasicGeometricObjects.GraphOfAphyFunction):
+            if graph.mx==None or graph.Mx==None:
+                raise TypeError,"You cannot draw phyFunction but only graph."
         if separator_name==None:
             try :
                 separator_name=graph.separator_name
