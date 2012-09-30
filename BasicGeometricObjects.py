@@ -1787,6 +1787,7 @@ class GraphOfASegment(GraphOfAnObject):
         self.F = B
         self.arrow_type=arrow_type
         GraphOfAnObject.__init__(self,self)
+        self.arrow_list=[]
 
     @lazy_attribute
     def Dx(self):
@@ -1979,6 +1980,18 @@ class GraphOfASegment(GraphOfAnObject):
         if advised:
             P.advised_mark_angle=self.angle().degree+90
         return P
+    def put_arrow(self,position=0.5,size=0.01):
+        """
+        Add a small arrow at the given position. `position` is a number between 0 and 1.
+
+        The arrow is pointed from self.I to self.F and is by default put at the middle of the
+        segment.
+
+        The arrow is a vector of size (by default 0.01). 
+        """
+        P=self.proportion(position,advised=False)
+        v=AffineVector(P,self.F).fix_size(size)
+        self.arrow_list.append(v)
     def Point(self):
         """
         Return the point X such that as free vector, 0->X == self
@@ -1986,7 +1999,6 @@ class GraphOfASegment(GraphOfAnObject):
         More precisely, if self is the segment A->B, return the point B-A
         """
         return self.F-self.I
-
     def center(self):
         P = self.proportion(0.5,advised=True)
         return P
@@ -2481,9 +2493,11 @@ class GraphOfASegment(GraphOfAnObject):
                 curve=InterpolationCurve(self.get_wavy_points(waviness.dx,waviness.dy),context_object=self)
                 return curve.pstricks_code()
             else:
-                a =  self.I.create_PSpoint() + self.F.create_PSpoint()
-                a=a+"\n\pstLineAB[%s]{%s}{%s}"%(self.params(),self.I.psName,self.F.psName)
-                return a
+                a =[self.I.create_PSpoint() + self.F.create_PSpoint()]
+                a.append("\pstLineAB[%s]{%s}{%s}"%(self.params(),self.I.psName,self.F.psName))
+        for v in self.arrow_list:
+            a.append(v.pstricks_code(pspict))
+        return "\n".join(a)
 
 class GraphOfAMeasureLength(GraphOfASegment):
     def __init__(self,seg,dist=0.1):
@@ -3481,7 +3495,11 @@ class GraphOfAphyFunction(GraphOfAnObject):
     def __rmul__(self,other):
         return self*other
     def __add__(self,other):
-        return phyFunction(self.sage+other.sage)
+        try :
+            g=other.sage
+        except AttributeError:
+            g=other
+        return phyFunction(self.sage+g)
     def __neg__(self):
         return phyFunction(-self.sage).graph(self.mx,self.Mx)
     def __str__(self):
@@ -4095,6 +4113,8 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             self._derivative_dict[n] = self.derivative(n-1).derivative()
         return self._derivative_dict[n]
     def put_arrow(self,*args):
+        # TODO : one should be able to give the size as optional argument, as done with
+        #       put_arrow on GraphOfASegment. 
         """
         Add a small arrow at the given positions.
 

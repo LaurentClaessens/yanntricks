@@ -450,6 +450,16 @@ def MeasureLength(seg,dist=0.1):
     """
     return BasicGeometricObjects.GraphOfAMeasureLength(seg,dist)
 
+def LagrangePolynomial(points_list):
+    """
+    return as `phyFunction` the Lagrange polynomial passing trough the given points
+
+    """
+    #http://ask.sagemath.org/question/1815/polynomialring-and-from-__future__-import
+    R = PolynomialRing(QQ,str('x'))
+    f = R.lagrange_polynomial([   (float(P.x),float(P.y)) for P in points_list  ])
+    return phyFunction(f)
+
 def InterpolationCurve(points_list,context_object=None):
     """
     determine an interpolation curve from a list of points.
