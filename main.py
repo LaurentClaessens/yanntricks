@@ -66,6 +66,10 @@ class PhystricksTestError(Exception):
         #a.append(self.obtained_text)
         #a.append("---")
 
+class PhystricksNoError(Exception):
+    def __init__(self,figure):
+        self.figure=figure
+
 class NoMathBoundingBox(Exception):
     def __init__(self,obj,fun):
         self.message = "Object {0} from class {1} has no attribute {2}".format(obj,type(obj),fun)
@@ -95,6 +99,7 @@ class FigureGenerationSuite(object):
         self.first=first
         self.title=title
         self.failed_list=[]
+        self.documentation_list=[]
         self.to_be_recompiled_list=[]
 
     def generate(self):
@@ -112,35 +117,49 @@ class FigureGenerationSuite(object):
             print "--------------------------- %s : figure %s/%s (failed: %s) -------------------------------------"%(self.title,str(i),str(len(self.test_list)),str(len(self.failed_list)))
             print " ============= %s ============="%str(self.test_list[i])
             try:
-                self.test_list[i]()
-            except PhystricksTestError,e:
-                print "The test of pspicture %s failed. %s"%(self.test_list[i],e.justification)
-                print e
-                self.failed_list.append((self.test_list[i],e.pspict))
-                if e.code==2:
-                    self.to_be_recompiled_list.append((self.test_list[i],e.pspict))
-    def latex_portion(self,failed_list):
+                try:
+                    pspict=self.test_list[i]()
+                except PhystricksTestError,e:
+                    print "The test of pspicture %s failed. %s"%(self.test_list[i],e.justification)
+                    print e
+                    self.failed_list.append((self.test_list[i],e.pspict))
+                    if e.code==2:
+                        self.to_be_recompiled_list.append((self.test_list[i],e.pspict))
+            except PhystricksNoError,e:
+                if global_vars.create_documentation:
+                    self.documentation_list.append( (self.test_list[i],e.figure) )
+    def latex_portion(self,failed_list,lstinputlisting=False):
         from latex_to_be import pseudo_caption
         portion=[]
         num=0
         for a in failed_list:
             try:
-                base=a[1].figure_mother.LaTeX_lines()
+                base=a[1].figure_mother.LaTeX_lines
+                print "COpeOC",base
             except AttributeError,e:
-                print "I cannot found the LaTeX lines corresponding to ",a[1]
-                print e
+                try:
+                    base=a[1].LaTeX_lines     # In the case we are arriving here to create the documentation.
+                    print "BclLrF",base
+                except AttributeError,e:
+                    print "I cannot found the LaTeX lines corresponding to ",a[1]
+                    print e
             else :
                 text=base.replace(pseudo_caption,str(a[0]))
                 portion.append(text)
+                if lstinputlisting :
+                    filename="phystricks"+str(a[1].script_filename)
+                    portion.append(r"\lstinputlisting{"+filename+".py}")
+                    portion.append("\clearpage")
                 num=num+1
                 if num==5:
                     portion.append("\clearpage\n")
                     num=0
         return "\n".join(portion)
+
     def create_to_be_latex_file(self,failed_list,name="checked"):
         """
         This function produce the LaTeX file that serves to continue the tests. 
-        This can be either the figures to be visually checked , either the figures that have to be recompiled.
+        This can be either the figures to be visually checked, either the figures that have to be recompiled.
         """
         from latex_to_be import to_be_checked_general_latex
         general_text=to_be_checked_general_latex
@@ -150,6 +169,20 @@ class FigureGenerationSuite(object):
         check_file.write(text)
         check_file.close()
         print "The file {0} is created for you".format(filename)
+
+    def create_documentation(self):
+        """
+        This function produce the LaTeX file that serves for documentation. That contains the source code of all pictures together with the result.
+        """
+        from latex_to_be import documentation_skel
+        general_text=documentation_skel
+        text=general_text.replace("EXAMPLES_LIST",self.latex_portion(self.documentation_list,lstinputlisting=True))
+        filename="documentation.tex"
+        check_file=open(filename,"w")
+        check_file.write(text)
+        check_file.close()
+        print "The file {0} is created for you".format(filename)
+
     def function_list_to_figures_list(self,function_list):
         first=",".join([a[0].__name__ for a in function_list])
         return "figures_list=[{0}]".format(first.replace("'"," "))
@@ -159,6 +192,8 @@ class FigureGenerationSuite(object):
         lines to be included in the LaTeX file in order to
         visualize them.
         """
+        if global_vars.create_documentation:
+            self.create_documentation()
         all_tests_passed = True
         if len(self.failed_list) != 0:
             print "The list of function to visually checked :"
@@ -231,7 +266,10 @@ def newlengthName():
     return "lengthOf"+latinize(sysargvzero)
 
 class figure(object):
-    def __init__(self,caption,name,nFich):
+    def __init__(self,caption,name,nFich,script_filename):
+        #self.nom=nom        # This is supposed to be the .py file name containing the source code.
+                             # You should use script_filename instead.
+        self.script_filename=script_filename
         self.caption = caption
         self.name = name
         self.xunit = 1
@@ -305,13 +343,15 @@ class figure(object):
         self.record_pspicture.append(pspict)
     def AjouteCode(self,liste_code):
         self.code.extend(liste_code)
+    @lazy_attribute
     def LaTeX_lines(self):
         """
         return the lines to be included in your LaTeX file.
         """
         a=[]
         from latex_to_be import pseudo_caption
-        a.append("The result is on figure \\ref{"+self.name+"}.")
+        a.append("The result is on figure \\ref{"+self.name+"}. % From file "+self.script_filename)
+        # The pseudo_caption is changed to the function name later.
         a.append("\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
         a.append("\\input{%s}"%(self.nFich))
         text = "\n".join(a)
@@ -351,7 +391,7 @@ class figure(object):
         """
         Write the figure in the file.
 
-        Does not write if we are testing.
+        Do not write if we are testing.
         """
         to_be_written=self.contenu
         if not global_vars.perform_tests :
@@ -359,8 +399,9 @@ class figure(object):
             self.fichier.file.write(to_be_written)
             self.fichier.file.close()
         print "--------------- For your LaTeX file ---------------"
-        print self.LaTeX_lines()
+        print self.LaTeX_lines
         print "---------------------------------------------------"
+        raise PhystricksNoError(self)
             
 class subfigure(object):
     """
@@ -1233,6 +1274,7 @@ class pspicture(object):
         # This is for pdf and pstricks.
         return "\ifpdf {0}\n \else {1}\n \\fi".format(to_other.input_code_pdf,self.contenu_pstricks)
     def write_the_file(self,f):
+        raise DeprecationWarning
         """
         Writes the LaTeX code of the pspict.
 

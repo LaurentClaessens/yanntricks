@@ -99,26 +99,28 @@ from phystricks.SmallComputations import *
 # TODO :    f=phyFunction(x**2+3*x-10), then  g=f/3 does not work.
 
 
-def GenericFigure(nom):
+def GenericFigure(nom,script_filename=None):
     """
     This function returns a figure with some default values. It creates coherent label, file name and prints the lines to be appended in the LaTeX file to include the figure.
     """
+    if not script_filename:
+        script_filename=nom
     caption = "\CaptionFig"+nom     # This is also hard-coded in the function main.figure.LaTeX_lines
     label = "LabelFig"+nom          # The string "LabelFig" is hard-coded in the function main.figure.LaTeX_lines
     nFich = "Fig_"+nom+".pstricks"
 
-    fig=main.figure(caption,label,nFich)
+    fig=main.figure(caption,label,nFich,script_filename)
     fig.figure_mother=fig   # I'm not sure that this line is useful.
-    print fig.LaTeX_lines()
+    print fig.LaTeX_lines
     return fig
 
-def SinglePicture(name):
+def SinglePicture(name,script_filename=None):
     """ Return the tuple of pspicture and figure that one needs in 90% of the cases. """
-    fig = GenericFigure(name)
+    fig = GenericFigure(name,script_filename)
     pspict=fig.new_pspicture(name)
     return pspict,fig
 
-def MultiplePictures(name,n):
+def MultiplePictures(name,n,script_filename=None):
     r"""
     Return a figure with multiple subfigures. This is the other 10% of cases.
 
@@ -148,7 +150,9 @@ def MultiplePictures(name,n):
 
     See also :class:`subfigure`
     """
-    fig = GenericFigure(name)
+    if not script_filename:
+        script_filename=name
+    fig = GenericFigure(name,script_filename)
     pspict=[]
     for i in range(n):
         subfigure=fig.new_subfigure("name"+str(i),"LabelSubFig"+name+str(i))
@@ -176,7 +180,8 @@ def SubsetFigures(old_pspicts,old_fig,l):
     I'm not sure that it is still possible to use the old fig.
     """
     name=old_fig.name
-    fig = GenericFigure(name)
+    script_filename=old_fig.script_filename
+    fig = GenericFigure(name,script_filename)
     pspict=[]
     for i in l:
         subfigure=fig.new_subfigure("name"+str(i),"LabelSubFig"+name+str(i))
@@ -1140,6 +1145,7 @@ class global_variables(object):
         self.create_formats["pdf"] = True
         self.perform_tests = False
         self.silent=False
+        self.create_documentation=False
     def special_exit(self):
         for sortie in self.create_formats.values():
             if sortie:
@@ -1300,6 +1306,91 @@ def SingleAxe(C,base,mx,Mx,pspict=None):
         sage: axe = SingleAxe(Point(1,1),Vector(0,1),-2,2)
     """
     return BasicGeometricObjects.GraphOfASingleAxe(C,base,mx,Mx,pspict)
+
+class ObliqueProjection(object):
+    def __init__(self,alpha,k):
+        """
+        This is the oblique projection of angle `alpha` and scale factor `k`.
+
+        `alpha` is given in degree.
+        """
+        self.k=k
+        if self.k>=1 :
+            print "Are you sure that you want such a scale factor : ",float(self.k)
+        self.alpha=alpha
+        self.theta=radian(self.alpha)
+        self.kc=self.k*cos(self.theta)
+        self.ks=self.k*sin(self.theta)
+    def point(self,x,y,z):
+        return Point(x+z*self.kc,y+z*self.ks)
+    def cuboid(self,P,a,b,c):
+        """
+        `P` -- a tupe (x,y) that gives the lower left point.
+
+        `a,b,c` the size
+        """
+        return Cuboid(self,P,a,b,c)
+
+class Cuboid(object):
+    def __init__(self,op,P,a,b,c):
+        """
+        `P` -- tuple (x,y) giving the lower left point
+        `a,b,c` -- lengths of the edges.
+
+          +--------------------------+
+        0/ |                       1/|
+        /  |         0             / |
+        0-------------------------1  |
+        |  |                      |  |
+        |  |                     1|  | 
+       3|  |______________________|__|
+        |3/                       |2/
+        |/           2            |/
+        3-------------------------2
+
+        """
+        self.op=op
+        self.P=P
+        self.Px=P[0]
+        self.Py=P[1]
+        self.a=a
+        self.b=b
+        self.c=c
+
+        self.A=[Point(self.Px,self.Py+b),Point(self.Px+a,self.Py+b),Point(self.Px+a,self.Py),Point(self.Px,self.Py)]
+
+        # The points on the first and second rectangle
+        self.c1=[ self.op.point(P.x,P.y,0) for P in self.A ]
+        self.c2=[ self.op.point(P.x,P.y,self.c) for P in self.A ]
+
+        # The edges.
+        self.segP=[ Segment( self.c1[i],self.c2[i] ) for i in range(0,len(self.c1))  ]
+        self.segc1=[ Segment(self.c1[i],self.c1[(i+1)%len(self.c1)]) for i in range(0,len(self.c1)) ]
+        self.segc2=[ Segment(self.c2[i],self.c2[(i+1)%len(self.c2)]) for i in range(0,len(self.c2)) ]
+
+        if op.alpha < 90 :
+            self.segP[3].parameters.style="dashed"
+            self.segc2[2].parameters.style="dashed"
+            self.segc2[3].parameters.style="dashed"
+        else :
+            self.segP[2].parameters.style="dashed"
+            self.segc2[2].parameters.style="dashed"
+            self.segc2[1].parameters.style="dashed"
+
+    def bounding_box(self,pspict=None):
+        bb=BasicGeometricObjects.BoundingBox()
+        for s in self.c1:
+            bb.append(s,pspict)
+        for s in self.c2:
+            bb.append(s,pspict)
+        return bb
+    def math_bounding_box(self,pspict=None):
+        return self.bounding_box(pspict)
+    def action_on_pspict(self,pspict):
+        pspict.DrawGraphs(self.segP,self.segc2,self.segc1)
+    def pstricks_code(self,pspict=None):
+        return ""   # Everything is in action_on_pspict
+
 
 def Histogram(tuple_box_list):
     return BasicGeometricObjects.GraphOfAnHistogram(tuple_box_list)
@@ -1501,6 +1592,8 @@ if "--create-tests" in sys.argv :
 if "--tests" in sys.argv :
     global_vars.perform_tests = True
     global_vars.create_formats["pdf"] = False
+if "--documentation" in sys.argv:
+    global_vars.create_documentation=True
 
 
 import phystricks.BasicGeometricObjects as BasicGeometricObjects

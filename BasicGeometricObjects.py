@@ -3979,13 +3979,15 @@ class GraphOfAPolygon(GraphOfAnObject):
         self.edges_list=[]
         self.edge=Segment(Point(0,0),Point(1,1))    # This is an arbitrary segment that only serves to have a
                                                     # "model" for the parameters.
-        for i in range(len(self.points_list)-1):
-            segment=Segment(self.points_list[i],self.points_list[i+1])
+        for i in range(0,len(self.points_list)):
+            segment=Segment(self.points_list[i],self.points_list[(i+1)%len(self.points_list)])
             self.edges_list.append(segment)
-        final_segment=Segment(self.points_list[-1],self.points_list[0])
-        self.edges_list.append(final_segment)
-        for edge in self.edges_list:
-            edge.parameters=self.edge.parameters
+    def make_edges_independent(self):
+        """
+        make the edges customisation independent the one to the other.
+        """
+        for s in self.edges_list :
+            s.parameters=Parameters()
     def math_bounding_box(self,pspict=None):
         bb=BoundingBox()
         for P in self.points_list:
@@ -4807,6 +4809,8 @@ class BoundingBox(object):
         self.Mx = max(self.Mx,bb.Mx)
         self.My = max(self.My,bb.My)
     def append(self,graph,pspict=None):
+        if not pspict :
+            print "You should provide a pspict in order to add",graph
         try :
             bb=graph.bounding_box(pspict)
             self.AddBB(bb)
