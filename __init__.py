@@ -1356,6 +1356,7 @@ class Cuboid(object):
         self.a=a
         self.b=b
         self.c=c
+        self.transparent=True
 
         self.A=[Point(self.Px,self.Py+b),Point(self.Px+a,self.Py+b),Point(self.Px+a,self.Py),Point(self.Px,self.Py)]
 
@@ -1377,6 +1378,8 @@ class Cuboid(object):
             self.segc2[2].parameters.style="dashed"
             self.segc2[1].parameters.style="dashed"
 
+    def make_opaque(self):
+        self.transparent=False
     def bounding_box(self,pspict=None):
         bb=BasicGeometricObjects.BoundingBox()
         for s in self.c1:
@@ -1387,7 +1390,23 @@ class Cuboid(object):
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def action_on_pspict(self,pspict):
-        pspict.DrawGraphs(self.segP,self.segc2,self.segc1)
+        for s in self.segP:
+            pspict.DrawGraphs(s)
+        for s in self.segc2:
+            pspict.DrawGraphs(s)
+        for s in self.segc2:
+            pspict.DrawGraphs(s)
+        if not self.transparent :
+            surface1=Polygon( self.c1 )
+            surface1.parameters.filled()
+            surface2=Polygon( self.c1[0],self.c1[1],self.c2[1],self.c2[0] )
+            surface2.parameters.filled()
+            if self.op.alpha<90:
+                surface3=Polygon(self.c1[1],self.c2[1],self.c2[2],self.c1[2])
+            else :
+                surface3=Polygon(self.c1[0],self.c2[0],self.c2[3],self.c1[3])
+            surface3.parameters.filled()
+            pspict.DrawGraphs(surface1,surface2)
     def pstricks_code(self,pspict=None):
         return ""   # Everything is in action_on_pspict
 
