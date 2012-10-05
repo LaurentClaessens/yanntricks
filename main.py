@@ -462,7 +462,7 @@ class PspictureToOtherOutputs(object):
         self.file_png = SmallComputations.Fichier(self.file_eps.chemin.replace(".eps",".png"))
         self.input_code_eps = "\includegraphics{%s}"%(self.file_eps.nom)
         self.input_code_pdf = "\includegraphics{%s}"%(self.file_pdf.nom)
-        self.input_code_png = "\includegraphics{%s}"%(self.file_png.nom)
+        self.input_code_png = "\includegraphics[width=WIDTH]{%s}"%(self.file_png.nom)   # 'WIDHT' will be replaced by the actual boundig box later.
     def latex_code_for_eps(self):
         text = """\documentclass{article}
         \\usepackage{pstricks,pst-eucl,pstricks-add,pst-plot,pst-eps,calc,catchfile}
@@ -504,8 +504,7 @@ class PspictureToOtherOutputs(object):
         on my computer inkscape crashes on a segmentation fault
         when launched from a script :(
         """
-        # TODO: check if inkscape is present. If not use convert. If convert
-        # is not present, prendi la f-parola.
+        # TODO: check if inkscape is present. If not use convert.
         self.create_eps_file()
         x_cmsize=100*numerical_approx(self.pspict.xsize*self.pspict.xunit)
         y_cmsize=100*numerical_approx(self.pspict.ysize*self.pspict.yunit)
@@ -1268,7 +1267,9 @@ class pspicture(object):
 
         # This is for png or eps
         if global_vars.exit_format not in ["pstricks","pdf"]:
-            return to_other.__getattribute__("input_code_"+global_vars.exit_format)
+            a = to_other.__getattribute__("input_code_"+global_vars.exit_format)
+            size=numerical_approx(self.xsize*self.xunit,4)
+            return a.replace('WIDTH',str(size)+"cm")
     
         # This is for pdf and pstricks.
         return "\ifpdf {0}\n \else {1}\n \\fi".format(to_other.input_code_pdf,self.contenu_pstricks)

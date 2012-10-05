@@ -1394,7 +1394,7 @@ class Cuboid(object):
             pspict.DrawGraphs(s)
         for s in self.segc2:
             pspict.DrawGraphs(s)
-        for s in self.segc2:
+        for s in self.segc1:
             pspict.DrawGraphs(s)
         if not self.transparent :
             surface1=Polygon( self.c1 )
