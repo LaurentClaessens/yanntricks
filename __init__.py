@@ -376,11 +376,14 @@ def phyFunction(fun,mx=None,Mx=None):
     x=var('x')
     return BasicGeometricObjects.GraphOfAphyFunction(sy.function(x),mx,Mx)
 
-def CustomSurface(*args):
-    if len(args)==1:
-        args=args[0]
-    graphList=list(args)
-    return BasicGeometricObjects.GraphOfACustomSurface(graphList)
+# There is an other CustomSurface later. (october, 6, 2012)
+#def CustomSurface(*args):
+#    if len(args)==1:
+#        args=args[0]
+#    graphList=list(args)
+#    print graphList
+#    raise
+#    return BasicGeometricObjects.GraphOfACustomSurface(graphList)
 
 def MeasureLength(seg,dist=0.1):
     """
@@ -733,10 +736,16 @@ def Polygon(*args):
     """
     represent a polygon.
 
+    You can give either a list of point or a list containing the points :
+
     .. literalinclude:: phystricksExPolygone.py
     .. image:: Picture_FIGLabelFigExPolygonePICTExPolygone-for_eps.png
     """
-    return BasicGeometricObjects.GraphOfAPolygon(args)
+    if len(args)==1:     # In this case, we suppose that this is a list
+        # args is a tupe containing the arguments. If you call
+        # Polygon([P,Q]) then args[0] is [P,Q]
+        return BasicGeometricObjects.GraphOfAPolygon(args[0])
+    return BasicGeometricObjects.GraphOfAPolygon(list(args))
 
 def CustomSurface(*args):
     """
@@ -1312,12 +1321,14 @@ class ObliqueProjection(object):
         """
         This is the oblique projection of angle `alpha` and scale factor `k`.
 
-        `alpha` is given in degree.
+        `alpha` is given in degree. It is immediately converted in order to have positive number. If you give -45, it will be converted to 315
         """
         self.k=k
         if self.k>=1 :
             print "Are you sure that you want such a scale factor : ",float(self.k)
         self.alpha=alpha
+        a=SmallComputations.AngleMeasure(value_degree=self.alpha).positive()
+        self.alpha=a.degree
         self.theta=radian(self.alpha)
         self.kc=self.k*cos(self.theta)
         self.ks=self.k*sin(self.theta)
@@ -1330,6 +1341,22 @@ class ObliqueProjection(object):
         `a,b,c` the size
         """
         return Cuboid(self,P,a,b,c)
+
+def Circle3D(op,O,A,B,angleI=0,angleF=2*pi):
+    return BasicGeometricObjects.GraphOfACircle3D(op,O,A,B,angleI,angleF)
+
+class Vector3D(object):
+    def __init__(self,x,y,z):
+        self.x=x
+        self.y=y
+        self.z=z
+        self.c_list=[x,y,z]
+    def __add__(self,other):
+        return Vector3D( self.x+other.x,self.y+other.y,self.z+other.z  )
+    def __rmul__(self,r):
+        return Vector3D(r*self.x,r*self.y,r*self.z)
+    def __getitem__(self,i):
+        return self.c_list[i]
 
 class Cuboid(object):
     def __init__(self,op,P,a,b,c):
@@ -1364,6 +1391,20 @@ class Cuboid(object):
         self.c1=[ self.op.point(P.x,P.y,0) for P in self.A ]
         self.c2=[ self.op.point(P.x,P.y,self.c) for P in self.A ]
 
+        self.A=self.c1[0]
+        self.B=self.c1[1]
+        self.C=self.c1[2]
+        self.D=self.c1[3]
+        self.E=self.c2[0]
+        self.F=self.c2[1]
+        self.G=self.c2[2]
+        self.H=self.c2[3]
+
+        for P in self.c1:
+            P.parameters.symbol="none"
+        for P in self.c2:
+            P.parameters.symbol="none"
+
         # The edges.
         self.segP=[ Segment( self.c1[i],self.c2[i] ) for i in range(0,len(self.c1))  ]
         self.segc1=[ Segment(self.c1[i],self.c1[(i+1)%len(self.c1)]) for i in range(0,len(self.c1)) ]
@@ -1378,6 +1419,16 @@ class Cuboid(object):
             self.segc2[2].parameters.style="dashed"
             self.segc2[1].parameters.style="dashed"
 
+    def put_vertex_mark(self,pspict=None):
+        self.A.put_mark(0.2,135,"\( A\)",automatic_place=pspict)
+        self.B.put_mark(0.2,90,"\( B\)",automatic_place=pspict)
+        self.C.put_mark(0.2,-45,"\( C\)",automatic_place=pspict)
+        self.D.put_mark(0.2,180,"\( D\)",automatic_place=pspict)
+        self.E.put_mark(0.2,135,"\( E\)",automatic_place=pspict)
+        self.F.put_mark(0.2,0,"\( F\)",automatic_place=pspict)
+        self.G.put_mark(0.2,0,"\( G\)",automatic_place=pspict)
+        self.H.put_mark(0.2,135,"\( H\)",automatic_place=pspict)
+
     def make_opaque(self):
         self.transparent=False
     def bounding_box(self,pspict=None):
@@ -1390,6 +1441,10 @@ class Cuboid(object):
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def action_on_pspict(self,pspict):
+        for P in self.c1:
+            pspict.DrawGraphs(P)
+        for P in self.c2:
+            pspict.DrawGraphs(P)
         for s in self.segP:
             pspict.DrawGraphs(s)
         for s in self.segc2:
@@ -1406,7 +1461,9 @@ class Cuboid(object):
             else :
                 surface3=Polygon(self.c1[0],self.c2[0],self.c2[3],self.c1[3])
             surface3.parameters.filled()
-            pspict.DrawGraphs(surface1,surface2)
+            #import random
+            #surface3.parameters.fill.color=random.choice(["blue","red","cyan","brown","green","lightgray"])
+            pspict.DrawGraphs(surface1,surface2,surface3)
     def pstricks_code(self,pspict=None):
         return ""   # Everything is in action_on_pspict
 

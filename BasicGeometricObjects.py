@@ -3729,6 +3729,8 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         GraphOfAnObject.__init__(self,self)
         self.parameters.color="brown"
         self.points_list=points_list
+        self.I=self.points_list[0]
+        self.F=self.points_list[-1]
         self.context_object=context_object
         if self.context_object is None:
             self.contex_object=self
@@ -3973,9 +3975,9 @@ class GraphOfAPolygon(GraphOfAnObject):
 
     This class is not intended to be used by the end-user. The latter has to use :func:`Polygon`.
     """
-    def __init__(self,args):
+    def __init__(self,points_list):
         GraphOfAnObject.__init__(self,self)
-        self.points_list=list(args)
+        self.points_list=points_list
         self.edges_list=[]
         self.edge=Segment(Point(0,0),Point(1,1))    # This is an arbitrary segment that only serves to have a
                                                     # "model" for the parameters.
@@ -4544,6 +4546,59 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             a.append(v.pstricks_code(pspict))
         return "\n".join(a)
 
+class GraphOfACircle3D(GraphOfAnObject):
+    def __init__(self,op,O,A,B,angleI=0,angleF=0):
+        """
+        The circle passing trough A and B with center O.
+
+        `A`, `B` and `O` are tuples of numbers
+        """
+        GraphOfAnObject.__init__(self,self)
+        self.op=op
+        self.O=O
+        self.A=A
+        self.B=B
+        self.center=Vector3D(O[0],O[1],O[2])
+        self.u=Vector3D( A[0]-O[0],A[1]-O[1],A[2]-O[2]  )
+        self.v=Vector3D( B[0]-O[0],B[1]-O[1],B[2]-O[2]  )
+        self.radius_u=sqrt( sum([k**2 for k in self.u])  )
+        self.radius_v=sqrt( sum([k**2 for k in self.v])  )
+        self.plotpoints=10*max(self.radius_u,self.radius_v)
+        self.angleI=angleI
+        self.angleF=angleF
+    @lazy_attribute
+    def points_list(self):
+        l=[]
+        import numpy
+        angles=numpy.linspace(self.angleI,self.angleF,self.plotpoints)
+        for a in angles:
+            l.append( self.get_point(a) )
+        return l
+    @lazy_attribute
+    def curve2d(self):
+        proj_points_list=[]
+        for P in self.points_list:
+            t=self.op.point(P.x,P.y,P.z)
+            proj_points_list.append(t)
+        curve=GraphOfAnInterpolationCurve(proj_points_list)
+        curve.parameters=self.parameters
+        return curve
+    def get_point(self,angle):
+        return self.center+cos(angle)*self.u+sin(angle)*self.v  
+    def get_point2d(self,angle):
+        return self.op.point(self.get_point(angle))
+    def graph(self,angleI,angleF):
+        C = GraphOfACircle3D(self.op,self.O,self.A,self.B,angleI,angleF)
+        return C
+    def bounding_box(self,pspict=None):
+        return self.curve2d.bounding_box(pspict)
+    def math_bounding_box(self,pspict=None):
+        return self.curve2d.math_bounding_box(pspict)
+    def action_on_pspict(self,pspict):
+        pspict.DrawGraphs(self.curve2d)
+    def pstricks_code(self,pspict):
+        return ""
+
 class HistogramBox(GraphOfAnObject):
     """
     describes a box in an histogram.
@@ -4809,6 +4864,8 @@ class BoundingBox(object):
         self.Mx = max(self.Mx,bb.Mx)
         self.My = max(self.My,bb.My)
     def append(self,graph,pspict=None):
+        if isinstance(graph,list):
+            raise KeyError
         if not pspict :
             print "You should provide a pspict in order to add",graph
         try :

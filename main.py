@@ -266,14 +266,18 @@ def newlengthName():
     return "lengthOf"+latinize(sysargvzero)
 
 class figure(object):
+    r"""
+    This is not exactly the 'figure' in the LaTeX sense of the term since it also contains informations about bounding boxes.
+
+    The method `figure.no_figure()` makes disappear the \begin{figure} ... \end{figure}. In this case the LaTeX code of the class figure contains the informations about the bounding boxes and a if/then for inclusion of pspicture or \includegraphics
+    """
     def __init__(self,caption,name,nFich,script_filename):
-        #self.nom=nom        # This is supposed to be the .py file name containing the source code.
-                             # You should use script_filename instead.
         self.script_filename=script_filename
         self.caption = caption
         self.name = name
         self.xunit = 1
         self.yunit = 1
+        self.figure_environment=True
         self.code = []
         self.record_subfigure = []
         self.record_pspicture=[]
@@ -292,11 +296,14 @@ class figure(object):
         self.separator_list.new_separator("BEFORE PSPICTURE")
         self.separator_list.new_separator("PSPICTURE")
         self.separator_list.new_separator("AFTER PSPICTURE")
-        self.separator_list.new_separator("AFTER ALL")
+        # the separators 'BEFORE SUBFIGURE' and 'AFTER ALL' will not be written in the case
+        # of self.figure_environment=False.
+        self.separator_list.new_separator("AFTER ALL")  # caption and \end{figure}
         add_latex_line_entete(self)
-
         self.add_latex_line("\\begin{figure}[ht]","BEFORE SUBFIGURES")
         self.add_latex_line("\centering","BEFORE SUBFIGURES")
+    def no_figure(self):
+        self.figure_environment=False
     def dilatation_X(self,fact):
         """ Makes a dilatation of the whole picture in the X direction. A contraction if the coefficient is lower than 1 """
         self.xunit = self.xunit * fact
@@ -359,7 +366,7 @@ class figure(object):
         
     def conclude(self):
         for pspict in self.record_pspicture :
-            # Here we add the picture itself. What arrives depends on --eps, --pdf, --png, ...
+            # Here we add the picture itself. What happens depends on --eps, --pdf, --png, ...
             self.add_latex_line(pspict.contenu(),"PSPICTURE")
 
             # What has to be written in the WRITE_AND_LABEL part of the picture is written now
@@ -378,7 +385,6 @@ class figure(object):
             self.add_latex_line("}                  % Closing subfigure "+str(self.record_subfigure.index(f)+1),"SUBFIGURES")
             self.add_latex_line("%","SUBFIGURES")
 
-
             for pspict in f.record_pspicture:
                 self.add_latex_line(pspict.write_and_label_separator_list["WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
                 self.add_latex_line(pspict.write_and_label_separator_list["CLOSE_WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
@@ -386,7 +392,10 @@ class figure(object):
             \end{figure}
             """%(self.caption,self.name)
         self.add_latex_line(after_all,"AFTER ALL")
-        self.contenu = self.separator_list.code()
+        if self.figure_environment:
+           self.contenu = self.separator_list.code()
+        else :
+           self.contenu = self.separator_list.code(not_to_be_used=["BEFORE SUBFIGURES","AFTER ALL"])
     def write_the_file(self):
         """
         Write the figure in the file.
@@ -550,8 +559,8 @@ class SeparatorList(object):
             self.separator_list.insert(number,separator)
         else:
             self.separator_list.append(separator)
-    def code(self):
-        return "".join(separator.code() for separator in self.separator_list)
+    def code(self,not_to_be_used=[]):
+        return "".join(separator.code() for separator in self.separator_list if separator.title not in not_to_be_used)
     def fusion(self,title_list,new_title):
         """
         Remove of the list the separators whose names are in the `title_list`
