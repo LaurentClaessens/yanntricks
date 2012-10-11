@@ -742,6 +742,11 @@ class pspicture(object):
         self.draw_default_axes=False
         self._bounding_box=None
 
+        self.mx_acceptable_BB=-100
+        self.my_acceptable_BB=-100
+        self.Mx_acceptable_BB=100
+        self.My_acceptable_BB=100
+
         self.grid = Grid(BasicGeometricObjects.BoundingBox())
 
         # The order of declaration is important, because it is recorded in the Separator.number attribute.
@@ -1197,7 +1202,8 @@ class pspicture(object):
         .. image:: Picture_FIGLabelFigEnlargeAxesPICTEnlargeAxes-for_eps.png
 
         """
-        BB = self.math_bounding_box()
+        BB = self.math_bounding_box(pspict=self)
+        print "hLqRXE",BB
         BB.add_object(self.axes.C,self,fun="math_bounding_box")     # If you add the no-math bounding box, it adds 0.1
                                                                     # and it becomes ugly when dilating
                                                                     # Notice that we pass here too early to use self.xunit,self.yunit
@@ -1232,7 +1238,7 @@ class pspicture(object):
         Add an object to the math bounding box of the pspicture. This object will not be drawn, but the axes and the grid will take it into account.
         """
         self.record_force_math_bounding_box.append(g)
-    def math_bounding_box(self):
+    def math_bounding_box(self,pspict=None):
         """
         Return the current BoundingBox, that is the BoundingBox of the objects that are currently in the list of objects to be drawn.
         """

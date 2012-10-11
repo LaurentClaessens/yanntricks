@@ -407,10 +407,19 @@ class GraphOfASingleAxe(GraphOfAnObject):
     # to compute the bounding box.
     def segment(self,projection=False,pspict=None):
         if self.mx == 0 and self.Mx == 0 :
+            # I think that we only pass here in order either to do a projection either to create an inital bounding box.
+            # If xunit or yunit are very low, then returning something like
+            #   Segment(self.C-self.base.visual_length(1,pspict=pspict),self.C+self.base.visual_length(1,pspict=pspict))      
+            # causes bounding box to be too large.
+            # This is why I return a small segment.
             if projection :
                 return Segment(self.C,self.C+self.base)
             else :
-                return Segment(self.C-self.base.visual_length(1,pspict=pspict),self.C+self.base.visual_length(1,pspict=pspict))      
+                #return Segment(self.C-self.base.visual_length(1,pspict=pspict),self.C+self.base.visual_length(1,pspict=pspict))      
+                return Segment(self.C-self.base.fix_size(1),self.C+self.base.fix_size(1))      
+
+
+
 
                 # raising an error here makes impossible to draw pictures with only vertical stuff. As an example, the following 
                 # was crashing :
@@ -1482,7 +1491,8 @@ class GraphOfAPoint(GraphOfAnObject):
         """Return a bounding box which include itself and that's it."""
         # Here one cannot use BoundingBox(self.point,self.point) because
         # it creates infinite loop.
-        return BoundingBox(mx=self.point.x,Mx=self.point.x,my=self.point.y,My=self.point.y)
+        bb=BoundingBox(mx=self.point.x,Mx=self.point.x,my=self.point.y,My=self.point.y)
+        return bb
     def pstricks_code(self,pspict=None,with_mark=False):
         r"""
         Return the pstricks code of the point
@@ -2471,6 +2481,9 @@ class GraphOfASegment(GraphOfAnObject):
             P=self.center().copy()
         return P
     def bounding_box(self,pspict=None):
+        if self.I.y < -10 :
+            print self.I
+            raise
         if self.in_bounding_box:
             return BoundingBox(self.I,self.F)       # If you change this, maybe you have to adapt math_bounding_box
         else :
@@ -4732,8 +4745,9 @@ def check_too_large(obj,pspict=None):
         my=obj.my
         Mx=obj.Mx
         My=obj.My
-    if mx<-100 or my<-100 or Mx>100 or My>100:
-        raise ValueError, "I don't believe that object {1} has a bounding box as large as {0}".format(bb,obj)
+    if pspict:
+        if mx<pspict.mx_acceptable_BB or my<pspict.my_acceptable_BB or Mx>pspict.Mx_acceptable_BB or My>pspict.My_acceptable_BB:
+            raise ValueError, "I don't believe that object {1} has a bounding box as large as {0}".format(bb,obj)
 
 class BoundingBox(object):
     r"""
@@ -4782,11 +4796,11 @@ class BoundingBox(object):
         self.My=My
 
         if P1 :
-            self.add_math_object(P1)
-            self.add_math_object(P2)
+            self.add_math_object(P1,check_too_large=False)
+            self.add_math_object(P2,check_too_large=False)
 
         self.parent=parent
-    def add_object(self,obj,pspict=None,fun="bounding_box"):
+    def add_object(self,obj,pspict=None,fun="bounding_box",check_too_large=True):
         try :
             bb=obj.__getattribute__(fun)(pspict=pspict)
         except AttributeError,message :
@@ -4797,19 +4811,20 @@ class BoundingBox(object):
                 raise
                 raise main.NoMathBoundingBox(obj,fun)
         else :
-            bb.check_too_large()
+            if check_too_large :
+                bb.check_too_large(pspict)
             self.AddBB(bb)
-    def add_math_object(self,obj,pspict=None):
+    def add_math_object(self,obj,pspict=None,check_too_large=True):
         try :
-            self.add_object(obj,pspict=pspict,fun="math_bounding_box")
+            self.add_object(obj,pspict=pspict,fun="math_bounding_box",check_too_large=check_too_large)
         except TypeError :
             print obj,type(obj)
             raise
-    def check_too_large(self):
+    def check_too_large(self,pspict=None):
         """
         Raise a ValueError if the bounding box is too large.
         """
-        check_too_large(self)
+        check_too_large(self,pspict=pspict)
     def N(self):
         return Segment(self.NW(),self.NE()).center()
     def S(self):
@@ -4870,12 +4885,12 @@ class BoundingBox(object):
             print "You should provide a pspict in order to add",graph
         try :
             bb=graph.bounding_box(pspict)
-            self.AddBB(bb)
         except (ValueError,AttributeError),msg :
             print "Something got wrong with %s"%str(graph)
             print msg
             print "If you want to debug me, you should add a raise here."
             raise
+        self.AddBB(bb)
     def add_math_graph(self,graphe,pspict=None):
         try :
             self.addBB(graphe.math_bounding_box(pspict))
