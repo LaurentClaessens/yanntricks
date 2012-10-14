@@ -179,12 +179,15 @@ class Axes(object):
         and update the mx,my of the single axes X and Y.
         """
         #self.update()  # removed on April, 8, 2012
+        if pspict == None :
+            print "pgPIYd"
+            raise TypeError,"No pspict given"
         BB=BoundingBox()
-        BB.append(self.single_axeX.bounding_box(pspict))
-        BB.append(self.single_axeY.bounding_box(pspict))
+        BB.append(self.single_axeX.bounding_box(pspict),pspict)
+        BB.append(self.single_axeY.bounding_box(pspict),pspict)
 
         if self.pspict :
-            BB.append(self.pspict.math_bounding_box())
+            BB.append(self.pspict.math_bounding_box(),pspict)
         self.add_bounding_box(BB,pspict)                       # This line updates the single axes taking the content of pspict into account.
         BB.check_too_large()
         return BB
@@ -196,7 +199,8 @@ class Axes(object):
         return BB
     def pstricks_code(self,pspict=None):
         if pspict == None :
-            raise TypeError
+            print "zlgDjE"
+            raise TypeError,"No pspict given"
         sDx=RemoveLastZeros(self.Dx,10)
         sDy=RemoveLastZeros(self.Dy,10)
         self.add_option("Dx="+sDx)
@@ -499,8 +503,10 @@ class GraphOfASingleAxe(GraphOfAnObject):
     def math_bounding_box(self,pspict):
         # The math_bounding box does not take into account the things that are inside the picture
         # (not even if this are default axes)
-        return self.segment(pspict=pspict).bounding_box(pspict)
-    def pstricks_code(self,pspict=None):
+        s = self.segment(pspict=pspict)
+        bb=s.bounding_box(pspict)
+        return bb
+    def pstricks_code(self,pspict):
         """
         Return the pstricks code of the axe.
         """
@@ -2480,10 +2486,7 @@ class GraphOfASegment(GraphOfAnObject):
         else :
             P=self.center().copy()
         return P
-    def bounding_box(self,pspict=None):
-        if self.I.y < -10 :
-            print self.I
-            raise
+    def bounding_box(self,pspict):
         if self.in_bounding_box:
             return BoundingBox(self.I,self.F)       # If you change this, maybe you have to adapt math_bounding_box
         else :
@@ -3704,9 +3707,11 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         self.parameters.color=None       
 
     def bounding_box(self,pspict=None):
+        if pspict==None:
+            raise ValueError, "You have to provide a pspict"
         bb=BoundingBox()
-        bb.append(self.curve1,pspict=None)
-        bb.append(self.curve2,pspict=None)
+        bb.append(self.curve1,pspict)
+        bb.append(self.curve2,pspict)
         return bb
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
@@ -4720,10 +4725,10 @@ class GraphOfAnHistogram(GraphOfAnObject):
             P.put_mark(0.2,90,"$"+str(box.n)+"$",automatic_place=(pspict,"S"))
             P.parameters.symbol="none"
             pspict.DrawGraph(P)
-    def bounding_box(self,pspict=None):
+    def bounding_box(self,pspict):
         bb=BoundingBox()
         for b in self.box_list:
-            bb.append(b)
+            bb.append(b,pspict)
         return bb
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict=pspict)
@@ -4878,9 +4883,13 @@ class BoundingBox(object):
         self.my = min(self.my,bb.my)
         self.Mx = max(self.Mx,bb.Mx)
         self.My = max(self.My,bb.My)
-    def append(self,graph,pspict=None):
+    def append(self,graph,pspict):
+        if pspict==None:
+            print "coGOtl; je vais faire un raise"
+            print graph
+            raise ValueError
         if isinstance(graph,list):
-            raise KeyError
+            raise KeyError,"%s is a list"%graph
         if not pspict :
             print "You should provide a pspict in order to add",graph
         try :

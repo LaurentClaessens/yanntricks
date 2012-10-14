@@ -135,11 +135,9 @@ class FigureGenerationSuite(object):
         for a in failed_list:
             try:
                 base=a[1].figure_mother.LaTeX_lines
-                print "COpeOC",base
             except AttributeError,e:
                 try:
                     base=a[1].LaTeX_lines     # In the case we are arriving here to create the documentation.
-                    print "BclLrF",base
                 except AttributeError,e:
                     print "I cannot found the LaTeX lines corresponding to ",a[1]
                     print e
@@ -853,7 +851,7 @@ class pspicture(object):
             self.add_latex_line(graph.pstricks_code(self),separator_name)
             list_used_separators.append(separator_name)
 
-            self.BB.append(self.axes,pspict=self)                   # Here the pspict take into account the enlarging of the axes
+            self.BB.append(self.axes,pspict=self)                   # Here the pspict takes into account the enlarging of the axes
 
             for single in [self.axes.single_axeX,self.axes.single_axeY]:
                 if single.marque:
@@ -1203,7 +1201,6 @@ class pspicture(object):
 
         """
         BB = self.math_bounding_box(pspict=self)
-        print "hLqRXE",BB
         BB.add_object(self.axes.C,self,fun="math_bounding_box")     # If you add the no-math bounding box, it adds 0.1
                                                                     # and it becomes ugly when dilating
                                                                     # Notice that we pass here too early to use self.xunit,self.yunit
