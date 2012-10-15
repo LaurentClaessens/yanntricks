@@ -1150,8 +1150,8 @@ class global_variables(object):
     def __init__(self):
         self.create_formats={"eps":False,"pdf":False,"png":False,"test":False}
         #self.exit_format="pstricks"
-        self.exit_format="pdf"
-        self.create_formats["pdf"] = True
+        self.exit_format="png"
+        self.create_formats["png"] = True
         self.perform_tests = False
         self.silent=False
         self.create_documentation=False
@@ -1654,12 +1654,12 @@ if "--eps" in sys.argv :
     global_vars.exit_format="eps"
     global_vars.create_formats["eps"] = True
 if "--png" in sys.argv :
-    global_vars.exit_format="png"
     global_vars.create_formats["png"] = True
 if "--create-png" in sys.argv :
     global_vars.create_formats["png"] = True
 if "--create-pdf" in sys.argv :
     global_vars.create_formats["pdf"] = True
+    global_vars.exit_format="pdf"
 if "--create-eps" in sys.argv :
     global_vars.create_formats["eps"] = True
 if "--create-tests" in sys.argv :
