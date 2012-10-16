@@ -524,6 +524,13 @@ class GraphOfASingleAxe(GraphOfAnObject):
     def __str__(self):
         return "<GraphOfASingleAxe: C={0} base={1} mx={2} Mx={3}>".format(self.C,self.base,self.mx,self.Mx)
 
+# TODO : to fill portion of circle should be as easy as:
+#    CerB=Cer.graph(alpha,alpha+90)
+#    CerB.parameters.filled()
+#    CerB.parameters.fill.color="blue"
+# See the picture RouletteACaVVA
+
+
 class GraphOfACircle(GraphOfAnObject):
     """
     This is a circle, or an arc of circle.
@@ -747,10 +754,16 @@ class GraphOfACircle(GraphOfAnObject):
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def bounding_box(self,pspict=None):
+        if not pspict:
+            raise TypeError,"You have to pass a pspict in order to compute the bounding box"
         a=simplify_degree(self.angleI,keep_max=True,number=True)
         b=simplify_degree(self.angleF,keep_max=True,number=True)
-        angleI=min(a,b)
-        angleF=max(a,b)
+        if self.angleI<self.angleF:
+            angleI=max(a,b)
+            angleF=min(a,b)
+        else :
+            angleI=max(a,b)
+            angleF=min(a,b)+360
         pI=self.get_point(angleI)
         pF=self.get_point(angleF)
         bb = BoundingBox(self.center,self.center)
