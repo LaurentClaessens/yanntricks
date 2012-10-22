@@ -380,6 +380,15 @@ class GraphOfAnObject(object):
         self.wavy = graph.wavy
         self.waviness = graph.waviness
     def conclude_params(self):
+        """
+        However the better way to add something like
+        linewidth=1mm
+        to a graph object `seg` is to use
+        seg.add_option("linewidth=1mm")
+        """
+        oo=self.parameters.other_options
+        for opt in oo.keys():
+            self.add_option(opt+"="+oo[opt])
         self.parameters.add_to_options(self.options)
     def params(self):
         self.conclude_params()
@@ -1046,12 +1055,29 @@ class Parameters(object):
         self.fill=FillParameters()
         self.hatch=HatchParameters()
         self.interesting_attributes=["color","symbol","style","_filled","fill","_hatched","hatch"]
+        self.other_options={}
         self._filled=False
         self._hatched=False
     def filled(self):
         self._filled=True
     def hatched(self):
         self._hatched=True
+    def add_option(self,key,value):
+        """
+        Add options that will be added to to code.
+
+            sage: from phystricks.BasicGeometricObjects import *
+            sage: seg=Segment(Point(0,0),Point(1,1))
+            sage: seg.parameters.add_option("linewidth","1mm")
+            sage: seg.pstricks_code()
+            klmklm
+
+        However the better way to add something like
+        linewidth=1mm
+        to a graph object `seg` is to use
+        seg.add_option("linewidth=1mm")
+        """
+        self.other_options[key]=value
     def add_to_options(self,opt):
         """
         Add to the object `opt` (type Option) the different options that correspond to the parameters.
@@ -1129,7 +1155,6 @@ class Parameters(object):
                 parameters.__dict__[attr]=candidate
         parameters.fill=self.fill
         parameters.hatch=self.hatch
-
 
 def extract_interval_information(curve):
     """
@@ -2470,8 +2495,6 @@ class GraphOfASegment(GraphOfAnObject):
             return "<segment I=%s F=%s>"%(str(self.I),str(self.F))
         if self.arrow_type=="vector":
             return "<vector I=%s F=%s>"%(str(self.I),str(self.F))
-
-
     def mark_point(self):
         """
         return the point on which a mark has to be placed if we use the method put_mark.
