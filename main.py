@@ -538,7 +538,7 @@ def add_latex_line_entete(truc,position=""):
     truc.add_latex_line("% http://student.ulb.ac.be/~lclaesse/phystricks-doc.pdf ",position)
     truc.add_latex_line("% http://student.ulb.ac.be/~lclaesse/phystricks-documentation/_build/html/index.html ",position)
     truc.add_latex_line("% and the projects phystricks and phystricks-doc at ",position)
-    truc.add_latex_line("% http://gitorious.org/~moky\n",position)
+    truc.add_latex_line("% http://gitorious.org/~moky",position)
 
 class SeparatorList(object):
     """
@@ -636,12 +636,19 @@ class Separator(object):
         self.title = title
         self.latex_code=[]
         self.add_latex_line("%"+self.title)
-    def add_latex_line(self,line):
+    def add_latex_line(self,line,add_line_jump=True):
+        print "========="
+        print "cuMQkG",add_line_jump
+        if not add_line_jump :
+            print line
+        print "========="
         if isinstance(line,Separator):
             text=line.code()
         else :
             text = "".join(line)        # Notice that "".join(x) also works when x is a string.
-        self.latex_code.append(text+"\n")
+        self.latex_code.append(text)
+        if add_line_jump :
+            self.latex_code.append("\n")
     def code(self):
         return "".join(self.latex_code)
 
@@ -932,40 +939,19 @@ class pspicture(object):
         fig.write_the_file()
     def initialize_newwrite(self):
         if not self.newwriteDone :
-            code = r""" \makeatletter
+            code = r"""\makeatletter
                 \@ifundefined{%s}
                 {\newwrite{\%s}
                 }{}
                 \makeatother"""%(self.newwriteName,self.newwriteName)
             self.add_latex_line(code,"WRITE_AND_LABEL")
 
-            # The following lines were creating the "TeX capacities exceeded" error.
-
-            #code="""\CatchFileDef \phystricksContent {%s}{\endlinechar=10 }
-            #    \immediate\openout\%s=%s
-            #    \immediate\write\%s{\phystricksContent}
-            #    """%(self.interWriteFile,self.newwriteName,self.interWriteFile,self.newwriteName)
-            #self.add_latex_line(code,"WRITE_AND_LABEL")
 
             code="\immediate\openout\%s=%s"%(self.newwriteName,self.interWriteFile)
             self.add_latex_line(code,"WRITE_AND_LABEL")
 
-
-            code=r"""\immediate\closeout\%s"""%self.newwriteName
-            self.add_latex_line(code,"CLOSE_WRITE_AND_LABEL")
-
-            #code = r"""\makeatletter
-            #    \@ifundefined{phystricksAppendToFile}{
-            #    \newcommand{\phystricksAppendToFile}[1]{
-            #    \CatchFileDef \phystricksContent {%s}{\endlinechar=10 }
-            #    \immediate\openout\%s=%s
-            #    \immediate\write\%s{\phystricksContent}
-            #    \immediate\write\%s{#1}
-            #    \immediate\closeout\%s
-            #    }
-            #    }
-            #    \makeatother"""%(self.interWriteFile,newwriteName(),self.interWriteFile,newwriteName(),newwriteName(),newwriteName())
-            #self.add_latex_line(code,"WRITE_AND_LABEL")
+            code=r"\immediate\closeout\%s"%self.newwriteName
+            self.add_latex_line(code,"CLOSE_WRITE_AND_LABEL",add_line_jump=False)
 
             self.newwriteDone = True
 
@@ -977,27 +963,24 @@ class pspicture(object):
                 f.close()
     def initialize_counter(self):
         if not self.counterDone:
-            code = r""" \makeatletter
+            code = r"""\makeatletter
                 \@ifundefined{c@%s}
                 {\newcounter{%s}}{}
-                \makeatother
-                """%(counterName(),counterName())           # make LaTeX test if the counter exist before to create it.
+                \makeatother"""%(counterName(),counterName())           # make LaTeX test if the counter exist before to create it.
             self.add_latex_line(code,"WRITE_AND_LABEL")
             self.counterDone = True
     def initialize_newlength(self):
         if not self.newlengthDone :
-            code =r"""
-            \makeatletter
+            code =r"""\makeatletter
             \@ifundefined{%s}{\newlength{\%s}}{}
-            \makeatother
-            """%(newlengthName(),newlengthName())
+            \makeatother"""%(newlengthName(),newlengthName())
             self.add_latex_line(code,"WRITE_AND_LABEL")
             self.newlengthDone = True
     def add_write_line(self,Id,value):
         r"""Writes in the standard auxiliary file \newwrite an identifier and a value separated by a «:»"""
         interWriteName = self.newwriteName
         self.initialize_newwrite()
-        self.add_latex_line(r"\immediate\write\%s{%s:%s-}"%(interWriteName,Id,value),"WRITE_AND_LABEL")
+        self.add_latex_line(r"\immediate\write\%s{%s:%s-}"%(interWriteName,Id,value),"WRITE_AND_LABEL",add_line_jump=False)
         #self.add_latex_line(r"\phystricksAppendToFile{%s:%s-}"%(Id,value),"WRITE_AND_LABEL")
 
     @lazy_attribute
@@ -1220,16 +1203,16 @@ class pspicture(object):
         self.grid.BB.my=SmallComputations.MultipleLower(self.grid.BB.my,Dy)
         self.grid.BB.My=SmallComputations.MultipleBigger(self.grid.BB.My,Dy)
         self.DrawGraph(self.grid)
-    def add_latex_line(self,ligne,separator_name="DEFAULT"):
+    def add_latex_line(self,ligne,separator_name="DEFAULT",add_line_jump=True):
         """
         Add a line in the pstricks code. The optional argument <position> is the name of a marker like %GRID, %AXES, ...
         """
         if separator_name==None:
             separator_name="DEFAULT"
         if separator_name=="WRITE_AND_LABEL" or separator_name=="CLOSE_WRITE_AND_LABEL":
-            self.write_and_label_separator_list[separator_name].add_latex_line(ligne)
+            self.write_and_label_separator_list[separator_name].add_latex_line(ligne,add_line_jump=add_line_jump)
         else:
-            self.separator_list[separator_name].add_latex_line(ligne)
+            self.separator_list[separator_name].add_latex_line(ligne,add_line_jump=add_line_jump)
     def force_math_bounding_box(self,g):
         """
         Add an object to the math bounding box of the pspicture. This object will not be drawn, but the axes and the grid will take it into account.
