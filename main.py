@@ -467,9 +467,9 @@ class PspictureToOtherOutputs(object):
         self.file_eps = SmallComputations.Fichier(self.file_dvi.chemin.replace(".dvi",".eps"))
         self.file_pdf = SmallComputations.Fichier(self.file_eps.chemin.replace(".eps",".pdf"))
         self.file_png = SmallComputations.Fichier(self.file_eps.chemin.replace(".eps",".png"))
-        self.input_code_eps = "\includegraphics{%s}"%(self.file_eps.nom)
-        self.input_code_pdf = "\includegraphics{%s}"%(self.file_pdf.nom)
-        self.input_code_png = "\includegraphics[width=WIDTH]{%s}"%(self.file_png.nom)   # 'WIDHT' will be replaced by the actual boundig box later.
+        self.input_code_eps = "\includegraphics{{{}}}%".format(self.file_eps.nom)
+        self.input_code_pdf = "\includegraphics{{{}}}%".format(self.file_pdf.nom)
+        self.input_code_png = "\includegraphics[width=WIDTH]{{{}}}%".format(self.file_png.nom)   # 'WIDHT' will be replaced by the actual boundig box later.
     def latex_code_for_eps(self):
         text = """\documentclass{article}
         \\usepackage{pstricks,pst-eucl,pstricks-add,pst-plot,pst-eps,calc,catchfile}
@@ -637,11 +637,6 @@ class Separator(object):
         self.latex_code=[]
         self.add_latex_line("%"+self.title)
     def add_latex_line(self,line,add_line_jump=True):
-        print "========="
-        print "cuMQkG",add_line_jump
-        if not add_line_jump :
-            print line
-        print "========="
         if isinstance(line,Separator):
             text=line.code()
         else :
@@ -939,18 +934,14 @@ class pspicture(object):
         fig.write_the_file()
     def initialize_newwrite(self):
         if not self.newwriteDone :
-            code = r"""\makeatletter
-                \@ifundefined{%s}
-                {\newwrite{\%s}
-                }{}
-                \makeatother"""%(self.newwriteName,self.newwriteName)
+            # In the next line, the wave of { is because an explicit { has to be written {{ for the .format method
+            code = r"""\makeatletter\@ifundefined{{{}}}{{\newwrite{{\{}}}}}{{}}\makeatother%""".format(self.newwriteName,self.newwriteName)
             self.add_latex_line(code,"WRITE_AND_LABEL")
 
-
-            code="\immediate\openout\%s=%s"%(self.newwriteName,self.interWriteFile)
+            code="\immediate\openout\{}={}%".format(self.newwriteName,self.interWriteFile)
             self.add_latex_line(code,"WRITE_AND_LABEL")
 
-            code=r"\immediate\closeout\%s"%self.newwriteName
+            code=r"\immediate\closeout\{}%".format(self.newwriteName)
             self.add_latex_line(code,"CLOSE_WRITE_AND_LABEL",add_line_jump=False)
 
             self.newwriteDone = True
@@ -963,24 +954,20 @@ class pspicture(object):
                 f.close()
     def initialize_counter(self):
         if not self.counterDone:
-            code = r"""\makeatletter
-                \@ifundefined{c@%s}
-                {\newcounter{%s}}{}
-                \makeatother"""%(counterName(),counterName())           # make LaTeX test if the counter exist before to create it.
+            # make LaTeX test if the counter exist before to create it. 
+            code = r"""\makeatletter\@ifundefined{{c@{}}}{{\newcounter{{{}}}}{{}}\makeatother%""".format(counterName(),counterName())       
             self.add_latex_line(code,"WRITE_AND_LABEL")
             self.counterDone = True
     def initialize_newlength(self):
         if not self.newlengthDone :
-            code =r"""\makeatletter
-            \@ifundefined{%s}{\newlength{\%s}}{}
-            \makeatother"""%(newlengthName(),newlengthName())
+            code =r"""\makeatletter\@ifundefined{{{}}}{{\newlength{{\{}}}}}{{}}\makeatother%""".format(newlengthName(),newlengthName())
             self.add_latex_line(code,"WRITE_AND_LABEL")
             self.newlengthDone = True
     def add_write_line(self,Id,value):
         r"""Writes in the standard auxiliary file \newwrite an identifier and a value separated by a «:»"""
         interWriteName = self.newwriteName
         self.initialize_newwrite()
-        self.add_latex_line(r"\immediate\write\%s{%s:%s-}"%(interWriteName,Id,value),"WRITE_AND_LABEL",add_line_jump=False)
+        self.add_latex_line(r"\immediate\write\{}{{{}:{}-}}%".format(interWriteName,Id,value),"WRITE_AND_LABEL",add_line_jump=False)
         #self.add_latex_line(r"\phystricksAppendToFile{%s:%s-}"%(Id,value),"WRITE_AND_LABEL")
 
     @lazy_attribute
@@ -1053,7 +1040,7 @@ class pspicture(object):
         """
         interId = dimension_name+self.name+self.NomPointLibre.next()
         self.initialize_newlength()
-        self.add_latex_line(r"\setlength{\%s}{\%s{%s}}"%(newlengthName(),dimension_name,tex_expression),"WRITE_AND_LABEL")
+        self.add_latex_line(r"\setlength{{\{}}}{{\{}}}%".format(newlengthName(),dimension_name,tex_expression),"WRITE_AND_LABEL")
         self.add_write_line(interId,r"\the\%s"%newlengthName())
         read_value =  self.get_Id_value(interId,"dimension %s"%dimension_name,default_value="0pt")
         dimenPT = float(read_value.replace("pt",""))
