@@ -38,31 +38,6 @@ class CalculPolynome(object):
                 l.append(int(rep))
         return Polynome(l)
 
-class NewtonMethodStep():
-	"""
-	Return the informations about one step of the Newton method.
-
-	self.A : the starting x value
-	self.P : the starting point on the graph
-	self.B : the next point
-	self.vertical_segment : the Segment from the point (xn,0) and the point P
-	self.diagonal_segment : the Segment which joins the point P and x_{n+1}
-	"""
-	def __init__(self,newton,xn):
-		self.A = Point(xn,0)
-		self.P = newton.f.get_point(xn)
-		xnn = xn - (self.P.y)/newton.f.derivative()(xn)			# The Newton's iteration formula is here
-		self.B = Point(xnn,0)
-		self.vertical_segment = Segment(self.A,self.P)
-		self.diagonal_segment = Segment(self.P,self.B).dilatation(1.5)
-
-class NewtonMethod():
-	def __init__(self,f):
-		self.f = f
-	def step_from_point(self,xn):
-		return NewtonMethodStep(self,xn)
-
-
 
 
 # Une instance de cette classe est un terme à l'intérieur d'un polynôme. Dans 7x^2+3x+9, le second terme est "+3x" et non simplement "3x". C'est à dire que ça tient compte du contexte dans lequel le terme est pour s'afficher.

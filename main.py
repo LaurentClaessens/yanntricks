@@ -955,7 +955,7 @@ class pspicture(object):
     def initialize_counter(self):
         if not self.counterDone:
             # make LaTeX test if the counter exist before to create it. 
-            code = r"""\makeatletter\@ifundefined{{c@{}}}{{\newcounter{{{}}}}{{}}\makeatother%""".format(counterName(),counterName())       
+            code = r"""\makeatletter\@ifundefined{{c@{}}}{{\newcounter{{{}}}}}{{}}\makeatother%""".format(counterName(),counterName())       
             self.add_latex_line(code,"WRITE_AND_LABEL")
             self.counterDone = True
     def initialize_newlength(self):
@@ -1021,7 +1021,7 @@ class pspicture(object):
 
         NOTE :
 
-        If you as for the page with for example  `page = pspict.get_counter_value("page")` the given page
+        If you ask for the page with for example  `page = pspict.get_counter_value("page")` the given page
         will be the one at which LaTeX think the figure is. I recall that a figure is a floating object;
         if you have 10 of them in a row, the page number could be incorrect.
         """
@@ -1040,7 +1040,7 @@ class pspicture(object):
         """
         interId = dimension_name+self.name+self.NomPointLibre.next()
         self.initialize_newlength()
-        self.add_latex_line(r"\setlength{{\{}}}{{\{}}}%".format(newlengthName(),dimension_name,tex_expression),"WRITE_AND_LABEL")
+        self.add_latex_line(r"\setlength{{\{}}}{{\{}{{{}}}}}%".format(newlengthName(),dimension_name,tex_expression),"WRITE_AND_LABEL")
         self.add_write_line(interId,r"\the\%s"%newlengthName())
         read_value =  self.get_Id_value(interId,"dimension %s"%dimension_name,default_value="0pt")
         dimenPT = float(read_value.replace("pt",""))

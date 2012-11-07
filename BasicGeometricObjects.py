@@ -956,7 +956,7 @@ class Mark(object):
         """
         Return the mathematics bounding box of its base object.
 
-        A mark has non own math_bounding_box because we do not want the axes to fit even the marques.
+        A mark has non own math_bounding_box because we do not want the axes to fit the marks.
         This is the deep difference between math_bounding_box and bounding_box. We want the
         marks to be fit in the bounding_box since if not the mark risks to be cut
         in the pdf/png version.
