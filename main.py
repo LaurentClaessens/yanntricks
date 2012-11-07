@@ -391,9 +391,9 @@ class figure(object):
             """%(self.caption,self.name)
         self.add_latex_line(after_all,"AFTER ALL")
         if self.figure_environment:
-           self.contenu = self.separator_list.code()
+           self.contenu = self.separator_list.code().replace("\n\n","\n")
         else :
-           self.contenu = self.separator_list.code(not_to_be_used=["BEFORE SUBFIGURES","AFTER ALL"])
+           self.contenu = self.separator_list.code(not_to_be_used=["BEFORE SUBFIGURES","AFTER ALL"]).replace("\n\n","\n")
     def write_the_file(self):
         """
         Write the figure in the file.
@@ -799,11 +799,11 @@ class pspicture(object):
 
 
         self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+",LabelSep="+str(self.LabelSep)+"}","BEFORE PSPICTURE")
-        self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}\n","BEFORE PSPICTURE")
-        self.add_latex_line("\\begin{pspicture}%s%s\n"%(self.bounding_box(self).SW().coordinates(numerical=True),self.bounding_box(self).NE().coordinates(numerical=True)),"BEGIN PSPICTURE")
+        self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}","BEFORE PSPICTURE")
+        self.add_latex_line("\\begin{pspicture}%s%s"%(self.bounding_box(self).SW().coordinates(numerical=True),self.bounding_box(self).NE().coordinates(numerical=True)),"BEGIN PSPICTURE")
 
 
-        self.add_latex_line("\end{pspicture}\n","END PSPICTURE")
+        self.add_latex_line("\end{pspicture}","END PSPICTURE")
         self.add_latex_line(self.pstricks_code_list,"OTHER STUFF")
 
 
@@ -1234,10 +1234,7 @@ class pspicture(object):
         
         Also creates the files corresponding to the `exit_format`.
 
-        This is of the form \begin{pspicture} ... \end{pspicture} if
-        the global variable `exit_format` is "pstricks".
-
-        In the other cases, this is \includegraphics{...}.
+        It produces an "ifpdf" that choice a pspicture or an \includegraphics
         """
         to_other = PspictureToOtherOutputs(self)
         create_dico=global_vars.create_formats
@@ -1247,14 +1244,18 @@ class pspicture(object):
                 to_other.__getattribute__("create_%s_file"%k)()
         # return the LaTeX code of self
 
+        a = to_other.__getattribute__("input_code_"+global_vars.exit_format)
+        size=numerical_approx(self.xsize*self.xunit,4)
+        include_line = a.replace('WIDTH',str(size)+"cm")
+
         # This is for png or eps
-        if global_vars.exit_format not in ["pstricks","pdf"]:
-            a = to_other.__getattribute__("input_code_"+global_vars.exit_format)
-            size=numerical_approx(self.xsize*self.xunit,4)
-            return a.replace('WIDTH',str(size)+"cm")
+        #if global_vars.exit_format not in ["pstricks","pdf"]:
+        #    a = to_other.__getattribute__("input_code_"+global_vars.exit_format)
+        #    size=numerical_approx(self.xsize*self.xunit,4)
+        #    return a.replace('WIDTH',str(size)+"cm")
     
-        # This is for pdf and pstricks.
-        return "\ifpdf {0}\n \else {1}\n \\fi".format(to_other.input_code_pdf,self.contenu_pstricks)
+        #return "\ifpdf {0}\n \else {1}\n \\fi".format(to_other.input_code_pdf,self.contenu_pstricks)
+        return "\ifpdf {0}\n \else {1}\n \\fi".format(include_line,self.contenu_pstricks)
     def write_the_file(self,f):
         raise DeprecationWarning
         """
