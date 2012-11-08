@@ -3980,7 +3980,8 @@ class GraphOfACustomSurface(GraphOfAnObject):
     """
     def __init__(self,args):
         GraphOfAnObject.__init__(self,self)
-        self.add_option("fillstyle=vlines,linestyle=none")  
+        #self.add_option("fillstyle=vlines,linestyle=none")  
+        self.add_option("fillstyle=none,linestyle=none")    # Change that default on November, 8, 2012
         self.graphList=args
     def bounding_box(self,pspict=None):
         bb=BoundingBox()
