@@ -1126,41 +1126,6 @@ class AxesUnit(object):
                 l.append((x,text))
         return l
 
-class global_variables(object):
-    """
-    Some global variables
-
-    - ``create_formats`` - dictionary which says the exit files we want to produce. These can be
-
-                    * eps,pdf,pfd : I think that these names are self-explaining.
-
-                    * test : outputs a `tmp` file
-
-    - ``exit_format`` - the format one wants to use in the LaTeX file. By default it is pstricks.
-
-    - ``perform_tests`` - (default=False) If True, perform the tests.
-
-    The difference between `create_formats` and `exit_format` is that `create_format` says
-    what files are going to be _produced_ while `exit_format` is the format that LaTeX will see.
-
-    Notice that `create_formats` is a plural while `exit_format` is a singlular. This is
-    not a joke ;)
-    """
-    # pdf output is default from September, 9, 2012.
-    def __init__(self):
-        self.create_formats={"eps":False,"pdf":False,"png":False,"test":False}
-        #self.exit_format="pstricks"
-        self.exit_format="png"
-        self.create_formats["png"] = True
-        self.perform_tests = False
-        self.silent=False
-        self.create_documentation=False
-    def special_exit(self):
-        for sortie in self.create_formats.values():
-            if sortie:
-                return True
-        return False
-
 def Angle(A,O,B,r=None):
     """
     Return the angle AOB.
@@ -1644,6 +1609,41 @@ def unify_point_name(s):
         s=s.replace("{%s}"%m,"{X%s}"%name).replace("(%s)"%m,"(X%s)"%name)
     return s
 
+class global_variables(object):
+    """
+    Some global variables
+
+    - ``create_formats`` - dictionary which says the exit files we want to produce. These can be
+
+                    * eps,pdf,pfd : I think that these names are self-explaining.
+
+                    * test : outputs a `tmp` file
+
+    - ``exit_format`` - the format one wants to use in the LaTeX file. By default it is pstricks.
+
+    - ``perform_tests`` - (default=False) If True, perform the tests.
+
+    The difference between `create_formats` and `exit_format` is that `create_format` says
+    what files are going to be _produced_ while `exit_format` is the format that LaTeX will see.
+
+    Notice that `create_formats` is a plural while `exit_format` is a singlular. This is
+    not a joke ;)
+    """
+    # pdf output is default from September, 9, 2012.
+    def __init__(self):
+        self.create_formats={"eps":False,"pdf":False,"png":False,"test":False}
+        #self.exit_format="pstricks"
+        self.exit_format="png"
+        self.create_formats["png"] = True
+        self.perform_tests = False
+        self.silent=False
+        self.create_documentation=False
+    def special_exit(self):
+        for sortie in self.create_formats.values():
+            if sortie:
+                return True
+        return False
+
 global_vars = global_variables()
 if "--silent" in sys.argv :
     global_vars.silent=True
@@ -1668,6 +1668,8 @@ if "--create-tests" in sys.argv :
 if "--tests" in sys.argv :
     global_vars.perform_tests = True
     global_vars.create_formats["pdf"] = False
+if "--no-compulation" in sys.argv:
+
 if "--documentation" in sys.argv:
     global_vars.create_documentation=True
 

@@ -1239,6 +1239,10 @@ class pspicture(object):
         to_other = PspictureToOtherOutputs(self)
         create_dico=global_vars.create_formats
         # Create files for the requested formats, including tests
+
+        print "eZdFkB",create_dico
+        raise
+
         for k in create_dico.keys():
             if create_dico[k] :
                 to_other.__getattribute__("create_%s_file"%k)()
