@@ -2947,7 +2947,7 @@ class GraphOfAnAngle(GraphOfAnObject):
         self.set_mark_angle(x).
         It will set both the mark_angle and the advised_mark_angle to to x in the same time.
 
-        We have to make a choice between the two angles that can be deduced from 3 points. Here the choice the
+        We have to make a choice between the two angles that can be deduced from 3 points. Here the choice is
         the angle from the first given point to the second one.
 
         EXAMPLES ::
@@ -2978,8 +2978,8 @@ class GraphOfAnAngle(GraphOfAnObject):
         b=self.angleB.degree
         if a > b:
             a=a-360
-        self.angleI=min(self.angleA,self.angleB)
-        self.angleF=max(self.angleA,self.angleB)
+        self.angleI=AngleMeasure(value_degree=min(a,b))
+        self.angleF=AngleMeasure(value_degree=max(a,b))
         self.media=AngleMeasure(value_degree=(b+a)/2)
         GraphOfAnObject.__init__(self,self)
         self.advised_mark_angle=self.media.degree       # see the choice of angle in the docstring
@@ -3005,9 +3005,7 @@ class GraphOfAnAngle(GraphOfAnObject):
     def pstricks_code(self,pspict=None):
         circle=self.circle()
         circle.parameters=self.parameters
-        l=[]
-        l.append(circle.pstricks_code(pspict))
-        return "\n".join(l)
+        return circle.pstricks_code(pspict)
 
 
 def general_funtion_get_point(fun,x,advised=True):
