@@ -1240,18 +1240,18 @@ class pspicture(object):
         create_dico=global_vars.create_formats
         # Create files for the requested formats, including tests
 
-        print "eZdFkB",create_dico
-        raise
-
         for k in create_dico.keys():
             if create_dico[k] :
                 to_other.__getattribute__("create_%s_file"%k)()
 
         # return the LaTeX code of self
 
-        a = to_other.__getattribute__("input_code_"+global_vars.exit_format)
-        size=numerical_approx(self.xsize*self.xunit,4)
-        include_line = a.replace('WIDTH',str(size)+"cm")
+        if not global_vars.no_compilation:
+            a = to_other.__getattribute__("input_code_"+global_vars.exit_format)
+            size=numerical_approx(self.xsize*self.xunit,4)
+            include_line = a.replace('WIDTH',str(size)+"cm")
+        else:
+            include_line="\\includegraphicsSANSRIEN"    # If one do not compile, the inclusion make no sense
 
         # This is for png or eps
         #if global_vars.exit_format not in ["pstricks","pdf"]:

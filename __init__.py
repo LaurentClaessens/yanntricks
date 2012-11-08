@@ -1637,6 +1637,7 @@ class global_variables(object):
         self.create_formats["png"] = True
         self.perform_tests = False
         self.silent=False
+        self.no_compilation=False
         self.create_documentation=False
     def special_exit(self):
         for sortie in self.create_formats.values():
@@ -1668,8 +1669,10 @@ if "--create-tests" in sys.argv :
 if "--tests" in sys.argv :
     global_vars.perform_tests = True
     global_vars.create_formats["pdf"] = False
-if "--no-compulation" in sys.argv:
-
+if "--no-compilation" in sys.argv:
+    global_vars.no_compilation=True
+    for k in [x for x in global_vars.create_formats.keys() if x!="test" ]:
+        global_vars.create_formats[k]=False
 if "--documentation" in sys.argv:
     global_vars.create_documentation=True
 
