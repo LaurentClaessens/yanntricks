@@ -698,7 +698,9 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,reverse1=False,re
     Mx1=Mx[0]
     Mx2=Mx[1]
 
-    return BasicGeometricObjects.GraphOfASurfaceBetweenParametricCurves(curve1,curve2,mx1,mx2,Mx1,Mx2,reverse1,reverse2)
+    surf = BasicGeometricObjects.GraphOfASurfaceBetweenParametricCurves(curve1,curve2,mx1,mx2,Mx1,Mx2,reverse1,reverse2)
+    surf.add_option("fillstyle=vlines,linestyle=none")  
+    return surf
 
 def SurfaceUnderFunction(f,mx,Mx):
     """
@@ -725,12 +727,17 @@ def SurfaceUnderFunction(f,mx,Mx):
 
     """
     if isinstance(f,BasicGeometricObjects.NonAnalyticFunction):
-       line1=Segment(Point(mx,0),Point(Mx,0))
-       line2=f.parametric_curve(mx,Mx)
-       return BasicGeometricObjects.SurfaceBetweenLines(line1,line2)
-    f2=0
-    return BasicGeometricObjects.SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
 
+        line1=Segment(Point(mx,0),Point(Mx,0))
+        line2=f.parametric_curve(mx,Mx)
+        surf = BasicGeometricObjects.SurfaceBetweenLines(line1,line2)
+        surf.add_option("fillstyle=vlines,linestyle=none")  
+        print "RWALKl SurfaceUnderFunction"
+        return surf
+    f2=0
+    print "THMpQE"
+    raise   # ça devrait passer par ici
+    return BasicGeometricObjects.SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
 
 def Polygon(*args):
     """

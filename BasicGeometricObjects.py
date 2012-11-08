@@ -297,6 +297,8 @@ class Options(object):
     # Ou alors en donnant un dictionnaire genre
     # {"Dx":1,"Dy":3}
     def add_option(self,opt):
+        if "fillstyle" in opt:
+            print "------- DGqIYK",opt
         if opt :            # If the argument is empty.
             try:
                 for op in opt.split(","):
@@ -332,7 +334,6 @@ class Options(object):
         return "".join(a)
     def __getitem__(self,opt):
         return self.DicoOptions[opt]
-    
 
 class GraphOfAnObject(object):
     """ This class is supposed to be used to create other "GraphOfA..." by inheritance. It is a superclass. """
@@ -3686,8 +3687,10 @@ class SurfaceBetweenLines(GraphOfAnObject):
         c1=self.curve1
         c2=self.curve2.reverse()
 
+        print "gKBgoK dans le pstricks_code"
         custom=CustomSurface(c1,self.Fsegment,c2,self.Isegment)
         self.parameters.add_to(custom.parameters)     # This curve is essentially dedicated to the colors
+        custom.options=self.options
         
         a.append("%--- begin of Surface between lines ---")
         a.append("% Custom surface")
@@ -3979,7 +3982,11 @@ class GraphOfACustomSurface(GraphOfAnObject):
     def __init__(self,args):
         GraphOfAnObject.__init__(self,self)
         #self.add_option("fillstyle=vlines,linestyle=none")  
+        print "OIYxGT custom"
         self.add_option("fillstyle=none,linestyle=none")    # Change that default on November, 8, 2012
+
+        #print "dQbFrj, remettre l'autre truc par défaut"
+
         self.graphList=args
     def bounding_box(self,pspict=None):
         bb=BoundingBox()
