@@ -1242,6 +1242,7 @@ class pspicture(object):
         for k in create_dico.keys():
             if create_dico[k] :
                 to_other.__getattribute__("create_%s_file"%k)()
+
         # return the LaTeX code of self
 
         a = to_other.__getattribute__("input_code_"+global_vars.exit_format)
