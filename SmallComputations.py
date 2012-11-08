@@ -519,6 +519,11 @@ class AngleMeasure(object):
         sage: x()
         90
 
+        sage: from phystricks.SmallComputations import *
+        sage: x=AngleMeasure(value_degree=360)
+        sage: print x
+        AngleMeasure, degree=360.000000000000,radian=2*pi
+
     Conversions are exact::
 
         sage: a=AngleMeasure(value_degree=30)
@@ -538,11 +543,14 @@ class AngleMeasure(object):
         if isinstance(value_degree,AngleMeasure):
             value_degree=value_degree.degree
         if value_degree == None :
-            value_degree=degree(value_radian)
+            value_degree=degree(value_radian,keep_max=True)
         if value_radian == None :
-            value_radian=radian(value_degree)
+            value_radian=radian(value_degree,keep_max=True) # keep_max=True from November, 8, 2012
         self.degree=value_degree
         self.radian=value_radian
+        if self.degree>359 and self.radian < 0.1:
+            print "DBwRgm",self.degree,self.radian
+            raise
         if self.degree==None or self.radian==None:
             raise ValueError,"Something wrong"
     def positive(self):
@@ -609,7 +617,7 @@ class AngleMeasure(object):
             if self.degree > other.degree :
                 return 1
             if self.degree < other.degree :
-                return 1
+                return -1       # Here was 1 up to November, 8, 2012
             if self.degree == other.degree :
                 return 0
     def __str__(self):

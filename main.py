@@ -967,7 +967,7 @@ class pspicture(object):
         r"""Writes in the standard auxiliary file \newwrite an identifier and a value separated by a «:»"""
         interWriteName = self.newwriteName
         self.initialize_newwrite()
-        self.add_latex_line(r"\immediate\write\{}{{{}:{}-}}%".format(interWriteName,Id,value),"WRITE_AND_LABEL",add_line_jump=False)
+        self.add_latex_line(r"\immediate\write\{}{{{}:{}-}}".format(interWriteName,Id,value),"WRITE_AND_LABEL",add_line_jump=False)
         #self.add_latex_line(r"\phystricksAppendToFile{%s:%s-}"%(Id,value),"WRITE_AND_LABEL")
 
     @lazy_attribute

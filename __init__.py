@@ -894,7 +894,7 @@ def Circle(center,radius,angleI=0,angleF=360):
 
     """
     # TODO: in the last example, the radian value should be 2*pi.
-    return BasicGeometricObjects.GraphOfACircle(center,radius)
+    return BasicGeometricObjects.GraphOfACircle(center,radius,angleI=angleI,angleF=angleF)
 
 def Rectangle(*args,**arg):
     """

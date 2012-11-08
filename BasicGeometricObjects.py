@@ -768,8 +768,8 @@ class GraphOfACircle(GraphOfAnObject):
         a=simplify_degree(self.angleI,keep_max=True,number=True)
         b=simplify_degree(self.angleF,keep_max=True,number=True)
         if self.angleI<self.angleF:
-            angleI=max(a,b)
-            angleF=min(a,b)
+            angleI=min(a,b)
+            angleF=max(a,b)     # min and max were reversed (November, 8, 2012)
         else :
             angleI=max(a,b)
             angleF=min(a,b)+360
@@ -4038,12 +4038,14 @@ class GraphOfAPolygon(GraphOfAnObject):
         for i in range(0,len(self.points_list)):
             segment=Segment(self.points_list[i],self.points_list[(i+1)%len(self.points_list)])
             self.edges_list.append(segment)
+        self.independent_edge=False
     def make_edges_independent(self):
         """
         make the edges customisation independent the one to the other.
         """
         for s in self.edges_list :
             s.parameters=Parameters()
+        self.independent_edge=True
     def math_bounding_box(self,pspict=None):
         bb=BoundingBox()
         for P in self.points_list:
@@ -4058,6 +4060,8 @@ class GraphOfAPolygon(GraphOfAnObject):
         a.append(custom.pstricks_code(pspict))
 
         for edge in self.edges_list:
+            if not self.independent_edge :
+                edge.parameters=self.edge.parameters
             a.append(edge.pstricks_code(pspict))
         return "\n".join(a)
 
