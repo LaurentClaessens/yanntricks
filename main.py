@@ -280,12 +280,15 @@ class figure(object):
         self.record_subfigure = []
         self.record_pspicture=[]
 
+        self.specific_needs=""
+
         self.nFich=nFich
         self.fichier = SmallComputations.Fichier(self.nFich)
 
         # The order of declaration is important, because it is recorded in the Separator.number attribute.
         self.separator_list=SeparatorList()
         self.separator_list.new_separator("ENTETE FIGURE")
+        self.separator_list.new_separator("SPECIFIC_NEEDS")
         self.separator_list.new_separator("WRITE_AND_LABEL")
         self.separator_list.new_separator("BEFORE SUBFIGURES")
         self.separator_list.new_separator("SUBFIGURES")
@@ -374,6 +377,7 @@ class figure(object):
 
             if global_vars.perform_tests:
                 TestPspictLaTeXCode(pspict).test()
+        self.add_latex_line(self.specific_needs,"SPECIFIC_NEEDS")
         if not global_vars.special_exit() :
             self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+"}","BEFORE SUBFIGURES")
         for f in self.record_subfigure :
@@ -400,7 +404,7 @@ class figure(object):
 
         Do not write if we are testing.
         """
-        to_be_written=self.contenu
+        to_be_written=self.contenu              # self.contenu is created in self.conclude
         if not global_vars.perform_tests :
             self.fichier.open_file("w")
             self.fichier.file.write(to_be_written)
@@ -478,7 +482,11 @@ class PspictureToOtherOutputs(object):
         code=text.split("\n")
         # Allows to add some lines, like packages or macro definitions required. This is useful when one adds formulas in the picture
         # that need packages of personal commands.
-        code.append(self.pspict.specific_needs)
+        # If the figure has specific_needs, that ones are used.
+        if self.pspict.figure_mother.specific_needs :
+            code.append(self.pspict.mother.specific_needs)
+        else:
+            code.append(self.pspict.specific_needs)
         code.append(self.pspict.write_and_label_separator_list["WRITE_AND_LABEL"].code())
         code.append(self.pspict.write_and_label_separator_list["CLOSE_WRITE_AND_LABEL"].code())
         code.extend(["\\begin{document}\n","\\begin{TeXtoEPS}"])
@@ -542,7 +550,7 @@ def add_latex_line_entete(truc,position=""):
 
 class SeparatorList(object):
     """
-    represent a dictionary of :class:`Separator`
+    Represent a dictionary of :class:`Separator`
     """
     def __init__(self):
         self.separator_list=[]
@@ -712,6 +720,7 @@ class pspicture(object):
         self.figure_mother=None
         self.pstricks_code_list = []
         self.specific_needs = ""    # See the class PspictureToOtherOutputs
+                                     # specific_needs becomes an attribute of figure instead of pspict (November, 9, 2012)
         self.newwriteDone = False
         #self.interWriteFile = newwriteName()+".pstricks.aux"
         self.interWriteFile = self.name+".phystricks.aux"
@@ -1261,14 +1270,3 @@ class pspicture(object):
     
         #return "\ifpdf {0}\n \else {1}\n \\fi".format(to_other.input_code_pdf,self.contenu_pstricks)
         return "\ifpdf {0}\n \else {1}\n \\fi".format(include_line,self.contenu_pstricks)
-    def write_the_file(self,f):
-        raise DeprecationWarning
-        """
-        Writes the LaTeX code of the pspict.
-
-        This function is almost never used because most of time we want to pspicture
-        to be included in a figure.
-        """
-        self.fichier = SmallComputations.Fichier(f)
-        self.fichier.file.write(self.contenu())
-        self.fichier.file.close()
