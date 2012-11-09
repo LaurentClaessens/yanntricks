@@ -277,7 +277,6 @@ def inner_product(v,w):
         b=w
     return a.x*b.x+a.y*b.y
 
-
 class Options(object):
     """
     Describe the drawing options of pstricks objects.
@@ -297,8 +296,6 @@ class Options(object):
     # Ou alors en donnant un dictionnaire genre
     # {"Dx":1,"Dy":3}
     def add_option(self,opt):
-        if "fillstyle" in opt:
-            print "------- DGqIYK",opt
         if opt :            # If the argument is empty.
             try:
                 for op in opt.split(","):
@@ -3771,6 +3768,7 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
 
         custom=CustomSurface(c1,reFsegment,c2,reIsegment)
         self.parameters.add_to(custom.parameters)     # This line is essentially dedicated to the colors
+        custom.options=self.options
         a.append(custom.pstricks_code())
 
         a.append(self.curve1.pstricks_code(pspict))
