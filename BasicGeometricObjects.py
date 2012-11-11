@@ -2361,6 +2361,21 @@ class GraphOfASegment(GraphOfAnObject):
         if self.arrow_type=="vector":
             l=self.length*coef
             return self.normalize(l)
+    def dilatationI(self,coef):
+        """
+        return a dilated segment, but only enlarges at the initial extremity.
+        """
+        v=AffineVector(self)
+        w=-v
+        wp=w.dilatation(coef)
+        return Segment(wp.F,v.F)
+    def dilatationF(self,coef):
+        """
+        return a dilated segment, but only enlarges at the final extremity.
+        """
+        v=self.vector()
+        v.dilatation(coef)
+        return Segment(v.I,v.F)
     def normalize(self,l=1):
         """
         If self.arrow_type is "segment", it normalize the segment to <l> by dilating in both extremities
