@@ -281,6 +281,9 @@ class figure(object):
         self.record_pspicture=[]
 
         self.specific_needs=""
+        # TODO : specific_needs should be a list of specific_need that is a class.
+        # The idea is to leave to the user the control if the command has to be included in the file 
+        # which creates the png and in the "final" file independently.
 
         self.nFich=nFich
         self.fichier = SmallComputations.Fichier(self.nFich)

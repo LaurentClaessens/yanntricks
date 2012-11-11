@@ -3980,11 +3980,7 @@ class GraphOfACustomSurface(GraphOfAnObject):
     def __init__(self,args):
         GraphOfAnObject.__init__(self,self)
         #self.add_option("fillstyle=vlines,linestyle=none")  
-        print "OIYxGT custom"
         self.add_option("fillstyle=none,linestyle=none")    # Change that default on November, 8, 2012
-
-        #print "dQbFrj, remettre l'autre truc par défaut"
-
         self.graphList=args
     def bounding_box(self,pspict=None):
         bb=BoundingBox()
@@ -4042,6 +4038,7 @@ class GraphOfAPolygon(GraphOfAnObject):
         for i in range(0,len(self.points_list)):
             segment=Segment(self.points_list[i],self.points_list[(i+1)%len(self.points_list)])
             self.edges_list.append(segment)
+        self.draw_edges=True
         self.independent_edge=False
     def make_edges_independent(self):
         """
@@ -4050,6 +4047,11 @@ class GraphOfAPolygon(GraphOfAnObject):
         for s in self.edges_list :
             s.parameters=Parameters()
         self.independent_edge=True
+    def no_edges(self):
+        """
+        When X.no_edges() is used, the edges of the polygon will not be drawn.
+        """
+        self.draw_edges=False
     def math_bounding_box(self,pspict=None):
         bb=BoundingBox()
         for P in self.points_list:
@@ -4063,10 +4065,11 @@ class GraphOfAPolygon(GraphOfAnObject):
         custom.parameters=self.parameters
         a.append(custom.pstricks_code(pspict))
 
-        for edge in self.edges_list:
-            if not self.independent_edge :
-                edge.parameters=self.edge.parameters
-            a.append(edge.pstricks_code(pspict))
+        if self.draw_edges:
+            for edge in self.edges_list:
+                if not self.independent_edge :
+                    edge.parameters=self.edge.parameters
+                a.append(edge.pstricks_code(pspict))
         return "\n".join(a)
 
 
