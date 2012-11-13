@@ -1970,6 +1970,12 @@ class GraphOfASegment(GraphOfAnObject):
             parms = [self.slope,(A.y*B.x-A.x*B.y)/(A.x-B.x)]
             x=var('x')
             return phyFunction( self.slope*x+self.independent )
+
+    def segment(self,projection=False):
+        """
+        serves to transform a vector into a segment
+        """
+        return Segment(self.I,self.F)
         
     def parametric_curve(self):
         """
@@ -2457,8 +2463,10 @@ class GraphOfASegment(GraphOfAnObject):
         if self.arrow_type=="segment":
             if coef<=0:
                 coef=-coef
-        P=Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef)    # Remove this line after debug
+        #P=Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef)    # Remove this line after debug ... removed on November, 13, 2012
         v = Segment(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
+        print "XGVgcuF",self.I,self.F
+        print "XGVgcuF",v.I,v.F
         return self.return_deformations(v)
     def __add__(self,other):
         """
@@ -2498,6 +2506,8 @@ class GraphOfASegment(GraphOfAnObject):
     def __rmul__(self,coef):
         return self*coef
     def __neg__(self):
+        if self.arrow_type=="segment":
+            return Segment(self.F,self.I)
         return self*(-1)
     def __div__(self,coef):
         return self * (1/coef)
