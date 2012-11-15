@@ -2465,8 +2465,6 @@ class GraphOfASegment(GraphOfAnObject):
                 coef=-coef
         #P=Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef)    # Remove this line after debug ... removed on November, 13, 2012
         v = Segment(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
-        print "XGVgcuF",self.I,self.F
-        print "XGVgcuF",v.I,v.F
         return self.return_deformations(v)
     def __add__(self,other):
         """
