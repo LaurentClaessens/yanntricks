@@ -4822,7 +4822,12 @@ def check_too_large(obj,pspict=None):
         My=obj.My
     if pspict:
         if mx<pspict.mx_acceptable_BB or my<pspict.my_acceptable_BB or Mx>pspict.Mx_acceptable_BB or My>pspict.My_acceptable_BB:
-            raise ValueError, "I don't believe that object {1} has a bounding box as large as {0}".format(bb,obj)
+            print "I don't believe that object {1} has a bounding box as large as {0}".format(bb,obj)
+            try :
+                print "The mother of {0} is {1}".format(obj,obj.mother)
+            except AttributeError :
+                pass
+            raise ValueError
 
 class BoundingBox(object):
     r"""
@@ -4864,7 +4869,7 @@ class BoundingBox(object):
     In the first call, the bounding box is not the same as in the second call.
 
     """
-    def __init__(self,P1=None,P2=None,mx=1000,Mx=-1000,my=1000,My=-1000,parent=None):
+    def __init__(self,P1=None,P2=None,mx=1000,Mx=-1000,my=1000,My=-1000,parent=None,mother=None):
         self.mx=mx
         self.my=my
         self.Mx=Mx
@@ -4874,7 +4879,9 @@ class BoundingBox(object):
             self.add_math_object(P1,check_too_large=False)
             self.add_math_object(P2,check_too_large=False)
 
-        self.parent=parent
+        if parent :
+            raise DeprecationWarning,"Use mother instead"
+        self.mother=mother
     def add_object(self,obj,pspict=None,fun="bounding_box",check_too_large=True):
         try :
             bb=obj.__getattribute__(fun)(pspict=pspict)

@@ -742,7 +742,7 @@ class pspicture(object):
         self.xunit = 1
         self.yunit = 1
         self.LabelSep = 1
-        self.BB = BasicGeometricObjects.BoundingBox(parent=self)
+        self.BB = BasicGeometricObjects.BoundingBox(mother=self)
         self.math_BB = BasicGeometricObjects.BoundingBox()     # self.BB and self.math_BB serve to add some objects by hand.
                                             # If you need the bounding box, use self.bounding_box()
                                             # or self.math_bounding_box()
@@ -884,15 +884,9 @@ class pspicture(object):
             # changed the bounding box.
             # Same for the bounding box of the pspicture, since it is not know before now
             if isinstance(graph,BasicGeometricObjects.BoundingBox):
-                if graph.parent:
-                    print "I'm drawing the bounding box of ",graph.parent
-                    graph=graph.parent.bounding_box(self)
-
-            # If the graph is a mark, then one has to recompute
-            # its position because of possible xunit,yunit.
-            #if isinstance(graph,Mark):
-            #    if graph.parent:
-            #        graph = Mark(graph.parent,graph.dist,graph.angle,graph.text,graph.automatic_place)
+                if graph.mother:
+                    print "I'm drawing the bounding box of ",graph.mother
+                    graph=graph.mother.bounding_box(self)
             separator_name=x.separator_name
             try :
                 self.add_latex_line(graph.pstricks_code(self),separator_name)
