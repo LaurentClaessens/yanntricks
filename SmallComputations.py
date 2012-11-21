@@ -887,6 +887,7 @@ class ConversionAngles(object):
                  if numerical:
                      return numerical_approx(x)
                  else:
+                     print "WPnaRcT",numerical_approx(x)
                      return x
             else :
                 return angle
@@ -903,32 +904,6 @@ simplify_degree=DegreeConversions.simplify
 simplify_radian=RadianConversions.simplify
 degree=DegreeConversions.conversion
 radian=RadianConversions.conversion
-
-# Convention : theta is in degree while alpha is in gradient.
-#def radian(theta,number=False,converting=True,keep_max=False):
-    #"""
-    #Convert from degree to radian. Return a value between 0 and 2pi (not 2pi itself)
-    #"""
-    #if isinstance(theta,AngleMeasure):
-        #return simplify_radian(theta,number=number,keep_max=keep_max)
-    #else :
-        #if converting :
-            #return simplify_radian(theta*math.pi/180,keep_max=keep_max)
-        #else :
-            #return simplify_radian(theta,keep_max=keep_max)
-#def degree(alpha,number=False,converting=True,keep_max=False):
-    #"""Convert from radian to degree. Return a value between 0 and 360 (not 360 itself)"""
-    #if isinstance(alpha,AngleMeasure):
-        #return simplify_degree(alpha,numbre=number,keep_max=keep_max)
-    #else :
-        #return simplify_degree(180*alpha/math.pi)
-
-def SubstitutionMathMaxima(exp):
-    raise DeprecationWarning
-    a = exp
-    for i in range(1,10):
-        a = a.replace("math.log"+str(i),"log("+str(i)+")^(-1)*log")
-    return a.replace("math.log","log").replace("math.tan","tan").replace("math.pi","%pi").replace("math.","")
 
 def visual_length(v,l,xunit=None,yunit=None,pspict=None):
     """

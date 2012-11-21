@@ -1254,6 +1254,10 @@ class pspicture(object):
 
         if not global_vars.no_compilation:
             a = to_other.__getattribute__("input_code_"+global_vars.exit_format)
+            print "VEOzNEX1", self.xsize
+            print "VEOzNEX2", numerical_approx(self.xsize)
+            print "VEOzNEX3", self.xunit
+            print "VEOzNEX4", numerical_approx(self.xunit)
             size=numerical_approx(self.xsize*self.xunit,4)
             include_line = a.replace('WIDTH',str(size)+"cm")
         else:
