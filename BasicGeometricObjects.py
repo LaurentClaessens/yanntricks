@@ -355,13 +355,13 @@ class GraphOfAnObject(object):
     def wave(self,dx,dy):                   # dx is the wave length and dy is the amplitude
         self.wavy = True
         self.waviness = Waviness(self,dx,dy)
-    def put_mark(self,dist,angle,text,automatic_place=False):
+    def put_mark(self,dist,angle,text,mark_point=None,automatic_place=False):
         """
         If you want to put a mark under a point :
         P.put_mark(0.1,-90,"text",automatic_place=(pspict,"N"))
         """
         self.marque = True
-        self.mark = Mark(self,dist,angle,text,automatic_place)
+        self.mark = Mark(self,dist,angle,text,automatic_place=automatic_place,mark_point=mark_point)
     def add_option(self,opt):
         self.options.add_option(opt)
     def get_option(opt):
@@ -850,7 +850,7 @@ class Waviness(object):
             return self.obj.get_wavy_points(self.dx,self.dy)
 
 class Mark(object):
-    def __init__(self,graph,dist,angle,text,automatic_place=False):
+    def __init__(self,graph,dist,angle,text,mark_point=None,automatic_place=False):
         """
         Describe a mark (essentially a P on a point for example)
         angle is given in degree or AngleMeasure
@@ -885,6 +885,7 @@ class Mark(object):
                           position (dist;angle) from the point.
 
         """
+        self.mark_point=mark_point
         self.graph = graph
         self.parent = graph
         self.angle = angle
@@ -908,7 +909,12 @@ class Mark(object):
         Thus an object that wants to accept a mark needs a method mark_point that returns the point on which the mark will be put.
         """
 
-        default=self.graph.mark_point().get_polar_point(self.dist,self.angle,pspict)
+        if self.mark_point :
+            graph_mark_point=self.mark_point
+        else :
+            graph_mark_point=self.graph.mark_point()
+
+        default=graph_mark_point.get_polar_point(self.dist,self.angle,pspict)
 
         if self.automatic_place :
             try :
@@ -928,7 +934,7 @@ class Mark(object):
                 d=self.dist+0.5*max(dimx*sin(alpha),dimy*cos(alpha))
                 beta=degree(-pi/2+alpha)
                 beta=self.angle
-                return self.graph.mark_point().get_polar_point(d,beta)
+                return graph_mark_point.get_polar_point(d,beta)
 
             if position=="corner":
                 if self.x>=0:
