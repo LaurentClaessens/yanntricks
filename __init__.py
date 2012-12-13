@@ -919,12 +919,16 @@ def Rectangle(*args,**arg):
     if len(args)==1:
         NW=args[0].NW()
         SE=args[0].SE()
+    if "xmin" in arg.keys() :
+        bb=BasicGeometricObjects.BoundingBox(mx=arg["xmin"],my=arg["ymin"],Mx=arg["xmax"],My=arg["ymax"])
+        # TODO : I should be able to pass directly the dictionary to BoundingBox
+        NW=bb.NW()
+        SE=bb.SE()
     if "mx" in arg.keys() :
         bb=BasicGeometricObjects.BoundingBox(mx=arg["mx"],my=arg["my"],Mx=arg["Mx"],My=arg["My"])
         # TODO : I should be able to pass directly the dictionary to BoundingBox
         NW=bb.NW()
         SE=bb.SE()
-
     return BasicGeometricObjects.GraphOfARectangle(NW,SE)
 
 def AffineVector(A=None,B=None):
