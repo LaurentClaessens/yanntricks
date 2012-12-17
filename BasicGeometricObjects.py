@@ -1973,7 +1973,7 @@ class GraphOfASegment(GraphOfAnObject):
             fi = SR(A.y).function(x)
             return phyFunction(fi)
         if not (self.vertical or self.horizontal) :
-            parms = [self.slope,(A.y*B.x-A.x*B.y)/(A.x-B.x)]
+            #parms = [self.slope,(A.y*B.x-A.x*B.y)/(A.x-B.x)]       # Removed on December, 17, 2012.
             x=var('x')
             return phyFunction( self.slope*x+self.independent )
 
