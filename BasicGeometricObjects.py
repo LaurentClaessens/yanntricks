@@ -4829,6 +4829,7 @@ def check_too_large(obj,pspict=None):
     if pspict:
         if mx<pspict.mx_acceptable_BB or my<pspict.my_acceptable_BB or Mx>pspict.Mx_acceptable_BB or My>pspict.My_acceptable_BB:
             print "I don't believe that object {1} has a bounding box as large as {0}".format(bb,obj)
+            print "Try adjusting pspict.mx_acceptable_BB"
             try :
                 print "The mother of {0} is {1}".format(obj,obj.mother)
             except AttributeError :
