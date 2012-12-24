@@ -1664,6 +1664,7 @@ if "--silent" in sys.argv :
 if "--dvi" in sys.argv :
     global_vars.exit_format="pstricks"
     global_vars.create_formats["pdf"] = False
+    global_vars.create_formats["png"] = False
 if "--eps" in sys.argv :
     global_vars.exit_format="eps"
     global_vars.create_formats["eps"] = True

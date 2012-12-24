@@ -887,7 +887,6 @@ class ConversionAngles(object):
                  if numerical:
                      return numerical_approx(x)
                  else:
-                     print "WPnaRcT",numerical_approx(x)
                      return x
             else :
                 return angle
