@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2012
+# copyright (c) Laurent Claessens, 2009-2013
 # email: moky.math@gmail.com
 
 # The documentation is compiled by
@@ -1445,6 +1445,12 @@ class Cuboid(object):
     def pstricks_code(self,pspict=None):
         return ""   # Everything is in action_on_pspict
 
+def Moustache(minimum,Q1,M,Q3,maximum,h,delta_y=0):
+    """
+    Q1 and Q3 are first and third quartiles; M is the median.
+    h is the size of the box
+    """
+    return BasicGeometricObjects.GraphOfAMoustache(minimum,Q1,M,Q3,maximum,h,delta_y)
 
 def Histogram(tuple_box_list):
     return BasicGeometricObjects.GraphOfAnHistogram(tuple_box_list)

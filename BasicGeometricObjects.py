@@ -17,11 +17,10 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2012
+# copyright (c) Laurent Claessens, 2010-2013
 # email: moky.math@gmai.com
 
 """
-This module contains the basic graphics elements like points, segments and vectors. 
 Each of them have the methods for basic geometric manipulations: rotations, dilatations, tangent vector, etc.
 
 The end-user should not use the functions whose name begin with ``GraphOf`` or ``Geometric``. 
@@ -4812,6 +4811,41 @@ class GraphOfAnHistogram(GraphOfAnObject):
         a=["% Histogram"]
         a.extend([x.pstricks_code(pspict) for x in self.box_list])
         return "\n".join(a)
+
+class GraphOfAMoustache(GraphOfAnObject):
+    def __init__(self,minimum,Q1,M,Q3,maximum,h,delta_y=0):
+        GraphOfAnObject.__init__(self,self)
+        self.Q1=Q1
+        self.Q3=Q3
+        self.M=M
+        self.h=h
+        self.delta_y=delta_y
+        self.minimum=minimum
+        self.maximum=maximum
+    def action_on_pspict(self,pspict):
+        my=self.delta_y-self.h/2
+        My=self.delta_y+self.h/2
+        h1=Segment(Point(self.minimum,my),Point(self.minimum,My))
+        s1=Segment(Point(self.minimum,self.delta_y),Point(self.Q1,self.delta_y))
+        box=Polygon( Point(self.Q1,my),Point(self.Q3,my),Point(self.Q3,My),Point(self.Q1,My) )
+        med=Segment(Point(self.M,my),Point(self.M,My))
+        med.parameters.color="red"
+        s2=Segment(Point(self.Q3,self.delta_y),Point(self.maximum,self.delta_y))
+        h2=Segment(Point(self.maximum,my),Point(self.maximum,My))
+        pspict.DrawGraphs(h1,h2,s1,box,med,s2)
+    def mark_point(self):
+        return Point(self.maximum,self.delta_y)
+    def math_bounding_box(self,pspict):
+        return self.bounding_box(pspict)
+    def bounding_box(self,pspict):
+        bb=BoundingBox()
+        bb.addX(self.minimum)
+        bb.addX(self.maximum)
+        bb.addY(self.delta_y-self.h/2)
+        bb.addY(self.delta_y+self.h/2)
+        return bb
+    def pstricks_code(self,pspict=None):
+        return ""
 
 def check_too_large(obj,pspict=None):
     try:
