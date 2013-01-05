@@ -1025,6 +1025,8 @@ class Grid(object):
         self.num_subX = 2
         self.num_subY = 2
         self.draw_border = False
+        self.draw_horizontal_grid=True
+        self.draw_vertical_grid=True
         self.main_horizontal = Segment(Point(0,1),Point(1,1))
         self.main_horizontal.parameters.color="gray"
         self.main_horizontal.parameters.style = "solid"
@@ -1056,47 +1058,53 @@ class Grid(object):
         #self.draw_border = False        # 16 oct 2010 : no more border  # commented this line on 14 March 2011
         if self.draw_border :
             # Right border
-            if self.BB.Mx <> int(self.BB.Mx):
-                S = self.BB.east_segment()
-                S.merge_options(self.border)
-                a.append(S)
+            if self.draw_vertical_grid :
+                if self.BB.Mx <> int(self.BB.Mx):
+                    S = self.BB.east_segment()
+                    S.merge_options(self.border)
+                    a.append(S)
             # Left border
-            if self.BB.mx <> int(self.BB.mx):
-                S = self.BB.west_segment()
-                S.merge_options(self.border)
-                a.append(S)
+            if self.draw_vertical_grid :
+                if self.BB.mx <> int(self.BB.mx):
+                    S = self.BB.west_segment()
+                    S.merge_options(self.border)
+                    a.append(S)
             # Upper border
-            if self.BB.My <> int(self.BB.My):
-                S = self.BB.north_segment()
-                S.merge_options(self.border)
-                a.append(S)
+            if self.draw_horizontal_grid :
+                if self.BB.My <> int(self.BB.My):
+                    S = self.BB.north_segment()
+                    S.merge_options(self.border)
+                    a.append(S)
             # Lower border
-            if self.BB.my <> int(self.BB.my):
-                S = self.BB.south_segment()
-                S.merge_options(self.border)
+            if self.draw_horizontal_grid :
+                if self.BB.my <> int(self.BB.my):
+                    S = self.BB.south_segment()
+                    S.merge_options(self.border)
+                    a.append(S)
+        if self.draw_vertical_grid:
+            # ++++++++++++ Principal vertical lines ++++++++
+            for x in MainGridArray(self.BB.mx,self.BB.Mx,self.Dx) :
+                S = Segment( Point(x,self.BB.my),Point(x,self.BB.My) )
+                S.merge_options(self.main_vertical)
                 a.append(S)
-        # ++++++++++++ The vertical sub grid ++++++++ 
-        if self.num_subX <> 0 :
-            for x in  SubGridArray(self.BB.mx,self.BB.Mx,self.Dx,self.num_subX) :
-                    S = Segment( Point(x,self.BB.my),Point(x,self.BB.My) )
-                    S.merge_options(self.sub_vertical)
-                    a.append(S)
-        # ++++++++++++ The horizontal sub grid ++++++++ 
-        if self.num_subY <> 0 :
-            for y in  SubGridArray(self.BB.my,self.BB.My,self.Dy,self.num_subY) :
-                    S = Segment( Point(self.BB.mx,y),Point(self.BB.Mx,y) )
-                    S.merge_options(self.sub_horizontal)
-                    a.append(S)
-        # ++++++++++++ Principal horizontal lines ++++++++ 
-        for y in MainGridArray(self.BB.my,self.BB.My,self.Dy) :
-            S = Segment( Point(self.BB.mx,y),Point(self.BB.Mx,y) )
-            S.merge_options(self.main_horizontal)
-            a.append(S)
-        # ++++++++++++ Principal vertical lines ++++++++
-        for x in MainGridArray(self.BB.mx,self.BB.Mx,self.Dx) :
-            S = Segment( Point(x,self.BB.my),Point(x,self.BB.My) )
-            S.merge_options(self.main_vertical)
-            a.append(S)
+            # ++++++++++++ The vertical sub grid ++++++++ 
+            if self.num_subX <> 0 :
+                for x in  SubGridArray(self.BB.mx,self.BB.Mx,self.Dx,self.num_subX) :
+                        S = Segment( Point(x,self.BB.my),Point(x,self.BB.My) )
+                        S.merge_options(self.sub_vertical)
+                        a.append(S)
+        if self.draw_horizontal_grid:
+            # ++++++++++++ The horizontal sub grid ++++++++ 
+            if self.num_subY <> 0 :
+                for y in  SubGridArray(self.BB.my,self.BB.My,self.Dy,self.num_subY) :
+                        S = Segment( Point(self.BB.mx,y),Point(self.BB.Mx,y) )
+                        S.merge_options(self.sub_horizontal)
+                        a.append(S)
+            # ++++++++++++ Principal horizontal lines ++++++++ 
+            for y in MainGridArray(self.BB.my,self.BB.My,self.Dy) :
+                S = Segment( Point(self.BB.mx,y),Point(self.BB.Mx,y) )
+                S.merge_options(self.main_horizontal)
+                a.append(S)
         return a
     def pstricks_code(self,pspict=None):
         a=[]
