@@ -1907,6 +1907,12 @@ class GraphOfASegment(GraphOfAnObject):
         """
         return self.I.y-self.I.x*(self.slope)
 
+    def get_point(self,x):
+        """
+        Return the point of abscisses 'x' on the line.
+        """
+        return Point(x,self.slope*x+self.independent)
+
     @lazy_attribute
     def vertical(self):
         vert = False
