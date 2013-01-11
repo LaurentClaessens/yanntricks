@@ -460,12 +460,20 @@ def MeasureLength(seg,dist=0.1):
     """
     return BasicGeometricObjects.GraphOfAMeasureLength(seg,dist)
 
-def LagrangePolynomial(points_list):
+def LagrangePolynomial(*args):
     """
     return as `phyFunction` the Lagrange polynomial passing trough the given points
 
+    You can either provide a list of points or some points.
     """
     #http://ask.sagemath.org/question/1815/polynomialring-and-from-__future__-import
+    points_list=[]
+    for arg in args :
+        try:
+            for p in arg :
+                points_list.append(P)
+        except TypeError :
+            points_list.append(arg)
     R = PolynomialRing(QQ,str('x'))
     f = R.lagrange_polynomial([   (float(P.x),float(P.y)) for P in points_list  ])
     return phyFunction(f)
