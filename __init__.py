@@ -470,7 +470,7 @@ def LagrangePolynomial(*args):
     points_list=[]
     for arg in args :
         try:
-            for p in arg :
+            for P in arg :
                 points_list.append(P)
         except TypeError :
             points_list.append(arg)
@@ -1471,7 +1471,35 @@ def Moustache(minimum,Q1,M,Q3,maximum,h,delta_y=0):
 def Histogram(tuple_box_list):
     return BasicGeometricObjects.GraphOfAnHistogram(tuple_box_list)
 
-def Segment(A,B):
+def Segment(A,B=None,vector=None):
+    """
+    Creates a segment.
+
+    The typical use is to give two points.
+    An alternative is to provide a point and a vector.
+
+    EXAMPLES::
+
+        sage: from phystricks import *
+        sage: seg=Segment(  Point(0,0),Point(2,10) )
+        sage: print seg.I            
+        <Point(0,0)>
+        sage: print seg.F
+        <Point(2,10)>
+        sage: seg2=Segment(  Point(-3,4),vector=Vector(1,2) )
+        sage: print seg2.I            
+        <Point(-3,4)>
+        sage: print seg2.F
+        <Point(-2,6)>
+        sage: v=AffineVector(  Point(1,2),Point(-2,5) )
+        sage: seg3=Segment(  Point(-3,4),vector=v )
+        sage: print seg3.I            
+        <Point(-3,4)>
+        sage: print seg3.F
+        <Point(-6,7)>
+    """
+    if vector:
+        B=A+vector
     return BasicGeometricObjects.GraphOfASegment(A,B)
 
 def Text(P,text,hide=True):

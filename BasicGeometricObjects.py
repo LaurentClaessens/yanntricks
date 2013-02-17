@@ -2218,7 +2218,6 @@ class GraphOfASegment(GraphOfAnObject):
         v1=self.projection(v)
         v2=self-v1
         return v1,v2
-
     def translate(self,vecteur):
         v = Segment(self.I.translate(vecteur),self.F.translate(vecteur))
         return self.return_deformations(v)
@@ -2390,8 +2389,8 @@ class GraphOfASegment(GraphOfAnObject):
         """
         return a dilated segment, but only enlarges at the final extremity.
         """
-        v=self.vector()
-        v.dilatation(coef)
+        v=self.AffineVector()
+        v=v.dilatation(coef)
         return Segment(v.I,v.F)
     def normalize(self,l=1):
         """
