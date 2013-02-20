@@ -1190,11 +1190,11 @@ class pspicture(object):
         Dx=self.grid.Dx
         Dy=self.grid.Dy
         # Make the grid end on its "big" subdivisions.
-        self.grid.BB.mx=SmallComputations.MultipleLower(self.grid.BB.mx,Dx)
-        self.grid.BB.Mx=SmallComputations.MultipleBigger(self.grid.BB.Mx,Dx)
+        self.grid.BB.xmin=SmallComputations.MultipleLower(self.grid.BB.xmin,Dx)
+        self.grid.BB.xmax=SmallComputations.MultipleBigger(self.grid.BB.xmax,Dx)
 
-        self.grid.BB.my=SmallComputations.MultipleLower(self.grid.BB.my,Dy)
-        self.grid.BB.My=SmallComputations.MultipleBigger(self.grid.BB.My,Dy)
+        self.grid.BB.ymin=SmallComputations.MultipleLower(self.grid.BB.ymin,Dy)
+        self.grid.BB.ymax=SmallComputations.MultipleBigger(self.grid.BB.ymax,Dy)
         self.DrawGraph(self.grid)
     def add_latex_line(self,ligne,separator_name="DEFAULT",add_line_jump=True):
         """

@@ -157,11 +157,11 @@ class Axes(object):
         """
         axeX=self.single_axeX
         axeY=self.single_axeY
-        axeX.mx=min((BB.mx-axeX.C.x)/axeX.base.F.x,axeX.mx)
-        axeX.Mx=max((BB.Mx-axeX.C.x)/axeX.base.F.x,axeX.Mx)
+        axeX.mx=min((BB.xmin-axeX.C.x)/axeX.base.F.x,axeX.mx)
+        axeX.Mx=max((BB.xmax-axeX.C.x)/axeX.base.F.x,axeX.Mx)
 
-        axeY.mx=min((BB.my-axeY.C.y)/axeY.base.F.y,axeY.mx)
-        axeY.Mx=max((BB.My-axeY.C.y)/axeY.base.F.y,axeY.Mx)
+        axeY.mx=min((BB.ymin-axeY.C.y)/axeY.base.F.y,axeY.mx)
+        axeY.Mx=max((BB.ymax-axeY.C.y)/axeY.base.F.y,axeY.Mx)
     def add_option(self,opt):
         self.options.add_option(opt)
     def no_graduation(self):
@@ -1538,7 +1538,7 @@ class GraphOfAPoint(GraphOfAnObject):
         """Return a bounding box which include itself and that's it."""
         # Here one cannot use BoundingBox(self.point,self.point) because
         # it creates infinite loop.
-        bb=BoundingBox(mx=self.point.x,Mx=self.point.x,my=self.point.y,My=self.point.y)
+        bb=BoundingBox(xmin=self.point.x,xmax=self.point.x,ymin=self.point.y,ymax=self.point.y)
         return bb
     def pstricks_code(self,pspict=None,with_mark=False):
         r"""
@@ -1697,7 +1697,7 @@ class GeometricImplicitCurve(object):
             sage: F=GeometricImplicitCurve(x-y==3)
             sage: graph=F.graph((x,-3,3),(y,-2,2))
             sage: print graph.bounding_box()
-            <BoundingBox mx=1.0,Mx=3.0; my=-2.0,My=0.0>
+            <BoundingBox xmin=1.0,xmax=3.0; ymin=-2.0,ymax=0.0>
 
         """
         return GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
@@ -1821,7 +1821,7 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
             sage: f=x**2+2*y**2
             sage: G=ImplicitCurve(f==sqrt(2),(x,-5,5),(y,-5,5),plot_points=200)
             sage: print G.bounding_box()
-            <BoundingBox mx=-1.188,Mx=1.188; my=-0.841,My=0.841>
+            <BoundingBox xmin=-1.188,xmax=1.188; ymin=-0.841,ymax=0.841>
         """
         bb = BoundingBox( Point(self.xmin(),self.ymin()),Point(self.xmax(),self.ymax())  )
         return bb
@@ -1844,15 +1844,12 @@ class GraphOfASegment(GraphOfAnObject):
         self.arrow_type=arrow_type
         GraphOfAnObject.__init__(self,self)
         self.arrow_list=[]
-
     @lazy_attribute
     def Dx(self):
         return self.F.x-self.I.x
-
     @lazy_attribute
     def Dy(self):
         return self.F.y-self.I.y
-
     @lazy_attribute
     def slope(self):        # It was before names "coefficient"
         """
@@ -1981,13 +1978,65 @@ class GraphOfASegment(GraphOfAnObject):
             #parms = [self.slope,(A.y*B.x-A.x*B.y)/(A.x-B.x)]       # Removed on December, 17, 2012.
             x=var('x')
             return phyFunction( self.slope*x+self.independent )
+    def inside_bounding_box(self,bb=None,xmin=None,xmax=None,ymin=None,ymax=None):
+        """
+        Return a segment that is the part of self contained inside the given bounding box.
+        """
+        if bb:
+            xmin=bb.xmin
+            xmax=bb.xmax
+            ymin=bb.ymin
+            ymax=bb.ymax
+        if self.vertical:
+            return Segment( Point(self.I.x,ymin),Point(self.I.y,ymax)  )
+        if self.horizontal:
+            return Segment( Point(xmin,self.I.y),Point(xmax,self.I.y)  )
+        bxmin=Segment( Point(xmin,-1),Point(xmin,1) )
+        bxmax=Segment( Point(xmax,-1),Point(xmax,1) )
+        bymin=Segment( Point(-1,ymin),Point(1,ymin) )
+        bymax=Segment( Point(-1,ymax),Point(1,ymax) )
+        # We compute the intersections of self with the four lines describing the window.
+        # Two of them will be the initial and final point of the searched segment.
+        Ixmin=Intersection(self,bxmin)[0]
+        Ixmax=Intersection(self,bxmax)[0]
+        Iymin=Intersection(self,bymin)[0]
+        Iymax=Intersection(self,bymax)[0]
 
+        l=[]
+        if Ixmin.y>= ymin and Ixmin.y <= ymax :
+            l.append(Ixmin)
+        if Ixmax.y>= ymin and Ixmax.y <= ymax :
+            l.append(Ixmax)
+        if Iymin.x>= xmin and Iymin.x <= xmax :
+            l.append(Iymin)
+        if Iymax.x >= xmin and Iymax.x <= xmax :
+            l.append(Iymax)
+        if len(l) == 0:     # this is the case in which the line does not cross the window.
+            return None
+        if len(l) != 2:
+            if Ixmin==Iymax and Ixmin in l:
+                l.remove(Ixmin)
+            if Ixmax==Iymax and Ixmax in l:
+                l.remove(Ixmax)
+            if Ixmax==Iymin and Ixmax in l:
+                l.remove(Ixmax)
+            if Ixmin==Iymin and Ixmin in l:
+                l.remove(Ixmin)
+        if len(l) != 2:
+            print("We found {} points".format(len(l)))
+            for p in l :
+                print(p)
+            print("The segment is {}, with equation {} ".format(self,self.equation))
+            print("and the intersection points are :")
+            for P in [Ixmin,Ixmax,Iymin,Iymax]:
+                print(   "({},{})".format(P.x,P.y)  )
+            raise ValueError
+        return Segment(  l[0],l[1]  )
     def segment(self,projection=False):
         """
         serves to transform a vector into a segment
         """
         return Segment(self.I,self.F)
-        
     def parametric_curve(self):
         """
         Return the parametric curve corresponding to `self`.
@@ -3157,7 +3206,7 @@ class NonAnalyticFunction(GraphOfAnObject):
         xmax=self.get_minmax_data(self.mx,self.Mx)["xmax"]
         ymin=self.get_minmax_data(self.mx,self.Mx)["ymin"]
         ymax=self.get_minmax_data(self.mx,self.Mx)["ymax"]
-        return BoundingBox(mx=xmin,Mx=xmax,my=ymin,My=ymax)
+        return BoundingBox(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax)
     def bounding_box(self,pspict=None):
         return self.math_bounding_box(pspict)
     def pstricks_code(self,pspict=None):
@@ -4855,10 +4904,10 @@ class GraphOfAMoustache(GraphOfAnObject):
 def check_too_large(obj,pspict=None):
     try:
         bb=obj.bounding_box(pspict)
-        mx=bb.mx
-        my=bb.my
-        Mx=bb.Mx
-        My=bb.My
+        mx=bb.xmin
+        my=bb.ymin
+        Mx=bb.xmax
+        My=bb.ymax
     except AttributeError:
         print "Object {0} has no method bounding_box.".format(obj)
         mx=obj.mx
@@ -4915,12 +4964,12 @@ class BoundingBox(object):
     In the first call, the bounding box is not the same as in the second call.
 
     """
-    def __init__(self,P1=None,P2=None,mx=1000,Mx=-1000,my=1000,My=-1000,parent=None,mother=None):
-        self.mx=mx
-        self.my=my
-        self.Mx=Mx
-        self.My=My
-
+    def __init__(self,P1=None,P2=None,xmin=1000,xmax=-1000,ymin=1000,ymax=-1000,parent=None,mother=None):
+        # mx,Mx,my,My are now progressively banished.  February 19,2013
+        self.xmin=xmin
+        self.xmax=xmax
+        self.ymin=ymin
+        self.ymax=ymax
         if P1 :
             self.add_math_object(P1,check_too_large=False)
             self.add_math_object(P2,check_too_large=False)
@@ -4936,7 +4985,7 @@ class BoundingBox(object):
                 print "The attribute {1} of the object {0} seems to have problems".format(obj,fun)
                 print "The message was :"
                 print message
-                raise
+                #raise       February 19, 2013
                 raise main.NoMathBoundingBox(obj,fun)
         else :
             if check_too_large :
@@ -4958,13 +5007,13 @@ class BoundingBox(object):
     def S(self):
         return Segment(self.SW(),self.SE()).center()
     def NE(self):
-        return Point(self.Mx,self.My)
+        return Point(self.xmax,self.ymax)
     def NW(self):
-        return Point(self.mx,self.My)
+        return Point(self.xmin,self.ymax)
     def SE(self):
-        return Point(self.Mx,self.my)
+        return Point(self.xmax,self.ymin)
     def SW(self):
-        return Point(self.mx,self.my)
+        return Point(self.xmin,self.ymin)
     def north_segment(self):
         return Segment( self.NW(),self.NE() )
     def south_segment(self):
@@ -4976,36 +5025,36 @@ class BoundingBox(object):
     def coordinates(self):
         return self.SW().coordinates()+self.NE().coordinates()
     def xsize(self):
-        return self.Mx-self.mx
+        return self.xmax-self.xmin
     def ysize(self):
-        return self.My-self.my
+        return self.ymax-self.ymin
     def addX(self,x):
-        self.mx=min(self.mx,x)
-        self.Mx=max(self.Mx,x)
+        self.xmin=min(self.xmin,x)
+        self.xmax=max(self.xmax,x)
     def addY(self,y):
-        self.my=min(self.my,y)
-        self.My=max(self.My,y)
+        self.ymin=min(self.ymin,y)
+        self.ymax=max(self.ymax,y)
     def extraX_left(self,l):
         """Enlarge the bounding box of a length l on the left"""
-        self.mx=self.mx-l
+        self.xmin=self.xmin-l
     def extraX_right(self,l):
         """Enlarge the bounding box of a length l on the right"""
-        self.Mx=self.Mx+l
+        self.xmax=self.xmax+l
     def extraX(self,l):
         """Enlarge the bounding box of a length l on both sides"""
         self.extraX_left(l)
         self.extraX_right(l)
     def AddX(self,x):
-        self.Mx=max(self.Mx,x)
-        self.mx=min(self.mx,x)
+        self.xmax=max(self.xmax,x)
+        self.xmin=min(self.xmin,x)
     def AddY(self,y):
-        self.My=max(self.My,y)
-        self.my=min(self.my,y)
+        self.ymax=max(self.ymax,y)
+        self.ymin=min(self.ymin,y)
     def AddBB(self,bb):
-        self.mx = min(self.mx,bb.mx)
-        self.my = min(self.my,bb.my)
-        self.Mx = max(self.Mx,bb.Mx)
-        self.My = max(self.My,bb.My)
+        self.xmin = min(self.xmin,bb.xmin)
+        self.ymin = min(self.ymin,bb.ymin)
+        self.xmax = max(self.xmax,bb.xmax)
+        self.ymax = max(self.ymax,bb.ymax)
     def append(self,graph,pspict):
         if pspict==None:
             print "coGOtl; je vais faire un raise"
@@ -5054,9 +5103,9 @@ class BoundingBox(object):
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def copy(self):
-        return BoundingBox(mx=self.mx,my=self.my,Mx=self.Mx,My=self.My)
+        return BoundingBox(xmin=self.xmin,ymin=self.ymin,xmax=self.xmax,ymax=self.ymax)
     def __str__(self):
-        return "<BoundingBox mx={0},Mx={1}; my={2},My={3}>".format(self.mx,self.Mx,self.my,self.My)
+        return "<BoundingBox xmin={0},xmax={1}; ymin={2},ymax={3}>".format(self.xmin,self.xmax,self.ymin,self.ymax)
 
 import phystricks.main as main
 import phystricks.SmallComputations as SmallComputations
