@@ -134,10 +134,10 @@ class FigureGenerationSuite(object):
         num=0
         for a in failed_list:
             try:
-                base=a[1].figure_mother.LaTeX_lines
+                base=a[1].figure_mother.LaTeX_lines()
             except AttributeError,e:
                 try:
-                    base=a[1].LaTeX_lines     # In the case we are arriving here to create the documentation.
+                    base=a[1].LaTeX_lines()     # In the case we are arriving here to create the documentation.
                 except AttributeError,e:
                     print "I cannot found the LaTeX lines corresponding to ",a[1]
                     print e
@@ -354,17 +354,23 @@ class figure(object):
         self.record_pspicture.append(pspict)
     def AjouteCode(self,liste_code):
         self.code.extend(liste_code)
-    @lazy_attribute
+    #@lazy_attribute                # I do not remember exactly why I wanted a lazy_attribute here
+                                    # I cannot because I want to make the text depend on fig.no_fig() that comes
+                                    # more or less at the end of the script.
     def LaTeX_lines(self):
         """
-        return the lines to be included in your LaTeX file.
+        Return the lines to be included in your LaTeX file.
         """
         a=[]
         from latex_to_be import pseudo_caption
         a.append("The result is on figure \\ref{"+self.name+"}. % From file "+self.script_filename)
         # The pseudo_caption is changed to the function name later.
         a.append("\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
+        if not self.figure_environment :
+            a.append("\\begin{center}")
         a.append("\\input{%s}"%(self.nFich))
+        if not self.figure_environment :
+            a.append("\\end{center}")
         text = "\n".join(a)
         return text
         
@@ -413,7 +419,7 @@ class figure(object):
             self.fichier.file.write(to_be_written)
             self.fichier.file.close()
         print "--------------- For your LaTeX file ---------------"
-        print self.LaTeX_lines
+        print self.LaTeX_lines()
         print "---------------------------------------------------"
         raise PhystricksNoError(self)
             

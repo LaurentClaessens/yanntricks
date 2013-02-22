@@ -113,7 +113,7 @@ def GenericFigure(nom,script_filename=None):
 
     fig=main.figure(caption,label,nFich,script_filename)
     fig.figure_mother=fig   # I'm not sure that this line is useful.
-    print fig.LaTeX_lines
+    print fig.LaTeX_lines()
     return fig
 
 def SinglePicture(name,script_filename=None):
@@ -1470,6 +1470,11 @@ def Moustache(minimum,Q1,M,Q3,maximum,h,delta_y=0):
 
 def Histogram(tuple_box_list):
     return BasicGeometricObjects.GraphOfAnHistogram(tuple_box_list)
+
+def BarDiagram(X,Y):
+    if len(X) != len(Y):
+        raise ValueError,"X and Y must be of the same size."
+    return BasicGeometricObjects.GraphOfABarDiagram(X,Y)
 
 def Segment(A,B=None,vector=None):
     """

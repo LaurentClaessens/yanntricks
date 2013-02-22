@@ -417,7 +417,7 @@ class GraphOfASingleAxe(GraphOfAnObject):
     # to compute the bounding box.
     def segment(self,projection=False,pspict=None):
         if self.mx == 0 and self.Mx == 0 :
-            # I think that we only pass here in order either to do a projection either to create an inital bounding box.
+            # I think that we only pass here in order either to do a projection either to create an initial bounding box.
             # If xunit or yunit are very low, then returning something like
             #   Segment(self.C-self.base.visual_length(1,pspict=pspict),self.C+self.base.visual_length(1,pspict=pspict))      
             # causes bounding box to be too large.
@@ -427,8 +427,6 @@ class GraphOfASingleAxe(GraphOfAnObject):
             else :
                 #return Segment(self.C-self.base.visual_length(1,pspict=pspict),self.C+self.base.visual_length(1,pspict=pspict))      
                 return Segment(self.C-self.base.fix_size(1),self.C+self.base.fix_size(1))      
-
-
 
 
                 # raising an error here makes impossible to draw pictures with only vertical stuff. As an example, the following 
@@ -4745,7 +4743,6 @@ class GraphOfACircle3D(GraphOfAnObject):
         pspict.DrawGraphs(self.curve2d)
     def pstricks_code(self,pspict):
         return ""
-
 class HistogramBox(GraphOfAnObject):
     """
     describes a box in an histogram.
@@ -4798,7 +4795,7 @@ class GraphOfAnHistogram(GraphOfAnObject):
         self.ysize=self.d_ymax              # d_ymin is zero (implicitly)
         self.legende=None
         # TODO : For sure one can sort it easier.
-        # The problem is that is sevaral differences x.th_height-y.th_height are small, 
+        # The problem is that if several differences x.th_height-y.th_height are small, 
         # int(...) always returns 1 (or -1), so that the sorting gets wrong.
         self.xscale=self.length/self.xsize
         classement = self.box_list[:]
@@ -4899,6 +4896,52 @@ class GraphOfAMoustache(GraphOfAnObject):
         bb.addY(self.delta_y+self.h/2)
         return bb
     def pstricks_code(self,pspict=None):
+        return ""
+
+class GraphOfABarDiagram(object):
+    def __init__(self,X,Y):
+        self.X=X
+        self.Y=Y
+        self.linewidth=1    # width of the lines (in centimetrs)
+        self.numbering=True
+        self.numbering_decimals=2
+
+        # Definition of the default bars to be drawn.
+        self.lines_list=[]
+        for i,x in enumerate(self.X):
+            y=self.Y[i]
+            l=Segment(Point(x,0),Point(x,y)  )
+            l.parameters.color="blue"
+            l.parameters.add_option("linewidth","{}cm".format(self.linewidth))
+            self.lines_list.append(l)
+    def numbering_marks(self,pspict):
+        nb=[]
+        if self.numbering:
+            for i,h in enumerate(self.Y):
+                P=Point(self.X[i],h)
+                P.parameters.symbol="none"
+                P.put_mark(0.2,90,"\({{:.{}f}}\)".format(self.numbering_decimals).format(h),automatic_place=(pspict,"S"))
+                nb.append(P)
+        return nb
+    def action_on_pspict(self,pspict):
+        for P in self.numbering_marks(pspict):
+            pspict.DrawGraph(P)
+        for l in self.lines_list:
+            l.parameters.other_options["linewidth"]="{}cm".format(self.linewidth)
+            pspict.DrawGraph(l)
+        for P in self.numbering_marks(pspict):
+            pspict.DrawGraph(P)
+    def math_bounding_box(self,pspict):
+        bb=BoundingBox()
+        for l in self.lines_list:
+            bb.append(l,pspict)
+        return bb
+    def bounding_box(self,pspict):
+        bb=self.math_bounding_box(pspict)
+        for P in self.numbering_marks(pspict):
+            bb.append(P.mark,pspict)
+        return bb
+    def pstricks_code(self,pspict):
         return ""
 
 def check_too_large(obj,pspict=None):
