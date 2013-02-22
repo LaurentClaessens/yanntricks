@@ -428,7 +428,6 @@ class GraphOfASingleAxe(GraphOfAnObject):
                 #return Segment(self.C-self.base.visual_length(1,pspict=pspict),self.C+self.base.visual_length(1,pspict=pspict))      
                 return Segment(self.C-self.base.fix_size(1),self.C+self.base.fix_size(1))      
 
-
                 # raising an error here makes impossible to draw pictures with only vertical stuff. As an example, the following 
                 # was crashing :
 

@@ -356,20 +356,23 @@ class figure(object):
         self.code.extend(liste_code)
     #@lazy_attribute                # I do not remember exactly why I wanted a lazy_attribute here
                                     # I cannot because I want to make the text depend on fig.no_fig() that comes
-                                    # more or less at the end of the script.
+                                    # more or less at the end of the script.     February 21, 2013
     def LaTeX_lines(self):
         """
         Return the lines to be included in your LaTeX file.
         """
         a=[]
         from latex_to_be import pseudo_caption
-        a.append("The result is on figure \\ref{"+self.name+"}. % From file "+self.script_filename)
-        # The pseudo_caption is changed to the function name later.
-        a.append("\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
-        if not self.figure_environment :
+        if self.figure_environment:
+            a.append("The result is on figure \\ref{"+self.name+"}. % From file "+self.script_filename)
+            # The pseudo_caption is changed to the function name later.
+            a.append("\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
+            a.append("\\input{%s}"%(self.nFich))
+        else :
+            a.append("%The result is on figure \\ref{"+self.name+"}. % From file "+self.script_filename)
+            a.append("%\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
             a.append("\\begin{center}")
-        a.append("\\input{%s}"%(self.nFich))
-        if not self.figure_environment :
+            a.append("\\input{%s}"%(self.nFich))
             a.append("\\end{center}")
         text = "\n".join(a)
         return text
@@ -473,11 +476,20 @@ class PspictureToOtherOutputs(object):
     self.input_code_pdf is the code to be input in the file that contains the picture. This is what replaces the pstricks code in the final figure.
     """
     def __init__(self,pspict):
+
+        # Why the intermediate file _bbb with "bad bounding box" ?
+        # dvips creates a bad bounding box when there are marks while (0,0) do not belong to the bounding box.
+        # The solution used here was given by Christoph Bersch on September 8, 2008 in the thread
+        # «pstricks-add question (bug?): bounding box changes with usepackage»
+        # on comp.text.tex
+        # It uses epstool.       February 22, 2013
+
         self.pspict = pspict
         self.name = self.pspict.name
         self.file_for_eps = SmallComputations.Fichier("Picture_%s-for_eps.tex"%(self.name))
         self.file_dvi = SmallComputations.Fichier(self.file_for_eps.chemin.replace(".tex",".dvi"))
-        self.file_eps = SmallComputations.Fichier(self.file_dvi.chemin.replace(".dvi",".eps"))
+        self.file_bbb_eps = SmallComputations.Fichier(self.file_dvi.chemin.replace(".dvi","_bbb.eps"))       # Bad bounding box
+        self.file_eps = SmallComputations.Fichier(self.file_bbb_eps.chemin.replace("_bbb.eps",".eps"))
         self.file_pdf = SmallComputations.Fichier(self.file_eps.chemin.replace(".eps",".pdf"))
         self.file_png = SmallComputations.Fichier(self.file_eps.chemin.replace(".eps",".png"))
         self.input_code_eps = "\includegraphics{{{}}}%".format(self.file_eps.nom)
@@ -513,7 +525,10 @@ class PspictureToOtherOutputs(object):
         commande_e = "latex %s"%self.file_for_eps.chemin
         print commande_e
         os.system(commande_e)
-        commande_e = "dvips -E %s -o %s -q"%(self.file_dvi.chemin,self.file_eps.chemin)
+        commande_e = "dvips -E %s -o %s -q"%(self.file_dvi.chemin,self.file_bbb_eps.chemin)
+        print commande_e
+        os.system(commande_e)
+        commande_e="epstool --bbox --copy --output {} {}".format(self.file_eps.chemin,self.file_bbb_eps.chemin)
         print commande_e
         os.system(commande_e)
     def create_png_file(self):
@@ -1258,12 +1273,12 @@ class pspicture(object):
 
         # return the LaTeX code of self
 
-        if not global_vars.no_compilation:
+        if not global_vars.no_compilation :
             a = to_other.__getattribute__("input_code_"+global_vars.exit_format)
             size=numerical_approx(self.xsize*self.xunit,4)
             include_line = a.replace('WIDTH',str(size)+"cm")
         else:
-            include_line="\\includegraphicsSANSRIEN"    # If one do not compile, the inclusion make no sense
+            include_line="\\includegraphicsSANSRIEN"    # If one does not compile, the inclusion make no sense
 
         # This is for png or eps
         #if global_vars.exit_format not in ["pstricks","pdf"]:

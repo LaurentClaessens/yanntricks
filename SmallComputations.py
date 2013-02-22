@@ -130,7 +130,7 @@ class Fichier(object):
         self.close_file()
     def contenu(self):
         r"""
-        Return the list of the lines of the file, inlcuding the \n at the end of each line.
+        Return the list of the lines of the file, including the \n at the end of each line.
         """
         self.open_file("r")
         c = [l for l in self.file]
