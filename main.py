@@ -114,7 +114,7 @@ class FigureGenerationSuite(object):
         print "********************************************"
         print ""
         for i in range(self.first,len(self.test_list)):
-            print "--------------------------- %s : figure %s/%s (failed: %s) -------------------------------------"%(self.title,str(i),str(len(self.test_list)),str(len(self.failed_list)))
+            print "--------------------------- %s : figure %s/%s (failed: %s) -------------------------------------"%(self.title,str(i+1),str(len(self.test_list)),str(len(self.failed_list)))
             print " ============= %s ============="%str(self.test_list[i])
             try:
                 try:
@@ -968,9 +968,8 @@ class pspicture(object):
             code="\immediate\openout\{}={}%".format(self.newwriteName,self.interWriteFile)
             self.add_latex_line(code,"WRITE_AND_LABEL")
 
-            code=r"\immediate\closeout\{}%".format(self.newwriteName)
+            code=r"\immediate\closeout\{}%".format(self.newwriteName)+"\n"         # the \n was added on February 26, 2013
             self.add_latex_line(code,"CLOSE_WRITE_AND_LABEL",add_line_jump=False)
-
             self.newwriteDone = True
 
             # Now we check that the file phystricks.aux exists. If not, we create it.
