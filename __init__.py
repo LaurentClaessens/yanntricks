@@ -1455,8 +1455,6 @@ class Cuboid(object):
             else :
                 surface3=Polygon(self.c1[0],self.c2[0],self.c2[3],self.c1[3])
             surface3.parameters.filled()
-            #import random
-            #surface3.parameters.fill.color=random.choice(["blue","red","cyan","brown","green","lightgray"])
             pspict.DrawGraphs(surface1,surface2,surface3)
     def pstricks_code(self,pspict=None):
         return ""   # Everything is in action_on_pspict

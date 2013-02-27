@@ -371,9 +371,17 @@ class figure(object):
         else :
             a.append("%The result is on figure \\ref{"+self.name+"}. % From file "+self.script_filename)
             a.append("%\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
-            a.append("\\begin{center}")
-            a.append("\\input{%s}"%(self.nFich))
-            a.append("\\end{center}")
+            text="""\\begin{minipage}{0.485\\textwidth}
+                    <++>
+                    \end{minipage}
+                    \hspace{1mm}    
+                    \\begin{minipage}{0.485\\textwidth}
+                            \\begin{center}
+                            INCLUSION
+                            \\end{center}
+                    \end{minipage}
+                """.replace("INCLUSION","\\input{%s}"%(self.nFich))
+            a.append(text)
         text = "\n".join(a)
         return text
         
@@ -749,6 +757,12 @@ class pspicture(object):
         #self.interWriteFile = newwriteName()+".pstricks.aux"
         self.interWriteFile = self.name+".phystricks.aux"
         self.newwriteName = "writeOfphystricks"
+        # TODO : in the aux file, we write things like that :
+        #        widthofFIGLabelFigYIoYAYAssLabelSubFigYIoYAYA0PICTYIoYAYApspict0aabd:8.80824pt-
+        #  Instead we should write
+        #       <sha of the LaTeX string>:8.80824pt-
+        #  and take care that each is written only once.
+        #  This should help debuging the cube marks problems in phystricksYIoYAYA.py
         self.NomPointLibre = BasicGeometricObjects.PointsNameList()
         self.record_marks=[]
         self.record_bounding_box=[]
@@ -1274,7 +1288,24 @@ class pspicture(object):
 
         if not global_vars.no_compilation :
             a = to_other.__getattribute__("input_code_"+global_vars.exit_format)
-            size=numerical_approx(self.xsize*self.xunit,4)
+            try:
+                # This line does not work on the figure CylindresxKDOdy; it raises a ValueError that seems to be
+                # triggered by a zero division somewhere in sage.           February 27, 2013
+                #size=numerical_approx(self.xsize*self.xunit,4)   
+
+                # The following two alternatives work
+                #size=numerical_approx(self.xsize*self.xunit)      
+                size=numerical_approx(self.xsize,5)*numerical_approx(self.xunit,5)   
+            except ValueError :
+                print("CHfmaYh")
+                print("self.xsize")
+                print("Vrai",self.xsize)
+                print("Approxx",numerical_approx(self.xsize))
+                print("self.xsize")
+                print("Vrai",self.xunit)
+                print("Approx",numerical_approx(self.xunit))
+                raise
+            # TODO : understand all that and eventually debug.
             include_line = a.replace('WIDTH',str(size)+"cm")
         else:
             include_line="\\includegraphicsSANSRIEN"    # If one does not compile, the inclusion make no sense
