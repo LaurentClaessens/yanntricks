@@ -2483,8 +2483,10 @@ class GraphOfASegment(GraphOfAnObject):
             v = (l*self).__div__(L)     
             v.arrow_type="vector"
         return self.return_deformations(v)
-    def graph(self):
-        return GraphOfASegment(self.I,self.F)
+    def graph(self,mx=None,Mx=None):
+        if not mx:
+            return GraphOfASegment(self.I,self.F)
+        return GraphOfASegment(self.get_point(mx),self.get_point(Mx))
     def default_associated_graph_class(self):
         """Return the class which is the Graph associated type"""
         return GraphOfASegment
