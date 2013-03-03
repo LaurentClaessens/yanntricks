@@ -371,16 +371,25 @@ class figure(object):
         else :
             a.append("%The result is on figure \\ref{"+self.name+"}. % From file "+self.script_filename)
             a.append("%\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
-            text="""\\begin{minipage}{0.485\\textwidth}
-                    <++>
-                    \end{minipage}
-                    \hspace{1mm}    
-                    \\begin{minipage}{0.485\\textwidth}
-                            \\begin{center}
-                            INCLUSION
-                            \\end{center}
-                    \end{minipage}
-                """.replace("INCLUSION","\\input{%s}"%(self.nFich))
+            #text="""\\begin{minipage}{0.485\\textwidth}
+            #        <++>
+            #        \end{minipage}
+            #        \hspace{1mm}    
+            #        \\begin{minipage}{0.485\\textwidth}
+            #                \\begin{center}
+            #                INCLUSION
+            #                \\end{center}
+            #        \end{minipage}
+            #    """.replace("INCLUSION","\\input{%s}"%(self.nFich))
+            text="""\\begin{wrapfigure}{r}{WIDTH}
+                \centering
+                    INCLUSION
+                \end{wrapfigure}""".replace("INCLUSION","\\input{%s}"%(self.nFich))
+            if len(self.record_pspicture)==1:
+                pspict=self.record_pspicture[0]
+                visual_xsize=pspict.visual_xsize()      # By the way, this is a reason why we cannot do this before to have
+                                                        # concluded the pictute.
+                text=text.replace("WIDTH",str(n(visual_xsize,3))+"cm")
             a.append(text)
         text = "\n".join(a)
         return text
@@ -553,8 +562,10 @@ class PspictureToOtherOutputs(object):
         """
         # TODO: check if inkscape is present. If not use convert.
         self.create_eps_file()
-        x_cmsize=100*numerical_approx(self.pspict.xsize*self.pspict.xunit)
-        y_cmsize=100*numerical_approx(self.pspict.ysize*self.pspict.yunit)
+        #x_cmsize=100*numerical_approx(self.pspict.xsize*self.pspict.xunit)
+        #y_cmsize=100*numerical_approx(self.pspict.ysize*self.pspict.yunit)
+        x_cmsize=100*self.pspict.visual_xsize()
+        y_cmsize=100*self.pspict.visual_ysize()     # Use of pspicture.visual_xsize. March 3, 2013
         commande_e = "convert -density 1000 %s -resize %sx%s %s"%(self.file_eps.chemin,str(x_cmsize),str(y_cmsize),self.file_png.chemin)
         #commande_e = "inkscape -f %s -e %s -D -d 600"%(self.file_pdf.chemin,self.file_png.chemin)
         #inkscape -f test.pdf -l test.svg
@@ -853,12 +864,16 @@ class pspicture(object):
         self.add_latex_line("\end{pspicture}","END PSPICTURE")
         self.add_latex_line(self.pstricks_code_list,"OTHER STUFF")
 
-
         self.xsize=self.bounding_box(self).xsize()
         self.ysize=self.bounding_box(self).ysize()
 
 
         return self.separator_list.code()
+
+    def visual_xsize(self):
+        return numerical_approx(self.xsize*self.xunit)
+    def visual_ysize(self):
+        return numerical_approx(self.ysize*self.yunit)
 
     @lazy_attribute
     def create_pstricks_code(self):
@@ -1131,7 +1146,7 @@ class pspicture(object):
         self.add_latex_line(self.CodeAddPoint(P))
     def bounding_box(self,pspict=None):
         if not self._bounding_box:
-            print "Warning : this will be an approximation. Inparticular the enlarging of the axes will not be taken into account"
+            print "Warning : this will be an approximation. In particular the enlarging of the axes will not be taken into account"
             # the bounding box of the figure is not know before the end of `create_pstricks_code`
             # because we have to know the content of the pspicture and the enlarging of the axes.
             bb=self.BB
@@ -1295,6 +1310,7 @@ class pspicture(object):
 
                 # The following two alternatives work
                 #size=numerical_approx(self.xsize*self.xunit)      
+                # TODO : understand all that and eventually debug.
                 size=numerical_approx(self.xsize,5)*numerical_approx(self.xunit,5)   
             except ValueError :
                 print("CHfmaYh")
@@ -1305,7 +1321,6 @@ class pspicture(object):
                 print("Vrai",self.xunit)
                 print("Approx",numerical_approx(self.xunit))
                 raise
-            # TODO : understand all that and eventually debug.
             include_line = a.replace('WIDTH',str(size)+"cm")
         else:
             include_line="\\includegraphicsSANSRIEN"    # If one does not compile, the inclusion make no sense
