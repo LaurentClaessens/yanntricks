@@ -382,6 +382,7 @@ class figure(object):
             #        \end{minipage}
             #    """.replace("INCLUSION","\\input{%s}"%(self.nFich))
             text="""\\begin{wrapfigure}{r}{WIDTH}
+            \\vspace{-0.5cm}        % à adapter.
                 \centering
                     INCLUSION
                 \end{wrapfigure}""".replace("INCLUSION","\\input{%s}"%(self.nFich))
