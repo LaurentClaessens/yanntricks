@@ -3254,6 +3254,9 @@ class GraphOfAphyFunction(GraphOfAnObject):
         self.f = self.obj
         self.mx = mx
         self.Mx = Mx
+        self.do_cut_y=False
+        self.cut_ymin=None
+        self.cut_ymax=None
         self.plotpoints = 100                   # We draw 100 points as default.
         self.parameters.color = "blue"              # Modification with respect to the attribute in GraphOfAnObject
 
@@ -3545,12 +3548,24 @@ class GraphOfAphyFunction(GraphOfAnObject):
         if not Mx :
             Mx=self.Mx
         return SurfaceUnderFunction(self,mx,Mx)
+    def cut_y(self,ymin,ymax,plotpoints=100):
+        """
+        Will not draw the function bellow 'ymin' and over 'ymax'. Will neither join the pieces.
+
+        This is useful when drawing the function 1/x.
+        """
+        self.do_cut_y=True
+        self.cut_ymin=ymin
+        self.cut_ymax=ymax
     def params(self):
         self.conclude_params()
         self.add_option("plotpoints=%s"%str(self.plotpoints))
         return self.options.code()
     def bounding_box(self,pspict=None):
         bb = BoundingBox()
+        if self.do_cut_y:
+            # In this case, we will in any case look for the bounding boxes of the pieces.
+            return bb
         bb.AddY(self.ymin(self.mx,self.Mx))
         bb.AddY(self.ymax(self.mx,self.Mx))
         bb.AddX(self.mx)
@@ -3560,36 +3575,38 @@ class GraphOfAphyFunction(GraphOfAnObject):
         return self.bounding_box(pspict)
     def mark_point(self):
         return self.get_point(self.Mx)
-    def pstricks_code(self,pspict=None):
-        """
-        return the pstricks code of the function
-
-        EXAMPLES::
-
-            sage: from phystricks import *
-            sage: f=phyFunction(x*sin(1/x)).graph(-5,5)
-            sage: f.pstricks_code()      
-            u'\\psplot[linestyle=solid,plotpoints=100,linecolor=blue]{-5.00000000000000}{5.00000000000000}{x*sin(1/x)}'
-        """
+    def action_on_pspict(self,pspict):
         a = []
         if self.marque :
             P = self.get_point(self.Mx)
             P.parameters.symbol="none"
             P.marque = True
             P.mark = self.mark
-            a.append(P.pstricks_code())
-        if self.wavy :          
+            pspict.DrawGraph(P)
+        if self.cut_ymin:
+            import numpy
+            X=numpy.linspace(self.mx,self.Mx,self.plotpoints)
+            s=SmallComputations.split_list(X,self.sage,self.cut_ymin,self.cut_ymax)
+            print("AHVMEwX",s)
+            raise
+            for k in s:
+                mx=k[0]
+                Mx=k[1]
+                f=self.graph(mx,Mx)
+                pspict.DrawGraph(f)
+        elif self.wavy :          
             waviness = self.waviness
-            #self.TracephyFunctionOndule(self.f,waviness.mx,waviness.Mx,waviness.dx,waviness.dy,self.params())
+            #TODO : we have to implement y_cut to InterpolationCurve
             curve=InterpolationCurve( self.get_wavy_points(waviness.mx,waviness.Mx,waviness.dx,waviness.dy),context_object=self)
-            a.append(curve.pstricks_code())
-        else :
+            pspict.DrawGraph(curve)
+    def pstricks_code(self,pspict=None):
+        if not self.wavy and not self.do_cut_y:
             # The use of numerical_approx is intended to avoid strings like "2*pi" in the final pstricks code.
             deb = numerical_approx(self.mx) 
             fin = numerical_approx(self.Mx)
-            a.append("\psplot["+self.params()+"]{"+str(deb)+"}{"+str(fin)+"}{"+self.pstricks+"}")
-        #return a               # I do not remember why it was like that. See also the change in SurfaceBetweenFunctions.pstricks_code (13005)
-        return "\n".join(a)
+            return "\psplot["+self.params()+"]{"+str(deb)+"}{"+str(fin)+"}{"+self.pstricks+"}"
+        return ""
+
     def __call__(self,xe,numerical=False):
         """
         return the value of the function at given point

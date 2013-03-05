@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2011
+# copyright (c) Laurent Claessens, 2010,2011,2013
 # email: moky.math@gmai.com
 
 """
@@ -936,3 +936,23 @@ def visual_length(v,l,xunit=None,yunit=None,pspict=None):
     else:
         from phystricks import Vector
         return Vector(x,y)
+
+def split_list(starting_list,fun,cut_ymin,cut_ymax):
+    ldel=[]
+    l=[]
+    for i,k in enumerate(starting_list):
+        try:
+            print("VXVzbbK",k,fun(k))
+            on=fun(k) > cut_ymin and fun(k) < cut_ymax
+        except ValueError:      # Happens when 1/x and x=0.
+            on=False
+        if on :
+            l.append(k)
+        else:
+            ldel.append(l)
+            l=[]
+    ldel.append(l)
+    while [] in ldel:
+        ldel.remove([])
+    s=[  (l[0],l[-1])  for l in ldel  ]
+    return s
