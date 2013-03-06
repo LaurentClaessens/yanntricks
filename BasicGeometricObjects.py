@@ -3258,6 +3258,8 @@ class GraphOfAphyFunction(GraphOfAnObject):
         self.cut_ymin=None
         self.cut_ymax=None
         self.plotpoints = 100                   # We draw 100 points as default.
+        self.cut_yplotpoints = self.plotpoints  # The number of points that will we computed in order to detect where the function
+                                                # exceed the cutting values.
         self.parameters.color = "blue"              # Modification with respect to the attribute in GraphOfAnObject
 
     def parametric_curve(self):
@@ -3557,6 +3559,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         self.do_cut_y=True
         self.cut_ymin=ymin
         self.cut_ymax=ymax
+        self.cut_yplotpoints=plotpoints
     def params(self):
         self.conclude_params()
         self.add_option("plotpoints=%s"%str(self.plotpoints))
@@ -3585,10 +3588,8 @@ class GraphOfAphyFunction(GraphOfAnObject):
             pspict.DrawGraph(P)
         if self.cut_ymin:
             import numpy
-            X=numpy.linspace(self.mx,self.Mx,self.plotpoints)
+            X=numpy.linspace(self.mx,self.Mx,self.cut_yplotpoints)
             s=SmallComputations.split_list(X,self.sage,self.cut_ymin,self.cut_ymax)
-            print("AHVMEwX",s)
-            raise
             for k in s:
                 mx=k[0]
                 Mx=k[1]

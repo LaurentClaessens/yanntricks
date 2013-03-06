@@ -942,7 +942,6 @@ def split_list(starting_list,fun,cut_ymin,cut_ymax):
     l=[]
     for i,k in enumerate(starting_list):
         try:
-            print("VXVzbbK",k,fun(k))
             on=fun(k) > cut_ymin and fun(k) < cut_ymax
         except ValueError:      # Happens when 1/x and x=0.
             on=False

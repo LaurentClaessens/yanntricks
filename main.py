@@ -1208,7 +1208,7 @@ class pspicture(object):
             pass            # This happens when the graph has no mark; that is most of the time.
         
         #make the object act on the pspicture 
-        # One cannot make try ... except AttributeError since this will catch silently possible real AttributeError
+        # One cannot make try ... except AttributeError since this will silently catch possible real AttributeError
         # inside the implementation of action_on_pspict
         if "action_on_pspict" in dir(graph):
             graph.action_on_pspict(self)
