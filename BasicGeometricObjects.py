@@ -3550,12 +3550,16 @@ class GraphOfAphyFunction(GraphOfAnObject):
         if not Mx :
             Mx=self.Mx
         return SurfaceUnderFunction(self,mx,Mx)
-    def cut_y(self,ymin,ymax,plotpoints=100):
+    def cut_y(self,ymin,ymax,plotpoints=None):
         """
         Will not draw the function bellow 'ymin' and over 'ymax'. Will neither join the pieces.
 
-        This is useful when drawing the function 1/x.
+        This is useful when drawing functions like 1/x.
+
+        It is wise to use a value of plotpoints that is not a multiple of the difference Mx-mx. The default behaviour is most of time like that.
         """
+        if not plotpoints:
+            plotpoints=2.34*self.plotpoints
         self.do_cut_y=True
         self.cut_ymin=ymin
         self.cut_ymax=ymax
@@ -3590,10 +3594,14 @@ class GraphOfAphyFunction(GraphOfAnObject):
             import numpy
             X=numpy.linspace(self.mx,self.Mx,self.cut_yplotpoints)
             s=SmallComputations.split_list(X,self.sage,self.cut_ymin,self.cut_ymax)
+            print("RFIretb Opération de découpage.")
+            print("BVENpXU",s)
             for k in s:
                 mx=k[0]
                 Mx=k[1]
                 f=self.graph(mx,Mx)
+                print("BVENpXU",f.mx,f.Mx)
+                print("===========")
                 pspict.DrawGraph(f)
         elif self.wavy :          
             waviness = self.waviness
