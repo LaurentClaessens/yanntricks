@@ -3594,14 +3594,10 @@ class GraphOfAphyFunction(GraphOfAnObject):
             import numpy
             X=numpy.linspace(self.mx,self.Mx,self.cut_yplotpoints)
             s=SmallComputations.split_list(X,self.sage,self.cut_ymin,self.cut_ymax)
-            print("RFIretb Opération de découpage.")
-            print("BVENpXU",s)
             for k in s:
                 mx=k[0]
                 Mx=k[1]
                 f=self.graph(mx,Mx)
-                print("BVENpXU",f.mx,f.Mx)
-                print("===========")
                 pspict.DrawGraph(f)
         elif self.wavy :          
             waviness = self.waviness
