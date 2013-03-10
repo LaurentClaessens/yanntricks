@@ -369,8 +369,8 @@ class figure(object):
             a.append("\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
             a.append("\\input{%s}"%(self.nFich))
         else :
-            a.append("%The result is on figure \\ref{"+self.name+"}. % From file "+self.script_filename)
-            a.append("%\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
+            #a.append("%The result is on figure \\ref{"+self.name+"}. % From file "+self.script_filename)
+            #a.append("%\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
             #text="""\\begin{minipage}{0.485\\textwidth}
             #        <++>
             #        \end{minipage}
@@ -382,10 +382,10 @@ class figure(object):
             #        \end{minipage}
             #    """.replace("INCLUSION","\\input{%s}"%(self.nFich))
             text="""\\begin{wrapfigure}{r}{WIDTH}
-            \\vspace{-0.5cm}        % à adapter.
-                \centering
-                    INCLUSION
-                \end{wrapfigure}""".replace("INCLUSION","\\input{%s}"%(self.nFich))
+   \\vspace{-0.5cm}        % à adapter.
+   \centering
+   INCLUSION
+\end{wrapfigure}""".replace("INCLUSION","\\input{%s}"%(self.nFich))
             if len(self.record_pspicture)==1:
                 pspict=self.record_pspicture[0]
                 visual_xsize=pspict.visual_xsize()      # By the way, this is a reason why we cannot do this before to have
