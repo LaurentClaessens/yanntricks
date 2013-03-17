@@ -5172,6 +5172,17 @@ class BoundingBox(object):
         return BoundingBox(xmin=self.xmin,ymin=self.ymin,xmax=self.xmax,ymax=self.ymax)
     def __str__(self):
         return "<BoundingBox xmin={0},xmax={1}; ymin={2},ymax={3}>".format(self.xmin,self.xmax,self.ymin,self.ymax)
+    def __contains__(self,P):
+        """
+        Return True if the point P belongs to self and False otherwise.
+
+        Allow to write
+        if P in bb :
+        http://www.rafekettler.com/magicmethods.html
+        """
+        if P.x <= self.xmax and P.x>=self.xmin and P.y<=self.ymax and P.y>=self.ymin:
+            return True
+        return False
 
 import phystricks.main as main
 import phystricks.SmallComputations as SmallComputations

@@ -484,7 +484,7 @@ class subfigure(object):
 
 class PspictureToOtherOutputs(object):
     """
-    contains the informations about the transformation of a pspicture into an eps/pdf file
+    Contains the informations about the transformation of a pspicture into an eps/pdf file
     The method to produce the eps file is taken from the documentation of the package pst-eps, and from some fruitful discussions on fctt
         http://archive.cs.uu.nl/mirror/CTAN/graphics/pstricks/contrib/pst-eps/pst-eps-doc.pdf
         http://groups.google.fr/group/fr.comp.text.tex/browse_thread/thread/a5c4a67c457c46b8?hl=fr#
@@ -541,14 +541,21 @@ class PspictureToOtherOutputs(object):
         file_tex = self.file_for_eps
         file_tex.write(self.latex_code_for_eps(),"w")
         commande_e = "latex %s"%self.file_for_eps.chemin
-        print commande_e
+        print("External :",commande_e)
         os.system(commande_e)
         commande_e = "dvips -E %s -o %s -q"%(self.file_dvi.chemin,self.file_bbb_eps.chemin)
-        print commande_e
+        print("External :",commande_e)
         os.system(commande_e)
-        commande_e="epstool --bbox --copy --output {} {}".format(self.file_eps.chemin,self.file_bbb_eps.chemin)
-        print commande_e
-        os.system(commande_e)
+
+        if Point(0,0) not in self.pspict.bounding_box():
+            commande_e="epstool --bbox --copy --output {} {}".format(self.file_eps.chemin,self.file_bbb_eps.chemin)
+            print "**** External :",commande_e
+            os.system(commande_e)
+        else :
+            commande_e="cp {} {}".format(self.file_bbb_eps.chemin,self.file_eps.chemin)
+            print "**** External :",commande_e
+            os.system(commande_e)
+
     def create_png_file(self):
         """
         Creates a png file by the chain latex->eps->png
@@ -567,10 +574,10 @@ class PspictureToOtherOutputs(object):
         #y_cmsize=100*numerical_approx(self.pspict.ysize*self.pspict.yunit)
         x_cmsize=100*self.pspict.visual_xsize()
         y_cmsize=100*self.pspict.visual_ysize()     # Use of pspicture.visual_xsize. March 3, 2013
-        commande_e = "convert -density 1000 %s -resize %sx%s %s"%(self.file_eps.chemin,str(x_cmsize),str(y_cmsize),self.file_png.chemin)
+        commande_e = "sage-native-execute convert -density 1000 %s -resize %sx%s %s"%(self.file_eps.chemin,str(x_cmsize),str(y_cmsize),self.file_png.chemin)
         #commande_e = "inkscape -f %s -e %s -D -d 600"%(self.file_pdf.chemin,self.file_png.chemin)
         #inkscape -f test.pdf -l test.svg
-        print commande_e
+        print "*** External :", commande_e
         os.system(commande_e)
     def create_pdf_file(self):
         """ Creates a pdf file by the chain latex/dvips/epstopdf """
