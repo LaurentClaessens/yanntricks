@@ -548,7 +548,7 @@ class PspictureToOtherOutputs(object):
         os.system(commande_e)
 
         if Point(0,0) not in self.pspict.bounding_box():
-            commande_e="epstool --bbox --copy --output {} {}".format(self.file_eps.chemin,self.file_bbb_eps.chemin)
+            commande_e="sage-native-execute epstool --bbox --copy --output {} {}".format(self.file_eps.chemin,self.file_bbb_eps.chemin)
             print "**** External :",commande_e
             os.system(commande_e)
         else :
