@@ -2086,7 +2086,7 @@ class GraphOfASegment(GraphOfAnObject):
         return PIs
     def proportion(self,p,advised=True):
         """
-        returns a point on the segment which is at the position
+        Return a point on the segment which is at the position
         (p-1)*I+p*F
         if I and F denote the initial and final point of the segment.
         """
@@ -2113,8 +2113,8 @@ class GraphOfASegment(GraphOfAnObject):
         More precisely, if self is the segment A->B, return the point B-A
         """
         return self.F-self.I
-    def center(self):
-        P = self.proportion(0.5,advised=True)
+    def center(self,advised=True):
+        P = self.proportion(0.5,advised)
         return P
 
     def AffineVector(self):
