@@ -1226,7 +1226,7 @@ class GraphOfAPoint(GraphOfAnObject):
         # size of a bounding box.
         #if max(abs(self.x),abs(self.y))>500:
         #    raise ValueError,"I don't believe you want a point with coordinates {0},{1}".format(self.x,self.y)
-    def projection(self,seg,direction=None):
+    def projection(self,seg,direction=None,advised=False):
         """
         Return the projection of the point on the given segment.
 
@@ -1272,7 +1272,10 @@ class GraphOfAPoint(GraphOfAnObject):
             direction=seg.get_normal_vector()
 
         seg2=direction.fix_origin(self)
-        return main.Intersection(seg,seg2)[0]
+        P=main.Intersection(seg,seg2)[0]
+        if advised :
+            P.advised_mark_angle=seg.angle().degree+90
+        return P
 
     def get_polar_point(self,r,theta,pspict=None):
         """
@@ -2187,7 +2190,7 @@ class GraphOfASegment(GraphOfAnObject):
     def return_deformations(self,segment):
         segment.arrow_type=self.arrow_type
         return segment
-    def projection(self,segment):
+    def projection(self,segment,advised=False):
         """
         Return the projection of self on the given segment
 
@@ -2215,6 +2218,8 @@ class GraphOfASegment(GraphOfAnObject):
             <segment I=<Point(0,0)> F=<Point(1,2)>>
         """
         v = Segment(self.I.projection(segment),self.F.projection(segment))
+        if advised:
+            v.advised_mark_angle=self.angle().degree+90
         return self.return_deformations(v)
     def orthogonal(self):
         """
