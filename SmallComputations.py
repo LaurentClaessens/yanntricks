@@ -536,21 +536,47 @@ class AngleMeasure(object):
         sage: b=AngleMeasure(a)
         sage: b.degree
         180
+
+    If the numerical approximation of an angle in degree is close to an integer to minus than 1e-10, we round it.
+    The reason is that in some case I got as entry such a number : -(3.47548077273962e-14)/pi + 360
+    Then the computation of radian gave 0 and we are left with degree around 359.9999 while the radian was rounded to 0.
+    (June, 2, 2013)
+
+        sage: a=AngleMeasure(value_degree=-(3.47548077273962e-14)/pi + 360)
+        sage: a.degree
+        360
+        sage: a.radian
+        2*pi
+
     """
     # TODO : take into account the following thread:
     # http://ask.sagemath.org/question/332/add-a-personnal-coercion-rule
     def __init__(self,value_degree=None,value_radian=None):
+        dep_value_degree=value_degree
+        dep_value_radian=value_radian
         if isinstance(value_degree,AngleMeasure):
             value_degree=value_degree.degree
         if value_degree == None :
             value_degree=degree(value_radian,keep_max=True)
+
+        s=numerical_approx(value_degree)
+        k=abs(s).frac()
+        if k<0.00000001 :
+            #print "dep degree",dep_value_degree,numerical_approx(dep_value_degree)
+            #print "dep_radian",dep_value_radian,numerical_approx(dep_value_radian)
+            value_degree=s.integer_part()
+
         if value_radian == None :
             value_radian=radian(value_degree,keep_max=True) # keep_max=True from November, 8, 2012
         self.degree=value_degree
         self.radian=value_radian
         if self.degree>359 and self.radian < 0.1:
             print "DBwRgm",self.degree,self.radian
-            raise
+            print "dep degree",dep_value_degree,numerical_approx(dep_value_degree)
+            print "dep_radian",dep_value_radian,numerical_approx(dep_value_radian)
+            print "final degree",numerical_approx(value_degree)
+            print "final radian",numerical_approx(value_radian)
+            raise ValueError
         if self.degree==None or self.radian==None:
             raise ValueError,"Something wrong"
     def positive(self):

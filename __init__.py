@@ -737,7 +737,6 @@ def SurfaceUnderFunction(f,mx,Mx):
 
     """
     if isinstance(f,BasicGeometricObjects.NonAnalyticFunction):
-
         line1=Segment(Point(mx,0),Point(Mx,0))
         line2=f.parametric_curve(mx,Mx)
         surf = BasicGeometricObjects.SurfaceBetweenLines(line1,line2)
@@ -745,8 +744,8 @@ def SurfaceUnderFunction(f,mx,Mx):
         print "RWALKl SurfaceUnderFunction"
         return surf
     f2=0
-    print "THMpQE"
-    raise   # ça devrait passer par ici
+    #print "THMpQE"
+    #raise   # ça devrait passer par ici            I do not remember why I added that raise (June, 2, 2013)
     return BasicGeometricObjects.SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
 
 def Polygon(*args):
