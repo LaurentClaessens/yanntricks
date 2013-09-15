@@ -1473,6 +1473,9 @@ def BarDiagram(X,Y):
         raise ValueError,"X and Y must be of the same size."
     return BasicGeometricObjects.GraphOfABarDiagram(X,Y)
 
+def SudokuGrid(question,length=1):
+    return BasicGeometricObjects.GraphOfASudokuGrid(question,length)
+
 def Segment(A,B=None,vector=None):
     """
     Creates a segment.
