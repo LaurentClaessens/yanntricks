@@ -1063,6 +1063,7 @@ class Parameters(object):
     def hatched(self):
         self._hatched=True
     def add_option(self,key,value):
+        # TODO : This method should be used as the other "add_option" methods in other classes.
         """
         Add options that will be added to to code.
 
