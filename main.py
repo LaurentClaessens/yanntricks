@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2012
+# copyright (c) Laurent Claessens, 2009-2013
 # email: moky.math@gmail.com
 
 
@@ -353,6 +353,7 @@ class figure(object):
         pspict.figure_mother=self
         self.record_pspicture.append(pspict)
     def AjouteCode(self,liste_code):
+        raise DeprecationWarning        # Septembre 18, 2013
         self.code.extend(liste_code)
     #@lazy_attribute                # I do not remember exactly why I wanted a lazy_attribute here
                                     # I cannot because I want to make the text depend on fig.no_fig() that comes
@@ -369,18 +370,6 @@ class figure(object):
             a.append("\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
             a.append("\\input{%s}"%(self.nFich))
         else :
-            #a.append("%The result is on figure \\ref{"+self.name+"}. % From file "+self.script_filename)
-            #a.append("%\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
-            #text="""\\begin{minipage}{0.485\\textwidth}
-            #        <++>
-            #        \end{minipage}
-            #        \hspace{1mm}    
-            #        \\begin{minipage}{0.485\\textwidth}
-            #                \\begin{center}
-            #                INCLUSION
-            #                \\end{center}
-            #        \end{minipage}
-            #    """.replace("INCLUSION","\\input{%s}"%(self.nFich))
             text="""\\begin{wrapfigure}{r}{WIDTH}
    \\vspace{-0.5cm}        % à adapter.
    \centering

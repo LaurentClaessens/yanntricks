@@ -137,16 +137,16 @@ def MultiplePictures(name,n,script_filename=None):
     EXAMPLE::
 
         sage: from phystricks import *
-        sage: pspict,fig = MultiplePictures("MyName",3)
+        sage: pspicts,fig = MultiplePictures("MyName",3)
         The result is on figure \ref{LabelFigMyName}.
         \newcommand{\CaptionFigMyName}{<+Type your caption here+>}
         \input{Fig_MyName.pstricks}
         See also the subfigure \ref{LabelFigMyNamessLabelSubFigMyName0}
         See also the subfigure \ref{LabelFigMyNamessLabelSubFigMyName1}
         See also the subfigure \ref{LabelFigMyNamessLabelSubFigMyName2}
-        sage: pspict[0].mother.caption="My first subfigure"
-        sage: pspict[1].mother.caption="My second subfigure"
-        sage: pspict[2].mother.caption="My third subfigure"
+        sage: pspicts[0].mother.caption="My first subfigure"
+        sage: pspicts[1].mother.caption="My second subfigure"
+        sage: pspicts[2].mother.caption="My third subfigure"
 
     Notice that a caption is related to a figure or a subfigure, not to a pspicture.
 
@@ -155,13 +155,13 @@ def MultiplePictures(name,n,script_filename=None):
     if not script_filename:
         script_filename=name
     fig = GenericFigure(name,script_filename)
-    pspict=[]
+    pspicts=[]
     for i in range(n):
         subfigure=fig.new_subfigure("name"+str(i),"LabelSubFig"+name+str(i))
         picture=subfigure.new_pspicture(name+"pspict"+str(i))
         picture.figure_mother=fig
-        pspict.append(picture)
-    return pspict,fig
+        pspicts.append(picture)
+    return pspicts,fig
 
 def SubsetFigures(old_pspicts,old_fig,l):
     r"""
