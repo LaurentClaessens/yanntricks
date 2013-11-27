@@ -70,6 +70,10 @@ class PhystricksNoError(Exception):
     def __init__(self,figure):
         self.figure=figure
 
+class PhystricksCheckBBError(Exception):
+    def __init__(self):
+        pass
+
 class NoMathBoundingBox(Exception):
     def __init__(self,obj,fun):
         self.message = "Object {0} from class {1} has no attribute {2}".format(obj,type(obj),fun)
