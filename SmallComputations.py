@@ -113,6 +113,7 @@ class CalculSage(object):
             a.append(sol)
         return a
 
+# TODO : this class should not exist.
 class Fichier(object):
     def __init__ (self, filename):
         self.NomComplet = filename

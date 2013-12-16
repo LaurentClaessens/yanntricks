@@ -211,7 +211,13 @@ def Intersection(f,g):
     """
     x,y=var('x,y')
     pts=[]
-    soluce=solve([f.equation,g.equation],[x,y])
+    #soluce=solve([f.equation,g.equation],[x,y])
+    # Adding to_poly_solve=True on Decembre 13, 2013
+    soluce=solve([f.equation,g.equation],[x,y],to_poly_solve=True,explicit_solutions=True)
+    print("ULebsho")
+    print(f.equation)
+    print(g.equation)
+    print(soluce)
     for s in soluce:
         a=s[0].rhs()
         b=s[1].rhs()
