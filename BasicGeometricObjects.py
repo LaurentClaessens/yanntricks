@@ -984,7 +984,7 @@ class Mark(object):
         central_point=self.central_point(pspict)
         #TODO : Use create_PSpoint instead of \pstGeonode.
         l.append("\pstGeonode[]"+central_point.coordinates(numerical=True)+"{"+central_point.psName+"}")
-        l.append(r"\rput(%s){\rput(%s;%s){%s}}"%(central_point.psName,"0",0,str(self.text)))
+        l.append(r"\rput({0}){{\rput({1};{2}){{{3}}}}}".format(central_point.psName,"0",0,self.text))
         return "\n".join(l)
 
 class FillParameters(object):
