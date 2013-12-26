@@ -510,6 +510,8 @@ class PspictureToOtherOutputs(object):
         text = """\documentclass{article}
         \\usepackage{pstricks,pst-eucl,pstricks-add,pst-plot,pst-eps,calc,catchfile}
         \pagestyle{empty}
+        \\usepackage[utf8]{inputenc}
+        \\usepackage[T1]{fontenc}
         """     # For some reasons with unicode_literals, not even the raw string can contain \u
         code=text.split("\n")
         # Allows to add some lines, like packages or macro definitions required. This is useful when one adds formulas in the picture
