@@ -2547,6 +2547,8 @@ class GraphOfASegment(GraphOfAnObject):
 
         If the two segments have not the same origin, the `other` one is first translated.
 
+        If the other is a vector, return the translated segment
+
         INPUT:
         - ``other`` - an other segment
 
@@ -2567,6 +2569,8 @@ class GraphOfASegment(GraphOfAnObject):
             <segment I=<Point(1,1)> F=<Point(1,6)>>
         """
         if isinstance(other,GraphOfASegment):
+            if other.arrow_type=="vector":
+                return Segment(   self.I+other,self.F+other  )
             if self.I != other.I:
                 other=other.fix_origin(self.I)
             v=Vector(self.F.x-self.I.x+other.F.x-other.I.x, self.F.y-self.I.y+other.F.y-other.I.y,)
