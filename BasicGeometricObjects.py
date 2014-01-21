@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2013
+# copyright (c) Laurent Claessens, 2010-2014
 # email: moky.math@gmai.com
 
 """
@@ -674,6 +674,16 @@ class GraphOfACircle(GraphOfAnObject):
 
     def get_tangent_vector(self,theta):
         return PolarPoint(1,theta+90).origin(self.get_point(theta,advised=False))
+    def get_tangent_segment(self,theta):
+        """
+        Return a tangent segment at point (x,f(x)).
+        
+        The difference with self.get_tangent_vector is that self.get_tangent_segment returns a segment that will
+        be symmetric. The point (x,f(x)) is the center of self.get_tangent_segment.
+        """
+        v=self.get_tangent_vector(theta)
+        mv=-v
+        return Segment(mv.F,v.F)
     def get_normal_vector(self,theta):
         """
         Return a normal vector at the given angle 
