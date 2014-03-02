@@ -2130,7 +2130,6 @@ class GraphOfASegment(GraphOfAnObject):
     def center(self,advised=True):
         P = self.proportion(0.5,advised)
         return P
-
     def AffineVector(self):
         return AffineVector(self.I,self.F)
     def get_normal_vector(self):
@@ -2196,8 +2195,7 @@ class GraphOfASegment(GraphOfAnObject):
         """
         return AffineVector(P,Point(P.x+self.Dx,P.y+self.Dy))
     def direction(self):
-        d=self.F-self.I
-        return d
+        return self.F-self.I
     def return_deformations(self,segment):
         segment.arrow_type=self.arrow_type
         return segment
@@ -5004,17 +5002,17 @@ def check_too_large(obj,pspict=None):
         try :
             if mx<pspict.mx_acceptable_BB :
                 print("mx=",mx,"when pspict.mx_acceptable_BB=",pspict.mx_acceptable_BB)
-                raise phystricks.PhystricksCheckBBError()
+                raise main.PhystricksCheckBBError()
             if my<pspict.my_acceptable_BB :
                 print("my=",my,"when pspict.my_acceptable_BB=",pspict.my_acceptable_BB)
-                raise phystricks.PhystricksCheckBBError()
+                raise main.PhystricksCheckBBError()
             if Mx>pspict.Mx_acceptable_BB :
                 print("Mx=",Mx,"when pspict.Mx_acceptable_BB=",pspict.Mx_acceptable_BB)
-                raise phystricks.PhystricksCheckBBError()
+                raise main.PhystricksCheckBBError()
             if My>pspict.My_acceptable_BB:
                 print("My=",My,"when pspict.My_acceptable_BB=",pspict.My_acceptable_BB)
-                raise phystricks.PhystricksCheckBBError()
-        except phystricks.PhystricksCheckBBError :
+                raise main.PhystricksCheckBBError()
+        except main.PhystricksCheckBBError :
             print "I don't believe that object {1} has a bounding box as large as {0}".format(bb,obj)
             try :
                 print "The mother of {0} is {1}".format(obj,obj.mother)

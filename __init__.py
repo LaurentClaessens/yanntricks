@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2013
+# copyright (c) Laurent Claessens, 2009-2014
 # email: moky.math@gmail.com
 
 # The documentation is compiled by
@@ -99,6 +99,10 @@ from phystricks.SmallComputations import *
 # TODO : f=phyFunction(x**2+3*x-10), then  g=f/3 does not work.
 # TODO : In figureHYeBZVj, the grid begins at negative numbers. Why ? (see smath also available on gitorious)
 # TODO : waving functions behaves badly when X and Y dilatations are differents. See figureHYeBZVj
+
+class PhystricksCheckBBError(Exception):
+    def __init__(self):
+        pass
 
 
 def GenericFigure(nom,script_filename=None):

@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2013
+# copyright (c) Laurent Claessens, 2009-2014
 # email: moky.math@gmail.com
 
 
@@ -70,9 +70,6 @@ class PhystricksNoError(Exception):
     def __init__(self,figure):
         self.figure=figure
 
-class PhystricksCheckBBError(Exception):
-    def __init__(self):
-        pass
 
 class NoMathBoundingBox(Exception):
     def __init__(self,obj,fun):
