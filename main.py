@@ -1265,6 +1265,8 @@ class pspicture(object):
         Return the current BoundingBox, that is the BoundingBox of the objects that are currently in the list of objects to be drawn.
         """
         bb = self.math_BB.copy()
+        for obj in self.record_force_math_bounding_box :
+            bb.add_math_object(obj)
         for graphe in [x.graph for x in self.record_draw_graph if x.take_math_BB]:
             try :
                 bb.add_math_object(graphe,pspict=self)
@@ -1313,13 +1315,10 @@ class pspicture(object):
                 # TODO : understand all that and eventually debug.
                 size=numerical_approx(self.xsize,5)*numerical_approx(self.xunit,5)   
             except ValueError :
-                print("CHfmaYh")
-                print("self.xsize")
-                print("Vrai",self.xsize)
-                print("Approxx",numerical_approx(self.xsize))
-                print("self.xsize")
-                print("Vrai",self.xunit)
-                print("Approx",numerical_approx(self.xunit))
+                print("self.xsize",self.xsize)
+                print("Approximation :",numerical_approx(self.xsize))
+                print("self.xunit",self.xunit)
+                print("Approximation : ",numerical_approx(self.xunit))
                 raise
             include_line = a.replace('WIDTH',str(size)+"cm")
         else:

@@ -125,14 +125,6 @@ class Axes(object):
         self.do_my_enlarge=True
         self.do_Mx_enlarge=True
         self.do_My_enlarge=True
-
-    # April, 8, 2012
-    # I do not know how work that version of update
-    #def update(self):
-    #    raise DeprecationWarning, "This BB is not updated ??" 
-    #    self.single_axeX.mx,self.single_axeX.Mx=self.BB.mx,self.BB.Mx
-    #    self.single_axeY.mx,self.single_axeY.Mx=self.BB.my,self.BB.My
-
     def enlarge_a_little(self,l,pspict):
         if self.already_enlarged :
             raise ValueError,"I'm already enlarged"
@@ -177,7 +169,6 @@ class Axes(object):
         If `self` is a default axe, it take into account the content of the pspicture
         and update the mx,my of the single axes X and Y.
         """
-        #self.update()  # removed on April, 8, 2012
         if pspict == None :
             print "pgPIYd"
             raise TypeError,"No pspict given"
@@ -191,7 +182,6 @@ class Axes(object):
         BB.check_too_large()
         return BB
     def math_bounding_box(self,pspict=None):
-        #self.update()      # removed on April, 8, 2012
         BB=BoundingBox()
         BB.append(self.single_axeX.math_bounding_box(pspict))
         BB.append(self.single_axeY.math_bounding_box(pspict))
@@ -205,7 +195,6 @@ class Axes(object):
         self.add_option("Dx="+sDx)
         self.add_option("Dy="+sDy)
         c=[]
-        #self.update()  # Removed on April, 8, 2012
         if self.draw_single_axeX :
             c.append(self.single_axeX.pstricks_code(pspict))
         if self.draw_single_axeY :
@@ -356,8 +345,10 @@ class GraphOfAnObject(object):
         self.waviness = Waviness(self,dx,dy)
     def put_mark(self,dist,angle,text,mark_point=None,automatic_place=False):
         """
-        If you want to put a mark under a point :
+        If you want to put a mark on an object
         P.put_mark(0.1,-90,"text",automatic_place=(pspict,"N"))
+
+        mark_point is a function which returns the position of the mark point.
         """
         self.marque = True
         self.mark = Mark(self,dist,angle,text,automatic_place=automatic_place,mark_point=mark_point)
@@ -773,7 +764,7 @@ class GraphOfACircle(GraphOfAnObject):
         b=simplify_degree(self.angleF,keep_max=True,number=True)
         if self.angleI<self.angleF:
             angleI=min(a,b)
-            angleF=max(a,b)     # min and max were reversed (November, 8, 2012)
+            angleF=max(a,b)   
         else :
             angleI=max(a,b)
             angleF=min(a,b)+360
@@ -1986,7 +1977,6 @@ class GraphOfASegment(GraphOfAnObject):
             fi = SR(A.y).function(x)
             return phyFunction(fi)
         if not (self.vertical or self.horizontal) :
-            #parms = [self.slope,(A.y*B.x-A.x*B.y)/(A.x-B.x)]       # Removed on December, 17, 2012.
             x=var('x')
             return phyFunction( self.slope*x+self.independent )
     def inside_bounding_box(self,bb=None,xmin=None,xmax=None,ymin=None,ymax=None):
@@ -2048,6 +2038,28 @@ class GraphOfASegment(GraphOfAnObject):
         serves to transform a vector into a segment
         """
         return Segment(self.I,self.F)
+    def fit_inside(self,xmin,xmax,ymin,ymax):
+        """
+        return the largest segment that fits into the given bounds
+        """
+        if self.horizontal:
+            k=self.I.y
+            return Segment(  Point(xmin,k),Point(xmax,k)  )
+        if self.vertical:
+            k=self.I.x
+            return Segment(  Point(x,ymin),Point(x,ymax)  )
+
+        x=var("x")
+        f=self.phyFunction()
+        x1=solve( [ f(x)==ymax ],x )[0].rhs()
+        x2=solve( [ f(x)==ymin ],x )[0].rhs()
+        x1=QQ(x1)
+        x2=QQ(x2)
+        X=[xmin,x1,x2,xmax]
+        X.sort()
+        A=Point(  X[1],f(X[1]) ) 
+        B=Point(X[2],f(X[2]))
+        return Segment(   Point(  X[1],f(X[1]) )  ,Point(X[2],f(X[2]))  )
     def parametric_curve(self):
         """
         Return the parametric curve corresponding to `self`.
@@ -3455,41 +3467,6 @@ class GraphOfAphyFunction(GraphOfAnObject):
             Ps.append( self.get_normal_point(PIs[i].x, ((-1)**i)*dy ) )
         Ps.append(self.get_point(Mx))   
         return Ps
-    def liste_extrema(self):
-        raise DeprecationWarning            # September 29, 2012
-        if self.listeExtrema == []:
-            self.extrema_analytique()
-        return self.listeExtrema
-    def ToutExtrema(self,mx,Mx,dx):
-        raise DeprecationWarning            # September 29, 2012
-        min = self.get_point(mx)
-        max = self.get_point(mx)
-        for ex in list(xsrange(mx,Mx,dx,include_endpoint=true)):
-            ey = self(ex)
-            if ey > max.y : max = Point(ex,ey)
-            if ey < min.y : min = Point(ex,ey)
-        self.listeExtrema.extend([min,max])
-    # La méthode phyFunction.extrema_analytique() ajoute les solutions de f'(x)=0 à self.listeExtrema
-    def extrema_analytique(self):
-        raise DeprecationWarning            # September 29, 2012
-        print "Analytique"
-        x=var('x')
-        a = []
-        listeSymbolicEquation = solve( [self.sage.diff(x)==0],[x] )
-        for sol in listeSymbolicEquation :
-            #s = sol[2]
-            s = sol.right_hand_side()
-            if "x" not in repr(s) :             # En attendant de trouver comment demander des solutions non implicites
-                a.append(self.get_point(numerical_approx(s)))
-        self.listeExtrema.extend(a)
-    # Donne les extrema connus entre mx et Mx
-    def extrema(self,mx,Mx):
-        raise DeprecationWarning            # September 29, 2012
-        a = []
-        for p in self.liste_extrema() :
-            if p.x >= mx and p.x <= Mx :
-                a.append(p)
-        return a
     def get_minmax_data(self,mx,Mx):
         """
         return numerical approximations of min and max of the function on the interval
@@ -3544,16 +3521,6 @@ class GraphOfAphyFunction(GraphOfAnObject):
         return self.get_minmax_data(deb,fin)['ymax']
     def ymin(self,deb,fin):
         return self.get_minmax_data(deb,fin)['ymin']
-    def tangente(self,x):
-        """
-        This should no more be used.
-        """
-        raise DeprecationWarning # April 2012
-        ca = self.derivative()(x)
-        A = self.get_point(x)
-        Ad = Point( A.x+1,A.y+ca )
-        Ag = Point( A.x-1,A.y-ca )
-        return ( Segment(Ag,Ad) )
     def graph(self,mx,Mx):
         return GraphOfAphyFunction(self.sage,mx,Mx)
     def surface_under(self,mx=None,Mx=None):
@@ -5092,8 +5059,6 @@ class GraphOfASudokuGrid(object):
         return BoundingBox()
     def pstricks_code(self,pspict):
         return ""
-
-
 
 class BoundingBox(object):
     r"""
