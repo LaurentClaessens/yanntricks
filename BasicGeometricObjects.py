@@ -2732,8 +2732,6 @@ class GraphOfAText(GraphOfAnObject):
         a.append(self.mark.pstricks_code(pspict))
         return "\n".join(a)
 
-
-
 class GeometricVectorField(object):
     """
     Describe a vector field
@@ -3523,6 +3521,9 @@ class GraphOfAphyFunction(GraphOfAnObject):
         return self.get_minmax_data(deb,fin)['ymin']
     def graph(self,mx,Mx):
         return GraphOfAphyFunction(self.sage,mx,Mx)
+    def fit_inside(self,xmin,xmax,ymin,ymax):
+        k=self.graph(xmin,xmax)
+        return k.fit_inside(xmin,xmax,ymin,ymax)
     def surface_under(self,mx=None,Mx=None):
         """
         Return the graph of a surface under the function.
