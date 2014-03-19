@@ -3288,6 +3288,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         self.plotpoints = 100                   # We draw 100 points as default.
         self.cut_yplotpoints = self.plotpoints  # The number of points that will we computed in order to detect where the function
                                                 # exceed the cutting values.
+        self.pieces=[]      
         self.parameters.color = "blue"              # Modification with respect to the attribute in GraphOfAnObject
 
     def parametric_curve(self):
@@ -3340,21 +3341,6 @@ class GraphOfAphyFunction(GraphOfAnObject):
             return self._derivative
         else:
             return self.derivative(n-1).derivative()
-    #def diff(self,v):
-    #    """
-    #    make the same as Sage's diff.
-    #
-    #    The aim is to be able to differentiate with respect to x and y a function of two variables.
-
-    #    EXAMPLES:
-    #    sage: x,y=var('x,y')
-    #    sage: f=phyFunction(x*y)
-    #    sage: print f.diff(x)
-    #    y
-    #    sage: print f.diff(y)
-    #    x
-    #    """
-    #    return phyFunction(self.sage.diff(v))
     def get_point(self,x,advised=True):        
         return general_funtion_get_point(self,x,advised)
     def get_normal_vector(self,xx):
@@ -3523,7 +3509,8 @@ class GraphOfAphyFunction(GraphOfAnObject):
         return GraphOfAphyFunction(self.sage,mx,Mx)
     def fit_inside(self,xmin,xmax,ymin,ymax):
         k=self.graph(xmin,xmax)
-        return k.fit_inside(xmin,xmax,ymin,ymax)
+        k.cut_y(ymin,ymax)
+        return k
     def surface_under(self,mx=None,Mx=None):
         """
         Return the graph of a surface under the function.
@@ -3550,6 +3537,14 @@ class GraphOfAphyFunction(GraphOfAnObject):
         self.cut_ymin=ymin
         self.cut_ymax=ymax
         self.cut_yplotpoints=plotpoints
+        import numpy
+        X=numpy.linspace(self.mx,self.Mx,self.cut_yplotpoints)
+        s=SmallComputations.split_list(X,self.sage,self.cut_ymin,self.cut_ymax)
+        for k in s:
+            mx=k[0]
+            Mx=k[1]
+            f=self.graph(mx,Mx)
+            self.pieces.append(f)
     def params(self):
         self.conclude_params()
         self.add_option("plotpoints=%s"%str(self.plotpoints))
@@ -3567,24 +3562,19 @@ class GraphOfAphyFunction(GraphOfAnObject):
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def mark_point(self):
-        return self.get_point(self.Mx)
+        if not self.pieces:
+            return self.get_point(self.Mx)
+        return self.pieces[-1].mark_point()
     def action_on_pspict(self,pspict):
         a = []
         if self.marque :
-            P = self.get_point(self.Mx)
+            P = self.mark_point()
             P.parameters.symbol="none"
             P.marque = True
             P.mark = self.mark
             pspict.DrawGraph(P)
         if self.cut_ymin:
-            import numpy
-            X=numpy.linspace(self.mx,self.Mx,self.cut_yplotpoints)
-            s=SmallComputations.split_list(X,self.sage,self.cut_ymin,self.cut_ymax)
-            for k in s:
-                mx=k[0]
-                Mx=k[1]
-                f=self.graph(mx,Mx)
-                pspict.DrawGraph(f)
+            pspict.DrawGraphs( self.pieces  )
         elif self.wavy :          
             waviness = self.waviness
             #TODO : we have to implement y_cut to InterpolationCurve
@@ -3597,7 +3587,6 @@ class GraphOfAphyFunction(GraphOfAnObject):
             fin = numerical_approx(self.Mx)
             return "\psplot["+self.params()+"]{"+str(deb)+"}{"+str(fin)+"}{"+self.pstricks+"}"
         return ""
-
     def __call__(self,xe,numerical=False):
         """
         return the value of the function at given point
@@ -3982,84 +3971,6 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         """
         return "<InterpolationCurve with points %s>"%(str([str(P) for P in self.points_list]))
 
-# The class SurfaceBetweenFunctions is replaced by the function SurfaceBetweenFunctions in __init__.py
-# (Augustus, 30, 2011)
-
-#class SurfaceBetweenFunctions(GraphOfAnObject):
-#    # linestyle=none in self.add_option corresponds to the fact that we do not want to draw the curve.
-#    # No default color are given; the reason is that we want to be able to control the color of each element separately. 
-#    def __init__(self,f1,f2,mx=None,Mx=None):
-#        GraphOfAnObject.__init__(self,self)
-#        if mx==None :
-#            try:
-#                if f1.mx != f2.mx :
-#                    raise ValueError,"The initial values of %s and %s does not fit"%(str(f1),str(f2))
-#                mx=f1.mx
-#            except AttributeError :
-#                print "If you do not provide `mx` and/or `Mx`, you should pass graphs and not %s and %s"%(type(f1),type(f2))
-#        if Mx==None :
-#            try :
-#                if f1.Mx != f2.Mx :
-#                    raise ValueError,"The final values of %s and %s does not fit"%(str(f1),str(f2))
-#                Mx=f1.Mx
-#            except AttributeError :
-#                print "If you do not provide `mx` and/or `Mx`, you should pass graphs and not %s and %s"%(type(f1),type(f2))
-#        self.f1=EnsurephyFunction(f1).graph(mx,Mx)
-#        self.f2=EnsurephyFunction(f2).graph(mx,Mx)
-#        self.Isegment=Segment(self.f1.get_point(mx,advised=False),self.f2.get_point(mx,advised=False))
-#        self.Fsegment=Segment(self.f1.get_point(Mx,advised=False),self.f2.get_point(Mx,advised=False))
-#        self.f1.parameters.style="none"
-#        self.f2.parameters.style="none"
-#        self.curve1=self.f1
-#        self.curve2=self.f2
-#        self.Isegment.parameters.style="none"
-#        self.Fsegment.parameters.style="none"
-#
-#        self.mx=mx
-#        self.Mx=Mx
-#        self.add_option("fillstyle=vlines,linestyle=none")  
-#        self.parameters.color=None              
-#    def bounding_box(self,pspict=None):
-#        bb=BoundingBox()
-#        bb.append(self.f1,pspict)
-#        bb.append(self.f2,pspict)
-#        #bb.AddY(0)      # Really, what was that line for ??
-#        return bb
-#    def math_bounding_box(self,pspict=None):
-#        return self.bounding_box(pspict)
-#    def pstricks_code(self,pspict=None):
-#        a=[]
-#        mx = numerical_approx(self.mx)     # Avoid "pi" in the pstricks code
-#        Mx = numerical_approx(self.Mx)
-#
-#        surface=SurfaceBetweenParametricCurves(self.f1,self.f2,interval=(mx,Mx))
-#        self.parameters.add_to(surface.parameters)     # This line is essentially dedicated to the colors
-#
-#        surface.Isegment=self.Isegment
-#        surface.Fsegment=self.Fsegment
-#
-#        a.append(surface.pstricks_code(pspict))
-#
-#        #a.append("\pscustom["+self.params()+"]{")
-#        #a.append("\psplot[linestyle=none]{"+str(deb)+"}{"+str(fin)+"}{"+self.f1.pstricks+"}")
-#        #a.append("\psplot[linestyle=none]{"+str(fin)+"}{"+str(deb)+"}{"+self.f2.pstricks+"}")
-#        #a.append("}")
-#
-#        # This was before a change in GraphOfAphyFunction.pstricks_code (13005)
-#        #if self.f1.parameters.style != "none":
-#        #   a.append("\n".join(self.f1.pstricks_code()))
-#        #if self.f2.parameters.style != "none":
-#        #   a.append("\n".join(self.f2.pstricks_code()))
-#        if self.f1.parameters.style != "none":
-#            a.append(self.f1.pstricks_code())
-#        if self.f2.parameters.style != "none":
-#            a.append(self.f2.pstricks_code())
-#        if self.Isegment.parameters.style != "none" :
-#            a.append(self.Isegment.pstricks_code())
-#        if self.Fsegment.parameters.style != "none" :
-#            a.append(self.Fsegment.pstricks_code())
-#        return "\n".join(a)
-
 class GraphOfACustomSurface(GraphOfAnObject):
     """
     INPUT:
@@ -4160,16 +4071,6 @@ class GraphOfAPolygon(GraphOfAnObject):
                     edge.parameters=self.edge.parameters
                 a.append(edge.pstricks_code(pspict))
         return "\n".join(a)
-
-
-#class GraphOfASurfaceUnderFunction(SurfaceBetweenFunctions):
-#    def __init__(self,f,mx,Mx):
-#        self.f=EnsurephyFunction(f)
-#        var('x')
-#        f2=0
-#        SurfaceBetweenFunctions.__init__(self,self.f,f2,mx,Mx)
-#    def __str__(self):
-#        return "SurfaceUnderFunction %s x:%s->%s"%(self.f,str(self.mx),str(self.Mx))
 
 class GraphOfAParametricCurve(GraphOfAnObject):
     def __init__(self,f1,f2,llamI,llamF):
