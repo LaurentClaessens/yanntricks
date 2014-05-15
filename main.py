@@ -108,6 +108,7 @@ class FigureGenerationSuite(object):
         perform the tests
         """
 
+        figure.send_noerror = True
         print ""
         print "********************************************"
         print "*  This is the automatic figure generation"
@@ -281,6 +282,8 @@ class figure(object):
         self.record_subfigure = []
         self.record_pspicture=[]
 
+        self.send_noerror = False
+
         self.specific_needs=""
         # TODO : specific_needs should be a list of specific_need that is a class.
         # The idea is to leave to the user the control if the command has to be included in the file 
@@ -432,7 +435,9 @@ class figure(object):
         print "--------------- For your LaTeX file ---------------"
         print self.LaTeX_lines()
         print "---------------------------------------------------"
-        raise PhystricksNoError(self)
+        # One only send the "no error" signal if we are performing a list of tests.
+        if self.send_noerror :
+            raise PhystricksNoError(self)
             
 class subfigure(object):
     """
