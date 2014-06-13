@@ -2296,6 +2296,8 @@ class GraphOfASegment(GraphOfAnObject):
         """
         Return the segment fixed at `P`. This is the translation of `self`  by `P-self`.
 
+        In other words, it returns the segment which is parallel to self trough the given point.
+
         Typically it is used in the framework of affine vector..
 
         INPUT:
