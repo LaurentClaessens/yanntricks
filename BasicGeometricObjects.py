@@ -214,8 +214,6 @@ def _vector_pstricks_code(segment,pspict=None):
         a = a + P.pstricks_code(pspict)
     return a
 
-
-
 def Distance_sq(P,Q):
     """ return the squared distance between P and Q """
     return (P.x-Q.x)**2+(P.y-Q.y)**2
@@ -2251,6 +2249,12 @@ class GraphOfASegment(GraphOfAnObject):
         new_Dy=self.Dx
         v=Segment(self.I,Point(self.I.x+new_Dx,self.I.y+new_Dy))
         return self.return_deformations(v)
+    def orthogonal_trough(self,P):
+        """
+        return a segment orthogonal to self passing trough P.
+        """
+        s=self.orthogonal()
+        return s.fix_origin(P)
 
     def decomposition(self,v):
         """
