@@ -188,7 +188,6 @@ class Axes(object):
         return BB
     def pstricks_code(self,pspict=None):
         if pspict == None :
-            print "zlgDjE"
             raise TypeError,"No pspict given"
         sDx=RemoveLastZeros(self.Dx,10)
         sDy=RemoveLastZeros(self.Dy,10)
@@ -984,6 +983,8 @@ class Mark(object):
         l.append("\pstGeonode[]"+central_point.coordinates(numerical=True)+"{"+central_point.psName+"}")
         l.append(r"\rput({0}){{\rput({1};{2}){{{3}}}}}".format(central_point.psName,"0",0,self.text))
         return "\n".join(l)
+    def tikz_code(self,pspict=None):
+        code="\draw "+central_point.coordinates(numerical=True)+" node "+self.text
 
 class FillParameters(object):
     """
@@ -1506,6 +1507,7 @@ class GraphOfAPoint(GraphOfAnObject):
             y=0
         return str("("+str(x)+","+str(y)+")")
     def coordinatesBr(self):
+        raise DeprecationWarning  # June 23, 2014
         return self.coordinates.replace("(","{").replace(")","}")
     def Affiche(self):
         return self.coordinates()
@@ -1579,6 +1581,11 @@ class GraphOfAPoint(GraphOfAnObject):
             l.append(self.mark.pstricks_code(pspict))
         l.append("\pstGeonode["+self.params()+"]"+self.coordinates(numerical=True)+"{"+self.psName+"}")
         return "\n".join(l)
+    def tikz_code(self,pspict=None):
+        symbol_dict={}
+        symbol_dict[None]="$\\bullet$"
+        code="\draw {0} node {{{1}}};".format(self.coordinates(numerical=True),symbol_dict[self.parameters.symbol])
+        return code
     def __eq__(self,other):
         """
         return True if the coordinates of `self` and `other` are the same.

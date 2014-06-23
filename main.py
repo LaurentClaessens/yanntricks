@@ -865,14 +865,11 @@ class pspicture(object):
         self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}","BEFORE PSPICTURE")
         self.add_latex_line("\\begin{pspicture}%s%s"%(self.bounding_box(self).SW().coordinates(numerical=True),self.bounding_box(self).NE().coordinates(numerical=True)),"BEGIN PSPICTURE")
 
-
         self.add_latex_line("\end{pspicture}","END PSPICTURE")
         self.add_latex_line(self.pstricks_code_list,"OTHER STUFF")
 
         self.xsize=self.bounding_box(self).xsize()
         self.ysize=self.bounding_box(self).ysize()
-
-
         return self.separator_list.code()
 
     def visual_xsize(self):
