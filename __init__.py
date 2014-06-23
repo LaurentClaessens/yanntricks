@@ -1708,10 +1708,10 @@ class global_variables(object):
         self.create_formats={"eps":False,"pdf":False,"png":False,"test":False}
         #self.exit_format="pstricks"
         self.exit_format="png"
-        self.create_formats["png"] = True
+        self.create_formats["png"] = False
         self.perform_tests = False
         self.silent=False
-        self.no_compilation=False
+        self.no_compilation=True
         self.create_documentation=False
     def special_exit(self):
         for sortie in self.create_formats.values():

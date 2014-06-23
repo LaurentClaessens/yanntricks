@@ -696,7 +696,13 @@ class Separator(object):
         if isinstance(line,Separator):
             text=line.code()
         else :
-            text = "".join(line)        # Notice that "".join(x) also works when x is a string.
+            try :
+                text = "".join(line)        # Notice that "".join(x) also works when x is a string.
+            except TypeError :
+                print("IYLooHnThmX WOW")
+                print type(line)
+                print dir(line)
+                raise
         self.latex_code.append(text)
         if add_line_jump :
             self.latex_code.append("\n")
@@ -766,6 +772,7 @@ class pspicture(object):
         self.name = name        # self.name is used in order to name the intermediate files when one produces the eps file.
         self.mother=None
         self.figure_mother=None
+        self.language="tikz"
         self.pstricks_code_list = []
         self.specific_needs = ""    # See the class PspictureToOtherOutputs
                                      # specific_needs becomes an attribute of figure instead of pspict (November, 9, 2012)
@@ -845,7 +852,6 @@ class pspicture(object):
         It also creates the attributes `xsize` and `ysize` that
         contain the size of the bounding box.
 
-
         NOTE :
 
         - You are not supposed to use `pspict.bounding_box().xsize()` in order to take
@@ -855,21 +861,33 @@ class pspicture(object):
         
         - The value of LabelSep is the distance between an angle and the label of the angle. It is by default 1, but if there is a dilatation, the visual effect is bad.
         """
-        self.create_pstricks_code
+        self.create_language_code
         if self.LabelSep == 1 :
             self.LabelSep = 2/(self.xunit+self.yunit)
         add_latex_line_entete(self)
-
 
         self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+",LabelSep="+str(self.LabelSep)+"}","BEFORE PSPICTURE")
         self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}","BEFORE PSPICTURE")
         self.add_latex_line("\\begin{pspicture}%s%s"%(self.bounding_box(self).SW().coordinates(numerical=True),self.bounding_box(self).NE().coordinates(numerical=True)),"BEGIN PSPICTURE")
 
         self.add_latex_line("\end{pspicture}","END PSPICTURE")
-        self.add_latex_line(self.pstricks_code_list,"OTHER STUFF")
+
+        # It seems to me that "OTHER STUFF" is never used, June 23 2014
+        #self.add_latex_line(self.pstricks_code_list,"OTHER STUFF")
 
         self.xsize=self.bounding_box(self).xsize()
         self.ysize=self.bounding_box(self).ysize()
+        return self.separator_list.code()
+    @lazy_attribute
+    def contenu_tikz(self):
+        self.create_language_code
+        add_latex_line_entete(self)
+        self.add_latex_line("\\begin{tikzpicture}","BEGIN PSPICTURE")
+        self.add_latex_line("\\end{tikzpicture}","END PSPICTURE")
+
+        self.xsize=self.bounding_box(self).xsize()
+        self.ysize=self.bounding_box(self).ysize()
+
         return self.separator_list.code()
 
     def visual_xsize(self):
@@ -878,10 +896,9 @@ class pspicture(object):
         return numerical_approx(self.ysize*self.yunit)
 
     @lazy_attribute
-    def create_pstricks_code(self):
+    def create_language_code(self):
         """
         Fix the bounding box and create the separator "PSTRICKS CODE".
-
 
         NOTES :
 
@@ -896,7 +913,6 @@ class pspicture(object):
 
         # Creating the bounding box
         #list_to_be_drawn = [a.graph for a in self.record_draw_graph if a.take_graph]
-
 
         list_to_be_drawn = [a for a in self.record_draw_graph if a.take_graph]
 
@@ -941,7 +957,10 @@ class pspicture(object):
                     graph=graph.mother.bounding_box(self)
             separator_name=x.separator_name
             try :
-                self.add_latex_line(graph.pstricks_code(self),separator_name)
+                if self.language=="pstricks":
+                    self.add_latex_line(graph.pstricks_code(self),separator_name)
+                if self.language=="tikz":
+                    self.add_latex_line(graph.tikz_code(self),separator_name)
                 list_used_separators.append(separator_name)
             except AttributeError,data:
                 if not "pstricks_code" in dir(graph):
@@ -960,7 +979,7 @@ class pspicture(object):
 
         This is called by :func:`contenu_pstricks`
         """
-        self.create_pstricks_code
+        self.create_language_code
         return self.separator_list["PSTRICKS CODE"].code()
 
     def default_figure(self,name=None):
@@ -1149,7 +1168,7 @@ class pspicture(object):
     def bounding_box(self,pspict=None):
         if not self._bounding_box:
             print "Warning : this will be an approximation. In particular the enlarging of the axes will not be taken into account"
-            # the bounding box of the figure is not know before the end of `create_pstricks_code`
+            # the bounding box of the figure is not know before the end of `create_language_code`
             # because we have to know the content of the pspicture and the enlarging of the axes.
             bb=self.BB
             for a in [x.graph.bounding_box(self) for x in self.record_draw_graph if x.take_math_BB or x.take_BB] :
@@ -1333,4 +1352,8 @@ class pspicture(object):
         #    return a.replace('WIDTH',str(size)+"cm")
     
         #return "\ifpdf {0}\n \else {1}\n \\fi".format(to_other.input_code_pdf,self.contenu_pstricks)
-        return "\ifpdf {0}\n \else {1}\n \\fi".format(include_line,self.contenu_pstricks)
+
+        if self.language=="tikz":
+            return self.contenu_tikz
+        else:
+            return "\ifpdf {0}\n \else {1}\n \\fi".format(include_line,self.contenu_pstricks)

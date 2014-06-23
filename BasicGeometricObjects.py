@@ -307,13 +307,19 @@ class Options(object):
         return O
     def style_ligne(self):
         return self.sousOptions(OptionsStyleLigne())
-    def code(self):
+    def code(self,language="pstricks"):
         a = []
-        for op in self.DicoOptions.keys():
-            a.append(op+"="+self.DicoOptions[op])
-            a.append(",")
-        del a[-1:]
-        return "".join(a)
+        if language=="pstricks":
+            for op in self.DicoOptions.keys():
+                a.append(op+"="+self.DicoOptions[op])
+                a.append(",")
+            del a[-1:]
+            return "".join(a)
+        if language=="tikz":
+            a=[]
+            if "linecolor" in self.DicoOptions :
+                a.append(self.DicoOptions["linecolor"])
+            return ",".join(a)
     def __getitem__(self,opt):
         return self.DicoOptions[opt]
 
@@ -375,9 +381,9 @@ class GraphOfAnObject(object):
         for opt in oo.keys():
             self.add_option(opt+"="+oo[opt])
         self.parameters.add_to_options(self.options)
-    def params(self):
+    def params(self,language):
         self.conclude_params()
-        return self.options.code()
+        return self.options.code(language=language)
 
 class GraphOfASingleAxe(GraphOfAnObject):
     def __init__(self,C,base,mx,Mx,pspict=None):
@@ -984,7 +990,9 @@ class Mark(object):
         l.append(r"\rput({0}){{\rput({1};{2}){{{3}}}}}".format(central_point.psName,"0",0,self.text))
         return "\n".join(l)
     def tikz_code(self,pspict=None):
-        code="\draw "+central_point.coordinates(numerical=True)+" node "+self.text
+        central_point=self.central_point(pspict)
+        code="\draw "+central_point.coordinates(numerical=True)+" node {"+self.text+"};"
+        return code
 
 class FillParameters(object):
     """
@@ -1579,12 +1587,12 @@ class GraphOfAPoint(GraphOfAnObject):
         l=[]
         if self.marque and with_mark:
             l.append(self.mark.pstricks_code(pspict))
-        l.append("\pstGeonode["+self.params()+"]"+self.coordinates(numerical=True)+"{"+self.psName+"}")
+        l.append("\pstGeonode["+self.params(language="pstricks")+"]"+self.coordinates(numerical=True)+"{"+self.psName+"}")
         return "\n".join(l)
     def tikz_code(self,pspict=None):
         symbol_dict={}
         symbol_dict[None]="$\\bullet$"
-        code="\draw {0} node {{{1}}};".format(self.coordinates(numerical=True),symbol_dict[self.parameters.symbol])
+        code="\draw [{2}]  {0} node {{{1}}};".format(self.coordinates(numerical=True),symbol_dict[self.parameters.symbol],self.params(language="tikz"))
         return code
     def __eq__(self,other):
         """
