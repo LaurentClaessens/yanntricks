@@ -197,7 +197,7 @@ class Axes(object):
         if self.draw_single_axeX :
             c.append(self.single_axeX.latex_code(language=language,pspict=pspict))
         if self.draw_single_axeY :
-            c.append(self.single_axeY.latex_code(language=languqge,pspict=pspict))
+            c.append(self.single_axeY.latex_code(language=language,pspict=pspict))
         return "\n".join(c)
 
 def _vector_latex_code(segment,language,pspict=None):
@@ -209,8 +209,8 @@ def _vector_latex_code(segment,language,pspict=None):
         a = segment.I.create_PSpoint() + segment.F.create_PSpoint()
         a = a + "\\ncline["+params+"]{->}{"+segment.I.psName+"}{"+segment.F.psName+"}"
     if language=="tikz":
-        params=params+",>=latex"
-        a = "\draw [{0}] {1} {2}".format(params,segment.I.coordinates(numerical=True),segment.F.coordinates(numerical=True))
+        params=params+",->,>=latex"
+        a = "\draw [{0}] {1} -- {2};".format(params,segment.I.coordinates(numerical=True),segment.F.coordinates(numerical=True))
     if segment.marque :
         P = segment.F
         P.parameters.symbol = "none"
@@ -465,44 +465,53 @@ class GraphOfASingleAxe(GraphOfAnObject):
         mx=self.mx-k
         Mx=self.Mx+k
         return mx,Mx
-    def graduation_points(self,pspict):
+    def graduation_bars(self,pspict):
         """
-        Return the list of points that makes the graduation of the axes
+        Return the list of bars that makes the graduation of the axes
 
-        By defaut, it is one at each multiple of self.base. If an user-defined axes_unit is given, then self.base is modified.
+        By default, it is one at each multiple of self.base. If an user-defined axes_unit is given, then self.base is modified.
 
         This function also enlarges the axe by half a *visual* centimeter.
         """
+        
+        # bars_list contains in the same time marks (for the numbering) and segments (for the bars itself)
+
         # It seems that this 'imposed_graduation' does not work because
         # the so-created points do not appear in the auxiliary file.
         if self.imposed_graduation :
+            raise DeprecationWarning  # June 24 2014
             return self.imposed_graduation
         if not self.graduation:
             return []
-        points_list=[]
+        bars_list=[]
         bar_angle=SR(self.mark_angle+90).n(digits=7)    # pstricks does not accept too large numbers
         for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,self.Dx,self.mark_origin):
             P=(x*self.base).F
-            P.parameters.symbol="|"
-            P.add_option("dotangle=%s"%str(bar_angle))
+            #P.parameters.symbol="|"
+            #P.add_option("dotangle=%s"%str(bar_angle))
             P.psName="ForTheBar"   # Since this point is not supposed to
                                        # be used, all of them have the same ps name.
+
             if self.numbering :
                 # The 0.2 here is hard coded in Histogram, see 71011299
                 r,theta=polar_with_dilatation(0.2,radian(self.mark_angle),pspict.xunit,pspict.yunit)
                 theta=degree(theta)
                 P.put_mark(r,theta,symbol,automatic_place=(pspict,"for axes",self.segment()))
-            points_list.append(P)
-        return points_list
+            bars_list.append(P.mark)
+
+            circle=Circle(P,0.1)    # 0.1 will be the (half)length of the bar
+            a=circle.get_point(bar_angle)
+            b=circle.get_point(bar_angle+180)
+            seg=Segment(a,b)
+            bars_list.append(seg)
+        return bars_list
     def bounding_box(self,pspict):
         # One cannot take into account the small enlarging here because
         # we do not know if this is the vertical or horizontal axe,
         # so we cannot make the fit of the drawn objects.
         BB=self.math_bounding_box(pspict)
-        for P in self.graduation_points(pspict):
-            BB.append(P,pspict)
-            if P.marque :
-                BB.append(P.mark,pspict)
+        for graph in self.graduation_bars(pspict):
+            BB.append(graph,pspict)
         return BB
     def math_bounding_box(self,pspict):
         # The math_bounding box does not take into account the things that are inside the picture
@@ -520,8 +529,8 @@ class GraphOfASingleAxe(GraphOfAnObject):
         if self.mark :
             c.append(self.mark.latex_code(language,pspict))
         if self.graduation :
-            for P in self.graduation_points(pspict):
-                c.append(P.latex_code(language,pspict,with_mark=True))
+            for graph in self.graduation_bars(pspict):
+                c.append(graph.latex_code(language,pspict))
         h=AffineVector(self.segment(pspict))
         c.append(h.latex_code(language,pspict))
         return "\n".join(c)
@@ -1601,6 +1610,7 @@ class GraphOfAPoint(GraphOfAnObject):
     def tikz_code(self,pspict=None):
         symbol_dict={}
         symbol_dict[None]="$\\bullet$"
+        symbol_dict["|"]="$|$"
         code="\draw [{2}]  {0} node {{{1}}};".format(self.coordinates(numerical=True),symbol_dict[self.parameters.symbol],self.params(language="tikz"))
         return code
     def latex_code(self,language=None,pspict=None,with_mark=False):

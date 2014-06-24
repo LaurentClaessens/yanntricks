@@ -880,7 +880,7 @@ class pspicture(object):
         return self.separator_list.code()
     @lazy_attribute
     def contenu_tikz(self):
-        self.create_latex_code(self,language="tikz")
+        self.create_latex_code(language="tikz")
         add_latex_line_entete(self)
         self.add_latex_line("\\begin{tikzpicture}","BEGIN PSPICTURE")
         self.add_latex_line("\\end{tikzpicture}","END PSPICTURE")
@@ -929,7 +929,6 @@ class pspicture(object):
                 self.axes.enlarge_a_little(self.axes.enlarge_size,pspict=self)  # This should be the only call to enlarge_a_little
 
             separator_name=graph.separator_name
-            print("HAZooHRpzUi -- language",language)
             self.add_latex_line(graph.latex_code(language=language,pspict=self),separator_name)
             list_used_separators.append(separator_name)
 
