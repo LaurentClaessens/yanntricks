@@ -70,7 +70,7 @@ def SubstitutionMathTikz(fx):
     # One of the big deal is that tikz works with degree instead of radian
 
     listeSubst = []
-    listeSubst.append(["x","\\x"])
+    listeSubst.append(["x","(\\x)"])        # Notice the parenthesis because \x^2=-1 when \x=-1
     listeSubst.append(["sin","radsin"])
     listeSubst.append(["cos","radcos"])
     listeSubst.append(["<++>","<++>"])
@@ -340,8 +340,6 @@ class Options(object):
             return "".join(a)
         if language=="tikz":
             a=[]
-            print("VEFooNyeggY")
-            print(self.DicoOptions)
             if "linecolor" in self.DicoOptions :
                 a.append(self.DicoOptions["linecolor"])
             if "linestyle" in self.DicoOptions :
@@ -4092,12 +4090,12 @@ class GraphOfACustomSurface(GraphOfAnObject):
         for obj in self.graphList :
             bb.AddBB(obj.math_bounding_box(pspict))
         return bb
-    def latex_code(self,language=None,pspict=None):
+    def pstricks_code(self,pspict=None):
         # I cannot add all the obj.pstricks_code() inside the \pscustom because we cannot have \pstGeonode inside \pscustom
         # Thus I have to hack the code in order to bring all the \pstGeonode before the opening of \pscustom
         a=[]
         for obj in self.graphList :
-            a.append(obj.latex_code(pspict))
+            a.append(obj.pstricks_code(pspict=pspict))
         insideBefore="\n".join(a)
         insideBeforeList=insideBefore.split("\n")
         outsideList=[]
@@ -4111,16 +4109,72 @@ class GraphOfACustomSurface(GraphOfAnObject):
         inside="\n".join(insideList)
         # Now we create the pscustom
         a=[]
-        a.append(outside)
         if self.parameters.color :
             self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
-        if language=="pstricks":
-            a.append("\pscustom["+self.params(language="pstricks")+"]{")
-        if language=="tikz":
-            a.append("\\fill [{0}]".pa)
+        a.append(outside)
+        a.append("\pscustom["+self.params(language="pstricks")+"]{")
         a.append(inside)
         a.append("}")
         return "\n".join(a)
+    def tikz_code(self,pspict=None):
+        """
+        If the CustomSurface has to be filled, we start by plotting the filling.
+
+        Then we plot, separately, the lines forming the border. Thus we can have different colors and line style for the different edges.
+        """
+        a=[]
+        if self.parameters.color :
+            self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
+        if self.parameters._filled or self.parameters._hatched :
+            l=[]
+            for obj in self.graphList :
+                if isinstance(obj,GraphOfASegment):
+                    l.append( obj.I.coordinates(numerical=True)+" -- "+obj.F.coordinates(numerical=True) )
+                else :
+                    l.append(obj.latex_code.replace(";",""))
+            l.append(" cycle;")
+            code=" -- ".join(l)
+            if self.parameters._hatched :
+                # This is from
+                # http://www.techques.com/question/31-54358/custom-and-built-in-tikz-fill-patterns
+                def_hatching=r"""
+                % defining the new dimensions
+\newlength{\hatchspread}
+\newlength{\hatchthickness}
+% declaring the keys in tikz
+\tikzset{hatchspread/.code={\setlength{\hatchspread}{#1}},
+         hatchthickness/.code={\setlength{\hatchthickness}{#1}}}
+% setting the default values
+\tikzset{hatchspread=3pt,
+         hatchthickness=0.4pt}
+% declaring the pattern
+\pgfdeclarepatternformonly[\hatchspread,\hatchthickness]% variables
+   {custom north west lines}% name
+   {\pgfqpoint{-2\hatchthickness}{-2\hatchthickness}}% lower left corner
+   {\pgfqpoint{\dimexpr\hatchspread+2\hatchthickness}{\dimexpr\hatchspread+2\hatchthickness}}% upper right corner
+   {\pgfqpoint{\hatchspread}{\hatchspread}}% tile size
+   {% shape description
+    \pgfsetlinewidth{\hatchthickness}
+    \pgfpathmoveto{\pgfqpoint{0pt}{\hatchspread}}
+    \pgfpathlineto{\pgfqpoint{\dimexpr\hatchspread+0.15pt}{-0.15pt}}
+        \pgfusepath{stroke}
+   }
+"""
+                a.append(def_hatching)
+                options="color="+self.parameters.hatch.color
+                options=options+",  pattern=custom north west lines,hatchspread=10pt,hatchthickness=1pt "
+            if self.parameters._filled:
+                options="color="+self.parameters.fill.color
+            a.append("\\fill [{}] ".format(options)+code)
+
+        for obj in self.graphList :
+            a.append(obj.tikz_code(pspict=pspict))
+        return "\n".join(a)
+    def latex_code(self,language=None,pspict=None):
+        if language=="pstricks":
+            return self.pstricks_code(pspict)
+        if language=="tikz":
+            return self.tikz_code(pspict)
 
 class GraphOfAPolygon(GraphOfAnObject):
     """
