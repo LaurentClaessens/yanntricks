@@ -957,10 +957,7 @@ class pspicture(object):
                     graph=graph.mother.bounding_box(self)
             separator_name=x.separator_name
             try :
-                if self.language=="pstricks":
-                    self.add_latex_line(graph.pstricks_code(self),separator_name)
-                if self.language=="tikz":
-                    self.add_latex_line(graph.tikz_code(self),separator_name)
+                self.add_latex_line(graph.latex_code(language=self.language,pspict=self),separator_name)
                 list_used_separators.append(separator_name)
             except AttributeError,data:
                 if not "pstricks_code" in dir(graph):

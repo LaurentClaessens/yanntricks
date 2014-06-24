@@ -200,17 +200,22 @@ class Axes(object):
             c.append(self.single_axeY.pstricks_code(pspict))
         return "\n".join(c)
 
-def _vector_pstricks_code(segment,pspict=None):
+def _vector_latex_code(segment,language,pspict=None):
     """
-    Return the pstricks's code of a Segment when is is seen as a vector.
+    Return the LaTeX's code of a Segment when is is seen as a vector.
     """
-    a = segment.I.create_PSpoint() + segment.F.create_PSpoint()
-    a = a + "\\ncline["+segment.params()+"]{->}{"+segment.I.psName+"}{"+segment.F.psName+"}"
+    params=segment.params(language=language)
+    if language=="pstricks":
+        a = segment.I.create_PSpoint() + segment.F.create_PSpoint()
+        a = a + "\\ncline["+params+"]{->}{"+segment.I.psName+"}{"+segment.F.psName+"}"
+    if language=="tikz":
+        params=params+",>=latex"
+        a = "\draw [{0}] {1} {2}".format(params,segment.I.coordinates(numerical=True),segment.F.coordinates(numerical=True))
     if segment.marque :
         P = segment.F
         P.parameters.symbol = "none"
         P.put_mark(segment.mark.dist,segment.mark.angle,segment.mark.text)
-        a = a + P.pstricks_code(pspict)
+        a = a + P.latex_code(language,pspict)
     return a
 
 def Distance_sq(P,Q):
@@ -224,7 +229,6 @@ def Distance(P,Q):
 def inner_product(v,w):
     """
     Return the inner product of vectors v and w
-
 
     INPUT:
     - ``v,w`` - two vectors or points
@@ -317,8 +321,12 @@ class Options(object):
             return "".join(a)
         if language=="tikz":
             a=[]
+            print("VEFooNyeggY")
+            print(self.DicoOptions)
             if "linecolor" in self.DicoOptions :
                 a.append(self.DicoOptions["linecolor"])
+            if "linestyle" in self.DicoOptions :
+                a.append(self.DicoOptions["linestyle"])
             return ",".join(a)
     def __getitem__(self,opt):
         return self.DicoOptions[opt]
@@ -2661,23 +2669,32 @@ class GraphOfASegment(GraphOfAnObject):
             return self.bounding_box(pspict)
         else :
             return BoundingBox()
-    def pstricks_code(self,pspict=None):
+    def latex_code(self,language,pspict=None):
         """
-        Return the pstricks's code of a Segment when is is seen as a segment
+        Return the LaTeX's code (pstricks or tikz) of a Segment when is is seen as a segment
         """
         if self.arrow_type=="vector":
-            return _vector_pstricks_code(self,pspict)
+                return _vector_latex_code(self,language=language,pspict=pspict)
         if self.arrow_type=="segment":
             if self.wavy:
                 waviness = self.waviness
                 curve=InterpolationCurve(self.get_wavy_points(waviness.dx,waviness.dy),context_object=self)
-                return curve.pstricks_code()
+                return curve.latex_code(language=language)
             else:
-                a =[self.I.create_PSpoint() + self.F.create_PSpoint()]
-                a.append("\pstLineAB[%s]{%s}{%s}"%(self.params(),self.I.psName,self.F.psName))
+                if language=="pstricks":
+                    a =[self.I.create_PSpoint() + self.F.create_PSpoint()]
+                    a.append("\pstLineAB[%s]{%s}{%s}"%(self.params(language="pstricks"),self.I.psName,self.F.psName))
+                if language=="tikz":
+                    a=[]
+                    a.append("\draw [{2}] {0} -- {1};".format(self.I.coordinates(),self.F.coordinates(),self.params(language="tikz")))
         for v in self.arrow_list:
-            a.append(v.pstricks_code(pspict))
+            a.append(v.latex_code(pspict,language=language))
         return "\n".join(a)
+
+    def pstricks_code(self,pspict=None):
+        return self.latex_code(language="pstricks",pspict=pspict)
+    def tikz_code(self,pspict=None):
+        return self.latex_code(language="tikz",pspict=pspict)
 
 class GraphOfAMeasureLength(GraphOfASegment):
     def __init__(self,seg,dist=0.1):
@@ -3970,14 +3987,29 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         """
         l = []
         try:
-            params=self.context_object.params()
+            params=self.context_object.params(language="pstricks")
         except AttributeError :
             params=self.params()
         l.append("\pscurve["+params+"]")
         for p in self.points_list:
             l.append(p.coordinates(numerical=True))
         return "".join(l)
-        
+    def tikz_code(self,pspict=None):
+        l = []
+        try:
+            params=self.context_object.params(language="tikz")
+        except AttributeError :
+            params=self.params()
+        l.append("\draw [{0}] plot [smooth,tension=1] coordinates {{".format(params))
+        for p in self.points_list:
+            l.append(p.coordinates(numerical=True))
+        l.append("};")
+        return "".join(l)
+    def latex_code(self,language,pspict=None):
+        if language=="pstricks":
+            return self.pstricks_code(pspict)
+        if language=="tikz":
+            return self.tikz_code(pspict)
     def __str__(self):
         """
         Return a string representation
@@ -4573,11 +4605,15 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         a.append("y(t)=%s>"%repr(self.f2.sage(x=t)))
         return "\n".join(a)
 
-    def params(self):
+    def params(self,language=None):
         self.conclude_params()
-        self.add_option("plotpoints=%s"%str(self.plotpoints))
-        self.add_option("plotstyle=%s"%str(self.plotstyle))
-        return self.options.code()
+        if language=="pstricks":
+            self.add_option("plotpoints=%s"%str(self.plotpoints))
+            self.add_option("plotstyle=%s"%str(self.plotstyle))
+        if language=="tikz":
+            self.add_option("sample="+self.plotpoints)
+            self.add_option("plotstyle=%s"%str(self.plotstyle))
+        return self.options.code(language=language)
     def reverse(self):
         """
         return the curve in the inverse sense but on the same interval
@@ -4607,18 +4643,25 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         return bb
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
-    def pstricks_code(self,pspict=None):
+    def latex_code(self,language=None,pspict=None):
         a=[]
         if self.wavy :
             waviness = self.waviness
             curve=InterpolationCurve(self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy),context_object=self)
-            a.append(curve.pstricks_code())
+            a.append(curve.latex_code(language=language))
         else:
-            initial = numerical_approx(self.llamI)      # Avoid the string "pi" in the pstricks code.
+            initial = numerical_approx(self.llamI)      # Avoid the string "pi" in the latex code.
             final = numerical_approx(self.llamF)
-            a.append("\parametricplot[%s]{%s}{%s}{%s}" %(self.params(),str(initial),str(final),self.curve.pstricks()))
+            if language=="pstricks":
+                a.append("\parametricplot[%s]{%s}{%s}{%s}" %(self.params(),str(initial),str(final),self.curve.pstricks()))
+            if language=="tikz":
+                params=self.params(language="tikz")
+                params=params.replace("plotpoints","samples")+",smooth,domain={0}:{1}".format(str(initial),str(final))
+                x=var('x')
+                a.append("\draw[{0}] plot ({{1}},{{2}});".format(params,repr(self.f1.sage(x=x)).replace("x","\\x"),repr(self.f2.sage(x=x)).replace("x","\\x")))
+            #http://forum.mathematex.net/latex-f6/tikz-et-courbe-parametree-t11672.html
         for v in self.record_arrows:
-            a.append(v.pstricks_code(pspict))
+            a.append(v.latex_code(pspict))
         return "\n".join(a)
 
 class GraphOfACircle3D(GraphOfAnObject):
