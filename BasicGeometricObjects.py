@@ -484,7 +484,7 @@ class GraphOfASingleAxe(GraphOfAnObject):
         if not self.graduation:
             return []
         bars_list=[]
-        bar_angle=SR(self.mark_angle+90).n(digits=7)    # pstricks does not accept too large numbers
+        bar_angle=SR(self.mark_angle).n(digits=7)    # pstricks does not accept too large numbers
         for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,self.Dx,self.mark_origin):
             P=(x*self.base).F
             #P.parameters.symbol="|"
@@ -500,8 +500,8 @@ class GraphOfASingleAxe(GraphOfAnObject):
             bars_list.append(P.mark)
 
             circle=Circle(P,0.1)    # 0.1 will be the (half)length of the bar
-            a=circle.get_point(bar_angle)
-            b=circle.get_point(bar_angle+180)
+            a=circle.get_point(bar_angle,numerical=True)
+            b=circle.get_point(bar_angle+180,numerical=True)
             seg=Segment(a,b)
             bars_list.append(seg)
         return bars_list
@@ -4678,7 +4678,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
                 params=self.params(language="tikz")
                 params=params.replace("plotpoints","samples")+",smooth,domain={0}:{1}".format(str(initial),str(final))
                 x=var('x')
-                a.append("\draw[{0}] plot ({{1}},{{2}});".format(params,repr(self.f1.sage(x=x)).replace("x","\\x"),repr(self.f2.sage(x=x)).replace("x","\\x")))
+                a.append("\draw[{0}] plot ({1},{2});".format(params,repr(self.f1.sage(x=x)).replace("x","\\x"),repr(self.f2.sage(x=x)).replace("x","\\x")))
             #http://forum.mathematex.net/latex-f6/tikz-et-courbe-parametree-t11672.html
         for v in self.record_arrows:
             a.append(v.latex_code(pspict))
