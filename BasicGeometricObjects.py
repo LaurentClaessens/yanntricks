@@ -4092,12 +4092,12 @@ class GraphOfACustomSurface(GraphOfAnObject):
         for obj in self.graphList :
             bb.AddBB(obj.math_bounding_box(pspict))
         return bb
-    def pstricks_code(self,pspict=None):
+    def latex_code(self,language=None,pspict=None):
         # I cannot add all the obj.pstricks_code() inside the \pscustom because we cannot have \pstGeonode inside \pscustom
         # Thus I have to hack the code in order to bring all the \pstGeonode before the opening of \pscustom
         a=[]
         for obj in self.graphList :
-            a.append(obj.pstricks_code(pspict))
+            a.append(obj.latex_code(pspict))
         insideBefore="\n".join(a)
         insideBeforeList=insideBefore.split("\n")
         outsideList=[]
@@ -4114,7 +4114,10 @@ class GraphOfACustomSurface(GraphOfAnObject):
         a.append(outside)
         if self.parameters.color :
             self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
-        a.append("\pscustom["+self.params()+"]{")
+        if language=="pstricks":
+            a.append("\pscustom["+self.params(language="pstricks")+"]{")
+        if language=="tikz":
+            a.append("\\fill [{0}]".pa)
         a.append(inside)
         a.append("}")
         return "\n".join(a)
@@ -4159,17 +4162,17 @@ class GraphOfAPolygon(GraphOfAnObject):
         return bb
     def bounding_box(self,pspict=None):
         return self.math_bounding_box(pspict)
-    def pstricks_code(self,pspict=None):
+    def latex_code(self,language=None,pspict=None):
         a=[]
         custom=CustomSurface(self.edges_list)
         custom.parameters=self.parameters
-        a.append(custom.pstricks_code(pspict))
+        a.append(custom.latex_code(language=language,pspict=pspict))
 
         if self.draw_edges:
             for edge in self.edges_list:
                 if not self.independent_edge :
                     edge.parameters=self.edge.parameters
-                a.append(edge.pstricks_code(pspict))
+                a.append(edge.latex_code(language=language,pspict=pspict))
         return "\n".join(a)
 
 class GraphOfAParametricCurve(GraphOfAnObject):

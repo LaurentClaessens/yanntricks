@@ -1119,10 +1119,10 @@ class Grid(object):
                 S.merge_options(self.main_horizontal)
                 a.append(S)
         return a
-    def pstricks_code(self,pspict=None):
+    def latex_code(self,language=None,pspict=None):
         a=[]
         for element in self.drawing():
-            a.append(element.pstricks_code(pspict))
+            a.append(element.latex_code(language=language,pspict=pspict))
         return "\n".join(a)
 
 class AxesUnit(object):
