@@ -3644,6 +3644,11 @@ class GraphOfAphyFunction(GraphOfAnObject):
             fin = numerical_approx(self.Mx)
             return "\psplot["+self.params()+"]{"+str(deb)+"}{"+str(fin)+"}{"+self.pstricks+"}"
         return ""
+    def latex_code(self,language=None,pspict=None):
+        if not self.wavy and not self.do_cut_y:
+            curve=self.parametric_curve()
+            return curve.latex_code(language=language)
+        return ""
     def __call__(self,xe,numerical=False):
         """
         return the value of the function at given point
