@@ -186,7 +186,7 @@ class Axes(object):
         BB.append(self.single_axeX.math_bounding_box(pspict))
         BB.append(self.single_axeY.math_bounding_box(pspict))
         return BB
-    def pstricks_code(self,pspict=None):
+    def latex_code(self,language=None,pspict=None):
         if pspict == None :
             raise TypeError,"No pspict given"
         sDx=RemoveLastZeros(self.Dx,10)
@@ -195,9 +195,9 @@ class Axes(object):
         self.add_option("Dy="+sDy)
         c=[]
         if self.draw_single_axeX :
-            c.append(self.single_axeX.pstricks_code(pspict))
+            c.append(self.single_axeX.latex_code(language=language,pspict=pspict))
         if self.draw_single_axeY :
-            c.append(self.single_axeY.pstricks_code(pspict))
+            c.append(self.single_axeY.latex_code(language=languqge,pspict=pspict))
         return "\n".join(c)
 
 def _vector_latex_code(segment,language,pspict=None):
@@ -510,7 +510,7 @@ class GraphOfASingleAxe(GraphOfAnObject):
         s = self.segment(pspict=pspict)
         bb=s.bounding_box(pspict)
         return bb
-    def pstricks_code(self,pspict):
+    def latex_code(self,language,pspict):
         """
         Return the pstricks code of the axe.
         """
@@ -518,12 +518,12 @@ class GraphOfASingleAxe(GraphOfAnObject):
         self.add_option("Dx="+sDx)
         c=[]
         if self.mark :
-            c.append(self.mark.pstricks_code(pspict))
+            c.append(self.mark.latex_code(language,pspict))
         if self.graduation :
             for P in self.graduation_points(pspict):
-                c.append(P.pstricks_code(pspict,with_mark=True))
+                c.append(P.latex_code(language,pspict,with_mark=True))
         h=AffineVector(self.segment(pspict))
-        c.append(h.pstricks_code(pspict))
+        c.append(h.latex_code(language,pspict))
         return "\n".join(c)
     def __str__(self):
         return "<GraphOfASingleAxe: C={0} base={1} mx={2} Mx={3}>".format(self.C,self.base,self.mx,self.Mx)
@@ -1001,6 +1001,11 @@ class Mark(object):
         central_point=self.central_point(pspict)
         code="\draw "+central_point.coordinates(numerical=True)+" node {"+self.text+"};"
         return code
+    def latex_code(self,language=None,pspict=None):
+        if language=="pstricks":
+            return self.pstricks_code(pspict=pspict)
+        if language=="tikz":
+            return self.tikz_code(pspict=pspict)
 
 class FillParameters(object):
     """
@@ -1592,16 +1597,21 @@ class GraphOfAPoint(GraphOfAnObject):
         sage: unify_point_name(P.pstricks_code(with_mark=True))
         u'\\pstGeonode[](1.21213203435596,1.21213203435596){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$P$}}\n\\pstGeonode[PointSymbol=*,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaab}'
         """
-        l=[]
-        if self.marque and with_mark:
-            l.append(self.mark.pstricks_code(pspict))
-        l.append("\pstGeonode["+self.params(language="pstricks")+"]"+self.coordinates(numerical=True)+"{"+self.psName+"}")
-        return "\n".join(l)
+        return "\pstGeonode["+self.params(language="pstricks")+"]"+self.coordinates(numerical=True)+"{"+self.psName+"}"
     def tikz_code(self,pspict=None):
         symbol_dict={}
         symbol_dict[None]="$\\bullet$"
         code="\draw [{2}]  {0} node {{{1}}};".format(self.coordinates(numerical=True),symbol_dict[self.parameters.symbol],self.params(language="tikz"))
         return code
+    def latex_code(self,language=None,pspict=None,with_mark=False):
+        l=[]
+        if self.marque and with_mark:
+            l.append(self.mark.latex_code(language=language,pspict=pspict))
+        if language=="pstricks":
+            l.append(self.pstricks_code(pspict=pspict))
+        if language=="tikz":
+            l.append(self.tikz_code(pspict=pspict))
+        return "\n".join(l)
     def __eq__(self,other):
         """
         return True if the coordinates of `self` and `other` are the same.
