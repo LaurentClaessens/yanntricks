@@ -883,6 +883,8 @@ class pspicture(object):
         self.create_latex_code(language="tikz")
         add_latex_line_entete(self)
         self.add_latex_line("\\begin{tikzpicture}","BEGIN PSPICTURE")
+        self.add_latex_line("\pgfmathdeclarefunction{radsin}{1}{\pgfmathparse{sin(deg(#1))}}","BEFORE PSPICTURE")
+        self.add_latex_line("\pgfmathdeclarefunction{radcos}{1}{\pgfmathparse{cos(deg(#1))}}","BEFORE PSPICTURE")
         self.add_latex_line("\\end{tikzpicture}","END PSPICTURE")
 
         self.xsize=self.bounding_box(self).xsize()

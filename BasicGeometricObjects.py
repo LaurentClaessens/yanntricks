@@ -61,6 +61,25 @@ def SubstitutionMathPsTricks(fx):
         a = a.replace(s[0],s[1])
     return a
 
+def SubstitutionMathTikz(fx):
+    """
+    - fx : string that gives a function with 'x'
+
+    We return the same function, but in terms of tikz.
+    """
+    # One of the big deal is that tikz works with degree instead of radian
+
+    listeSubst = []
+    listeSubst.append(["x","\\x"])
+    listeSubst.append(["sin","radsin"])
+    listeSubst.append(["cos","radcos"])
+    listeSubst.append(["<++>","<++>"])
+    listeSubst.append(["<++>","<++>"])
+    a = fx
+    for s in listeSubst :
+        a = a.replace(s[0],s[1])
+    return a
+
 def PointsNameList():
     """
     Furnish a list of points name.
@@ -3326,8 +3345,9 @@ class GraphOfAphyFunction(GraphOfAnObject):
             # F=GraphOfAVectorField(x,y)
             self.sageFast = self.sage
         self.string = repr(self.sage)
-        self.fx = self.string.replace("^","**").replace("x |--> ","")
+        self.fx = self.string.replace("x |--> ","")
         self.pstricks = SubstitutionMathPsTricks(self.fx)
+        self.tikz = SubstitutionMathTikz(self.fx)
         self.ListeSurface = []
         self.listeTests = []
         self.TesteDX = 0
@@ -3638,6 +3658,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
             curve=InterpolationCurve( self.get_wavy_points(waviness.mx,waviness.Mx,waviness.dx,waviness.dy),context_object=self)
             pspict.DrawGraph(curve)
     def pstricks_code(self,pspict=None):
+        raise DeprecationWarning   # June 24 2014
         if not self.wavy and not self.do_cut_y:
             # The use of numerical_approx is intended to avoid strings like "2*pi" in the final pstricks code.
             deb = numerical_approx(self.mx) 
@@ -3646,7 +3667,9 @@ class GraphOfAphyFunction(GraphOfAnObject):
         return ""
     def latex_code(self,language=None,pspict=None):
         if not self.wavy and not self.do_cut_y:
-            curve=self.parametric_curve()
+            deb = numerical_approx(self.mx) 
+            fin = numerical_approx(self.Mx)
+            curve=self.parametric_curve().graph(deb,fin)
             return curve.latex_code(language=language)
         return ""
     def __call__(self,xe,numerical=False):
@@ -4683,8 +4706,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
                 params=self.params(language="tikz")
                 params=params.replace("plotpoints","samples")+",smooth,domain={0}:{1}".format(str(initial),str(final))
                 x=var('x')
-                a.append("\draw[{0}] plot ({1},{2});".format(params,repr(self.f1.sage(x=x)).replace("x","\\x"),repr(self.f2.sage(x=x)).replace("x","\\x")))
-            #http://forum.mathematex.net/latex-f6/tikz-et-courbe-parametree-t11672.html
+                a.append("\draw[{0}] plot ({{{1}}},{{{2}}});".format(params,self.f1.tikz,self.f2.tikz))
         for v in self.record_arrows:
             a.append(v.latex_code(pspict))
         return "\n".join(a)
