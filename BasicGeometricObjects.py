@@ -3107,7 +3107,7 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
         return BoundingBox(self.NW,self.SE)
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
-    def pstricks_code(self,pspict=None):
+    def latex_code(self,language=None,pspict=None):
         """
         We are drawing the psframe AND the segments.
         The aim is to be able to use the frame for filling, being still able to customise separately the edges.
@@ -3116,9 +3116,14 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
             if s.parameters==None:
                 s.parameters=self.parameters
         a=[]
-        a.append("\psframe["+self.params()+"]"+self.rectangle.SW.coordinates(numerical=True)+self.rectangle.NE.coordinates(numerical=True))
+        cNE=self.rectangle.NE.coordinates(numerical=True)
+        cSW=self.rectangle.SW.coordinates(numerical=True)
+        if language=="pstricks":
+            a.append("\psframe["+self.params(language="pstricks")+"]"+cSW+cNE)
+        if language=="tikz":
+            a.append("\draw [{0}] {1} rectangle {2}; ".format(self.params(language="tikz"),cSW,cNE))
         for s in self.segments :
-            a.append(s.pstricks_code(pspict))
+            a.append(s.latex_code(language=language,pspict=pspict))
         return "\n".join(a)
 
 class GraphOfAnAngle(GraphOfAnObject):
@@ -5299,10 +5304,10 @@ class BoundingBox(object):
     def AddAxes(self,axes):
         self.AddPoint( axes.BB.SW() )
         self.AddPoint( axes.BB.NE() )
-    def pstricks_code(self,pspict=None):
+    def latex_code(self,language=None,pspict=None):
         rect=Rectangle(self.SW(),self.NE())
         rect.parameters.color="cyan"
-        return rect.pstricks_code(pspict)
+        return rect.latex_code(language=language,pspict=pspict)
     def bounding_box(self,pspict=None):
         return self
     def math_bounding_box(self,pspict=None):
