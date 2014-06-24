@@ -895,7 +895,6 @@ class pspicture(object):
     def visual_ysize(self):
         return numerical_approx(self.ysize*self.yunit)
 
-    @lazy_attribute
     def create_latex_code(self,language):
         """
         Fix the bounding box and create the separator "PSTRICKS CODE".
