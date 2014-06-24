@@ -514,7 +514,7 @@ class GraphOfASingleAxe(GraphOfAnObject):
                 r,theta=polar_with_dilatation(0.2,radian(self.mark_angle),pspict.xunit,pspict.yunit)
                 theta=degree(theta)
                 P.put_mark(r,theta,symbol,automatic_place=(pspict,"for axes",self.segment()))
-            bars_list.append(P.mark)
+                bars_list.append(P.mark)
 
             circle=Circle(P,0.1)    # 0.1 will be the (half)length of the bar
             a=circle.get_point(bar_angle,numerical=True)

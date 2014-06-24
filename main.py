@@ -884,7 +884,7 @@ class pspicture(object):
     def contenu_tikz(self):
         self.create_latex_code(language="tikz")
         add_latex_line_entete(self)
-        self.add_latex_line("\\begin{{tikzpicture}}[xscale={0},yscale={1}]".format(self.xunit,self.yunit),"BEGIN PSPICTURE")
+        self.add_latex_line("\\begin{{tikzpicture}}[xscale={0},yscale={1},inner sep=0pt,outer sep=0pt]".format(self.xunit,self.yunit),"BEGIN PSPICTURE")
         self.add_latex_line("\pgfmathdeclarefunction{radsin}{1}{\pgfmathparse{sin(deg(#1))}}","BEFORE PSPICTURE")
         self.add_latex_line("\pgfmathdeclarefunction{radcos}{1}{\pgfmathparse{cos(deg(#1))}}","BEFORE PSPICTURE")
         self.add_latex_line("\\end{tikzpicture}","END PSPICTURE")
