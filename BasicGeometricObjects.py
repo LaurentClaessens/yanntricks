@@ -330,7 +330,7 @@ class Options(object):
         return O
     def style_ligne(self):
         return self.sousOptions(OptionsStyleLigne())
-    def code(self,language="pstricks"):
+    def code(self,language=None):
         a = []
         if language=="pstricks":
             for op in self.DicoOptions.keys():

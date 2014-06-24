@@ -283,6 +283,7 @@ class figure(object):
         self.record_pspicture=[]
 
         self.send_noerror = False
+        self.language="tikz"
 
         self.specific_needs=""
         # TODO : specific_needs should be a list of specific_need that is a class.
@@ -402,7 +403,8 @@ class figure(object):
                 TestPspictLaTeXCode(pspict).test()
         self.add_latex_line(self.specific_needs,"SPECIFIC_NEEDS")
         if not global_vars.special_exit() :
-            self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+"}","BEFORE SUBFIGURES")
+            if self.language=="pstricks":
+                self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+"}","BEFORE SUBFIGURES")
         for f in self.record_subfigure :
             self.add_latex_line("\subfigure["+f.caption+"]{%","SUBFIGURES")
             self.add_latex_line(f.subfigure_code(),"SUBFIGURES")
@@ -882,7 +884,7 @@ class pspicture(object):
     def contenu_tikz(self):
         self.create_latex_code(language="tikz")
         add_latex_line_entete(self)
-        self.add_latex_line("\\begin{tikzpicture}","BEGIN PSPICTURE")
+        self.add_latex_line("\\begin{{tikzpicture}}[xscale={0},yscale={1}]".format(self.xunit,self.yunit),"BEGIN PSPICTURE")
         self.add_latex_line("\pgfmathdeclarefunction{radsin}{1}{\pgfmathparse{sin(deg(#1))}}","BEFORE PSPICTURE")
         self.add_latex_line("\pgfmathdeclarefunction{radcos}{1}{\pgfmathparse{cos(deg(#1))}}","BEFORE PSPICTURE")
         self.add_latex_line("\\end{tikzpicture}","END PSPICTURE")
