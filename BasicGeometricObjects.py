@@ -4773,8 +4773,8 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         a=[]
         if self.wavy :
             waviness = self.waviness
-            curve=InterpolationCurve(self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy),context_object=self)
-            a.append(curve.latex_code(language=language))
+            curve=InterpolationCurve(self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy,xunit=pspict.xunit,yunit=pspict.yunit),context_object=self)
+            a.append(curve.latex_code(language=language,pspict=pspict))
         else:
             initial = numerical_approx(self.llamI)      # Avoid the string "pi" in the latex code.
             final = numerical_approx(self.llamF)
