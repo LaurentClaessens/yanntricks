@@ -1461,7 +1461,7 @@ class Cuboid(object):
                 surface3=Polygon(self.c1[0],self.c2[0],self.c2[3],self.c1[3])
             surface3.parameters.filled()
             pspict.DrawGraphs(surface1,surface2,surface3)
-    def pstricks_code(self,pspict=None):
+    def latex_code(self,language=None,pspict=None):
         return ""   # Everything is in action_on_pspict
 
 def Moustache(minimum,Q1,M,Q3,maximum,h,delta_y=0):

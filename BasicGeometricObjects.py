@@ -818,7 +818,7 @@ class GraphOfACircle(GraphOfAnObject):
         if angleI<270 and angleF>270 :
             bb.AddY(self.center.y-self.radius)
         return bb
-    def pstricks_code(self,pspict=None):
+    def latex_code(self,language=None,pspict=None):
         if self.wavy:
             waviness = self.waviness
             alphaI = radian(self.angleI,number=True,keep_max=True)
@@ -832,7 +832,7 @@ class GraphOfACircle(GraphOfAnObject):
             G.parameters.style = self.parameters.style
             G.parameters.color = self.parameters.color  # May,3,2012  : before it was ...=self.color
             G.wave(waviness.dx,waviness.dy)
-            return G.pstricks_code()
+            return G.latex_code()
         else:
             angleI=degree(self.angleI,number=True,converting=False,keep_max=True)
             angleF=degree(self.angleF,number=True,converting=False,keep_max=True)
@@ -1557,6 +1557,7 @@ class GraphOfAPoint(GraphOfAnObject):
         raise DeprecationWarning  # June 23, 2014
         return self.coordinates.replace("(","{").replace(")","}")
     def Affiche(self):
+        raise DeprecationWarning  # June 24, 2014
         return self.coordinates()
     def graph_object(self):
         return GraphOfAPoint(self)
@@ -1628,8 +1629,9 @@ class GraphOfAPoint(GraphOfAnObject):
         symbol_dict={}
         symbol_dict[None]="$\\bullet$"
         symbol_dict["|"]="$|$"
-        code="\draw [{2}]  {0} node {{{1}}};".format(self.coordinates(numerical=True),symbol_dict[self.parameters.symbol],self.params(language="tikz"))
-        return code
+        if self.parameters.symbol!="none":
+            return "\draw [{2}]  {0} node {{{1}}};".format(self.coordinates(numerical=True),symbol_dict[self.parameters.symbol],self.params(language="tikz"))
+        return ""
     def latex_code(self,language=None,pspict=None,with_mark=False):
         l=[]
         if self.marque and with_mark:
@@ -2723,7 +2725,7 @@ class GraphOfASegment(GraphOfAnObject):
                     a.append("\pstLineAB[%s]{%s}{%s}"%(self.params(language="pstricks"),self.I.psName,self.F.psName))
                 if language=="tikz":
                     a=[]
-                    a.append("\draw [{2}] {0} -- {1};".format(self.I.coordinates(),self.F.coordinates(),self.params(language="tikz")))
+                    a.append("\draw [{2}] {0} -- {1};".format(self.I.coordinates(numerical=True),self.F.coordinates(numerical=True),self.params(language="tikz")))
         for v in self.arrow_list:
             a.append(v.latex_code(pspict,language=language))
         return "\n".join(a)
@@ -4853,9 +4855,9 @@ class HistogramBox(GraphOfAnObject):
         return rect
     def bounding_box(self,pspict=None):
         return self.rectangle.bounding_box(pspict)
-    def pstricks_code(self,pspict=None):
+    def latex_code(self,language=None,pspict=None):
         # The put_mark can only be done here (and not in self.rectangle()) because one needs the pspict.
-        return self.rectangle.pstricks_code(pspict)
+        return self.rectangle.pstricks_code(language=language,pspict=pspict)
 
 class GraphOfAnHistogram(GraphOfAnObject):
     """
@@ -4940,9 +4942,9 @@ class GraphOfAnHistogram(GraphOfAnObject):
         return bb
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict=pspict)
-    def pstricks_code(self,pspict=None):
+    def latex_code(self,language=None,pspict=None):
         a=["% Histogram"]
-        a.extend([x.pstricks_code(pspict) for x in self.box_list])
+        a.extend([x.latex_code(language=language,pspict=pspict) for x in self.box_list])
         return "\n".join(a)
 
 class GraphOfAMoustache(GraphOfAnObject):
@@ -4977,7 +4979,7 @@ class GraphOfAMoustache(GraphOfAnObject):
         bb.addY(self.delta_y-self.h/2)
         bb.addY(self.delta_y+self.h/2)
         return bb
-    def pstricks_code(self,pspict=None):
+    def latex_code(self,language=None,pspict=None):
         return ""
 
 class GraphOfABarDiagram(object):
@@ -5023,7 +5025,7 @@ class GraphOfABarDiagram(object):
         for P in self.numbering_marks(pspict):
             bb.append(P.mark,pspict)
         return bb
-    def pstricks_code(self,pspict):
+    def latex_code(self,language=None,pspict=None):
         return ""
 
 def check_too_large(obj,pspict=None):
@@ -5131,7 +5133,7 @@ class GraphOfASudokuGrid(object):
         return BoundingBox()
     def bounding_box(self,pspict):
         return BoundingBox()
-    def pstricks_code(self,pspict):
+    def latex_code(self,language=None,pspict=None):
         return ""
 
 class BoundingBox(object):
