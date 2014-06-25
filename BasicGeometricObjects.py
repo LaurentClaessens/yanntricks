@@ -1051,7 +1051,7 @@ class FillParameters(object):
     Represent the parameters of filling a surface.
     """
     def __init__(self):
-        self.color= None
+        self.color= "lightgray"
         self.style= "solid"
     def add_to_options(self,opt):
         """
