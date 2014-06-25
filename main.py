@@ -882,7 +882,7 @@ class pspicture(object):
         return self.separator_list.code()
     @lazy_attribute
     def contenu_tikz(self):
-        self.create_latex_code(language="tikz")
+        self.create_latex_code(language="tikz",pspict=self)
         add_latex_line_entete(self)
         self.add_latex_line("\\begin{{tikzpicture}}[xscale={0},yscale={1},inner sep=0pt,outer sep=0pt]".format(self.xunit,self.yunit),"BEGIN PSPICTURE")
         self.add_latex_line("\pgfmathdeclarefunction{radsin}{1}{\pgfmathparse{sin(deg(#1))}}","BEFORE PSPICTURE")
@@ -899,7 +899,7 @@ class pspicture(object):
     def visual_ysize(self):
         return numerical_approx(self.ysize*self.yunit)
 
-    def create_latex_code(self,language):
+    def create_latex_code(self,language=None,pspict=None):
         """
         Fix the bounding box and create the separator "PSTRICKS CODE".
 

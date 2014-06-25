@@ -219,7 +219,7 @@ class Axes(object):
             c.append(self.single_axeY.latex_code(language=language,pspict=pspict))
         return "\n".join(c)
 
-def _vector_latex_code(segment,language,pspict=None):
+def _vector_latex_code(segment,language=None,pspict=None):
     """
     Return the LaTeX's code of a Segment when is is seen as a vector.
     """
@@ -235,6 +235,7 @@ def _vector_latex_code(segment,language,pspict=None):
         P.parameters.symbol = "none"
         P.put_mark(segment.mark.dist,segment.mark.angle,segment.mark.text)
         a = a + P.latex_code(language,pspict)
+    print("FVDooIzJJRI",language)
     return a
 
 def Distance_sq(P,Q):
@@ -1644,6 +1645,7 @@ class GraphOfAPoint(GraphOfAnObject):
         symbol_dict["*"]="$\\bullet$"
         symbol_dict["|"]="$|$"
         symbol_dict["x"]="$x$"
+        symbol_dict["o"]="$o$"
         if self.parameters.symbol!="none":
             return "\draw [{2}]  {0} node {{{1}}};".format(self.coordinates(numerical=True),symbol_dict[self.parameters.symbol],self.params(language="tikz"))
         return ""
@@ -2723,11 +2725,12 @@ class GraphOfASegment(GraphOfAnObject):
             return self.bounding_box(pspict)
         else :
             return BoundingBox()
-    def latex_code(self,language,pspict=None):
+    def latex_code(self,language=None,pspict=None):
         """
         Return the LaTeX's code (pstricks or tikz) of a Segment when is is seen as a segment
         """
         if self.arrow_type=="vector":
+                print("JQMooOWuZDM",language)
                 return _vector_latex_code(self,language=language,pspict=pspict)
         if self.arrow_type=="segment":
             if self.wavy:
@@ -4816,7 +4819,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
                 x=var('x')
                 a.append("\draw[{0}] plot ({{{1}}},{{{2}}});".format(params,self.f1.tikz,self.f2.tikz))
         for v in self.record_arrows:
-            a.append(v.latex_code(pspict))
+            a.append(v.latex_code(language=language,pspict=pspict))
         return "\n".join(a)
 
 class GraphOfACircle3D(GraphOfAnObject):
