@@ -2178,7 +2178,6 @@ class GraphOfASegment(GraphOfAnObject):
         The wavelength is dx and the amplitude is dy.
         The first and the last points are self.I and self.F and are then *on* the segment. Thus the wave begins and ends on the segment.
         """
-        print("ACTooIzhZdd")
         normal = self.get_normal_vector().fix_size(dy)
         PI = self.get_regular_points(dx)
         PIs = [self.I]
@@ -4676,8 +4675,6 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         Vf2=phyFunction(self.f2(yunit*x))
         Vcurve=ParametricCurve(Vf1,Vf2)
 
-        print("UZXooOouYBe",xunit,yunit)
-
         fp = Vcurve.derivative()
         minDll = abs(Mll-mll)/1000
         ll = mll
@@ -4733,12 +4730,12 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         Return a list of points which do a wave around the parametric curve.
         """
         PAs = self.get_regular_parameter(mll,Mll,dl,xunit=xunit,yunit=yunit)
-        PTs = []
+        PTs = [self.get_point(mll)]
         for i in range(0,len(PAs)) :
             llam = float(PAs[i])
-            v=self.get_normal_vector(llam).fix_size(dy)
+            v=self.get_normal_vector(llam)
             vp=v.F-v.I
-            w=Vector(vp.x*yunit/xunit,vp.y*xunit/yunit)
+            w=Vector(vp.x*yunit/xunit,vp.y*xunit/yunit).visual_length(dy,xunit,yunit)
             PTs.append( self.get_point(llam)+w*(-1)**i )
         PTs.append(self.get_point(Mll))
         return PTs
