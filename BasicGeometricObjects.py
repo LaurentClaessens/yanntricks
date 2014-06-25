@@ -2178,6 +2178,7 @@ class GraphOfASegment(GraphOfAnObject):
         The wavelength is dx and the amplitude is dy.
         The first and the last points are self.I and self.F and are then *on* the segment. Thus the wave begins and ends on the segment.
         """
+        print("ACTooIzhZdd")
         normal = self.get_normal_vector().fix_size(dy)
         PI = self.get_regular_points(dx)
         PIs = [self.I]
@@ -3392,7 +3393,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         return a parametric curve with the same graph as `self`.
         """
         x=var('x')
-        curve = ParametricCurve(phyFunction(x),self)
+        curve = ParametricCurve(phyFunction(x),self,self.mx,self.Mx)
         return curve
     def inverse(self,y):
         """ returns a list of values x such that f(x)=y """
@@ -3530,21 +3531,36 @@ class GraphOfAphyFunction(GraphOfAnObject):
         Even if it is not clear from these expressions, these are almost the points (-1,0),(0,1), and (1,2).
 
         """
-        x=var('x')
-        f1 = phyFunction(x)
-        try :
-            f2 = self.f     # Here, self can be of type «GraphOfAphyFunction»
-        except AttributeError :
-            f2 = self
-        curve = ParametricCurve(f1,f2)
+
+        raise DeprecationWarning
+        # This deprecation warning is because the method get_wavy_points is now delegating the work to the parametric curve.
+        # Thus I bet nothing use this function anymore. June 25, 2014
+
+        # Use self.parametric_curve instead of that stuff since June 25, 2014
+        #x=var('x')
+        #f1 = phyFunction(x)
+        #try :
+        #    f2 = self.f     # Here, self can be of type «GraphOfAphyFunction»
+        #except AttributeError :
+        #    f2 = self
+        #curve = ParametricCurve(f1,f2)
+        
+
+        curve = self.parametric_curve()
         return curve.get_regular_points(mx,Mx,dx)
     def get_wavy_points(self,mx,Mx,dx,dy):
-        PIs = self.get_regular_points(mx,Mx,dx)
-        Ps = [self.get_point(mx)]
-        for i in range(0,len(PIs)) :
-            Ps.append( self.get_normal_point(PIs[i].x, ((-1)**i)*dy ) )
-        Ps.append(self.get_point(Mx))   
-        return Ps
+        print("SKBooMaOvCE")
+        curve=self.parametric_curve()
+        return curve.get_wavy_points(mx,Mx,dx,dy)
+
+        # No more in use since June 25, 2014
+        #PIs = self.get_regular_points(mx,Mx,dx)
+        #Ps = [self.get_point(mx)]
+        #for i in range(0,len(PIs)) :
+        #    Ps.append( self.get_normal_point(PIs[i].x, ((-1)**i)*dy ) )
+        #Ps.append(self.get_point(Mx))   
+        #return Ps
+
     def get_minmax_data(self,mx,Mx):
         """
         return numerical approximations of min and max of the function on the interval
@@ -3671,9 +3687,15 @@ class GraphOfAphyFunction(GraphOfAnObject):
             pspict.DrawGraphs( self.pieces  )
         elif self.wavy :          
             waviness = self.waviness
-            #TODO : we have to implement y_cut to InterpolationCurve
-            curve=InterpolationCurve( self.get_wavy_points(waviness.mx,waviness.Mx,waviness.dx,waviness.dy),context_object=self)
+            curve=self.parametric_curve()
+            curve.parameters=self.parameters
+            curve.wave(self.waviness.dx,self.waviness.dy)
             pspict.DrawGraph(curve)
+
+            #All the wave stuff on phyFunction is now using parametric curve.
+            #TODO : we have to implement y_cut to InterpolationCurve
+            #curve=InterpolationCurve( self.get_wavy_points(waviness.mx,waviness.Mx,waviness.dx,waviness.dy),context_object=self)
+            #pspict.DrawGraph(curve)
     def pstricks_code(self,pspict=None):
         raise DeprecationWarning   # June 24 2014
         if not self.wavy and not self.do_cut_y:
@@ -4630,7 +4652,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         """
         # TODO : create this function
         pass 
-    def get_regular_parameter(self,mll,Mll,dl,initial_point=False,final_point=False):
+    def get_regular_parameter(self,mll,Mll,dl,initial_point=False,final_point=False,xunit=1,yunit=1):
         """ 
         returns a list of values of the parameter such that the corresponding points are equally spaced by dl.
         Here, we compute the distance using the method arc_length.
@@ -4648,7 +4670,15 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 
         """
         prop_precision = float(dl)/100      # precision of the interval
-        fp = self.derivative()
+
+        x=var('x')
+        Vf1=phyFunction(self.f1(xunit*x))
+        Vf2=phyFunction(self.f2(yunit*x))
+        Vcurve=ParametricCurve(Vf1,Vf2)
+
+        print("UZXooOouYBe",xunit,yunit)
+
+        fp = Vcurve.derivative()
         minDll = abs(Mll-mll)/1000
         ll = mll
         PIs = []
@@ -4657,7 +4687,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         if final_point:
             PIs.append(Mll)
         while ll < Mll :
-            # Here if one remove numerical=True, we got a segfault in some cases
+            # Here if one removes numerical=True, we got a segfault in some cases
             v = sqrt( (fp.f1(ll,numerical=True))**2+(fp.f2(ll,numerical=True))**2 )
             if v == 0 :
                 Dll = minDll
@@ -4665,27 +4695,29 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             Dll = dl/v
             grand = Mll
             petit = ll
-            if abs(self.arc_length(ll,ll+Dll)) > dl :
+            if abs(Vcurve.arc_length(ll,ll+Dll)) > dl :
                 grand = ll+Dll
-                while abs(self.arc_length(ll,petit)) > dl :
+                while abs(Vcurve.arc_length(ll,petit)) > dl :
                     petit = (grand+petit)/2
             else :
                 petit = ll+Dll
-                while abs(self.arc_length(ll,grand)) < dl :
+                while abs(Vcurve.arc_length(ll,grand)) < dl :
                     grand = 2*grand - ll
             ell = (petit+grand)/2
-            while abs(self.arc_length( ll, ell )-dl) > prop_precision:
+            while abs(Vcurve.arc_length( ll, ell )-dl) > prop_precision:
                 if prop_precision == 0:
                     raise ValueError,"prop_precision is zero. Something sucks. You probably want to launch me in an infinite loop. dl=%s"%str(dl)
                 ell = (grand+petit)/2
-                if self.arc_length(ll,ell) > dl :
+                if Vcurve.arc_length(ll,ell) > dl :
                     grand = ell
                 else :
                     petit = ell
             ll = (petit+grand)/2
             if ll < Mll :
                 PIs.append( ll )
+
         return PIs
+
     def get_regular_points(self,mll,Mll,dl):
         """
         Return a list of points regularly spaced (with respect to the arc length) by dl. 
@@ -4700,12 +4732,13 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         """
         Return a list of points which do a wave around the parametric curve.
         """
-        PAs = self.get_regular_parameter(mll,Mll,dl)
+        PAs = self.get_regular_parameter(mll,Mll,dl,xunit=xunit,yunit=yunit)
         PTs = []
         for i in range(0,len(PAs)) :
             llam = float(PAs[i])
             v=self.get_normal_vector(llam).fix_size(dy)
-            w=Vector(v.x/xunit,v.y/yunit)
+            vp=v.F-v.I
+            w=Vector(vp.x*yunit/xunit,vp.y*xunit/yunit)
             PTs.append( self.get_point(llam)+w*(-1)**i )
         PTs.append(self.get_point(Mll))
         return PTs
