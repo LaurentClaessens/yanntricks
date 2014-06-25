@@ -3374,8 +3374,6 @@ class GraphOfAphyFunction(GraphOfAnObject):
         sage: print f.get_normal_vector(0)
         <vector I=<Point(0,0)> F=<Point(0,-1)>>
         """
-        #ca = self.derivative()(x) 
-        #return Point(-ca,1).normalize().origin(self.get_point(x))       
         x=var('x')
         F=ParametricCurve(x,self)
         return F.get_normal_vector(xx)
@@ -4532,7 +4530,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         values of the parameter instead of the list of points. This is what you need if you want to draw tangent vectors for example.
         """
         return [self.get_point(ll) for ll in self.get_regular_parameter(mll,Mll,dl)]
-    def get_wavy_points(self,mll,Mll,dl,dy):
+    def get_wavy_points(self,mll,Mll,dl,dy,xunit=1,yunit=1):
         """
         Return a list of points which do a wave around the parametric curve.
         """
@@ -4540,7 +4538,9 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         PTs = []
         for i in range(0,len(PAs)) :
             llam = float(PAs[i])
-            PTs.append( self.get_point(llam)+self.get_normal_vector(llam).fix_size(dy)*(-1)**i )
+            v=self.get_normal_vector(llam).fix_size(dy)
+            w=Vector(v.x/xunit,v.y/yunit)
+            PTs.append( self.get_point(llam)+w*(-1)**i )
         PTs.append(self.get_point(Mll))
         return PTs
     def rotate(self,theta):
