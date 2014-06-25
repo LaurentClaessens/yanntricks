@@ -2742,7 +2742,7 @@ class GraphOfASegment(GraphOfAnObject):
                     a=[]
                     a.append("\draw [{2}] {0} -- {1};".format(self.I.coordinates(numerical=True),self.F.coordinates(numerical=True),self.params(language="tikz")))
         for v in self.arrow_list:
-            a.append(v.latex_code(pspict,language=language))
+            a.append(v.latex_code(pspict=pspict,language=language))
         return "\n".join(a)
 
     def pstricks_code(self,pspict=None):
