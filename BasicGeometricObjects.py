@@ -830,28 +830,41 @@ class GraphOfACircle(GraphOfAnObject):
             G.add_option(self.params())
             # The two following lines are a pity. If I add some properties, I have to change by hand...
             G.parameters.style = self.parameters.style
-            G.parameters.color = self.parameters.color  # May,3,2012  : before it was ...=self.color
+            G.parameters.color = self.parameters.color 
             G.wave(waviness.dx,waviness.dy)
-            return G.latex_code()
+            return G.latex_code(language=language,pspict=pspict)
         else:
             angleI=degree(self.angleI,number=True,converting=False,keep_max=True)
             angleF=degree(self.angleF,number=True,converting=False,keep_max=True)
             if angleI == 0 and angleF == 360 :
-                PsA = Point(self.center.x-self.radius,self.center.y)        
-                a = PsA.create_PSpoint()
-                a = a + self.center.create_PSpoint()
-                a = a + "\pstCircleOA["+self.params()+"]{"+self.center.psName+"}{"+PsA.psName+"}"
-                return a
-                # Some remarks :
-                # Besoin d'un point sur le cercle pour le tracer avec \pstCircleOA,"")
-                # La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
-                #self.add_latex_line("\pscircle["+params+"]("+Cer.center.psName+"){"+str(Cer.radius)+"}")
+                if language=="pstricks":
+                    PsA = Point(self.center.x-self.radius,self.center.y)        
+                    a = PsA.create_PSpoint()
+                    a = a + self.center.create_PSpoint()
+                    a = a + "\pstCircleOA["+self.params()+"]{"+self.center.psName+"}{"+PsA.psName+"}"
+                    return a
+                    # Some remarks :
+                    # Besoin d'un point sur le cercle pour le tracer avec \pstCircleOA,"")
+                    # La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
+                    #self.add_latex_line("\pscircle["+params+"]("+Cer.center.psName+"){"+str(Cer.radius)+"}")
+                if language=="tikz":
+                    return "\draw [0] {1} circle {2}".format(self.params(language="tikz"),self.center.coordinates(numerical=True),self.radius)
             else :
-                PsA = self.get_point(angleI)
-                PsB = self.get_point(angleF)
-                a = PsA.create_PSpoint() + PsB.create_PSpoint() + self.center.create_PSpoint()
-                a = a+"\pstArcOAB[%s]{%s}{%s}{%s}"%(self.params(),self.center.psName,PsA.psName,PsB.psName)
-                return a
+                if language=="pstricks":
+                    PsA = self.get_point(angleI)
+                    PsB = self.get_point(angleF)
+                    a = PsA.create_PSpoint() + PsB.create_PSpoint() + self.center.create_PSpoint()
+                    a = a+"\pstArcOAB[%s]{%s}{%s}{%s}"%(self.params(),self.center.psName,PsA.psName,PsB.psName)
+                    return a
+                if language=="tikz":
+                    # From http://tex.stackexchange.com/questions/66216/draw-arc-in-tikz-when-center-of-circle-is-specified
+                    #c=self.center.coordinates(numerical=True).replace("(","([shift= {{ ({0}:{1})}}]".format(angleI,self.radius))
+                    #return "\draw [{0}] {1} arc ({2}:{3}:{4}) ".format( self.params(language="tikz"),c,angleI,angleF,self.radius )
+                    A = self.get_point(angleI)
+                    ai=numerical_approx(angleI)
+                    af=numerical_approx(angleF)
+                    ar=numerical_approx(self.radius)
+                    return "\draw [{0}] {1} arc ({2}:{3}:{4}); ".format( self.params(language="tikz"),A.coordinates(numerical=True),ai,af,ar)
 
 class GeometricRectangle(object):
     """
@@ -1628,7 +1641,9 @@ class GraphOfAPoint(GraphOfAnObject):
     def tikz_code(self,pspict=None):
         symbol_dict={}
         symbol_dict[None]="$\\bullet$"
+        symbol_dict["*"]="$\\bullet$"
         symbol_dict["|"]="$|$"
+        symbol_dict["x"]="$x$"
         if self.parameters.symbol!="none":
             return "\draw [{2}]  {0} node {{{1}}};".format(self.coordinates(numerical=True),symbol_dict[self.parameters.symbol],self.params(language="tikz"))
         return ""
@@ -3190,11 +3205,10 @@ class GraphOfAnAngle(GraphOfAnObject):
         return self.circle().bounding_box(pspict)
     def mark_point(self):
         return self.circle().get_point(self.mark_angle)
-    def pstricks_code(self,pspict=None):
+    def latex_code(self,language=None,pspict=None):
         circle=self.circle()
         circle.parameters=self.parameters
-        return circle.pstricks_code(pspict)
-
+        return circle.latex_code(language=language,pspict=pspict)
 
 def general_funtion_get_point(fun,x,advised=True):
         """
@@ -3627,10 +3641,10 @@ class GraphOfAphyFunction(GraphOfAnObject):
             Mx=k[1]
             f=self.graph(mx,Mx)
             self.pieces.append(f)
-    def params(self):
+    def params(self,language=None):
         self.conclude_params()
         self.add_option("plotpoints=%s"%str(self.plotpoints))
-        return self.options.code()
+        return self.options.code(language=language)
     def bounding_box(self,pspict=None):
         bb = BoundingBox()
         if self.do_cut_y:
@@ -4052,7 +4066,7 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         try:
             params=self.context_object.params(language="tikz")
         except AttributeError :
-            params=self.params()
+            params=self.params(language="tikz")
         l.append("\draw [{0}] plot [smooth,tension=1] coordinates {{".format(params))
         for p in self.points_list:
             l.append(p.coordinates(numerical=True))
@@ -4857,7 +4871,7 @@ class HistogramBox(GraphOfAnObject):
         return self.rectangle.bounding_box(pspict)
     def latex_code(self,language=None,pspict=None):
         # The put_mark can only be done here (and not in self.rectangle()) because one needs the pspict.
-        return self.rectangle.pstricks_code(language=language,pspict=pspict)
+        return self.rectangle.latex_code(language=language,pspict=pspict)
 
 class GraphOfAnHistogram(GraphOfAnObject):
     """
