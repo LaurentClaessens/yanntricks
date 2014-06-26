@@ -848,7 +848,17 @@ class GraphOfACircle(GraphOfAnObject):
                     # La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
                     #self.add_latex_line("\pscircle["+params+"]("+Cer.center.psName+"){"+str(Cer.radius)+"}")
                 if language=="tikz":
-                    return "\draw [{0}] {1} circle ({2});".format(self.params(language="tikz"),self.center.coordinates(numerical=True),self.radius)
+                    rx=self.radius
+                    ry=rx
+                    if self.parameters.visual:
+                        rx=numerical_approx(self.radius/pspict.xunit)
+                        ry=numerical_approx(self.radius/pspict.yunit)
+                    code="""
+                    \coordinate (P) at (${0} + (0:{1} and {2})$);
+                    \draw[{3}] (${0} + (0:{1} and {2})$(P) arc (0:360:{1} and {2});
+                    """.format(self.center.coordinates(numerical=True),rx,ry,self.params(language="tikz"))
+                    return code
+
             else :
                 if language=="pstricks":
                     PsA = self.get_point(angleI)
@@ -860,11 +870,21 @@ class GraphOfACircle(GraphOfAnObject):
                     # From http://tex.stackexchange.com/questions/66216/draw-arc-in-tikz-when-center-of-circle-is-specified
                     #c=self.center.coordinates(numerical=True).replace("(","([shift= {{ ({0}:{1})}}]".format(angleI,self.radius))
                     #return "\draw [{0}] {1} arc ({2}:{3}:{4}) ".format( self.params(language="tikz"),c,angleI,angleF,self.radius )
-                    A = self.get_point(angleI)
-                    ai=numerical_approx(angleI)
-                    af=numerical_approx(angleF)
-                    ar=numerical_approx(self.radius)
-                    return "\draw [{0}] {1} arc ({2}:{3}:{4}); ".format( self.params(language="tikz"),A.coordinates(numerical=True),ai,af,ar)
+                    if not self.parameters.visual :
+                        A = self.get_point(angleI)
+                        ai=numerical_approx(angleI)
+                        af=numerical_approx(angleF)
+                        ar=numerical_approx(self.radius)
+                        return "\draw [{0}] {1} arc ({2}:{3}:{4}); ".format( self.params(language="tikz"),A.coordinates(numerical=True),ai,af,ar)
+                    if self.parameters.visual:
+                        rx=numerical_approx(self.radius/pspict.xunit)
+                        ry=numerical_approx(self.radius/pspict.yunit)
+                        code="""
+                        \coordinate (P) at (${0} + ({4}:{1} and {2})$);
+                        \draw[{3}] (${0} + (0:{1} and {2})$(P) arc ({4}:{5}:{1} and {2});
+                        """.format(self.center.coordinates(),rx,ry,self.params(language="tikz"),angleI,self.angleF)
+                        return code
+
 
 # Suppressed on June 26, 2014
 #class GeometricRectangle(object):
@@ -1119,6 +1139,7 @@ class Parameters(object):
         self.other_options={}
         self._filled=False
         self._hatched=False
+        self.visual=None        # If True, it means that one wants the object to be non deformed by xunit,yunit
     def filled(self):
         self._filled=True
     def hatched(self):
