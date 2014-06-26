@@ -688,7 +688,6 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,reverse1=False,re
     .. image:: Picture_FIGLabelFigBetweenParametricPICTBetweenParametric-for_eps.png
 
     """
-
     curve=[curve1,curve2]
     mx=[None,None]
     Mx=[None,None]
@@ -747,11 +746,9 @@ def SurfaceUnderFunction(f,mx,Mx):
         line2=f.parametric_curve(mx,Mx)
         surf = BasicGeometricObjects.SurfaceBetweenLines(line1,line2)
         surf.add_option("fillstyle=vlines,linestyle=none")  
-        print "RWALKl SurfaceUnderFunction"
         return surf
     f2=0
-    #print "THMpQE"
-    #raise   # ça devrait passer par ici            I do not remember why I added that raise (June, 2, 2013)
+    return SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
     return BasicGeometricObjects.SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
 
 def Polygon(*args):
@@ -856,7 +853,7 @@ def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
     if "mx" in dir(f2) and mx==None:
         mx2=f2.mx
         Mx2=f2.Mx
-    # The following is a precaution because it happens that
+    # The following is a precaution because it can happen that
     # f1 has a "mx" attribute which is set to None while
     # a mx is given here.
     if mx1 is None:

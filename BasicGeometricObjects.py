@@ -235,7 +235,6 @@ def _vector_latex_code(segment,language=None,pspict=None):
         P.parameters.symbol = "none"
         P.put_mark(segment.mark.dist,segment.mark.angle,segment.mark.text)
         a = a + P.latex_code(language,pspict)
-    print("FVDooIzJJRI",language)
     return a
 
 def Distance_sq(P,Q):
@@ -1905,14 +1904,14 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
         return bb
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
-    def pstricks_code(self,pspict=None):
-        r"""
+    def latex_code(self,language=None,pspict=None):
+        """
         Return the pstrick code of the implicit curve.
         """
         code=[]
         for path in self.paths:
             curve=InterpolationCurve(path,context_object=self)
-            code.append(curve.pstricks_code(pspict))
+            code.append(curve.latex_code(language=language,pspict=pspict))
         return "\n".join(code)
 
 class GraphOfASegment(GraphOfAnObject):
@@ -2730,7 +2729,6 @@ class GraphOfASegment(GraphOfAnObject):
         Return the LaTeX's code (pstricks or tikz) of a Segment when is is seen as a segment
         """
         if self.arrow_type=="vector":
-                print("JQMooOWuZDM",language)
                 return _vector_latex_code(self,language=language,pspict=pspict)
         if self.arrow_type=="segment":
             if self.wavy:
@@ -3953,7 +3951,7 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         return bb
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
-    def pstricks_code(self,pspict=None):
+    def latex_code(self,language=None,pspict=None):
         a=[]
        
         c1=self.curve1.graph(self.mx1,self.Mx1)
@@ -3973,12 +3971,12 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         custom=CustomSurface(c1,reFsegment,c2,reIsegment)
         self.parameters.add_to(custom.parameters)     # This line is essentially dedicated to the colors
         custom.options=self.options
-        a.append(custom.pstricks_code())
+        a.append(custom.latex_code(language=language,pspict=pspict))
 
-        a.append(self.curve1.pstricks_code(pspict))
-        a.append(self.curve2.pstricks_code(pspict))
-        a.append(reIsegment.pstricks_code(pspict))
-        a.append(reFsegment.pstricks_code(pspict))
+        a.append(self.curve1.latex_code(language=language,pspict=pspict))
+        a.append(self.curve2.latex_code(language=language,pspict=pspict))
+        a.append(reIsegment.latex_code(language=language,pspict=pspict))
+        a.append(reFsegment.latex_code(language=language,pspict=pspict))
         return "\n".join(a)
 
 class GraphOfAnInterpolationCurve(GraphOfAnObject):
@@ -4211,7 +4209,7 @@ class GraphOfACustomSurface(GraphOfAnObject):
             a.append("\\fill [{}] ".format(options)+code)
 
         for obj in self.graphList :
-            a.append(obj.tikz_code(pspict=pspict))
+            a.append(obj.latex_code(language="tikz",pspict=pspict))
         return "\n".join(a)
     def latex_code(self,language=None,pspict=None):
         if language=="pstricks":
