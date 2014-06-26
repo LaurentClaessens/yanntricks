@@ -877,11 +877,13 @@ class GraphOfACircle(GraphOfAnObject):
                         ar=numerical_approx(self.radius)
                         return "\draw [{0}] {1} arc ({2}:{3}:{4}); ".format( self.params(language="tikz"),A.coordinates(numerical=True),ai,af,ar)
                     if self.parameters.visual:
+                        # To draw part of an ellips, see
+                        #http://tex.stackexchange.com/questions/123158/tikz-using-the-ellipse-command-with-a-start-and-end-angle-instead-of-an-arc
                         rx=numerical_approx(self.radius/pspict.xunit)
                         ry=numerical_approx(self.radius/pspict.yunit)
                         code="""
                         \coordinate (P) at (${0} + ({4}:{1} and {2})$);
-                        \draw[{3}] (${0} + (0:{1} and {2})$(P) arc ({4}:{5}:{1} and {2});
+                        \draw[{3}] (${0} + ({4}:{1} and {2})$(P) arc ({4}:{5}:{1} and {2});
                         """.format(self.center.coordinates(),rx,ry,self.params(language="tikz"),angleI,self.angleF)
                         return code
 
