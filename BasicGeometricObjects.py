@@ -848,7 +848,7 @@ class GraphOfACircle(GraphOfAnObject):
                     # La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
                     #self.add_latex_line("\pscircle["+params+"]("+Cer.center.psName+"){"+str(Cer.radius)+"}")
                 if language=="tikz":
-                    return "\draw [0] {1} circle {2}".format(self.params(language="tikz"),self.center.coordinates(numerical=True),self.radius)
+                    return "\draw [{0}] {1} circle ({2});".format(self.params(language="tikz"),self.center.coordinates(numerical=True),self.radius)
             else :
                 if language=="pstricks":
                     PsA = self.get_point(angleI)
@@ -4818,7 +4818,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             self.add_option("plotpoints=%s"%str(self.plotpoints))
             self.add_option("plotstyle=%s"%str(self.plotstyle))
         if language=="tikz":
-            self.add_option("sample="+self.plotpoints)
+            self.add_option("sample="+str(self.plotpoints))
             self.add_option("plotstyle=%s"%str(self.plotstyle))
         return self.options.code(language=language)
     def reverse(self):
@@ -4920,7 +4920,7 @@ class GraphOfACircle3D(GraphOfAnObject):
         return self.curve2d.math_bounding_box(pspict)
     def action_on_pspict(self,pspict):
         pspict.DrawGraphs(self.curve2d)
-    def pstricks_code(self,pspict):
+    def latex_code(self,pspict):
         return ""
 class HistogramBox(GraphOfAnObject):
     """
