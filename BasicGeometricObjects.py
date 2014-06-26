@@ -340,10 +340,10 @@ class Options(object):
             return "".join(a)
         if language=="tikz":
             a=[]
-            if "linecolor" in self.DicoOptions :
-                a.append(self.DicoOptions["linecolor"])
-            if "linestyle" in self.DicoOptions :
-                a.append(self.DicoOptions["linestyle"])
+            for at in ["linecolor","linestyle"]:
+                k=self.DicoOptions[at]
+                if k and k!="none" :
+                    a.append(k)
             return ",".join(a)
     def __getitem__(self,opt):
         return self.DicoOptions[opt]
@@ -827,7 +827,7 @@ class GraphOfACircle(GraphOfAnObject):
                 alphaF=2*pi
             curve = self.parametric_curve()
             G = ParametricCurve(curve,alphaI,alphaF)
-            G.add_option(self.params())
+            G.add_option(self.params(language=language))
             # The two following lines are a pity. If I add some properties, I have to change by hand...
             G.parameters.style = self.parameters.style
             G.parameters.color = self.parameters.color 
@@ -866,10 +866,12 @@ class GraphOfACircle(GraphOfAnObject):
                     ar=numerical_approx(self.radius)
                     return "\draw [{0}] {1} arc ({2}:{3}:{4}); ".format( self.params(language="tikz"),A.coordinates(numerical=True),ai,af,ar)
 
-class GeometricRectangle(object):
-    """
-    The four points of the square are designated by NW,NE,SW and SE.
-    """
+# Suppressed on June 26, 2014
+#class GeometricRectangle(object):
+#    """
+#    The four points of the square are designated by NW,NE,SW and SE.
+#    """
+
 def OptionsStyleLigne():
     return ["linecolor","linestyle"]
 
@@ -1645,6 +1647,7 @@ class GraphOfAPoint(GraphOfAnObject):
         symbol_dict["|"]="$|$"
         symbol_dict["x"]="$x$"
         symbol_dict["o"]="$o$"
+        symbol_dict["diamond"]="$\diamondsuit$"
         if self.parameters.symbol!="none":
             return "\draw [{2}]  {0} node {{{1}}};".format(self.coordinates(numerical=True),symbol_dict[self.parameters.symbol],self.params(language="tikz"))
         return ""
@@ -3062,14 +3065,15 @@ class GraphOfAVectorField(GraphOfAnObject,GeometricVectorField):
         for v in self.draw_vectors:
             bb.append(v,pspict)
         return bb
-    def pstricks_code(self,pspict=None):
+    def latex_code(self,language=None,pspict=None):
         code=[]
         for v in self.draw_vectors:
             v.parameters=self.parameters
-            code.append(v.pstricks_code(pspict))
+            code.append(v.latex_code(language=language,pspict=pspict))
         return "\n".join(code)
 
-class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
+# GraphOfARectangle once inherited from GeometricRectangle):   (June 26, 2014)
+class GraphOfARectangle(GraphOfAnObject):
     """
     The parameters of the four lines are by default the same, but they can be adapted separately.
 
@@ -3098,12 +3102,14 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
         for s in self.segments:
             s.parameters=None
 
+    def polygon(self):
+        polygon= Polygon(self.NW,self.NE,self.SE,self.SW)
+        polygon.parameters=self.parameters
+        return polygon
     def first_diagonal(self):
         return Segment(self.NW,self.SE)
-
     def second_diagonal(self):
         return Segment(self.SW,self.NE)
-
     def center(self):
         return self.first_diagonal().center()
     def default_associated_graph_class(self):
@@ -3130,19 +3136,28 @@ class GraphOfARectangle(GraphOfAnObject,GeometricRectangle):
         We are drawing the psframe AND the segments.
         The aim is to be able to use the frame for filling, being still able to customise separately the edges.
         """
-        for s in self.segments:
-            if s.parameters==None:
-                s.parameters=self.parameters
-        a=[]
-        cNE=self.rectangle.NE.coordinates(numerical=True)
-        cSW=self.rectangle.SW.coordinates(numerical=True)
-        if language=="pstricks":
-            a.append("\psframe["+self.params(language="pstricks")+"]"+cSW+cNE)
-        if language=="tikz":
-            a.append("\draw [{0}] {1} rectangle {2}; ".format(self.params(language="tikz"),cSW,cNE))
-        for s in self.segments :
-            a.append(s.latex_code(language=language,pspict=pspict))
-        return "\n".join(a)
+        return self.polygon().latex_code(language=language,pspict=pspict)
+
+        # Drawing of rectangle is now completely passed to Polygon.
+        #    June 26, 2014
+        #for s in self.segments:
+        #    if s.parameters==None:
+        #        s.parameters=self.parameters
+        #a=[]
+        #cNE=self.rectangle.NE.coordinates(numerical=True)
+        #cSW=self.rectangle.SW.coordinates(numerical=True)
+        #if language=="pstricks":
+        #    a.append("\psframe["+self.params(language="pstricks")+"]"+cSW+cNE)
+        #if language=="tikz":
+        #    k=self.params(language="tikz")
+        #    if "none" in k:
+        #        print(self)
+        #        print(self.parameters)
+        #        raise TypeError
+        #    a.append("\draw [{0}] {1} rectangle {2}; ".format(self.params(language="tikz"),cSW,cNE))
+        #for s in self.segments :
+        #    a.append(s.latex_code(language=language,pspict=pspict))
+        #return "\n".join(a)
 
 class GraphOfAnAngle(GraphOfAnObject):
     """
@@ -3270,8 +3285,8 @@ class NonAnalyticParametricCurve(GraphOfAnObject):
         return self.curve().math_bounding_box(pspict)
     def bounding_box(self,pspict=None):
         return self.curve().bounding_box(pspict)
-    def pstricks_code(self,pspict=None):
-        return self.curve().pstricks_code(pspict)
+    def latex_code(self,language=None,pspict=None):
+        return self.curve().latex_code(language=language,pspict=pspict)
     def __call__(self,x):
         return self.get_point(x)
 
@@ -3332,8 +3347,8 @@ class NonAnalyticFunction(GraphOfAnObject):
         return BoundingBox(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax)
     def bounding_box(self,pspict=None):
         return self.math_bounding_box(pspict)
-    def pstricks_code(self,pspict=None):
-        return self.curve(self.drawpoints).pstricks_code(pspict)
+    def latex_code(self,language=None,pspict=None):
+        return self.curve(self.drawpoints).latex_code(language=language,pspict=pspict)
     def __call__(self,x):
         return self.fun(x)
 
@@ -3531,10 +3546,6 @@ class GraphOfAphyFunction(GraphOfAnObject):
         Even if it is not clear from these expressions, these are almost the points (-1,0),(0,1), and (1,2).
 
         """
-
-        raise DeprecationWarning
-        # This deprecation warning is because the method get_wavy_points is now delegating the work to the parametric curve.
-        # Thus I bet nothing use this function anymore. June 25, 2014
 
         # Use self.parametric_curve instead of that stuff since June 25, 2014
         #x=var('x')
@@ -3880,29 +3891,28 @@ class SurfaceBetweenLines(GraphOfAnObject):
         return bb
     def math_bounding_box(self,pspict):
         return self.bounding_box(pspict)
-    def pstricks_code(self,pspict):
+    def latex_code(self,language=None,pspict=None):
         a=[]
        
         c1=self.curve1
         c2=self.curve2.reverse()
 
-        print "gKBgoK dans le pstricks_code"
         custom=CustomSurface(c1,self.Fsegment,c2,self.Isegment)
         self.parameters.add_to(custom.parameters)     # This curve is essentially dedicated to the colors
         custom.options=self.options
         
         a.append("%--- begin of Surface between lines ---")
         a.append("% Custom surface")
-        a.append(custom.pstricks_code())
+        a.append(custom.latex_code(language=language,pspict=pspict))
 
         a.append("% Curve 1")
-        a.append(self.curve1.pstricks_code(pspict))
+        a.append(self.curve1.latex_code(language=language,pspict=pspict))
         a.append("% Curve 2")
-        a.append(self.curve2.pstricks_code(pspict))
+        a.append(self.curve2.latex_code(language=language,pspict=pspict))
         a.append("% Isegment")
-        a.append(self.Isegment.pstricks_code(pspict))
+        a.append(self.Isegment.latex_code(language=language,pspict=pspict))
         a.append("% Fsegment")
-        a.append(self.Fsegment.pstricks_code(pspict))
+        a.append(self.Fsegment.latex_code(language=language,pspict=pspict))
         a.append("%--- end of Surface between lines ---")
         return "\n".join(a)
 
@@ -3965,8 +3975,10 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         if c2.I.x < c2.F.x:
             c2=c2.reverse()
 
-        reFsegment=Segment(c1.F,c2.I)
         reIsegment=Segment(c2.F,c1.I)
+        reFsegment=Segment(c1.F,c2.I)
+        reIsegment.parameters=self.Isegment.parameters
+        reFsegment.parameters=self.Fsegment.parameters
 
         custom=CustomSurface(c1,reFsegment,c2,reIsegment)
         self.parameters.add_to(custom.parameters)     # This line is essentially dedicated to the colors
@@ -4110,6 +4122,28 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         """
         return "<InterpolationCurve with points %s>"%(str([str(P) for P in self.points_list]))
 
+def draw_to_fill(text):
+    #"""
+    #The tikz code of objects are of the form
+    # \draw [...] something (...) ;
+    #Here we have to convert that into
+    #  something [...] (...)
+    #ex :
+    #\draw[domain=2:3] plot ( {\x},{\x} );
+    #     -->
+    # plot [domain=2:3] ( {\x},{\x} )
+    #"""
+    t1=text.replace("\draw","").replace(";","")
+    if "[" in t1:
+        a=t1.find("[")
+        b=t1.rfind("]")+1
+        bracket=t1[a:b]
+    t2=t1.replace(bracket,"")
+    t3=t2.strip()
+    # In fact, I do not know Tikz enough to guess what can happen. In my case, only "plot" is used.
+    t4=t3.replace("plot","plot "+bracket)
+    return t4
+
 class GraphOfACustomSurface(GraphOfAnObject):
     """
     INPUT:
@@ -4163,16 +4197,31 @@ class GraphOfACustomSurface(GraphOfAnObject):
 
         Then we plot, separately, the lines forming the border. Thus we can have different colors and line style for the different edges.
         """
+        # The color attribution priority is the following.
+        # if self.parameters.color is given, then this will be the color
+        # if an hatch or a fill color is given and no self.parameters.color, then this will be used
         a=[]
+        color=None
         if self.parameters.color :
-            self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
+            if self.parameters._hatched==False:     # By default it will be filled if one give a color
+                self.parameters._filled=True
+        if self.parameters._filled and self.parameters.fill.color:
+            color=self.parameters.fill.color
+        if self.parameters._hatched and self.parameters.hatch.color:
+            color=self.parameters.hatch.color
+        if self.parameters.color:
+            color=self.parameters.color
         if self.parameters._filled or self.parameters._hatched :
             l=[]
             for obj in self.graphList :
-                if isinstance(obj,GraphOfASegment):
-                    l.append( obj.I.coordinates(numerical=True)+" -- "+obj.F.coordinates(numerical=True) )
-                else :
-                    l.append(obj.latex_code.replace(";",""))
+
+                obj_code=obj.latex_code(language="tikz",pspict=pspict)
+                l.append( draw_to_fill(obj_code) )
+
+                #if isinstance(obj,GraphOfASegment):
+                #    l.append( obj.I.coordinates(numerical=True)+" -- "+obj.F.coordinates(numerical=True) )
+                #else :
+                #    l.append(obj.latex_code(language="tikz",pspict=pspict).replace(";",""))
             l.append(" cycle;")
             code=" -- ".join(l)
             if self.parameters._hatched :
@@ -4202,14 +4251,15 @@ class GraphOfACustomSurface(GraphOfAnObject):
    }
 """
                 a.append(def_hatching)
-                options="color="+self.parameters.hatch.color
+                options="color="+color
                 options=options+",  pattern=custom north west lines,hatchspread=10pt,hatchthickness=1pt "
             if self.parameters._filled:
-                options="color="+self.parameters.fill.color
+                options="color="+color
             a.append("\\fill [{}] ".format(options)+code)
 
-        for obj in self.graphList :
-            a.append(obj.latex_code(language="tikz",pspict=pspict))
+        #for obj in self.graphList :
+        #    a.append(obj.latex_code(language="tikz",pspict=pspict))
+        #a.append(";")
         return "\n".join(a)
     def latex_code(self,language=None,pspict=None):
         if language=="pstricks":
