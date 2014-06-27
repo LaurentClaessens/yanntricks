@@ -2823,15 +2823,15 @@ class GraphOfAMeasureLength(GraphOfASegment):
         return bb
     def mark_point(self):
         return self.mseg.center()
-    def pstricks_code(self,pspict=None):
+    def latex_code(self,language=None,pspict=None):
         a=[]
         C=self.mseg.center()
         vI=AffineVector(C,self.mI)
         vF=AffineVector(C,self.mF)
         vI.parameters=self.parameters
         vF.parameters=self.parameters
-        a.append(vI.pstricks_code())
-        a.append(vF.pstricks_code())
+        a.append(vI.latex_code(language=language,pspict=pspict))
+        a.append(vF.latex_code(language=language,pspict=pspict))
         #if self.marque :
         #    a.append(self.mark.pstricks_code(pspict))
         return "\n".join(a)
@@ -4259,9 +4259,12 @@ class GraphOfACustomSurface(GraphOfAnObject):
         # if an hatch or a fill color is given and no self.parameters.color, then this will be used
         a=[]
         color=None
-        if self.parameters.color :
-            if self.parameters._hatched==False:     # By default it will be filled if one give a color
-                self.parameters._filled=True
+
+        # It cannot be filled by default when a color is given because Rectangles and Polygon drop here
+        #if self.parameters.color :
+        #    if self.parameters._hatched==False:     # By default it will be filled if one give a color
+        #        self.parameters._filled=True
+
         if self.parameters._filled and self.parameters.fill.color:
             color=self.parameters.fill.color
         if self.parameters._hatched and self.parameters.hatch.color:
@@ -4308,6 +4311,8 @@ class GraphOfACustomSurface(GraphOfAnObject):
    }
 """
                 a.append(def_hatching)
+                if color==None:
+                    color="lightgray"
                 options="color="+color
                 options=options+",  pattern=custom north west lines,hatchspread=10pt,hatchthickness=1pt "
             if self.parameters._filled:
@@ -4919,13 +4924,22 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         else:
             initial = numerical_approx(self.llamI)      # Avoid the string "pi" in the latex code.
             final = numerical_approx(self.llamF)
-            if language=="pstricks":
-                a.append("\parametricplot[%s]{%s}{%s}{%s}" %(self.params(),str(initial),str(final),self.curve.pstricks()))
-            if language=="tikz":
-                params=self.params(language="tikz")
-                params=params+",smooth,domain={0}:{1}".format(str(initial),str(final))
-                x=var('x')
-                a.append("\draw[{0}] plot ({{{1}}},{{{2}}});".format(params,self.f1.tikz,self.f2.tikz))
+            params=self.params(language="tikz")
+            plotpoints=self.parameters.plotpoints
+            if plotpoints==None :
+                plotpoints=100
+            import numpy
+            Llam=numpy.linspace(initial,final,self.parameters.plotpoints)
+            points_list=[ self.get_point(x) for x in Llam ]
+            curve=InterpolationCurve(points_list)
+            curve.parameters=self.parameters
+            return curve.latex_code(language=language,pspict=pspict)
+                #Everything is InterpolationCurve. June 27, 2014
+                #params=params+",smooth,domain={0}:{1}".format(str(initial),str(final))
+                #x=var('x')
+                #a.append("\draw[{0}] plot ({{{1}}},{{{2}}});".format(params,self.f1.tikz,self.f2.tikz))
+                    #if language=="pstricks":
+                    #    a.append("\parametricplot[%s]{%s}{%s}{%s}" %(self.params(),str(initial),str(final),self.curve.pstricks()))
         for v in self.record_arrows:
             a.append(v.latex_code(language=language,pspict=pspict))
         return "\n".join(a)

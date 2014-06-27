@@ -514,7 +514,8 @@ def HermiteInterpolation(points_list):
     for j in range(0,n):
         parenthese=1-(x-xx[j])*Q[j].diff(x)(xx[j])/Q[j](xx[j])
         P[j]=(Q[j](x)/Q[j](xx[j]))*(    parenthese*y[j]+(x-xx[j])*d[j]      )
-    return phyFunction(sum(P.values()))
+    f=sum(P.values())
+    return phyFunction(f.expand())
 
 def InterpolationCurve(points_list,context_object=None):
     """
