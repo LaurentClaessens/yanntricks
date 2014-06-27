@@ -4170,6 +4170,17 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         """
         return "<InterpolationCurve with points %s>"%(str([str(P) for P in self.points_list]))
 
+def first_bracket(text):
+    """
+    return the first bracket in the string 'text'  
+    """
+    if "[" not in text:
+        return ""
+    a=text.find("[")
+    b=text[a:].find("]")+1+a
+    bracket=text[a:b]
+    return bracket
+
 def draw_to_fill(text):
     #"""
     #The tikz code of objects are of the form
@@ -4180,17 +4191,19 @@ def draw_to_fill(text):
     #\draw[domain=2:3] plot ( {\x},{\x} );
     #     -->
     # plot [domain=2:3] ( {\x},{\x} )
-    #"""
+
+    # There are also interpolations curves whose come like that :
+    #   \draw [...] plot [smooth,tension=1] coordinates {(x1,y2)(x2,y2)} 
+
     t1=text.replace("\draw","").replace(";","")
-    if "[" in t1:
-        a=t1.find("[")
-        b=t1.rfind("]")+1
-        bracket=t1[a:b]
+    bracket=first_bracket(t1)
     t2=t1.replace(bracket,"")
     t3=t2.strip()
-    # In fact, I do not know Tikz enough to guess what can happen. In my case, only "plot" is used.
-    t4=t3.replace("plot","plot "+bracket)
-    return t4
+    if "coordinates" in t3 :
+        return t3
+    else :
+        answer=t3.replace("plot","plot "+bracket)
+    return answer
 
 class GraphOfACustomSurface(GraphOfAnObject):
     """
