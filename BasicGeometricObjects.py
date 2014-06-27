@@ -3725,7 +3725,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
     #def params(self,language=None):
     #    self.conclude_params()
     #    self.add_option("plotpoints=%s"%str(self.parameters.plotpoints))
-        return self.options.code(language=language)
+        return self.options.code()
     def bounding_box(self,pspict=None):
         bb = BoundingBox()
         if self.do_cut_y:
@@ -4156,7 +4156,6 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         #    params=self.context_object.params(language="tikz")
         #except AttributeError :
         params=self.params(language="tikz")
-        print("VDGooFauEsX",self.parameters.color)
         l.append("\draw [{0}] plot [smooth,tension=1] coordinates {{".format(params))
         for p in self.points_list:
             l.append(p.coordinates(numerical=True))
@@ -4935,7 +4934,6 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             waviness = self.waviness
             curve=InterpolationCurve(self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy,xunit=pspict.xunit,yunit=pspict.yunit),context_object=self)
             curve.parameters=self.parameters.copy()
-            print("FZPooShIRUM",curve.parameters.color)
             a.append(curve.latex_code(language=language,pspict=pspict))
         else:
             initial = numerical_approx(self.llamI)      # Avoid the string "pi" in the latex code.
