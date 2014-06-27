@@ -1816,7 +1816,6 @@ class GeometricImplicitCurve(object):
 
         """
         gr = GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
-        gr.parameters=self.parameters
         return gr
     def __str__(self):
         """
@@ -2858,13 +2857,13 @@ class GraphOfAText(GraphOfAnObject):
         return self.mark.math_bounding_box(pspict)
     def bounding_box(self,pspict=None):
         return self.mark.bounding_box(pspict)
-    def pstricks_code(self,pspict):
+    def latex_code(self,language=None,pspict=None):
         a=[]
         rect=Rectangle(self.mark.bounding_box(pspict))
         rect.parameters=self.rectangle.parameters
         if self.hide:
-            a.append(rect.pstricks_code(pspict))
-        a.append(self.mark.pstricks_code(pspict))
+            a.append(rect.latex_code(language=language,pspict=pspict))
+        a.append(self.mark.latex_code(language=language,pspict=pspict))
         return "\n".join(a)
 
 class GeometricVectorField(object):
@@ -4025,13 +4024,10 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         reFsegment.parameters=self.Fsegment.parameters
 
         custom=CustomSurface(c1,reFsegment,c2,reIsegment)
-        print("PJAooSjXPlD",self.parameters._hatched,self.parameters._filled,self.parameters.color,self.parameters.hatch.color)
         #self.parameters.add_to(custom.parameters)     # This line is essentially dedicated to the colors
         #custom.options=self.options
         custom.parameters=self.parameters
-        print("DVNooMNENpx",custom.parameters._hatched,custom.parameters._filled,custom.parameters.color)
         a.append(custom.latex_code(language=language,pspict=pspict))
-        print("ATXooIwGQBo",a[-1])
 
         a.append(self.curve1.latex_code(language=language,pspict=pspict))
         a.append(self.curve2.latex_code(language=language,pspict=pspict))
