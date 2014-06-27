@@ -761,7 +761,7 @@ class GraphOfACircle(GraphOfAnObject):
         Return a graph of the circle between the two angles given in degree
         """
         C = GraphOfACircle(self.center,self.radius,angleI,angleF)
-        C.parameters=self.parameters
+        C.parameters=self.parameters.copy()
         return C
     def __str__(self):
         return "<Circle, center=%s, radius=%s>"%(self.center.__str__(),str(self.radius))
@@ -838,10 +838,11 @@ class GraphOfACircle(GraphOfAnObject):
                 alphaF=2*pi
             curve = self.parametric_curve()
             G = ParametricCurve(curve,alphaI,alphaF)
-            G.add_option(self.params(language=language))
+            #G.add_option(self.params(language=language))
             # The two following lines are a pity. If I add some properties, I have to change by hand...
-            G.parameters.style = self.parameters.style
-            G.parameters.color = self.parameters.color 
+            #G.parameters.style = self.parameters.style
+            #G.parameters.color = self.parameters.color 
+            G.parameters=self.parameters.copy()
             G.wave(waviness.dx,waviness.dy)
             return G.latex_code(language=language,pspict=pspict)
         else:
@@ -1146,14 +1147,26 @@ class Parameters(object):
         self.color = None           # I take into account in SurfaceBetweenParametricCurves that the default values are None
         self.symbol = None
         self.style = None
+        self.plotpoints=None
         self.fill=FillParameters()
         self.hatch=HatchParameters()
-        self.interesting_attributes=["color","symbol","style","plotpoints"]
         self.other_options={}
         self._filled=False
         self._hatched=False
         self.visual=None        # If True, it means that one wants the object to be non deformed by xunit,yunit
-        self.plotpoints=None
+        self.interesting_attributes=["color","symbol","style","plotpoints"]
+    def copy(self):
+        cop=Parameters()
+        cop.visual=self.visual
+        cop._hatched=self._hatched
+        cop._filled=self._filled
+        cop.hatch=self.hatch
+        cop.fill=self.fill
+        cop.plotpoints=self.plotpoints
+        cop.style=self.style
+        cop.symbol=self.symbol
+        cop.color=self.color
+        return cop
     def filled(self):
         self._filled=True
     def hatched(self):
@@ -2636,7 +2649,7 @@ class GraphOfASegment(GraphOfAnObject):
             C = GraphOfASegment(self.I,self.F)
         else :
             C = GraphOfASegment(self.get_point(mx),self.get_point(Mx))
-        C.parameters=self.parameters
+        C.parameters=self.parameters.copy()
         return C
     def default_associated_graph_class(self):
         """Return the class which is the Graph associated type"""
@@ -2828,8 +2841,8 @@ class GraphOfAMeasureLength(GraphOfASegment):
         C=self.mseg.center()
         vI=AffineVector(C,self.mI)
         vF=AffineVector(C,self.mF)
-        vI.parameters=self.parameters
-        vF.parameters=self.parameters
+        vI.parameters=self.parameters.copy()
+        vF.parameters=self.parameters.copy()
         a.append(vI.latex_code(language=language,pspict=pspict))
         a.append(vF.latex_code(language=language,pspict=pspict))
         #if self.marque :
@@ -3107,7 +3120,7 @@ class GraphOfAVectorField(GraphOfAnObject,GeometricVectorField):
     def latex_code(self,language=None,pspict=None):
         code=[]
         for v in self.draw_vectors:
-            v.parameters=self.parameters
+            v.parameters=self.parameters.copy()
             code.append(v.latex_code(language=language,pspict=pspict))
         return "\n".join(code)
 
@@ -3143,7 +3156,7 @@ class GraphOfARectangle(GraphOfAnObject):
 
     def polygon(self):
         polygon= Polygon(self.NW,self.NE,self.SE,self.SW)
-        polygon.parameters=self.parameters
+        polygon.parameters=self.parameters.copy()
         return polygon
     def first_diagonal(self):
         return Segment(self.NW,self.SE)
@@ -3159,7 +3172,7 @@ class GraphOfARectangle(GraphOfAnObject):
         bare_name = "graph_"+side
         if not bare_name in self.__dict__.keys():
             line = self.__getattribute__("segment_"+side)()
-            #line.parameters=self.parameters
+            #line.parameters=self.parameters.copy()
             self.__dict__[bare_name]=line
         return  self.__dict__[bare_name]
     def __getattr__(self,attrname):
@@ -3181,7 +3194,7 @@ class GraphOfARectangle(GraphOfAnObject):
         #    June 26, 2014
         #for s in self.segments:
         #    if s.parameters==None:
-        #        s.parameters=self.parameters
+        #        s.parameters=self.parameters.copy()
         #a=[]
         #cNE=self.rectangle.NE.coordinates(numerical=True)
         #cSW=self.rectangle.SW.coordinates(numerical=True)
@@ -3262,7 +3275,7 @@ class GraphOfAnAngle(GraphOfAnObject):
         return self.circle().get_point(self.mark_angle)
     def latex_code(self,language=None,pspict=None):
         circle=self.circle()
-        circle.parameters=self.parameters
+        circle.parameters=self.parameters.copy()
         return circle.latex_code(language=language,pspict=pspict)
 
 def general_funtion_get_point(fun,x,advised=True):
@@ -3448,7 +3461,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         """
         x=var('x')
         curve = ParametricCurve(phyFunction(x),self,self.mx,self.Mx)
-        curve.parameters=self.parameters
+        curve.parameters=self.parameters.copy()
         return curve
     def inverse(self,y):
         """ returns a list of values x such that f(x)=y """
@@ -3668,7 +3681,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         return self.get_minmax_data(deb,fin)['ymin']
     def graph(self,mx,Mx):
         gr = GraphOfAphyFunction(self.sage,mx,Mx)
-        gr.parameters=self.parameters
+        gr.parameters=self.parameters.copy()
         return gr
     def fit_inside(self,xmin,xmax,ymin,ymax):
         k=self.graph(xmin,xmax)
@@ -3742,7 +3755,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         elif self.wavy :          
             waviness = self.waviness
             curve=self.parametric_curve()
-            curve.parameters=self.parameters
+            curve.parameters=self.parameters.copy()
             curve.wave(self.waviness.dx,self.waviness.dy)
             pspict.DrawGraph(curve)
 
@@ -4026,7 +4039,7 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         custom=CustomSurface(c1,reFsegment,c2,reIsegment)
         #self.parameters.add_to(custom.parameters)     # This line is essentially dedicated to the colors
         #custom.options=self.options
-        custom.parameters=self.parameters
+        custom.parameters=self.parameters.copy()
         a.append(custom.latex_code(language=language,pspict=pspict))
 
         a.append(self.curve1.latex_code(language=language,pspict=pspict))
@@ -4139,10 +4152,11 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         return "".join(l)
     def tikz_code(self,pspict=None):
         l = []
-        try:
-            params=self.context_object.params(language="tikz")
-        except AttributeError :
-            params=self.params(language="tikz")
+        #try:
+        #    params=self.context_object.params(language="tikz")
+        #except AttributeError :
+        params=self.params(language="tikz")
+        print("VDGooFauEsX",self.parameters.color)
         l.append("\draw [{0}] plot [smooth,tension=1] coordinates {{".format(params))
         for p in self.points_list:
             l.append(p.coordinates(numerical=True))
@@ -4372,7 +4386,7 @@ class GraphOfAPolygon(GraphOfAnObject):
     def latex_code(self,language=None,pspict=None):
         a=[]
         custom=CustomSurface(self.edges_list)
-        custom.parameters=self.parameters
+        custom.parameters=self.parameters.copy()
         a.append(custom.latex_code(language=language,pspict=pspict))
 
         if self.draw_edges:
@@ -4864,7 +4878,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         return ParametricCurve(g1,g2)
     def graph(self,mx,Mx):
         gr = ParametricCurve(self.f1,self.f2,mx,Mx)
-        gr.parameters=self.parameters
+        gr.parameters=self.parameters.copy()
         return gr
     def __call__(self,llam,approx=False):
         return self.get_point(llam,approx)
@@ -4920,6 +4934,8 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         if self.wavy :
             waviness = self.waviness
             curve=InterpolationCurve(self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy,xunit=pspict.xunit,yunit=pspict.yunit),context_object=self)
+            curve.parameters=self.parameters.copy()
+            print("FZPooShIRUM",curve.parameters.color)
             a.append(curve.latex_code(language=language,pspict=pspict))
         else:
             initial = numerical_approx(self.llamI)      # Avoid the string "pi" in the latex code.
@@ -4932,7 +4948,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             Llam=numpy.linspace(initial,final,self.parameters.plotpoints)
             points_list=[ self.get_point(x) for x in Llam ]
             curve=InterpolationCurve(points_list)
-            curve.parameters=self.parameters
+            curve.parameters=self.parameters.copy()
             return curve.latex_code(language=language,pspict=pspict)
                 #Everything is InterpolationCurve. June 27, 2014
                 #params=params+",smooth,domain={0}:{1}".format(str(initial),str(final))
@@ -4979,7 +4995,7 @@ class GraphOfACircle3D(GraphOfAnObject):
             t=self.op.point(P.x,P.y,P.z)
             proj_points_list.append(t)
         curve=GraphOfAnInterpolationCurve(proj_points_list)
-        curve.parameters=self.parameters
+        curve.parameters=self.parameters.copy()
         return curve
     def get_point(self,angle):
         return self.center+cos(angle)*self.u+sin(angle)*self.v  
@@ -4987,7 +5003,7 @@ class GraphOfACircle3D(GraphOfAnObject):
         return self.op.point(self.get_point(angle))
     def graph(self,angleI,angleF):
         C = GraphOfACircle3D(self.op,self.O,self.A,self.B,angleI,angleF)
-        C.parameters=self.parameters
+        C.parameters=self.parameters.copy()
         return C
     def bounding_box(self,pspict=None):
         return self.curve2d.bounding_box(pspict)
@@ -5021,7 +5037,7 @@ class HistogramBox(GraphOfAnObject):
         ymin=0
         ymax=self.histo.yscale*self.th_height
         rect=Rectangle(mx=xmin,Mx=xmax,my=ymin,My=ymax)
-        rect.parameters=self.parameters
+        rect.parameters=self.parameters.copy()
         return rect
     def bounding_box(self,pspict=None):
         return self.rectangle.bounding_box(pspict)
