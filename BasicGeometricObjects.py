@@ -407,7 +407,6 @@ class GraphOfAnObject(object):
             self.add_option(opt+"="+oo[opt])
         self.parameters.add_to_options(self.options)
     def params(self,language):
-        print("ESUooLotMVi",type(self))
         self.conclude_params()
         l=[]
         for attr in self.parameters.interesting_attributes:
@@ -416,8 +415,9 @@ class GraphOfAnObject(object):
                 l.append(attr+"="+str(value))
         code=",".join(l)
         if language=="tikz":
-            code=code.replace("plotpoints","sample")
-        return self.options.code(language=language)
+            code=code.replace("plotpoints","samples")
+        return code
+        #return self.options.code(language=language)
 
 class GraphOfASingleAxe(GraphOfAnObject):
     def __init__(self,C,base,mx,Mx,pspict=None):
@@ -1148,7 +1148,7 @@ class Parameters(object):
         self.style = None
         self.fill=FillParameters()
         self.hatch=HatchParameters()
-        self.interesting_attributes=["color","symbol","style","_filled","fill","_hatched","hatch","plotpoints"]
+        self.interesting_attributes=["color","symbol","style","plotpoints"]
         self.other_options={}
         self._filled=False
         self._hatched=False
@@ -3764,7 +3764,6 @@ class GraphOfAphyFunction(GraphOfAnObject):
             deb = numerical_approx(self.mx) 
             fin = numerical_approx(self.Mx)
             curve=self.parametric_curve().graph(deb,fin)
-            print("HENooDGVnuC",self.parameters.color,curve.parameters.color)
             return curve.latex_code(language=language)
         return ""
     def __call__(self,xe,numerical=False):
@@ -4026,9 +4025,13 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         reFsegment.parameters=self.Fsegment.parameters
 
         custom=CustomSurface(c1,reFsegment,c2,reIsegment)
-        self.parameters.add_to(custom.parameters)     # This line is essentially dedicated to the colors
-        custom.options=self.options
+        print("PJAooSjXPlD",self.parameters._hatched,self.parameters._filled,self.parameters.color,self.parameters.hatch.color)
+        #self.parameters.add_to(custom.parameters)     # This line is essentially dedicated to the colors
+        #custom.options=self.options
+        custom.parameters=self.parameters
+        print("DVNooMNENpx",custom.parameters._hatched,custom.parameters._filled,custom.parameters.color)
         a.append(custom.latex_code(language=language,pspict=pspict))
+        print("ATXooIwGQBo",a[-1])
 
         a.append(self.curve1.latex_code(language=language,pspict=pspict))
         a.append(self.curve2.latex_code(language=language,pspict=pspict))
@@ -4859,15 +4862,16 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         a.append("y(t)=%s>"%repr(self.f2.sage(x=t)))
         return "\n".join(a)
 
-    def params(self,language=None):
-        self.conclude_params()
-        if language=="pstricks":
-            self.add_option("plotpoints=%s"%str(self.parameters.plotpoints))
-            self.add_option("plotstyle=%s"%str(self.plotstyle))
-        if language=="tikz":
-            self.add_option("sample="+str(self.parameters.plotpoints))
-            self.add_option("plotstyle=%s"%str(self.plotstyle))
-        return self.options.code(language=language)
+    # Use the generic method 'params' from 'GraphOfAnObject'.  June 27, 2014
+    #def params(self,language=None):
+    #    self.conclude_params()
+    #    if language=="pstricks":
+    #        self.add_option("plotpoints=%s"%str(self.parameters.plotpoints))
+    #        self.add_option("plotstyle=%s"%str(self.plotstyle))
+    #    if language=="tikz":
+    #        self.add_option("sample="+str(self.parameters.plotpoints))
+    #        self.add_option("plotstyle=%s"%str(self.plotstyle))
+    #    return self.options.code(language=language)
     def reverse(self):
         """
         return the curve in the inverse sense but on the same interval
@@ -4910,7 +4914,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
                 a.append("\parametricplot[%s]{%s}{%s}{%s}" %(self.params(),str(initial),str(final),self.curve.pstricks()))
             if language=="tikz":
                 params=self.params(language="tikz")
-                params=params.replace("plotpoints","samples")+",smooth,domain={0}:{1}".format(str(initial),str(final))
+                params=params+",smooth,domain={0}:{1}".format(str(initial),str(final))
                 x=var('x')
                 a.append("\draw[{0}] plot ({{{1}}},{{{2}}});".format(params,self.f1.tikz,self.f2.tikz))
         for v in self.record_arrows:
@@ -4968,7 +4972,7 @@ class GraphOfACircle3D(GraphOfAnObject):
         return self.curve2d.math_bounding_box(pspict)
     def action_on_pspict(self,pspict):
         pspict.DrawGraphs(self.curve2d)
-    def latex_code(self,pspict):
+    def latex_code(self,language=None,pspict=None):
         return ""
 class HistogramBox(GraphOfAnObject):
     """
