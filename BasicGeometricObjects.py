@@ -407,7 +407,16 @@ class GraphOfAnObject(object):
             self.add_option(opt+"="+oo[opt])
         self.parameters.add_to_options(self.options)
     def params(self,language):
+        print("ESUooLotMVi",type(self))
         self.conclude_params()
+        l=[]
+        for attr in self.parameters.interesting_attributes:
+            value=self.parameters.__getattribute__(attr)
+            if value != None:
+                l.append(attr+"="+str(value))
+        code=",".join(l)
+        if language=="tikz":
+            code=code.replace("plotpoints","sample")
         return self.options.code(language=language)
 
 class GraphOfASingleAxe(GraphOfAnObject):
@@ -751,7 +760,9 @@ class GraphOfACircle(GraphOfAnObject):
         """
         Return a graph of the circle between the two angles given in degree
         """
-        return GraphOfACircle(self.center,self.radius,angleI,angleF)
+        C = GraphOfACircle(self.center,self.radius,angleI,angleF)
+        C.parameters=self.parameters
+        return C
     def __str__(self):
         return "<Circle, center=%s, radius=%s>"%(self.center.__str__(),str(self.radius))
     def copy(self):
@@ -1137,11 +1148,12 @@ class Parameters(object):
         self.style = None
         self.fill=FillParameters()
         self.hatch=HatchParameters()
-        self.interesting_attributes=["color","symbol","style","_filled","fill","_hatched","hatch"]
+        self.interesting_attributes=["color","symbol","style","_filled","fill","_hatched","hatch","plotpoints"]
         self.other_options={}
         self._filled=False
         self._hatched=False
         self.visual=None        # If True, it means that one wants the object to be non deformed by xunit,yunit
+        self.plotpoints=None
     def filled(self):
         self._filled=True
     def hatched(self):
@@ -1803,7 +1815,9 @@ class GeometricImplicitCurve(object):
             <BoundingBox xmin=1.0,xmax=3.0; ymin=-2.0,ymax=0.0>
 
         """
-        return GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
+        gr = GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
+        gr.parameters=self.parameters
+        return gr
     def __str__(self):
         """
         Return string representation of this implicit curve
@@ -2620,8 +2634,11 @@ class GraphOfASegment(GraphOfAnObject):
         return self.return_deformations(v)
     def graph(self,mx=None,Mx=None):
         if not mx:
-            return GraphOfASegment(self.I,self.F)
-        return GraphOfASegment(self.get_point(mx),self.get_point(Mx))
+            C = GraphOfASegment(self.I,self.F)
+        else :
+            C = GraphOfASegment(self.get_point(mx),self.get_point(Mx))
+        C.parameters=self.parameters
+        return C
     def default_associated_graph_class(self):
         """Return the class which is the Graph associated type"""
         return GraphOfASegment
@@ -3285,11 +3302,11 @@ class NonAnalyticParametricCurve(GraphOfAnObject):
         self.I=self.get_point(mx)
         self.F=self.get_point(Mx)
 
-        self.plotpoints=100
+        self.parameters.plotpoints=100
 
         from numpy import linspace
         if self.mx is not None and self.Mx is not None:
-            self.drawpoints=linspace(self.mx,self.Mx,self.plotpoints,endpoint=True)
+            self.drawpoints=linspace(self.mx,self.Mx,self.parameters.plotpoints,endpoint=True)
     def curve(self):
         interpolation = InterpolationCurve([self.get_point(x) for x in self.drawpoints])
         self.parameters.add_to(interpolation.parameters,force=True)     # This curve is essentially dedicated to the colors
@@ -3324,13 +3341,13 @@ class NonAnalyticFunction(GraphOfAnObject):
         self.mx=mx
         self.Mx=Mx
         self.fun=fun
-        self.plotpoints=100
+        self.parameters.plotpoints=100
         self.old_mx=None    # Will be used in order to simulate a lazy_attribute in self.get_minmax_data
         self.old_Mx=None
         self.minmax_result=None
         from numpy import linspace
         if self.mx is not None and self.Mx is not None:
-            self.drawpoints=linspace(self.mx,self.Mx,self.plotpoints,endpoint=True)
+            self.drawpoints=linspace(self.mx,self.Mx,self.parameters.plotpoints,endpoint=True)
         self.parameters.color="blue"
     def parametric_curve(self,mx=None,Mx=None):
         if mx == None:
@@ -3420,8 +3437,8 @@ class GraphOfAphyFunction(GraphOfAnObject):
         self.do_cut_y=False
         self.cut_ymin=None
         self.cut_ymax=None
-        self.plotpoints = 100                   # We draw 100 points as default.
-        self.cut_yplotpoints = self.plotpoints  # The number of points that will we computed in order to detect where the function
+        self.parameters.plotpoints = 100                   # We draw 100 points as default.
+        self.cut_yplotpoints = self.parameters.plotpoints  # The number of points that will we computed in order to detect where the function
                                                 # exceed the cutting values.
         self.pieces=[]      
         self.parameters.color = "blue"              # Modification with respect to the attribute in GraphOfAnObject
@@ -3432,6 +3449,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         """
         x=var('x')
         curve = ParametricCurve(phyFunction(x),self,self.mx,self.Mx)
+        curve.parameters=self.parameters
         return curve
     def inverse(self,y):
         """ returns a list of values x such that f(x)=y """
@@ -3650,7 +3668,9 @@ class GraphOfAphyFunction(GraphOfAnObject):
     def ymin(self,deb,fin):
         return self.get_minmax_data(deb,fin)['ymin']
     def graph(self,mx,Mx):
-        return GraphOfAphyFunction(self.sage,mx,Mx)
+        gr = GraphOfAphyFunction(self.sage,mx,Mx)
+        gr.parameters=self.parameters
+        return gr
     def fit_inside(self,xmin,xmax,ymin,ymax):
         k=self.graph(xmin,xmax)
         k.cut_y(ymin,ymax)
@@ -3676,7 +3696,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         It is wise to use a value of plotpoints that is not a multiple of the difference Mx-mx. The default behaviour is most of time like that.
         """
         if not plotpoints:
-            plotpoints=2.34*self.plotpoints
+            plotpoints=2.34*self.parameters.plotpoints
         self.do_cut_y=True
         self.cut_ymin=ymin
         self.cut_ymax=ymax
@@ -3689,9 +3709,10 @@ class GraphOfAphyFunction(GraphOfAnObject):
             Mx=k[1]
             f=self.graph(mx,Mx)
             self.pieces.append(f)
-    def params(self,language=None):
-        self.conclude_params()
-        self.add_option("plotpoints=%s"%str(self.plotpoints))
+    # I use the generic function 'params' from GraphOfAnObject, June 27, 2014
+    #def params(self,language=None):
+    #    self.conclude_params()
+    #    self.add_option("plotpoints=%s"%str(self.parameters.plotpoints))
         return self.options.code(language=language)
     def bounding_box(self,pspict=None):
         bb = BoundingBox()
@@ -3743,6 +3764,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
             deb = numerical_approx(self.mx) 
             fin = numerical_approx(self.Mx)
             curve=self.parametric_curve().graph(deb,fin)
+            print("HENooDGVnuC",self.parameters.color,curve.parameters.color)
             return curve.latex_code(language=language)
         return ""
     def __call__(self,xe,numerical=False):
@@ -4373,7 +4395,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         self.Mx = llamF
         self.parameters.color = "blue"
         self.plotstyle = "curve"
-        self.plotpoints = "1000"
+        self.parameters.plotpoints = "1000"
         self.record_arrows=[]
         #TODO: if I remove the protection "if self.llamI", sometimes it 
         # tries to make self.get_point(self.llamI) with self.llamI==None
@@ -4824,7 +4846,9 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         g2=-sin(alpha)*self.f1+cos(alpha)*self.f2
         return ParametricCurve(g1,g2)
     def graph(self,mx,Mx):
-        return ParametricCurve(self.f1,self.f2,mx,Mx)
+        gr = ParametricCurve(self.f1,self.f2,mx,Mx)
+        gr.parameters=self.parameters
+        return gr
     def __call__(self,llam,approx=False):
         return self.get_point(llam,approx)
     def __str__(self):
@@ -4838,10 +4862,10 @@ class GraphOfAParametricCurve(GraphOfAnObject):
     def params(self,language=None):
         self.conclude_params()
         if language=="pstricks":
-            self.add_option("plotpoints=%s"%str(self.plotpoints))
+            self.add_option("plotpoints=%s"%str(self.parameters.plotpoints))
             self.add_option("plotstyle=%s"%str(self.plotstyle))
         if language=="tikz":
-            self.add_option("sample="+str(self.plotpoints))
+            self.add_option("sample="+str(self.parameters.plotpoints))
             self.add_option("plotstyle=%s"%str(self.plotstyle))
         return self.options.code(language=language)
     def reverse(self):
@@ -4910,14 +4934,14 @@ class GraphOfACircle3D(GraphOfAnObject):
         self.v=Vector3D( B[0]-O[0],B[1]-O[1],B[2]-O[2]  )
         self.radius_u=sqrt( sum([k**2 for k in self.u])  )
         self.radius_v=sqrt( sum([k**2 for k in self.v])  )
-        self.plotpoints=10*max(self.radius_u,self.radius_v)
+        self.parameters.plotpoints=10*max(self.radius_u,self.radius_v)
         self.angleI=angleI
         self.angleF=angleF
     @lazy_attribute
     def points_list(self):
         l=[]
         import numpy
-        angles=numpy.linspace(self.angleI,self.angleF,self.plotpoints)
+        angles=numpy.linspace(self.angleI,self.angleF,self.parameters.plotpoints)
         for a in angles:
             l.append( self.get_point(a) )
         return l
@@ -4936,6 +4960,7 @@ class GraphOfACircle3D(GraphOfAnObject):
         return self.op.point(self.get_point(angle))
     def graph(self,angleI,angleF):
         C = GraphOfACircle3D(self.op,self.O,self.A,self.B,angleI,angleF)
+        C.parameters=self.parameters
         return C
     def bounding_box(self,pspict=None):
         return self.curve2d.bounding_box(pspict)
