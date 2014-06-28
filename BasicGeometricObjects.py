@@ -1148,13 +1148,14 @@ class Parameters(object):
         self.symbol = None
         self.style = None
         self.plotpoints=None
+        self.dotangle=None
         self.fill=FillParameters()
         self.hatch=HatchParameters()
         self.other_options={}
         self._filled=False
         self._hatched=False
         self.visual=None        # If True, it means that one wants the object to be non deformed by xunit,yunit
-        self.interesting_attributes=["color","symbol","style","plotpoints"]
+        self.interesting_attributes=["color","symbol","style","plotpoints","dotangle"]
     def copy(self):
         cop=Parameters()
         cop.visual=self.visual
@@ -1166,6 +1167,7 @@ class Parameters(object):
         cop.style=self.style
         cop.symbol=self.symbol
         cop.color=self.color
+        cop.dotangle=self.dotangle
         return cop
     def filled(self):
         self._filled=True
@@ -1697,7 +1699,12 @@ class GraphOfAPoint(GraphOfAnObject):
         symbol_dict["o"]="$o$"
         symbol_dict["diamond"]="$\diamondsuit$"
         if self.parameters.symbol!="none":
-            return "\draw [{2}]  {0} node {{{1}}};".format(self.coordinates(numerical=True),symbol_dict[self.parameters.symbol],self.params(language="tikz",refute=["symbol"]))
+            s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(numerical=True),symbol_dict[self.parameters.symbol],self.params(language="tikz",refute=["symbol","dotangle"]),"DOTANGLE")
+            if self.parameters.dotangle != None :
+                s=s.replace("DOTANGLE",self.parameters.dotangle)
+            else :
+                s=s.replace("DOTANGLE","0")
+            return s
         return ""
     def latex_code(self,language=None,pspict=None,with_mark=False):
         l=[]
