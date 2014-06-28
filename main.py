@@ -404,7 +404,7 @@ class figure(object):
         self.add_latex_line(self.specific_needs,"SPECIFIC_NEEDS")
         if not global_vars.special_exit() :
             if self.language=="pstricks":
-                self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+"}","BEFORE SUBFIGURES")
+                self.add_latex_line("\psset{xunit=1,yunit=1}","BEFORE SUBFIGURES")
         for f in self.record_subfigure :
             self.add_latex_line("\subfigure["+f.caption+"]{%","SUBFIGURES")
             self.add_latex_line(f.subfigure_code(),"SUBFIGURES")
@@ -868,7 +868,7 @@ class pspicture(object):
             self.LabelSep = 2/(self.xunit+self.yunit)
         add_latex_line_entete(self)
 
-        self.add_latex_line("\psset{xunit="+str(self.xunit)+",yunit="+str(self.yunit)+",LabelSep="+str(self.LabelSep)+"}","BEFORE PSPICTURE")
+        self.add_latex_line("\psset{xunit=1,yunit=1,LabelSep="+str(self.LabelSep)+"}","BEFORE PSPICTURE")
         self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}","BEFORE PSPICTURE")
         self.add_latex_line("\\begin{pspicture}%s%s"%(self.bounding_box(self).SW().coordinates(numerical=True),self.bounding_box(self).NE().coordinates(numerical=True)),"BEGIN PSPICTURE")
 
@@ -884,7 +884,7 @@ class pspicture(object):
     def contenu_tikz(self):
         self.create_latex_code(language="tikz",pspict=self)
         add_latex_line_entete(self)
-        self.add_latex_line("\\begin{{tikzpicture}}[xscale={0},yscale={1},inner sep=0pt,outer sep=0pt]".format(self.xunit,self.yunit),"BEGIN PSPICTURE")
+        self.add_latex_line("\\begin{{tikzpicture}}[xscale={0},yscale={1},inner sep=0pt,outer sep=0pt]".format(1,1),"BEGIN PSPICTURE")
         self.add_latex_line("\pgfmathdeclarefunction{radsin}{1}{\pgfmathparse{sin(deg(#1))}}","BEFORE PSPICTURE")
         self.add_latex_line("\pgfmathdeclarefunction{radcos}{1}{\pgfmathparse{cos(deg(#1))}}","BEFORE PSPICTURE")
         self.add_latex_line("\\end{tikzpicture}","END PSPICTURE")

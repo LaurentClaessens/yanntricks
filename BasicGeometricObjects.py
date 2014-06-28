@@ -229,7 +229,7 @@ def _vector_latex_code(segment,language=None,pspict=None):
         a = a + "\\ncline["+params+"]{->}{"+segment.I.psName+"}{"+segment.F.psName+"}"
     if language=="tikz":
         params=params+",->,>=latex"
-        a = "\draw [{0}] {1} -- {2};".format(params,segment.I.coordinates(numerical=True),segment.F.coordinates(numerical=True))
+        a = "\draw [{0}] {1} -- {2};".format(params,segment.I.coordinates(numerical=True,pspict=pspict),segment.F.coordinates(numerical=True,pspict=pspict))
     if segment.marque :
         P = segment.F
         P.parameters.symbol = "none"
@@ -868,7 +868,7 @@ class GraphOfACircle(GraphOfAnObject):
                     code="""
                     \coordinate (P) at (${0} + (0:{1} and {2})$);
                     \draw[{3}] (${0} + (0:{1} and {2})$(P) arc (0:360:{1} and {2});
-                    """.format(self.center.coordinates(numerical=True),rx,ry,self.params(language="tikz"))
+                    """.format(self.center.coordinates(numerical=True,pspict=pspict),rx,ry,self.params(language="tikz"))
                     return code
 
             else :
@@ -887,7 +887,7 @@ class GraphOfACircle(GraphOfAnObject):
                         ai=numerical_approx(angleI)
                         af=numerical_approx(angleF)
                         ar=numerical_approx(self.radius)
-                        return "\draw [{0}] {1} arc ({2}:{3}:{4}); ".format( self.params(language="tikz"),A.coordinates(numerical=True),ai,af,ar)
+                        return "\draw [{0}] {1} arc ({2}:{3}:{4}); ".format( self.params(language="tikz"),A.coordinates(numerical=True,pspict=pspict),ai,af,ar)
                     if self.parameters.visual:
                         # To draw part of an ellips, see
                         #http://tex.stackexchange.com/questions/123158/tikz-using-the-ellipse-command-with-a-start-and-end-angle-instead-of-an-arc
@@ -896,7 +896,7 @@ class GraphOfACircle(GraphOfAnObject):
                         code="""
                         \coordinate (P) at (${0} + ({4}:{1} and {2})$);
                         \draw[{3}] (${0} + ({4}:{1} and {2})$(P) arc ({4}:{5}:{1} and {2});
-                        """.format(self.center.coordinates(),rx,ry,self.params(language="tikz"),angleI,self.angleF)
+                        """.format(self.center.coordinates(pspict=pspict),rx,ry,self.params(language="tikz"),angleI,self.angleF)
                         return code
 
 
@@ -1069,12 +1069,12 @@ class Mark(object):
         l=[]
         central_point=self.central_point(pspict)
         #TODO : Use create_PSpoint instead of \pstGeonode.
-        l.append("\pstGeonode[]"+central_point.coordinates(numerical=True)+"{"+central_point.psName+"}")
+        l.append("\pstGeonode[]"+central_point.coordinates(numerical=True,pspict=pspict)+"{"+central_point.psName+"}")
         l.append(r"\rput({0}){{\rput({1};{2}){{{3}}}}}".format(central_point.psName,"0",0,self.text))
         return "\n".join(l)
     def tikz_code(self,pspict=None):
         central_point=self.central_point(pspict)
-        code="\draw "+central_point.coordinates(numerical=True)+" node {"+self.text+"};"
+        code="\draw "+central_point.coordinates(numerical=True,pspict=pspict)+" node {"+self.text+"};"
         return code
     def latex_code(self,language=None,pspict=None):
         if language=="pstricks":
@@ -1593,7 +1593,7 @@ class GraphOfAPoint(GraphOfAnObject):
         Return the result in degree.
         """
         return self.polar_coordinates()[1]
-    def coordinates(self,numerical=False):
+    def coordinates(self,numerical=False,pspict=None):
         """
         Return the coordinates of the point as a string.
 
@@ -1605,6 +1605,8 @@ class GraphOfAPoint(GraphOfAnObject):
             sage: P=Point(1,3)
             sage: print P.coordinates()
             (1,3)
+
+        If a pspicture is given, we divide by xunit and yunit to normalize.
         """
         if numerical :
             x=numerical_approx(self.x)
@@ -1617,6 +1619,9 @@ class GraphOfAPoint(GraphOfAnObject):
             x=0
         if abs(y) < 0.0001 :
             y=0
+        if pspict :
+            x=x/pspict.xunit
+            y=y/pspict.yunit
         return str("("+str(x)+","+str(y)+")")
     def coordinatesBr(self):
         raise DeprecationWarning  # June 23, 2014
@@ -1689,7 +1694,7 @@ class GraphOfAPoint(GraphOfAnObject):
         sage: unify_point_name(P.pstricks_code(with_mark=True))
         u'\\pstGeonode[](1.21213203435596,1.21213203435596){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$P$}}\n\\pstGeonode[PointSymbol=*,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaab}'
         """
-        return "\pstGeonode["+self.params(language="pstricks")+"]"+self.coordinates(numerical=True)+"{"+self.psName+"}"
+        return "\pstGeonode["+self.params(language="pstricks")+"]"+self.coordinates(numerical=True,pspict=pspict)+"{"+self.psName+"}"
     def tikz_code(self,pspict=None):
         symbol_dict={}
         symbol_dict[None]="$\\bullet$"
@@ -1699,9 +1704,9 @@ class GraphOfAPoint(GraphOfAnObject):
         symbol_dict["o"]="$o$"
         symbol_dict["diamond"]="$\diamondsuit$"
         if self.parameters.symbol!="none":
-            s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(numerical=True),symbol_dict[self.parameters.symbol],self.params(language="tikz",refute=["symbol","dotangle"]),"DOTANGLE")
+            s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(numerical=True,pspict=pspict),symbol_dict[self.parameters.symbol],self.params(language="tikz",refute=["symbol","dotangle"]),"DOTANGLE")
             if self.parameters.dotangle != None :
-                s=s.replace("DOTANGLE",self.parameters.dotangle)
+                s=s.replace("DOTANGLE",str(self.parameters.dotangle))
             else :
                 s=s.replace("DOTANGLE","0")
             return s
@@ -2803,7 +2808,7 @@ class GraphOfASegment(GraphOfAnObject):
                     a.append("\pstLineAB[%s]{%s}{%s}"%(self.params(language="pstricks"),self.I.psName,self.F.psName))
                 if language=="tikz":
                     a=[]
-                    a.append("\draw [{2}] {0} -- {1};".format(self.I.coordinates(numerical=True),self.F.coordinates(numerical=True),self.params(language="tikz")))
+                    a.append("\draw [{2}] {0} -- {1};".format(self.I.coordinates(numerical=True,pspict=pspict),self.F.coordinates(numerical=True,pspict=pspict),self.params(language="tikz")))
         for v in self.arrow_list:
             a.append(v.latex_code(pspict=pspict,language=language))
         return "\n".join(a)
@@ -4155,7 +4160,7 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
             params=self.params()
         l.append("\pscurve["+params+"]")
         for p in self.points_list:
-            l.append(p.coordinates(numerical=True))
+            l.append(p.coordinates(numerical=True,pspict=pspict))
         return "".join(l)
     def tikz_code(self,pspict=None):
         l = []
@@ -4165,7 +4170,7 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         params=self.params(language="tikz")
         l.append("\draw [{0}] plot [smooth,tension=1] coordinates {{".format(params))
         for p in self.points_list:
-            l.append(p.coordinates(numerical=True))
+            l.append(p.coordinates(numerical=True,pspict=pspict))
         l.append("};")
         return "".join(l)
     def latex_code(self,language,pspict=None):
@@ -5425,8 +5430,8 @@ class BoundingBox(object):
         return Segment( self.NE(),self.SE() )
     def west_segment(self):
         return Segment( self.NW(),self.SW() )
-    def coordinates(self):
-        return self.SW().coordinates()+self.NE().coordinates()
+    def coordinates(self,pspict=None):
+        return self.SW().coordinates(pspict=pspict)+self.NE().coordinates(pspict=pspict)
     def xsize(self):
         return self.xmax-self.xmin
     def ysize(self):
