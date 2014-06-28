@@ -406,10 +406,10 @@ class GraphOfAnObject(object):
         for opt in oo.keys():
             self.add_option(opt+"="+oo[opt])
         self.parameters.add_to_options(self.options)
-    def params(self,language):
+    def params(self,language,refute=[]):
         self.conclude_params()
         l=[]
-        for attr in self.parameters.interesting_attributes:
+        for attr in [x for x in self.parameters.interesting_attributes if x not in refute]:
             value=self.parameters.__getattribute__(attr)
             if value != None:
                 l.append(attr+"="+str(value))
@@ -1697,7 +1697,7 @@ class GraphOfAPoint(GraphOfAnObject):
         symbol_dict["o"]="$o$"
         symbol_dict["diamond"]="$\diamondsuit$"
         if self.parameters.symbol!="none":
-            return "\draw [{2}]  {0} node {{{1}}};".format(self.coordinates(numerical=True),symbol_dict[self.parameters.symbol],self.params(language="tikz"))
+            return "\draw [{2}]  {0} node {{{1}}};".format(self.coordinates(numerical=True),symbol_dict[self.parameters.symbol],self.params(language="tikz",refute=["symbol"]))
         return ""
     def latex_code(self,language=None,pspict=None,with_mark=False):
         l=[]
