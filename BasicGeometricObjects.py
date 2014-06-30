@@ -841,6 +841,7 @@ class GraphOfACircle(GraphOfAnObject):
 
         if self.wavy:
             waviness = self.waviness
+            print("HZHooNnKWcC",G.parameters.color)
             G.wave(waviness.dx,waviness.dy)
             return G.latex_code(language=language,pspict=pspict)
         else :
@@ -1005,6 +1006,8 @@ class Mark(object):
         if self.automatic_place :
             try :
                 pspict=self.automatic_place[0]
+                if isinstance(pspict,list):
+                    pspict=pspict[-1]
                 position=self.automatic_place[1]
             except TypeError :
                 pspict=self.automatic_place
@@ -1704,7 +1707,7 @@ class GraphOfAPoint(GraphOfAnObject):
         symbol_dict[None]="$\\bullet$"
         symbol_dict["*"]="$\\bullet$"
         symbol_dict["|"]="$|$"
-        symbol_dict["x"]="$x$"
+        symbol_dict["x"]="$\\times$"
         symbol_dict["o"]="$o$"
         symbol_dict["diamond"]="$\diamondsuit$"
         if self.parameters.symbol!="none":
@@ -2805,7 +2808,8 @@ class GraphOfASegment(GraphOfAnObject):
             if self.wavy:
                 waviness = self.waviness
                 curve=InterpolationCurve(self.get_wavy_points(waviness.dx,waviness.dy),context_object=self)
-                return curve.latex_code(language=language)
+                curve.parameters=self.parameters.copy()
+                return curve.latex_code(language=language,pspict=pspict)
             else:
                 if language=="pstricks":
                     a =[self.I.create_PSpoint() + self.F.create_PSpoint()]
