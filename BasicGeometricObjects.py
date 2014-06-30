@@ -883,18 +883,24 @@ class GraphOfACircle(GraphOfAnObject):
             bb.AddY(self.center.y-self.radius)
         return bb
     def latex_code(self,language=None,pspict=None):
-        if not isinstance(self.angleI,AngleMeasure):
-            self.angleI = AngleMeasure(value_degree=self.angleI)
-        if not isinstance(self.angleF,AngleMeasure):
-            self.angleF = AngleMeasure(value_degree=self.angleF)
         alphaI = radian(self.angleI,number=True,keep_max=True)
         alphaF = radian(self.angleF,number=True,keep_max=True)
-        if self.angleF.degree==360:        # Because the function radian simplifies modulo 2pi.
+
+        # self.angleI and self.angleF should be AngleMeasure, but sometimes the user
+        #    writes something like 
+        #   C.angleI=20
+
+        if isinstance(self.angleF,AngleMeasure):
+            f=self.angleF.degree
+        else :
+            f=self.angleF
+        if f==360:        # Because the function radian simplifies modulo 2pi.
             alphaF=2*pi
         curve = self.parametric_curve()
         G = ParametricCurve(curve,alphaI,alphaF)
         G.parameters=self.parameters.copy()
         G.parameters.plotpoints=500
+        print("ZKWooZKCykl",G.llamI,G.llamF)
 
         if self.wavy:
             waviness = self.waviness
