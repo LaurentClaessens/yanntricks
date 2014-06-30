@@ -2789,7 +2789,7 @@ class GraphOfASegment(GraphOfAnObject):
             <segment I=<Point(1,1)> F=<Point(1,6)>>
         """
         if isinstance(other,GraphOfASegment):
-            if other.arrow_type=="vector":
+            if self.arrow_type=="segment" and other.arrow_type=="vector":
                 return Segment(   self.I+other,self.F+other  )
             if self.I != other.I:
                 other=other.fix_origin(self.I)
