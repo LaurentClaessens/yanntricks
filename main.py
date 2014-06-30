@@ -298,6 +298,7 @@ class figure(object):
         self.separator_list.new_separator("ENTETE FIGURE")
         self.separator_list.new_separator("SPECIFIC_NEEDS")
         self.separator_list.new_separator("WRITE_AND_LABEL")
+        self.separator_list.new_separator("HATCHING_COMMANDS")
         self.separator_list.new_separator("BEFORE SUBFIGURES")
         self.separator_list.new_separator("SUBFIGURES")
         self.separator_list.new_separator("AFTER SUBFIGURES")
@@ -398,6 +399,42 @@ class figure(object):
             # This has to be done _after_ having called pspict.contenu().
             self.add_latex_line(pspict.write_and_label_separator_list["WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
             self.add_latex_line(pspict.write_and_label_separator_list["CLOSE_WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
+
+            # For the following big stuff, see the position 170321508
+            def_length_tex=r"""  
+               \makeatletter
+% If hatchspread is not defined, we define it
+\ifthenelse{\value{defHatch}=0}{
+\setcounter{defHatch}{1}
+\newlength{\hatchspread}%
+\newlength{\hatchthickness}%
+}{}
+               \makeatother
+               """
+
+            def_pattern_tex=r"""
+               \makeatletter
+\ifthenelse{\value{defPattern}=0}{
+\setcounter{defPattern}{1}
+\pgfdeclarepatternformonly[\hatchspread,\hatchthickness]% variables
+   {custom north west lines}% name
+   {\pgfqpoint{-2\hatchthickness}{-2\hatchthickness}}% lower left corner
+   {\pgfqpoint{\dimexpr\hatchspread+2\hatchthickness}{\dimexpr\hatchspread+2\hatchthickness}}% upper right corner
+   {\pgfqpoint{\hatchspread}{\hatchspread}}% tile size
+   {% shape description
+    \pgfsetlinewidth{\hatchthickness}
+    \pgfpathmoveto{\pgfqpoint{0pt}{\hatchspread}}
+    \pgfpathlineto{\pgfqpoint{\dimexpr\hatchspread+0.15pt}{-0.15pt}}
+        \pgfusepath{stroke}
+   }
+   }{}
+   \makeatother
+               """
+
+            if pspict.language=="tikz":
+                self.add_latex_line(def_length_tex,"HATCHING_COMMANDS")
+                self.add_latex_line(def_pattern_tex,"HATCHING_COMMANDS")
+
 
             if global_vars.perform_tests:
                 TestPspictLaTeXCode(pspict).test()
@@ -885,8 +922,8 @@ class pspicture(object):
         self.create_latex_code(language="tikz",pspict=self)
         add_latex_line_entete(self)
         self.add_latex_line("\\begin{{tikzpicture}}[xscale={0},yscale={1},inner sep=0pt,outer sep=0pt]".format(1,1),"BEGIN PSPICTURE")
-        self.add_latex_line("\pgfmathdeclarefunction{radsin}{1}{\pgfmathparse{sin(deg(#1))}}","BEFORE PSPICTURE")
-        self.add_latex_line("\pgfmathdeclarefunction{radcos}{1}{\pgfmathparse{cos(deg(#1))}}","BEFORE PSPICTURE")
+        #self.add_latex_line("\pgfmathdeclarefunction{radsin}{1}{\pgfmathparse{sin(deg(#1))}}","BEFORE PSPICTURE")
+        #self.add_latex_line("\pgfmathdeclarefunction{radcos}{1}{\pgfmathparse{cos(deg(#1))}}","BEFORE PSPICTURE")
         self.add_latex_line("\\end{tikzpicture}","END PSPICTURE")
 
         self.xsize=self.bounding_box(self).xsize()

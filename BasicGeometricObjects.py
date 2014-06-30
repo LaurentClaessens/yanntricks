@@ -71,8 +71,8 @@ def SubstitutionMathTikz(fx):
 
     listeSubst = []
     listeSubst.append(["x","(\\x)"])        # Notice the parenthesis because \x^2=-1 when \x=-1
-    listeSubst.append(["sin","radsin"])
-    listeSubst.append(["cos","radcos"])
+    #listeSubst.append(["sin","radsin"])
+    #listeSubst.append(["cos","radcos"])
     listeSubst.append(["<++>","<++>"])
     listeSubst.append(["<++>","<++>"])
     a = fx
@@ -1620,8 +1620,8 @@ class GraphOfAPoint(GraphOfAnObject):
         if abs(y) < 0.0001 :
             y=0
         if pspict :
-            x=x/pspict.xunit
-            y=y/pspict.yunit
+            x=x*pspict.xunit
+            y=y*pspict.yunit
         return str("("+str(x)+","+str(y)+")")
     def coordinatesBr(self):
         raise DeprecationWarning  # June 23, 2014
@@ -3788,7 +3788,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
             deb = numerical_approx(self.mx) 
             fin = numerical_approx(self.Mx)
             curve=self.parametric_curve().graph(deb,fin)
-            return curve.latex_code(language=language)
+            return curve.latex_code(language=language,pspict=pspict)
         return ""
     def __call__(self,xe,numerical=False):
         """
@@ -4312,28 +4312,14 @@ class GraphOfACustomSurface(GraphOfAnObject):
             if self.parameters._hatched :
                 # This is from
                 # http://www.techques.com/question/31-54358/custom-and-built-in-tikz-fill-patterns
+                # position 170321508
                 def_hatching=r"""
-                % defining the new dimensions
-\newlength{\hatchspread}
-\newlength{\hatchthickness}
 % declaring the keys in tikz
 \tikzset{hatchspread/.code={\setlength{\hatchspread}{#1}},
          hatchthickness/.code={\setlength{\hatchthickness}{#1}}}
 % setting the default values
 \tikzset{hatchspread=3pt,
          hatchthickness=0.4pt}
-% declaring the pattern
-\pgfdeclarepatternformonly[\hatchspread,\hatchthickness]% variables
-   {custom north west lines}% name
-   {\pgfqpoint{-2\hatchthickness}{-2\hatchthickness}}% lower left corner
-   {\pgfqpoint{\dimexpr\hatchspread+2\hatchthickness}{\dimexpr\hatchspread+2\hatchthickness}}% upper right corner
-   {\pgfqpoint{\hatchspread}{\hatchspread}}% tile size
-   {% shape description
-    \pgfsetlinewidth{\hatchthickness}
-    \pgfpathmoveto{\pgfqpoint{0pt}{\hatchspread}}
-    \pgfpathlineto{\pgfqpoint{\dimexpr\hatchspread+0.15pt}{-0.15pt}}
-        \pgfusepath{stroke}
-   }
 """
                 a.append(def_hatching)
                 if color==None:
@@ -4956,7 +4942,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
                 plotpoints=100
             import numpy
             Llam=numpy.linspace(initial,final,self.parameters.plotpoints)
-            points_list=[ self.get_point(x) for x in Llam ]
+            points_list=[ self.get_point(x,advised=False) for x in Llam ]
             curve=InterpolationCurve(points_list)
             curve.parameters=self.parameters.copy()
             return curve.latex_code(language=language,pspict=pspict)
