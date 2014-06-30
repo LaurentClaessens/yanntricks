@@ -830,22 +830,26 @@ class GraphOfACircle(GraphOfAnObject):
             bb.AddY(self.center.y-self.radius)
         return bb
     def latex_code(self,language=None,pspict=None):
+        alphaI = radian(self.angleI,number=True,keep_max=True)
+        alphaF = radian(self.angleF,number=True,keep_max=True)
+        if self.angleF.degree==360:        # Because the function radian simplifies modulo 2pi.
+            alphaF=2*pi
+        curve = self.parametric_curve()
+        G = ParametricCurve(curve,alphaI,alphaF)
+        G.parameters=self.parameters.copy()
+        G.parameters.plotpoints=500
+
         if self.wavy:
             waviness = self.waviness
-            alphaI = radian(self.angleI,number=True,keep_max=True)
-            alphaF = radian(self.angleF,number=True,keep_max=True)
-            if self.angleF.degree==360:        # Because the function radian simplifies modulo 2pi.
-                alphaF=2*pi
-            curve = self.parametric_curve()
-            G = ParametricCurve(curve,alphaI,alphaF)
-            #G.add_option(self.params(language=language))
-            # The two following lines are a pity. If I add some properties, I have to change by hand...
-            #G.parameters.style = self.parameters.style
-            #G.parameters.color = self.parameters.color 
-            G.parameters=self.parameters.copy()
             G.wave(waviness.dx,waviness.dy)
             return G.latex_code(language=language,pspict=pspict)
-        else:
+        else :
+            return G.latex_code(language=language,pspict=pspict)
+
+
+        # Now circles are also parametric curves. This makes everything much easier.  June, 30 2014
+        raise DeprecationWarning
+        if False :
             angleI=degree(self.angleI,number=True,converting=False,keep_max=True)
             angleF=degree(self.angleF,number=True,converting=False,keep_max=True)
             if angleI == 0 and angleF == 360 :
@@ -860,8 +864,8 @@ class GraphOfACircle(GraphOfAnObject):
                     # La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
                     #self.add_latex_line("\pscircle["+params+"]("+Cer.center.psName+"){"+str(Cer.radius)+"}")
                 if language=="tikz":
-                    rx=self.radius
-                    ry=rx
+                    rx=numerical_approx(self.radius)
+                    ry=numerical_approx(rx)
                     if self.parameters.visual:
                         rx=numerical_approx(self.radius/pspict.xunit)
                         ry=numerical_approx(self.radius/pspict.yunit)
