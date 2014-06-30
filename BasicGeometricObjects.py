@@ -419,6 +419,54 @@ class GraphOfAnObject(object):
         return code
         #return self.options.code(language=language)
 
+
+def visual_length(v,l,xunit=None,yunit=None,pspict=None):
+    """
+    Return a vector in the direction of v that has *visual* length l taking xunit and yunit into accout.
+
+    In the following example, the cyan vectors are deformed the the X-dilatation while the
+    brown vectors are of length 2.
+
+    .. literalinclude:: phystrickstestVisualLength.py
+    .. image:: Picture_FIGLabelFigtestVisualLengthPICTtestVisualLength-for_eps.png
+
+    """
+    if pspict:
+        xunit=pspict.xunit
+        yunit=pspict.yunit
+    Dx=v.Dx
+    Dy=v.Dy
+    if not v.vertical :
+        slope=v.slope
+        x=l/sqrt(xunit**2+slope**2*yunit**2)
+        if Dx<0:
+            x=-x
+        y=slope*x
+    else:
+        x=0
+        y=l/yunit
+    if hasattr(v,"I"):
+        from phystricks import AffineVector
+        from phystricks import Vector
+        return AffineVector(v.I,v.I+Vector(x,y))
+    else:
+        from phystricks import Vector
+        return Vector(x,y)
+
+
+def visual_polar(P,r,theta,pspict=None):
+    """
+    Return a point at VISUAL coordinates (r,theta) from the point P.
+
+    theta is given in degree.
+    """
+    xunit=pspict.xunit
+    yunit=pspict.yunit
+    alpha=pi*theta/180
+    v=Vector( cos(alpha)/xunit,sin(alpha)/yunit  )
+    w=visual_length(v,r,pspict=pspict)
+    return P+w
+
 class GraphOfASingleAxe(GraphOfAnObject):
     def __init__(self,C,base,mx,Mx,pspict=None):
         GraphOfAnObject.__init__(self,self)
@@ -525,9 +573,14 @@ class GraphOfASingleAxe(GraphOfAnObject):
                 P.put_mark(r,theta,symbol,automatic_place=(pspict,"for axes",self.segment()))
                 bars_list.append(P.mark)
 
-            circle=Circle(P,0.1)    # 0.1 will be the (half)length of the bar
-            a=circle.get_point(bar_angle,numerical=True)
-            b=circle.get_point(bar_angle+180,numerical=True)
+            # The following was not taking (xunit,yunit) into account. June 30, 2014
+            #circle=Circle(P,0.1)    # 0.1 will be the (half)length of the bar
+            #a=circle.get_point(bar_angle,numerical=True)
+            #b=circle.get_point(bar_angle+180,numerical=True)
+
+            a=visual_polar(P,0.1,bar_angle,pspict)
+            b=visual_polar(P,0.1,bar_angle+180,pspict)
+
             seg=Segment(a,b)
             bars_list.append(seg)
         return bars_list
@@ -556,7 +609,7 @@ class GraphOfASingleAxe(GraphOfAnObject):
             c.append(self.mark.latex_code(language,pspict))
         if self.graduation :
             for graph in self.graduation_bars(pspict):
-                c.append(graph.latex_code(language,pspict))
+                c.append(graph.latex_code(language=language,pspict=pspict))
         h=AffineVector(self.segment(pspict))
         c.append(h.latex_code(language,pspict))
         return "\n".join(c)
@@ -2526,7 +2579,7 @@ class GraphOfASegment(GraphOfAnObject):
             yunit=pspict.yunit
         if xunit==None or yunit==None:
             raise TypeError,"When you are here, you have to furnish xunit,yunit or a pspict."
-        return SmallComputations.visual_length(self,l,xunit,yunit,pspict)
+        return visual_length(self,l,xunit,yunit,pspict)
     def add_size_extemity(self,l):
         """
         Add a length <l> at the extremity of the segment. Return a new object.
