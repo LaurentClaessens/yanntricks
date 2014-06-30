@@ -883,6 +883,10 @@ class GraphOfACircle(GraphOfAnObject):
             bb.AddY(self.center.y-self.radius)
         return bb
     def latex_code(self,language=None,pspict=None):
+        if not isinstance(self.angleI,AngleMeasure):
+            self.angleI = AngleMeasure(value_degree=self.angleI)
+        if not isinstance(self.angleF,AngleMeasure):
+            self.angleF = AngleMeasure(value_degree=self.angleF)
         alphaI = radian(self.angleI,number=True,keep_max=True)
         alphaF = radian(self.angleF,number=True,keep_max=True)
         if self.angleF.degree==360:        # Because the function radian simplifies modulo 2pi.
@@ -894,12 +898,10 @@ class GraphOfACircle(GraphOfAnObject):
 
         if self.wavy:
             waviness = self.waviness
-            print("HZHooNnKWcC",G.parameters.color)
             G.wave(waviness.dx,waviness.dy)
             return G.latex_code(language=language,pspict=pspict)
         else :
             return G.latex_code(language=language,pspict=pspict)
-
 
         # Now circles are also parametric curves. This makes everything much easier.  June, 30 2014
         raise DeprecationWarning
