@@ -900,7 +900,6 @@ class GraphOfACircle(GraphOfAnObject):
         G = ParametricCurve(curve,alphaI,alphaF)
         G.parameters=self.parameters.copy()
         G.parameters.plotpoints=500
-        print("ZKWooZKCykl",G.llamI,G.llamF)
 
         if self.wavy:
             waviness = self.waviness
@@ -4119,12 +4118,15 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         custom=CustomSurface(c1,reFsegment,c2,reIsegment)
         #self.parameters.add_to(custom.parameters)     # This line is essentially dedicated to the colors
         #custom.options=self.options
-        if self.parameters.color!=None:
-            self.parameters.filled()
-            self.parameters.fill.color=self.parameters.color
         custom.parameters=self.parameters.copy()
         a.append(custom.latex_code(language=language,pspict=pspict))
 
+        if self.parameters.color!=None :
+            self.Isegment.parameters.color=self.parameters.color
+            self.Fsegment.parameters.color=self.parameters.color
+            self.curve1.parameters.color=self.parameters.color
+            self.curve2.parameters.color=self.parameters.color
+    
         a.append(self.curve1.latex_code(language=language,pspict=pspict))
         a.append(self.curve2.latex_code(language=language,pspict=pspict))
         a.append(reIsegment.latex_code(language=language,pspict=pspict))
@@ -4406,6 +4408,20 @@ class GraphOfACustomSurface(GraphOfAnObject):
         #a.append(";")
         return "\n".join(a)
     def latex_code(self,language=None,pspict=None):
+        """
+        There are two quite different ways to get here. The first is to ask a surface under a function and the second is to ask for a rectangle or a polygon.
+
+        if self.parameters.color is given, this will be the color of the edges
+
+        If one wants to give different colors to edges, one has to ask explicitly using
+        self.Isegment
+        self.Fsegment
+        self.curve1
+        self.curve2
+        in the case of surface between curves.
+
+        If one wants to surface to be filled or hatched, on has to ask explicitly.
+        """
         if language=="pstricks":
             return self.pstricks_code(pspict)
         if language=="tikz":
@@ -4452,15 +4468,29 @@ class GraphOfAPolygon(GraphOfAnObject):
     def bounding_box(self,pspict=None):
         return self.math_bounding_box(pspict)
     def latex_code(self,language=None,pspict=None):
+        """
+        If self.parameters.color is not None, it will be the color of the edges.
+
+        If one wants to fill or hatch, one has to ask explicitly.
+        """
         a=[]
-        custom=CustomSurface(self.edges_list)
-        custom.parameters=self.parameters.copy()
-        a.append(custom.latex_code(language=language,pspict=pspict))
+        if self.parameters._hatched or self.parameters._filled :
+            custom=CustomSurface(self.edges_list)
+            custom.parameters=self.parameters.copy()
+            a.append(custom.latex_code(language=language,pspict=pspict))
+
+        if self.parameters.color!=None:
+            self.draw_edges=True
+            for edge in self.edges_list:
+                edge.parameters.color=self.parameters.color
 
         if self.draw_edges:
             for edge in self.edges_list:
                 if not self.independent_edge :
                     edge.parameters=self.edge.parameters
+                    if self.parameters.color!=None:
+                        edge.parameters.color=self.parameters.color
+
                 a.append(edge.latex_code(language=language,pspict=pspict))
         return "\n".join(a)
 
