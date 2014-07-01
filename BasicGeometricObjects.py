@@ -3234,7 +3234,6 @@ class GraphOfARectangle(GraphOfAnObject):
         self.segments=[self.segment_N,self.segment_S,self.segment_E,self.segment_W]
         for s in self.segments:
             s.parameters=None
-
     def polygon(self):
         polygon= Polygon(self.NW,self.NE,self.SE,self.SW)
         polygon.parameters=self.parameters.copy()
@@ -4120,6 +4119,9 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         custom=CustomSurface(c1,reFsegment,c2,reIsegment)
         #self.parameters.add_to(custom.parameters)     # This line is essentially dedicated to the colors
         #custom.options=self.options
+        if self.parameters.color!=None:
+            self.parameters.filled()
+            self.parameters.fill.color=self.parameters.color
         custom.parameters=self.parameters.copy()
         a.append(custom.latex_code(language=language,pspict=pspict))
 

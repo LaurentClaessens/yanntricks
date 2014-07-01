@@ -750,7 +750,7 @@ def SurfaceUnderFunction(f,mx,Mx):
         return surf
     f2=0
     return SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
-    return BasicGeometricObjects.SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
+    #return BasicGeometricObjects.SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
 
 def Polygon(*args):
     """
