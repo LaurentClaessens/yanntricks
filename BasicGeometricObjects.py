@@ -1882,6 +1882,7 @@ class GeometricImplicitCurve(object):
     """
     def __init__(self,f):
         self.f=f
+        self.parameters=Parameters()
         from sage.symbolic.expression import is_SymbolicEquation
         if is_SymbolicEquation(f):
             if f.operator() != operator.eq:
@@ -1908,6 +1909,7 @@ class GeometricImplicitCurve(object):
 
         """
         gr = GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
+        gr.parameters=self.parameters.copy()
         return gr
     def __str__(self):
         """
@@ -2042,6 +2044,7 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
         code=[]
         for path in self.paths:
             curve=InterpolationCurve(path,context_object=self)
+            curve.parameters=self.parameters.copy()
             code.append(curve.latex_code(language=language,pspict=pspict))
         return "\n".join(code)
 
