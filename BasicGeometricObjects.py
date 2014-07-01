@@ -715,9 +715,12 @@ class GraphOfACircle(GraphOfAnObject):
             f2 = phyFunction(self.center.y+self.radius*sin(x))
             self._parametric_curve = ParametricCurve(f1,f2)
         curve=self._parametric_curve
-        if a == None :
+        curve.parameters=self.parameters.copy()
+        print("WRCooOkdQTH",a,b)
+        if a==None :
             return curve
         else :
+            print("AWGooYEVIYJ",a,b)
             return curve.graph(a,b)
 
     def get_point(self,theta,advised=True,numerical=False):
@@ -901,12 +904,19 @@ class GraphOfACircle(GraphOfAnObject):
         G.parameters=self.parameters.copy()
         G.parameters.plotpoints=500
 
+        a=[]
+        if self.parameters._filled or self.parameters._hatched:
+            custom=CustomSurface( [self.parametric_curve(alphaI,alphaF)] )
+            custom.parameters=self.parameters.copy()
+            a.append(custom.latex_code(language=language,pspict=pspict))
+
         if self.wavy:
             waviness = self.waviness
             G.wave(waviness.dx,waviness.dy)
-            return G.latex_code(language=language,pspict=pspict)
+            a.append( G.latex_code(language=language,pspict=pspict))
         else :
-            return G.latex_code(language=language,pspict=pspict)
+            a.append( G.latex_code(language=language,pspict=pspict))
+        return "\n".join(a)
 
         # Now circles are also parametric curves. This makes everything much easier.  June, 30 2014
         raise DeprecationWarning
@@ -5045,7 +5055,8 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             if plotpoints==None :
                 plotpoints=100
             import numpy
-            Llam=numpy.linspace(initial,final,self.parameters.plotpoints)
+            print("LHDooYaoaHI",initial,final,plotpoints)
+            Llam=numpy.linspace(initial,final,plotpoints)
             points_list=[ self.get_point(x,advised=False) for x in Llam ]
             curve=InterpolationCurve(points_list)
             curve.parameters=self.parameters.copy()
