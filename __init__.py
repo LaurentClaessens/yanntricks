@@ -232,8 +232,8 @@ def EnsurephyFunction(f):
         k = f.phyFunction()
     else :
         k = phyFunction(f)
-    if "is_zero" in dir(f):
-        k.is_zero = f.is_zero
+    if "nul_function" in dir(f):
+        k.nul_function = f.nul_function
     return k
 
 def EnsureParametricCurve(curve):
@@ -687,13 +687,23 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval1=(None,None),interval2
     .. image:: Picture_FIGLabelFigBetweenParametricPICTBetweenParametric-for_eps.png
 
     """
+    
+    exceptions = [BasicGeometricObjects.GraphOfACircle,BasicGeometricObjects.GraphOfASegment]
+    on=True
+    for ex in exceptions :
+        if isinstance(curve1,ex):
+            on=False
+    if on:
+        iz11=curve1.f1.nul_function
+        iz21=curve2.f1.nul_function
 
-    if not isinstance(curve1,BasicGeometricObjects.GraphOfACircle):
-        iz11=curve1.f1.is_zero
-        iz21=curve2.f1.is_zero
-    if not isinstance(curve1,BasicGeometricObjects.GraphOfACircle):
-        iz22=curve2.f2.is_zero
-        iz12=curve1.f2.is_zero
+    on=True
+    for ex in exceptions :
+        if isinstance(curve2,ex):
+            on=False
+    if on:
+        iz22=curve2.f2.nul_function
+        iz12=curve1.f2.nul_function
 
     curve=[curve1,curve2]
     mx=[None,None]
@@ -723,10 +733,10 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval1=(None,None),interval2
     Mx2=Mx[1]
 
     try :
-        c1.f1.is_zero=iz11
-        c1.f2.is_zero=iz12
-        c2.f1.is_zero=iz21
-        c2.f2.is_zero=iz22
+        c1.f1.nul_function=iz11
+        c1.f2.nul_function=iz12
+        c2.f1.nul_function=iz21
+        c2.f2.nul_function=iz22
     except UnboundLocalError :
         pass
 
@@ -766,7 +776,7 @@ def SurfaceUnderFunction(f,mx,Mx):
         surf.add_option("fillstyle=vlines,linestyle=none")  
         return surf
     f2=phyFunction(0)
-    f2.is_zero=True     # Serves to compute the bounding box, see 2252914222
+    f2.nul_function=True     # Serves to compute the bounding box, see 2252914222
     return SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
     #return BasicGeometricObjects.SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
 
@@ -1244,7 +1254,7 @@ def CircleOA(O,A):
     radius=sqrt( (O.x-A.x)**2+(O.y-A.y)**2 )
     return Circle(O,radius)
 
-def Point(x,y):
+def Point(a,b):
     """
     return a point.
 
@@ -1277,7 +1287,7 @@ def Point(x,y):
 
                 
     """
-    return BasicGeometricObjects.GraphOfAPoint(x,y)
+    return BasicGeometricObjects.GraphOfAPoint(a,b)
 
 def PolarPoint(r,theta):
     """

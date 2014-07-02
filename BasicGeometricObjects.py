@@ -712,7 +712,13 @@ class GraphOfACircle(GraphOfAnObject):
             x=var('x')
             f1 = phyFunction(self.center.x+self.radius*cos(x))
             f2 = phyFunction(self.center.y+self.radius*sin(x))
-            self._parametric_curve = ParametricCurve(f1,f2,(self.angleI.radian,self.angleF.radian))
+            try :
+                ai=self.angleI.radian
+                af=self.angleF.radian
+            except AttributeError:
+                ai=self.angleI
+                af=self.angleF
+            self._parametric_curve = ParametricCurve(f1,f2,(ai,af))
         curve=self._parametric_curve
         curve.parameters=self.parameters.copy()
         if a==None :
@@ -1394,9 +1400,9 @@ def extract_interval_information(curve):
 class GraphOfAPoint(GraphOfAnObject):
     NomPointLibre = PointsNameList()
 
-    def __init__(self,x,y):
-        self.x=SR(x)
-        self.y=SR(y)
+    def __init__(self,a,b):
+        self.x=SR(a)
+        self.y=SR(b)
         GraphOfAnObject.__init__(self,self)
         #self.psName = point.psName      # The psName of the point is erased when running Point.__init__
                                          # This line is no more useful (April 29 2011)
@@ -2299,7 +2305,7 @@ class GraphOfASegment(GraphOfAnObject):
         l=self.length()
         f1=phyFunction(self.I.x+x*(self.F.x-self.I.x)/l)
         f2=phyFunction(self.I.y+x*(self.F.y-self.I.y)/l)
-        return ParametricCurve(f1,f2)
+        return ParametricCurve(f1,f2,(0,l))
 
     def copy(self):
         v=Segment(self.I,self.F)
@@ -3543,7 +3549,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
                                                 # exceed the cutting values.
         self.pieces=[]      
         self.parameters.color = "blue"              # Modification with respect to the attribute in GraphOfAnObject
-        self.is_zero=None
+        self.nul_function=None
 
     def parametric_curve(self):
         """
@@ -4136,7 +4142,6 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         if self.parameters._filled or self.parameters._hatched :
             custom=CustomSurface(c1,reFsegment,c2,reIsegment)
             custom.parameters=self.parameters.copy()
-            print("FDXooQXlEdq",custom.parameters._filled,custom.parameters.fill.color)
             a.append(custom.latex_code(language=language,pspict=pspict))
 
         if self.parameters.color!=None :
@@ -4529,6 +4534,8 @@ class GraphOfAParametricCurve(GraphOfAnObject):
                             such a function have too fast oscillations.
 
         """
+        if isinstance(f1,GraphOfAParametricCurve):
+            raise
         GraphOfAnObject.__init__(self,self)
         self._derivative_dict={0:self}
         self.f1=f1
@@ -4850,9 +4857,9 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         d = MyMinMax(parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) ).get_minmax_data(),decimals=decimals)
         # for the curve (x,0), Sage gives a bounding box ymin=-1,ymax=1.
         # In order to avoid that problem, when the surface under a function is created, the second curve (the one of y=0)
-        # is given the attribute is_zero to True
+        # is given the attribute nul_function to True
         # See 2252914222
-        if self.f2.is_zero:
+        if self.f2.nul_function:
             d["ymin"]=0
             d["ymax"]=0
         return d
