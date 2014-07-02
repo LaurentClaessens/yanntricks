@@ -622,7 +622,6 @@ class GraphOfASingleAxe(GraphOfAnObject):
 #    CerB.parameters.fill.color="blue"
 # See the picture RouletteACaVVA
 
-
 class GraphOfACircle(GraphOfAnObject):
     """
     This is a circle, or an arc of circle.
@@ -716,11 +715,9 @@ class GraphOfACircle(GraphOfAnObject):
             self._parametric_curve = ParametricCurve(f1,f2)
         curve=self._parametric_curve
         curve.parameters=self.parameters.copy()
-        print("WRCooOkdQTH",a,b)
         if a==None :
             return curve
         else :
-            print("AWGooYEVIYJ",a,b)
             return curve.graph(a,b)
 
     def get_point(self,theta,advised=True,numerical=False):
@@ -3517,11 +3514,12 @@ class GraphOfAphyFunction(GraphOfAnObject):
         self.sage=fun
         try :
             self.sageFast = self.sage._fast_float_(x)
-        except (NotImplementedError,TypeError,ValueError) :    
+        except (NotImplementedError,TypeError,ValueError,AttributeError) : 
             # Happens when the derivative of the function is not implemented in Sage
             # Also happens when there is a free variable,
             # as an example
             # F=GraphOfAVectorField(x,y)
+            # Also when something non analytic is given like a distribution.
             self.sageFast = self.sage
         self.string = repr(self.sage)
         self.fx = self.string.replace("x |--> ","")
@@ -3546,6 +3544,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
                                                 # exceed the cutting values.
         self.pieces=[]      
         self.parameters.color = "blue"              # Modification with respect to the attribute in GraphOfAnObject
+        self.is_zero=None
 
     def parametric_curve(self):
         """
@@ -3891,7 +3890,10 @@ class GraphOfAphyFunction(GraphOfAnObject):
         if numerical :
             return numerical_approx(self.sageFast(xe))
         else :
-            return self.sage(x=xe)
+            try :
+                return self.sage(x=xe)
+            except TypeError:       # Happens when one has a distribution function
+                return self.sage(xe)
     def __pow__(self,n):
         return phyFunction(self.sage**n)
     def __mul__(self,other):
@@ -4129,8 +4131,6 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         reFsegment.parameters=self.Fsegment.parameters
 
         custom=CustomSurface(c1,reFsegment,c2,reIsegment)
-        #self.parameters.add_to(custom.parameters)     # This line is essentially dedicated to the colors
-        #custom.options=self.options
         custom.parameters=self.parameters.copy()
         a.append(custom.latex_code(language=language,pspict=pspict))
 
@@ -4842,12 +4842,23 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         It turns out the Sage's get_minmax_data produce unpredictable figures.
 
         """
-        return MyMinMax(parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) ).get_minmax_data(),decimals=decimals)
+        d = MyMinMax(parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) ).get_minmax_data(),decimals=decimals)
+        # for the curve (x,0), Sage gives a bounding box ymin=-1,ymax=1.
+        # In order to avoid that problem, when the surface under a function is created, the second curve (the one of y=0)
+        # is given the attribute is_zero to True
+        # See 2252914222
+        print("KUSooWaAGWK",d,self.f2.sage,self.f2.is_zero)
+        if self.f2.is_zero:
+            d["ymin"]=0
+            d["ymax"]=0
+        print("VPNooCwFRkp",d)
+        return d
     def xmax(self,deb,fin):
         return self.get_minmax_data(deb,fin)['xmax']
     def xmin(self,deb,fin):
         return self.get_minmax_data(deb,fin)['xmin']
     def ymax(self,deb,fin):
+        print("AFGooRBhVXc",self.get_minmax_data(deb,fin))
         return self.get_minmax_data(deb,fin)['ymax']
     def ymin(self,deb,fin):
         return self.get_minmax_data(deb,fin)['ymin']
@@ -5053,14 +5064,14 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             params=self.params(language="tikz")
             plotpoints=self.parameters.plotpoints
             if plotpoints==None :
+                print("XYMooUXxNYT -- je ne devrais pas")
                 plotpoints=100
             import numpy
-            print("LHDooYaoaHI",initial,final,plotpoints)
             Llam=numpy.linspace(initial,final,plotpoints)
             points_list=[ self.get_point(x,advised=False) for x in Llam ]
             curve=InterpolationCurve(points_list)
             curve.parameters=self.parameters.copy()
-            return curve.latex_code(language=language,pspict=pspict)
+            a.append( curve.latex_code(language=language,pspict=pspict))
                 #Everything is InterpolationCurve. June 27, 2014
                 #params=params+",smooth,domain={0}:{1}".format(str(initial),str(final))
                 #x=var('x')

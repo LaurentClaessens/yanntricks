@@ -291,8 +291,12 @@ def ParametricCurve(*args,**opt):
         if len(args)>2:
             llamI=args[2]
             llamF=args[3]
+        iz1=f1.is_zero
+        iz2=f2.is_zero
         f1=EnsurephyFunction(f1)
         f2=EnsurephyFunction(f2)
+        f1.is_zero=iz1
+        f2.is_zero=iz2
     # Then we consider the case in which the first argument is a parametric curve
     else :
         f1=EnsurephyFunction(args[0].f1)
@@ -380,7 +384,10 @@ def phyFunction(fun,mx=None,Mx=None):
     try:
         sy=symbolic_expression(fun)
     except TypeError:       # This deals with probability distributions for example.
-        return BasicGeometricObjects.NonAnalyticFunction(fun,mx,Mx)
+        return BasicGeometricObjects.GraphOfAphyFunction(fun,mx,Mx)
+
+        # I'm trying not to use NonAnalytic anymore, July 1, 2014
+        #return BasicGeometricObjects.NonAnalyticFunction(fun,mx,Mx)
     x=var('x')
     return BasicGeometricObjects.GraphOfAphyFunction(sy.function(x),mx,Mx)
 
@@ -689,6 +696,16 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,reverse1=False,re
     .. image:: Picture_FIGLabelFigBetweenParametricPICTBetweenParametric-for_eps.png
 
     """
+    iz11=curve1.f1.is_zero
+    iz12=curve1.f2.is_zero
+    iz21=curve2.f1.is_zero
+    iz22=curve2.f2.is_zero
+    print("ZGIooSjpafi")
+    print(curve1.f1.sage,curve1.f1.is_zero)
+    print(curve1.f2.sage,curve1.f2.is_zero)
+    print(curve2.f1.sage,curve2.f1.is_zero)
+    print(curve2.f2.sage,curve2.f2.is_zero)
+
     curve=[curve1,curve2]
     mx=[None,None]
     Mx=[None,None]
@@ -713,6 +730,17 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,reverse1=False,re
     mx2=mx[1]
     Mx1=Mx[0]
     Mx2=Mx[1]
+
+    curve1.f1.is_zero=iz11
+    curve1.f2.is_zero=iz12
+    curve2.f1.is_zero=iz21
+    curve2.f2.is_zero=iz22
+
+    print("ECOooLkweHC")
+    print(curve1.f1,curve1.f1.is_zero)
+    print(curve1.f2,curve1.f2.is_zero)
+    print(curve2.f1,curve2.f1.is_zero)
+    print(curve2.f2,curve2.f2.is_zero)
 
     surf = BasicGeometricObjects.GraphOfASurfaceBetweenParametricCurves(curve1,curve2,mx1,mx2,Mx1,Mx2,reverse1,reverse2)
     surf.add_option("fillstyle=vlines,linestyle=none")  
@@ -743,12 +771,14 @@ def SurfaceUnderFunction(f,mx,Mx):
 
     """
     if isinstance(f,BasicGeometricObjects.NonAnalyticFunction):
+        print("FPNooDPSRPQ -- heu...")
         line1=Segment(Point(mx,0),Point(Mx,0))
         line2=f.parametric_curve(mx,Mx)
         surf = BasicGeometricObjects.SurfaceBetweenLines(line1,line2)
         surf.add_option("fillstyle=vlines,linestyle=none")  
         return surf
-    f2=0
+    f2=phyFunction(0)
+    f2.is_zero=True     # Serves to compute the bounding box, see 2252914222
     return SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
     #return BasicGeometricObjects.SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
 
@@ -868,6 +898,7 @@ def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
     x=var('x')
     curve1=ParametricCurve(x,f1,mx1,Mx1)
     curve2=ParametricCurve(x,f2,mx2,Mx2)
+    print("YUWooAQUBrY",f2.is_zero)
     return SurfaceBetweenParametricCurves(curve1,curve2)
 
 def Vector(*args):
@@ -1154,7 +1185,8 @@ class AxesUnit(object):
                 l.append((x,"$"+latex(x)+"$"))
             else :
                 pos=(x/self.numerical_value)*k
-                text="$"+latex(pos).replace("\mbox{TheTag}",self.latex_symbol)+"$"  # This risks to be Sage-version dependent.
+                print("TMHooVWdGTE",k,pos)
+                text="$"+latex(pos).replace("TheTag",self.latex_symbol)+"$"  # This risks to be Sage-version dependent.
                 l.append((x,text))
         return l
 
