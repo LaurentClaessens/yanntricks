@@ -700,11 +700,6 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,reverse1=False,re
     iz12=curve1.f2.is_zero
     iz21=curve2.f1.is_zero
     iz22=curve2.f2.is_zero
-    print("ZGIooSjpafi")
-    print(curve1.f1.sage,curve1.f1.is_zero)
-    print(curve1.f2.sage,curve1.f2.is_zero)
-    print(curve2.f1.sage,curve2.f1.is_zero)
-    print(curve2.f2.sage,curve2.f2.is_zero)
 
     curve=[curve1,curve2]
     mx=[None,None]
@@ -735,12 +730,6 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,reverse1=False,re
     curve1.f2.is_zero=iz12
     curve2.f1.is_zero=iz21
     curve2.f2.is_zero=iz22
-
-    print("ECOooLkweHC")
-    print(curve1.f1,curve1.f1.is_zero)
-    print(curve1.f2,curve1.f2.is_zero)
-    print(curve2.f1,curve2.f1.is_zero)
-    print(curve2.f2,curve2.f2.is_zero)
 
     surf = BasicGeometricObjects.GraphOfASurfaceBetweenParametricCurves(curve1,curve2,mx1,mx2,Mx1,Mx2,reverse1,reverse2)
     surf.add_option("fillstyle=vlines,linestyle=none")  
@@ -898,7 +887,6 @@ def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
     x=var('x')
     curve1=ParametricCurve(x,f1,mx1,Mx1)
     curve2=ParametricCurve(x,f2,mx2,Mx2)
-    print("YUWooAQUBrY",f2.is_zero)
     return SurfaceBetweenParametricCurves(curve1,curve2)
 
 def Vector(*args):

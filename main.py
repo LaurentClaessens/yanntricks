@@ -967,9 +967,7 @@ class pspicture(object):
             self.axes.add_bounding_box(self.math_BB,self)     # Here the axes take into account the content of pspict.
             graph=self.axes
             if self.axes.do_enlarge :
-                print("FEGooLyUYiC",self.axes.single_axeX.mx,self.axes.single_axeX.Mx,self.axes.single_axeY.mx,self.axes.single_axeY.Mx)
                 self.axes.enlarge_a_little(self.axes.enlarge_size,pspict=self)  # This should be the only call to enlarge_a_little
-                print("ZAXooUDxjjm",self.axes.single_axeX.mx,self.axes.single_axeX.Mx,self.axes.single_axeY.mx,self.axes.single_axeY.Mx)
 
             separator_name=graph.separator_name
             self.add_latex_line(graph.latex_code(language=language,pspict=self),separator_name)

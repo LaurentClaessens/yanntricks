@@ -4847,18 +4847,15 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         # In order to avoid that problem, when the surface under a function is created, the second curve (the one of y=0)
         # is given the attribute is_zero to True
         # See 2252914222
-        print("KUSooWaAGWK",d,self.f2.sage,self.f2.is_zero)
         if self.f2.is_zero:
             d["ymin"]=0
             d["ymax"]=0
-        print("VPNooCwFRkp",d)
         return d
     def xmax(self,deb,fin):
         return self.get_minmax_data(deb,fin)['xmax']
     def xmin(self,deb,fin):
         return self.get_minmax_data(deb,fin)['xmin']
     def ymax(self,deb,fin):
-        print("AFGooRBhVXc",self.get_minmax_data(deb,fin))
         return self.get_minmax_data(deb,fin)['ymax']
     def ymin(self,deb,fin):
         return self.get_minmax_data(deb,fin)['ymin']
