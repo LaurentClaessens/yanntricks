@@ -226,12 +226,16 @@ def Intersection(f,g):
     return pts
 
 def EnsurephyFunction(f):
+    if "is_zero" in dir(f):
+        iz=f.is_zero
     if "sage" in dir(f):        # This tests in the same time if the type if phyFunction or GraphOfAphyFunction
-        return phyFunction(f.sage)
+        k = phyFunction(f.sage)
     if "phyFunction" in dir(f):
-        return f.phyFunction()
+        k = f.phyFunction()
     else :
-        return phyFunction(f)
+        k = phyFunction(f)
+    k.is_zero = iz
+    return k
 
 def EnsureParametricCurve(curve):
     if "parametric_curve" in dir(curve):
@@ -246,18 +250,16 @@ def PolarSegment(P,r,theta):
     alpha = radian(theta)
     return Segment(P, Point(P.x+r*cos(alpha),P.y+r*sin(alpha)) )
 
-def ParametricCurve(*args,**opt):
+def ParametricCurve(f1,f2,interval=(None,None)):
     """
     This class describes a parametric curve.
 
     INPUT:
 
     - ``f1,f2`` - functions that are the components of the parametric curve.
-    - ``mx,Mx`` - (optionals) Initial and final value of the parameter.
+    - 'interval' - the interval on which the curve is considered.
 
-    Alternatively you can give a parametric curve as only argument.
-
-    If `mx` and `Mx` are given, a graph object is returned.
+    If 'f1' has mx and Mx and interval is not given, they are used.
 
     OUTPUT:
     an object ready to be drawn.
@@ -283,30 +285,20 @@ def ParametricCurve(*args,**opt):
 
     """
     # First, we consider the case in which two functions are given
-    llamI=None
-    llamF=None
-    if "f2" not in dir(args[0]):
-        f1=args[0]
-        f2=args[1]
-        if len(args)>2:
-            llamI=args[2]
-            llamF=args[3]
-        iz1=f1.is_zero
-        iz2=f2.is_zero
-        f1=EnsurephyFunction(f1)
-        f2=EnsurephyFunction(f2)
-        f1.is_zero=iz1
-        f2.is_zero=iz2
-    # Then we consider the case in which the first argument is a parametric curve
-    else :
-        f1=EnsurephyFunction(args[0].f1)
-        f2=EnsurephyFunction(args[0].f2)
-        if len(args)>1:
-            llamI=args[1]
-            llamF=args[2]
-    if "mx" in opt.keys() and "Mx" in opt.keys() :
-        llamI=opt["mx"]
-        llamF=opt["Mx"]
+    llamI=interval[0]
+    llamF=interval[1]
+
+    if "mx" in dir(f1) :
+        if f1.mx != None:
+            llamI=f1.mx
+            llamF=f1.Mx
+
+    f1=EnsurephyFunction(f1)
+    f2=EnsurephyFunction(f2)
+
+    if isinstance(llamI,AngleMeasure):
+        raise
+
     return BasicGeometricObjects.GraphOfAParametricCurve(f1,f2,llamI,llamF)
 
 def PolarCurve(fr,ftheta=None):
@@ -613,13 +605,13 @@ def ImplicitCurve(f,xrange,yrange,plot_points=100):
     return BasicGeometricObjects.GeometricImplicitCurve(f).graph(xrange,yrange,plot_points=100)
 
 
-def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,reverse1=False,reverse2=True):
+def SurfaceBetweenParametricCurves(curve1,curve2,interval1=(None,None),interval2=(None,None),reverse1=False,reverse2=True):
     """
     Represents a surface between two parametric curves.
 
-    INPUT:
+    'curve1' and 'curve2' are parametric curves or objects that have a method 'parametric_curve'
 
-    - ``curve1,curve2`` - two parametric curves.
+    'interval1' and 'interval2' are tuples. If 'interval2' is not given, it is fixed to be the same as interval2
 
     OPTIONAL ARGUMENTS :
     - ``(mx1,Mx1)`` - a tuple. Initial and final values of the parameter for the first curve.
@@ -696,42 +688,50 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,reverse1=False,re
     .. image:: Picture_FIGLabelFigBetweenParametricPICTBetweenParametric-for_eps.png
 
     """
-    iz11=curve1.f1.is_zero
-    iz12=curve1.f2.is_zero
-    iz21=curve2.f1.is_zero
-    iz22=curve2.f2.is_zero
+
+    if not isinstance(curve1,BasicGeometricObjects.GraphOfACircle):
+        iz11=curve1.f1.is_zero
+        iz21=curve2.f1.is_zero
+    if not isinstance(curve1,BasicGeometricObjects.GraphOfACircle):
+        iz22=curve2.f2.is_zero
+        iz12=curve1.f2.is_zero
 
     curve=[curve1,curve2]
     mx=[None,None]
     Mx=[None,None]
     for i in [0,1]:
-        if isinstance(curve[i],tuple) :
-            mx[i]=curve[i][1]
-            Mx[i]=curve[i][2]
-            curve[i]=EnsureParametricCurve(curve[i][0]).graph(mx[i],Mx[i])
-        else :
-            mx[i],Mx[i]=BasicGeometricObjects.extract_interval_information(curve[i])
-            curve[i]=EnsureParametricCurve(curve[i]).graph(mx[i],Mx[i])
-        if interval:
-            mx[i]=interval[0]
-            Mx[i]=interval[1]
-        if mx[i] == None :
-            raise ValueError, "Cannot determinate the initial or final value of the parameter for %s"%str(curve[i])
-        if "parameters" in dir(curve[i]):
-            curve[i].parameters.replace_to(curve[i].parameters)
-    curve1=curve[0]
-    curve2=curve[1]
+        #if isinstance(curve[i],tuple) :
+        #    mx[i]=curve[i][1]
+        #    Mx[i]=curve[i][2]
+        #    curve[i]=EnsureParametricCurve(curve[i][0]).graph(mx[i],Mx[i])
+        mx[i],Mx[i]=BasicGeometricObjects.extract_interval_information(curve[i])
+        if interval1 != (None,None):
+            mx[0]=interval1[0]
+            Mx[0]=interval1[1]
+            mx[1]=interval2[0]
+            Mx[1]=interval2[1]
+        curve[i]=EnsureParametricCurve(curve[i]).graph(mx[i],Mx[i])
+
+    if mx[0] != None and mx[1] == None:
+        mx[1]=mx[0]
+        Mx[1]=Mx[0]
+
+    c1=curve[0]
+    c2=curve[1]
     mx1=mx[0]
     mx2=mx[1]
     Mx1=Mx[0]
     Mx2=Mx[1]
 
-    curve1.f1.is_zero=iz11
-    curve1.f2.is_zero=iz12
-    curve2.f1.is_zero=iz21
-    curve2.f2.is_zero=iz22
+    try :
+        c1.f1.is_zero=iz11
+        c1.f2.is_zero=iz12
+        c2.f1.is_zero=iz21
+        c2.f2.is_zero=iz22
+    except UnboundLocalError :
+        pass
 
-    surf = BasicGeometricObjects.GraphOfASurfaceBetweenParametricCurves(curve1,curve2,mx1,mx2,Mx1,Mx2,reverse1,reverse2)
+    surf = BasicGeometricObjects.GraphOfASurfaceBetweenParametricCurves(c1,c2,(mx1,mx2),(Mx1,Mx2),reverse1,reverse2)
     surf.add_option("fillstyle=vlines,linestyle=none")  
     return surf
 
@@ -885,9 +885,9 @@ def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
     if Mx2 is None:
         Mx2=Mx
     x=var('x')
-    curve1=ParametricCurve(x,f1,mx1,Mx1)
-    curve2=ParametricCurve(x,f2,mx2,Mx2)
-    return SurfaceBetweenParametricCurves(curve1,curve2)
+    curve1=ParametricCurve(x,f1,(mx1,Mx1))
+    curve2=ParametricCurve(x,f2,(mx2,Mx2))
+    return SurfaceBetweenParametricCurves(curve1,curve2,(mx1,Mx1),(mx2,Mx2))
 
 def Vector(*args):
     """

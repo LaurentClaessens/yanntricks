@@ -712,7 +712,7 @@ class GraphOfACircle(GraphOfAnObject):
             x=var('x')
             f1 = phyFunction(self.center.x+self.radius*cos(x))
             f2 = phyFunction(self.center.y+self.radius*sin(x))
-            self._parametric_curve = ParametricCurve(f1,f2)
+            self._parametric_curve = ParametricCurve(f1,f2,(self.angleI.radian,self.angleF.radian))
         curve=self._parametric_curve
         curve.parameters=self.parameters.copy()
         if a==None :
@@ -4077,7 +4077,7 @@ class SurfaceBetweenLines(GraphOfAnObject):
 # with the right particularization.
 
 class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
-    def __init__(self,curve1,curve2, mx1, mx2,Mx1,Mx2,reverse1=False,reverse2=True):
+    def __init__(self,curve1,curve2,interval1=(None,None),interval2=(None,None),reverse1=False,reverse2=True):
         # TODO: I think that the parameters reverse1 and reverse2 are no more useful
         #   since I enforce the condition curve1 : left -> right by hand.
         GraphOfAnObject.__init__(self,self)
@@ -4085,16 +4085,20 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         self.curve1=curve1
         self.curve2=curve2
 
-        self.f1=self.curve1       # TODO: Soon or later, one will have to fusion these two
-        self.f2=self.curve2        
+        #self.f1=self.curve1       # TODO: Soon or later, one will have to fusion these two
+        #self.f2=self.curve2        
 
-        self.mx1=mx1
-        self.mx2=mx2
-        self.Mx1=Mx1
-        self.Mx2=Mx2
+        self.mx1=interval1[0]
+        self.mx2=interval1[1]
+        self.Mx1=interval2[0]
+        self.Mx2=interval2[1]
         for attr in [self.mx1,self.mx2,self.Mx1,self.Mx2]:
             if attr == None:
                 raise TypeError,"At this point, initial and final values have to be already chosen"
+        self.curve1.llamI=self.mx1
+        self.curve1.llamF=self.Mx1
+        self.curve2.llamI=self.mx2
+        self.curve2.llamF=self.Mx2
 
         self.Isegment=Segment(self.curve2.get_point(self.mx2,advised=False),self.curve1.get_point(self.mx1,advised=False))
         self.Fsegment=Segment(self.curve1.get_point(self.Mx1,advised=False),self.curve2.get_point(self.Mx2,advised=False))
@@ -4130,9 +4134,11 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         reIsegment.parameters=self.Isegment.parameters
         reFsegment.parameters=self.Fsegment.parameters
 
-        custom=CustomSurface(c1,reFsegment,c2,reIsegment)
-        custom.parameters=self.parameters.copy()
-        a.append(custom.latex_code(language=language,pspict=pspict))
+        if self.parameters._filled or self.parameters._hatched :
+            custom=CustomSurface(c1,reFsegment,c2,reIsegment)
+            custom.parameters=self.parameters.copy()
+            print("FDXooQXlEdq",custom.parameters._filled,custom.parameters.fill.color)
+            a.append(custom.latex_code(language=language,pspict=pspict))
 
         if self.parameters.color!=None :
             self.Isegment.parameters.color=self.parameters.color
@@ -4380,8 +4386,6 @@ class GraphOfACustomSurface(GraphOfAnObject):
             color=self.parameters.fill.color
         if self.parameters._hatched and self.parameters.hatch.color:
             color=self.parameters.hatch.color
-        if self.parameters.color:
-            color=self.parameters.color
         if self.parameters._filled or self.parameters._hatched :
             l=[]
             for obj in self.graphList :
@@ -4842,6 +4846,8 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         It turns out the Sage's get_minmax_data produce unpredictable figures.
 
         """
+        if deb==None:
+            raise
         d = MyMinMax(parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) ).get_minmax_data(),decimals=decimals)
         # for the curve (x,0), Sage gives a bounding box ymin=-1,ymax=1.
         # In order to avoid that problem, when the surface under a function is created, the second curve (the one of y=0)
@@ -4996,7 +5002,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         g2=-sin(alpha)*self.f1+cos(alpha)*self.f2
         return ParametricCurve(g1,g2)
     def graph(self,mx,Mx):
-        gr = ParametricCurve(self.f1,self.f2,mx,Mx)
+        gr = ParametricCurve(self.f1,self.f2,(mx,Mx))
         gr.parameters=self.parameters.copy()
         return gr
     def __call__(self,llam,approx=False):
@@ -5061,7 +5067,6 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             params=self.params(language="tikz")
             plotpoints=self.parameters.plotpoints
             if plotpoints==None :
-                print("XYMooUXxNYT -- je ne devrais pas")
                 plotpoints=100
             import numpy
             Llam=numpy.linspace(initial,final,plotpoints)

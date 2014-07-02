@@ -1000,7 +1000,7 @@ class pspicture(object):
                 self.add_latex_line(graph.latex_code(language=self.language,pspict=self),separator_name)
                 list_used_separators.append(separator_name)
             except AttributeError,data:
-                if not "pstricks_code" in dir(graph):
+                if not "latex_code" in dir(graph):
                     print "phystricks error: object %s has no pstricks_code method"%(str(graph))
                 raise
         self.separator_list.fusion(list_used_separators,"PSTRICKS CODE")
