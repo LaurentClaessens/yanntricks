@@ -226,15 +226,14 @@ def Intersection(f,g):
     return pts
 
 def EnsurephyFunction(f):
-    if "is_zero" in dir(f):
-        iz=f.is_zero
     if "sage" in dir(f):        # This tests in the same time if the type if phyFunction or GraphOfAphyFunction
         k = phyFunction(f.sage)
     if "phyFunction" in dir(f):
         k = f.phyFunction()
     else :
         k = phyFunction(f)
-    k.is_zero = iz
+    if "is_zero" in dir(f):
+        k.is_zero = f.is_zero
     return k
 
 def EnsureParametricCurve(curve):

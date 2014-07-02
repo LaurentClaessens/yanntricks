@@ -896,8 +896,7 @@ class GraphOfACircle(GraphOfAnObject):
             f=self.angleF
         if f==360:        # Because the function radian simplifies modulo 2pi.
             alphaF=2*pi
-        curve = self.parametric_curve()
-        G = ParametricCurve(curve,alphaI,alphaF)
+        G = self.parametric_curve(alphaI,alphaF)
         G.parameters=self.parameters.copy()
         G.parameters.plotpoints=500
 
@@ -3551,7 +3550,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         return a parametric curve with the same graph as `self`.
         """
         x=var('x')
-        curve = ParametricCurve(phyFunction(x),self,self.mx,self.Mx)
+        curve = ParametricCurve(phyFunction(x),self,(self.mx,self.Mx))
         curve.parameters=self.parameters.copy()
         return curve
     def inverse(self,y):
