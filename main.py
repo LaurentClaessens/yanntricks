@@ -465,6 +465,7 @@ class figure(object):
         Write the figure in the file.
 
         Do not write if we are testing.
+        It also remove the tikz externalize file.
         """
         to_be_written=self.contenu              # self.contenu is created in self.conclude
         if not global_vars.perform_tests :
@@ -809,6 +810,7 @@ class pspicture(object):
         - `self.interWriteFile` is the name of the file in which the data will be written.
         """
         self.name = name        # self.name is used in order to name the intermediate files when one produces the eps file.
+        self.tikzfilename="tikz"+self.name
         self.mother=None
         self.figure_mother=None
         self.language="tikz"
@@ -919,8 +921,12 @@ class pspicture(object):
         return self.separator_list.code()
     @lazy_attribute
     def contenu_tikz(self):
+        """
+        It also remove the tikz externalize file.
+        """
         self.create_latex_code(language="tikz",pspict=self)
         add_latex_line_entete(self)
+        self.add_latex_line("\\tikzsetnextfilename{{{0}}}".format(self.tikzfilename),"BEGIN PSPICTURE")
         self.add_latex_line("\\begin{{tikzpicture}}[xscale={0},yscale={1},inner sep=0pt,outer sep=0pt]".format(1,1),"BEGIN PSPICTURE")
         #self.add_latex_line("\pgfmathdeclarefunction{radsin}{1}{\pgfmathparse{sin(deg(#1))}}","BEFORE PSPICTURE")
         #self.add_latex_line("\pgfmathdeclarefunction{radcos}{1}{\pgfmathparse{cos(deg(#1))}}","BEFORE PSPICTURE")
@@ -928,6 +934,14 @@ class pspicture(object):
 
         self.xsize=self.bounding_box(self).xsize()
         self.ysize=self.bounding_box(self).ysize()
+
+        import os
+        print(self.tikzfilename)
+        tikz_pdf_filename=self.tikzfilename+".pdf"
+        if os.path.isfile(tikz_pdf_filename):
+            print("The tikz file {0} exists. I remove it.".format(tikz_pdf_filename))
+            import shutil
+            shutil.os.remove(tikz_pdf_filename)
 
         return self.separator_list.code()
 
