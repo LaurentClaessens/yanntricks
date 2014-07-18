@@ -4535,7 +4535,8 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 
         """
         if isinstance(f1,GraphOfAParametricCurve):
-            raise
+            print("You cannot creare a parametric curve by giving a parametric curve")
+            raise TypeError
         GraphOfAnObject.__init__(self,self)
         self._derivative_dict={0:self}
         self.f1=f1

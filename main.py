@@ -401,19 +401,16 @@ class figure(object):
             self.add_latex_line(pspict.write_and_label_separator_list["CLOSE_WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
 
             # For the following big stuff, see the position 170321508
-            def_length_tex=r"""  
-               \makeatletter
+            def_length_tex=r"""                 \makeatletter
 % If hatchspread is not defined, we define it
 \ifthenelse{\value{defHatch}=0}{
 \setcounter{defHatch}{1}
 \newlength{\hatchspread}%
 \newlength{\hatchthickness}%
 }{}
-               \makeatother
-               """
+               \makeatother               """
 
-            def_pattern_tex=r"""
-               \makeatletter
+            def_pattern_tex=r"""               \makeatletter
 \ifthenelse{\value{defPattern}=0}{
 \setcounter{defPattern}{1}
 \pgfdeclarepatternformonly[\hatchspread,\hatchthickness]% variables
@@ -428,8 +425,7 @@ class figure(object):
         \pgfusepath{stroke}
    }
    }{}
-   \makeatother
-               """
+   \makeatother               """
 
             if pspict.language=="tikz":
                 self.add_latex_line(def_length_tex,"HATCHING_COMMANDS")
