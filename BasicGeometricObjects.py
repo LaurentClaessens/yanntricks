@@ -2877,6 +2877,8 @@ class GraphOfASegment(GraphOfAnObject):
         """
         Return the LaTeX's code (pstricks or tikz) of a Segment when is is seen as a segment
         """
+        if self.parameters.style=="none":
+            return ""
         if self.arrow_type=="vector":
                 return _vector_latex_code(self,language=language,pspict=pspict)
         if self.arrow_type=="segment":
