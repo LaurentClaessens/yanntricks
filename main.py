@@ -380,7 +380,11 @@ class figure(object):
    \\vspace{-0.5cm}        % à adapter.
    \centering
    INCLUSION
-\end{wrapfigure}""".replace("INCLUSION","\\input{%s}"%(self.nFich))
+\end{wrapfigure}
+ou
+\\begin{center}
+   INCLUSION
+\end{center}""".replace("INCLUSION","\\input{%s}"%(self.nFich))
             if len(self.record_pspicture)==1:
                 pspict=self.record_pspicture[0]
                 visual_xsize=pspict.visual_xsize()      # By the way, this is a reason why we cannot do this before to have

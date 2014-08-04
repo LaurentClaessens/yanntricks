@@ -1182,7 +1182,6 @@ class AxesUnit(object):
                 l.append((x,"$"+latex(x)+"$"))
             else :
                 pos=(x/self.numerical_value)*k
-                print("TMHooVWdGTE",k,pos)
                 text="$"+latex(pos).replace("TheTag",self.latex_symbol)+"$"  # This risks to be Sage-version dependent.
                 l.append((x,text))
         return l

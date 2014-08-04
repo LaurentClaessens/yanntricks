@@ -3553,6 +3553,25 @@ class GraphOfAphyFunction(GraphOfAnObject):
         self.parameters.color = "blue"              # Modification with respect to the attribute in GraphOfAnObject
         self.nul_function=None
 
+    @lazy_attribute
+    def I(self):
+        if not self.do_cut_y:
+            mx=self.mx
+        else :
+            mx=self.pieces[0].mx
+        P=Point(mx,self(mx))
+        return P
+    @lazy_attribute
+    def F(self):
+        if not self.do_cut_y:
+            Mx=self.Mx
+        else :
+            Mx=self.pieces[0].Mx
+        P = Point(Mx,self(Mx))
+        return P
+
+
+
     def parametric_curve(self):
         """
         return a parametric curve with the same graph as `self`.
@@ -3560,6 +3579,13 @@ class GraphOfAphyFunction(GraphOfAnObject):
         x=var('x')
         curve = ParametricCurve(phyFunction(x),self,(self.mx,self.Mx))
         curve.parameters=self.parameters.copy()
+        return curve
+    def parametric_curve(self):
+        """
+        return a parametric curve with the same graph as `self`.
+        """
+        x=var('x')
+        curve = ParametricCurve(phyFunction(x),self,(self.mx,self.Mx))
         return curve
     def inverse(self,y):
         """ returns a list of values x such that f(x)=y """
