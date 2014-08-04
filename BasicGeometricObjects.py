@@ -3569,9 +3569,6 @@ class GraphOfAphyFunction(GraphOfAnObject):
             Mx=self.pieces[0].Mx
         P = Point(Mx,self(Mx))
         return P
-
-
-
     def parametric_curve(self):
         """
         return a parametric curve with the same graph as `self`.
@@ -3579,13 +3576,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         x=var('x')
         curve = ParametricCurve(phyFunction(x),self,(self.mx,self.Mx))
         curve.parameters=self.parameters.copy()
-        return curve
-    def parametric_curve(self):
-        """
-        return a parametric curve with the same graph as `self`.
-        """
-        x=var('x')
-        curve = ParametricCurve(phyFunction(x),self,(self.mx,self.Mx))
+        print("SDPooAsFXJR",curve.parameters.color)
         return curve
     def inverse(self,y):
         """ returns a list of values x such that f(x)=y """
