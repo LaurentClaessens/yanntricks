@@ -197,7 +197,8 @@ def SubsetFigures(old_pspicts,old_fig,l):
         pspict.append(old_pspicts[i])
     return pspict,fig
 
-def Intersection(f,g):
+
+def Intersection(f,g,a=None,b=None,numerical=False):
     """
     When f and g are objects with an attribute equation, return the list of points of intersections.
 
@@ -212,7 +213,26 @@ def Intersection(f,g):
         sage: for P in pts:print P
         <Point(1,2)>
         <Point(4,2)>
+
+        sage: f=phyFunction(sin(x))
+        sage: g=phyFunction(cos(x))
+        sage: pts=Intersection(f,g,-2*pi,2*pi,numerical=True)
+        sage: for P in pts:print P
+        <Point(-5.497787143782138,0.707106781186548)>
+        <Point(-2.3561944901923466,-0.707106781186546)>
+        <Point(0.7853981633974484,0.707106781186548)>
+        <Point(3.926990816987241,-0.707106781186547)>
+
+
+    If 'numerical' is True, it search for the intersection points of the functions 'f' and 'g' (it only work with functions). In this case an interval is required.
     """
+
+    if numerical :
+        k=f-g
+        xx=SmallComputations.find_roots_recursive(k.sage,a,b)
+        pts=[  Point(x,f(x)) for x in xx ]
+        return pts
+
     x,y=var('x,y')
     pts=[]
     soluce=solve([f.equation,g.equation],[x,y])

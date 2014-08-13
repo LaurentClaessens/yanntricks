@@ -949,3 +949,21 @@ def split_list(starting_list,fun,cut_ymin,cut_ymax):
         ldel.remove([])
     s=[  (l[0],l[-1])  for l in ldel  ]
     return s
+
+def find_roots_recursive(f,a,b,tol=0.000000000001):
+    """
+    Return the roots of the function 'f' between 'a' and 'b' as a list.
+
+    The list is sorted.
+    """
+    # The method was proposed by ndomes in http://ask.sagemath.org/question/8886/obtaining-all-numerical-roots-of-a-function-in-an-interval/
+    L = []
+    try:
+        x0 = find_root(f,a,b)
+    except RuntimeError :
+        return []
+    L.append(x0)
+    L += find_roots_recursive(f,a,x0-tol,tol)       
+    L += find_roots_recursive(f,x0+tol,b,tol)       
+    L.sort()
+    return L

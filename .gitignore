@@ -1,0 +1,10 @@
+*.pyc
+*.py~
+*.swp
+all-*
+tests/*
+*~
+.viminfo
+.kk.log
+.directory
+documentation/*

@@ -419,7 +419,6 @@ class GraphOfAnObject(object):
         return code
         #return self.options.code(language=language)
 
-
 def visual_length(v,l,xunit=None,yunit=None,pspict=None):
     """
     Return a vector in the direction of v that has *visual* length l taking xunit and yunit into accout.
@@ -3576,7 +3575,6 @@ class GraphOfAphyFunction(GraphOfAnObject):
         x=var('x')
         curve = ParametricCurve(phyFunction(x),self,(self.mx,self.Mx))
         curve.parameters=self.parameters.copy()
-        print("SDPooAsFXJR",curve.parameters.color)
         return curve
     def inverse(self,y):
         """ returns a list of values x such that f(x)=y """
@@ -3934,6 +3932,8 @@ class GraphOfAphyFunction(GraphOfAnObject):
         except AttributeError:
             g=other
         return phyFunction(self.sage+g)
+    def __sub__(self,other):
+        return self+(-other)
     def __neg__(self):
         return phyFunction(-self.sage).graph(self.mx,self.Mx)
     def __str__(self):
