@@ -942,7 +942,6 @@ def split_list(starting_list,fun,cut_ymin,cut_ymax):
         if on :
             l.append(k)
         else:
-            print("JJAooWtbjBQ -- Une liste est terminée à cause de",k)
             ldel.append(l)
             l=[]
     ldel.append(l)

@@ -3785,7 +3785,6 @@ class GraphOfAphyFunction(GraphOfAnObject):
             if y.is_infinity():
                 valid=False
             if valid :
-                print("XKRooKrbrQQ",x,y)
                 ymax=max(ymax,y)
                 ymin=min(ymin,y)
         minmax['ymax']=ymax
@@ -3881,13 +3880,12 @@ class GraphOfAphyFunction(GraphOfAnObject):
         bb = BoundingBox()
         if self.do_cut_y and len(self.pieces)>0:
             # In this case, we will in any case look for the bounding boxes of the pieces.
-            # Notice that it can happen that self.do_cut_y=True but that only one piece is done.
+            # Notice that it can happen that self.do_cut_y=True but that only one piece is found.
             return bb
         bb.addY(self.ymin(self.mx,self.Mx))
         bb.addY(self.ymax(self.mx,self.Mx))
         bb.addX(self.mx)
         bb.addX(self.Mx)
-        print("HFQooPtpUfB -- je retourne une BB",bb.xmin,bb.xmax,bb.ymin,bb.ymax)
         return bb
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
