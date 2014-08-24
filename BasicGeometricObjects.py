@@ -879,13 +879,13 @@ class GraphOfACircle(GraphOfAnObject):
         bb.append(pI,pspict)
         bb.append(pF,pspict)
         if angleI==0:
-            bb.AddX(self.center.x+self.radius)
+            bb.addX(self.center.x+self.radius)
         if angleI<90 and angleF>90 :
-            bb.AddY(self.center.y+self.radius)
+            bb.addY(self.center.y+self.radius)
         if angleI<180 and angleF>180 :
-            bb.AddX(self.center.x-self.radius)
+            bb.addX(self.center.x-self.radius)
         if angleI<270 and angleF>270 :
-            bb.AddY(self.center.y-self.radius)
+            bb.addY(self.center.y-self.radius)
         return bb
     def latex_code(self,language=None,pspict=None):
         alphaI = radian(self.angleI,number=True,keep_max=True)
@@ -3546,8 +3546,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         self.cut_ymin=None
         self.cut_ymax=None
         self.parameters.plotpoints = 100                   # We draw 100 points as default.
-        self.cut_yplotpoints = self.parameters.plotpoints  # The number of points that will we computed in order to detect where the function
-                                                # exceed the cutting values.
+        self.added_plotpoints=[]
         self.pieces=[]      
         self.parameters.color = "blue"              # Modification with respect to the attribute in GraphOfAnObject
         self.nul_function=None
@@ -3768,22 +3767,44 @@ class GraphOfAphyFunction(GraphOfAnObject):
 
         NOTE:
 
-        This function is victim of the `Trac 10246 <http://trac.sagemath.org/sage_trac/ticket/10246>` The try ... except
+        This function is victim of the `Trac 10246 <http://trac.sagemath.org/sage_trac/ticket/10246>` The try/except
         block is a workaround.
 
         """
-        try :
-            return MyMinMax(plot(self.sage,(mx,Mx)).get_minmax_data())
-        except ValueError :
-            try:
-                if self.sage==x:
-                    return MyMinMax(plot(x,mx,Mx).get_minmax_data())
-            except NameError:
-                if repr(self.sage)=="x |--> x":
-                    x=var('x')
-                    return MyMinMax(plot(x,mx,Mx).get_minmax_data())
-        else :
-            raise ValueError,"This is a strange case. Maybe related to ticket 10246"
+        minmax={}
+        minmax['xmin']=mx
+        minmax['xmax']=Mx
+        ymin=1000
+        ymax=-1000
+        for x in self.plotpoints_list():
+            valid=True
+            try :
+                y=self(x)
+            except ZeroDivisionError :
+                valid=False
+            if y.is_infinity():
+                valid=False
+            if valid :
+                print("XKRooKrbrQQ",x,y)
+                ymax=max(ymax,y)
+                ymin=min(ymin,y)
+        minmax['ymax']=ymax
+        minmax['ymin']=ymin
+        return minmax
+
+        # This is no more based on the Sage's MinMax function of a plot.
+        #try :
+        #    return MyMinMax(plot(self.sage,(mx,Mx)).get_minmax_data())
+        #except ValueError :
+        #    try:
+        #        if self.sage==x:
+        #            return MyMinMax(plot(x,mx,Mx).get_minmax_data())
+        #    except NameError:
+        #        if repr(self.sage)=="x |--> x":
+        #            x=var('x')
+        #            return MyMinMax(plot(x,mx,Mx).get_minmax_data())
+        #else :
+        #    raise ValueError,"This is a strange case. Maybe related to ticket 10246"
     def xmax(self,deb,fin):
         return self.get_minmax_data(deb,fin)['xmax']
     def xmin(self,deb,fin):
@@ -3812,6 +3833,19 @@ class GraphOfAphyFunction(GraphOfAnObject):
         if not Mx :
             Mx=self.Mx
         return SurfaceUnderFunction(self,mx,Mx)
+    def add_plotpoint(self,x):
+        """
+        This point will be added to the list of points to be computed.
+        """
+        self.added_plotpoints.append(x)
+    def plotpoints_list(self,plotpoints=None):
+        import numpy
+        if not plotpoints:
+            plotpoints=self.parameters.plotpoints
+        X=list(numpy.linspace(self.mx,self.Mx,plotpoints))
+        X.extend(self.added_plotpoints)
+        X.sort()
+        return X
     def cut_y(self,ymin,ymax,plotpoints=None):
         """
         Will not draw the function bellow 'ymin' and over 'ymax'. Will neither join the pieces.
@@ -3819,15 +3853,19 @@ class GraphOfAphyFunction(GraphOfAnObject):
         This is useful when drawing functions like 1/x.
 
         It is wise to use a value of plotpoints that is not a multiple of the difference Mx-mx. The default behaviour is most of time like that.
+
+        If an other cut_y is already imposed, the most restrictive is used.
         """
+        if self.do_cut_y:
+            self.pieces=[]
+            ymin=max(ymin,self.cut_ymin)
+            ymax=min(ymax,self.cut_ymax)
         if not plotpoints:
-            plotpoints=2.34*self.parameters.plotpoints
+            plotpoints=2.347*self.parameters.plotpoints
         self.do_cut_y=True
         self.cut_ymin=ymin
         self.cut_ymax=ymax
-        self.cut_yplotpoints=plotpoints
-        import numpy
-        X=numpy.linspace(self.mx,self.Mx,self.cut_yplotpoints)
+        X=self.plotpoints_list(plotpoints=plotpoints)
         s=SmallComputations.split_list(X,self.sage,self.cut_ymin,self.cut_ymax)
         for k in s:
             mx=k[0]
@@ -3838,16 +3876,18 @@ class GraphOfAphyFunction(GraphOfAnObject):
     #def params(self,language=None):
     #    self.conclude_params()
     #    self.add_option("plotpoints=%s"%str(self.parameters.plotpoints))
-        return self.options.code()
+    #    return self.options.code()
     def bounding_box(self,pspict=None):
         bb = BoundingBox()
-        if self.do_cut_y:
+        if self.do_cut_y and len(self.pieces)>0:
             # In this case, we will in any case look for the bounding boxes of the pieces.
+            # Notice that it can happen that self.do_cut_y=True but that only one piece is done.
             return bb
-        bb.AddY(self.ymin(self.mx,self.Mx))
-        bb.AddY(self.ymax(self.mx,self.Mx))
-        bb.AddX(self.mx)
-        bb.AddX(self.Mx)
+        bb.addY(self.ymin(self.mx,self.Mx))
+        bb.addY(self.ymax(self.mx,self.Mx))
+        bb.addX(self.mx)
+        bb.addX(self.Mx)
+        print("HFQooPtpUfB -- je retourne une BB",bb.xmin,bb.xmax,bb.ymin,bb.ymax)
         return bb
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
@@ -5576,12 +5616,6 @@ class BoundingBox(object):
         return self.xmax-self.xmin
     def ysize(self):
         return self.ymax-self.ymin
-    def addX(self,x):
-        self.xmin=min(self.xmin,x)
-        self.xmax=max(self.xmax,x)
-    def addY(self,y):
-        self.ymin=min(self.ymin,y)
-        self.ymax=max(self.ymax,y)
     def extraX_left(self,l):
         """Enlarge the bounding box of a length l on the left"""
         self.xmin=self.xmin-l
@@ -5592,12 +5626,20 @@ class BoundingBox(object):
         """Enlarge the bounding box of a length l on both sides"""
         self.extraX_left(l)
         self.extraX_right(l)
-    def AddX(self,x):
-        self.xmax=max(self.xmax,x)
+    def addX(self,x):
         self.xmin=min(self.xmin,x)
-    def AddY(self,y):
-        self.ymax=max(self.ymax,y)
+        self.xmax=max(self.xmax,x)
+    def AddX(self,x):
+        raise DeprecationWarning   # Use addX instead. Augustus, 24, 2014
+        self.xmin=min(self.xmin,x)
+        self.xmax=max(self.xmax,x)
+    def addY(self,y):
         self.ymin=min(self.ymin,y)
+        self.ymax=max(self.ymax,y)
+    def AddY(self,y):
+        raise DeprecationWarning   # Use addY instead. Augustus, 24, 2014
+        self.ymin=min(self.ymin,y)
+        self.ymax=max(self.ymax,y)
     def AddBB(self,bb):
         self.xmin = min(self.xmin,bb.xmin)
         self.ymin = min(self.ymin,bb.ymin)
