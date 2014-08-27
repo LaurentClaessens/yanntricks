@@ -882,6 +882,8 @@ class pspicture(object):
         self.write_and_label_separator_list.new_separator("WRITE_AND_LABEL")
         self.write_and_label_separator_list.new_separator("CLOSE_WRITE_AND_LABEL")
 
+        self.already_used_interId=[]
+
     @lazy_attribute
     def contenu_pstricks(self):
         r"""
@@ -1165,12 +1167,20 @@ class pspicture(object):
         dimension_name is a valid LaTeX macro that can be applied to a LaTeX expression and that return a number. Like
         widthof, depthof, heightof, totalheightof
         """
-        interId = dimension_name+self.name+self.NomPointLibre.next()
-        self.initialize_newlength()
-        self.add_latex_line(r"\setlength{{\{}}}{{\{}{{{}}}}}%".format(newlengthName(),dimension_name,tex_expression),"WRITE_AND_LABEL")
-        self.add_write_line(interId,r"\the\%s"%newlengthName())
-        read_value =  self.get_Id_value(interId,"dimension %s"%dimension_name,default_value="0pt")
-        dimenPT = float(read_value.replace("pt",""))
+        # Simpler Id creation (Augustus, 27 2014)
+        #interId = dimension_name+self.name+self.NomPointLibre.next()
+
+        import hashlib
+        h=hashlib.new("sha1")
+        h.update(tex_expression.encode("utf8"))
+        interId=h.hexdigest()
+        if interId not in self.already_used_interId :
+            self.initialize_newlength()
+            self.add_latex_line(r"\setlength{{\{}}}{{\{}{{{}}}}}%".format(newlengthName(),dimension_name,tex_expression),"WRITE_AND_LABEL")
+            self.add_write_line(interId,r"\the\%s"%newlengthName())
+            self.already_used_interId.append(interId)
+        read_value=self.get_Id_value(interId,"dimension %s"%dimension_name,default_value="0pt")
+        dimenPT=float(read_value.replace("pt",""))
         return dimenPT/30           # 30 is the conversion factor : 1pt=(1/3)mm
     def get_box_size(self,tex_expression):
         """

@@ -1463,7 +1463,6 @@ class Cuboid(object):
             self.segP[2].parameters.style="dashed"
             self.segc2[2].parameters.style="dashed"
             self.segc2[1].parameters.style="dashed"
-
     def put_vertex_mark(self,pspict=None):
         self.A.put_mark(0.2,135,"\( A\)",automatic_place=pspict)
         self.B.put_mark(0.2,90,"\( B\)",automatic_place=pspict)
@@ -1473,7 +1472,6 @@ class Cuboid(object):
         self.F.put_mark(0.2,0,"\( F\)",automatic_place=pspict)
         self.G.put_mark(0.2,0,"\( G\)",automatic_place=pspict)
         self.H.put_mark(0.2,135,"\( H\)",automatic_place=pspict)
-
     def make_opaque(self):
         self.transparent=False
     def bounding_box(self,pspict=None):
