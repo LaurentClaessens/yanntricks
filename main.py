@@ -270,6 +270,10 @@ class figure(object):
     This is not exactly the 'figure' in the LaTeX sense of the term since it also contains informations about bounding boxes.
 
     The method `figure.no_figure()` makes disappear the \begin{figure} ... \end{figure}. In this case the LaTeX code of the class figure contains the informations about the bounding boxes and a if/then for inclusion of pspicture or \includegraphics
+
+    - `self.newwriteName` is the name that will be given to LaTeX in ``\newwrite{...}``. This is not the
+                name of the file in which the data is written.
+    - `self.interWriteFile` is the name of the file in which the data will be written.
     """
     def __init__(self,caption,name,nFich,script_filename):
         self.script_filename=script_filename
@@ -285,6 +289,10 @@ class figure(object):
         self.send_noerror = False
         self.language="tikz"
 
+        self.newwriteName = "writeOfphystricks"
+        self.interWriteFile = self.name+".phystricks.aux"
+        self.already_used_interId=[]
+
         self.specific_needs=""
         # TODO : specific_needs should be a list of specific_need that is a class.
         # The idea is to leave to the user the control if the command has to be included in the file 
@@ -297,7 +305,9 @@ class figure(object):
         self.separator_list=SeparatorList()
         self.separator_list.new_separator("ENTETE FIGURE")
         self.separator_list.new_separator("SPECIFIC_NEEDS")
+        self.separator_list.new_separator("OPEN_WRITE_AND_LABEL")
         self.separator_list.new_separator("WRITE_AND_LABEL")
+        self.separator_list.new_separator("CLOSE_WRITE_AND_LABEL")
         self.separator_list.new_separator("HATCHING_COMMANDS")
         self.separator_list.new_separator("BEFORE SUBFIGURES")
         self.separator_list.new_separator("SUBFIGURES")
@@ -395,6 +405,26 @@ ou
         return text
         
     def conclude(self):
+        code = r"""\makeatletter\@ifundefined{{{}}}{{\newwrite{{\{}}}}}{{}}\makeatother%""".format(self.newwriteName,self.newwriteName)
+        self.add_latex_line(code,"OPEN_WRITE_AND_LABEL")
+
+        code =r"""\makeatletter\@ifundefined{{{}}}{{\newlength{{\{}}}}}{{}}\makeatother%""".format(newlengthName(),newlengthName())
+        self.add_latex_line(code,"OPEN_WRITE_AND_LABEL")
+
+        code="\immediate\openout\{}={}%".format(self.newwriteName,self.interWriteFile)
+        self.add_latex_line(code,"OPEN_WRITE_AND_LABEL")
+
+        code=r"\immediate\closeout\{}%".format(self.newwriteName)+"\n"         # the \n was added on February 26, 2013
+        self.add_latex_line(code,"CLOSE_WRITE_AND_LABEL")
+
+        # Now we check that the file phystricks.aux exists. If not, we create it.
+        if not os.path.isfile(self.interWriteFile):
+            f=open(self.interWriteFile,"w")
+            #f.write("a:b-")
+            f.write("default:content-")
+            f.close()
+        
+
         for pspict in self.record_pspicture :
             # Here we add the picture itself. What happens depends on --eps, --pdf, --png, ...
             self.add_latex_line(pspict.contenu(),"PSPICTURE")
@@ -402,7 +432,9 @@ ou
             # What has to be written in the WRITE_AND_LABEL part of the picture is written now
             # This has to be done _after_ having called pspict.contenu().
             self.add_latex_line(pspict.write_and_label_separator_list["WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
-            self.add_latex_line(pspict.write_and_label_separator_list["CLOSE_WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
+
+            # No more closing the write at each picture (Augustus 28, 2014)
+            #self.add_latex_line(pspict.write_and_label_separator_list["CLOSE_WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
 
             # For the following big stuff, see the position 170321508
             def_length_tex=r"""                 \makeatletter
@@ -451,7 +483,7 @@ ou
 
             for pspict in f.record_pspicture:
                 self.add_latex_line(pspict.write_and_label_separator_list["WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
-                self.add_latex_line(pspict.write_and_label_separator_list["CLOSE_WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
+                #self.add_latex_line(pspict.write_and_label_separator_list["CLOSE_WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
         after_all=r"""\caption{%s}\label{%s}
             \end{figure}
             """%(self.caption,self.name)
@@ -804,10 +836,7 @@ class pspicture(object):
             marks of points and thinks like that. This is the bounding box that is going to be used for the axes and the grid.
             When a graph object has a method math_bounding_box, this is the one taken into account in the math_BB here.
 
-        - `self.newwriteName` is the name that will be given to LaTeX in ``\newwrite{...}``. This is not the
-                name of the file in which the data is written.
 
-        - `self.interWriteFile` is the name of the file in which the data will be written.
         """
         self.name = name        # self.name is used in order to name the intermediate files when one produces the eps file.
         self.tikzfilename="tikz"+self.name
@@ -818,15 +847,9 @@ class pspicture(object):
         self.specific_needs = ""    # See the class PspictureToOtherOutputs
                                      # specific_needs becomes an attribute of figure instead of pspict (November, 9, 2012)
         self.newwriteDone = False
-        #self.interWriteFile = newwriteName()+".pstricks.aux"
-        self.interWriteFile = self.name+".phystricks.aux"
-        self.newwriteName = "writeOfphystricks"
-        # TODO : in the aux file, we write things like that :
-        #        widthofFIGLabelFigYIoYAYAssLabelSubFigYIoYAYA0PICTYIoYAYApspict0aabd:8.80824pt-
-        #  Instead we should write
-        #       <sha of the LaTeX string>:8.80824pt-
-        #  and take care that each is written only once.
-        #  This should help debuging the cube marks problems in phystricksYIoYAYA.py
+
+        # self.interWriteFile is redefined in MultiplePictures
+
         self.NomPointLibre = BasicGeometricObjects.PointsNameList()
         self.record_marks=[]
         self.record_bounding_box=[]
@@ -878,11 +901,12 @@ class pspicture(object):
         # 2. we are in a subfigure environment : in that case one cannot
         #    put the corresponding code between two subfigures
         # 3. we are building the pdf file.
+
+        # In fact now WRITE_AND_LABEL is managed by the figure.
+
         self.write_and_label_separator_list=SeparatorList()
         self.write_and_label_separator_list.new_separator("WRITE_AND_LABEL")
-        self.write_and_label_separator_list.new_separator("CLOSE_WRITE_AND_LABEL")
 
-        self.already_used_interId=[]
 
     @lazy_attribute
     def contenu_pstricks(self):
@@ -1063,13 +1087,13 @@ class pspicture(object):
         fig.conclude()
         fig.write_the_file()
     def initialize_newwrite(self):
-        if not self.newwriteDone :
-            # In the next line, the wave of { is because an explicit { has to be written {{ for the .format method
+        raise DeprecationWarning    # Augustus, 28, 2014
+        if not self.newwritedone :
             code = r"""\makeatletter\@ifundefined{{{}}}{{\newwrite{{\{}}}}}{{}}\makeatother%""".format(self.newwriteName,self.newwriteName)
             self.add_latex_line(code,"WRITE_AND_LABEL")
 
             code="\immediate\openout\{}={}%".format(self.newwriteName,self.interWriteFile)
-            self.add_latex_line(code,"WRITE_AND_LABEL")
+            self.add_latex_line(code,"OPEN_WRITE_AND_LABEL")
 
             code=r"\immediate\closeout\{}%".format(self.newwriteName)+"\n"         # the \n was added on February 26, 2013
             self.add_latex_line(code,"CLOSE_WRITE_AND_LABEL",add_line_jump=False)
@@ -1079,8 +1103,10 @@ class pspicture(object):
             exist_aux = os.path.isfile(self.interWriteFile)
             if not exist_aux:
                 f=open(self.interWriteFile,"w")
-                f.write("a:b-")
+                #f.write("a:b-")
+                f.write("default:content-")
                 f.close()
+
     def initialize_counter(self):
         if not self.counterDone:
             # make LaTeX test if the counter exist before to create it. 
@@ -1088,15 +1114,18 @@ class pspicture(object):
             self.add_latex_line(code,"WRITE_AND_LABEL")
             self.counterDone = True
     def initialize_newlength(self):
+        raise DeprecationWarning   # Augustus, 28, 2014
         if not self.newlengthDone :
             code =r"""\makeatletter\@ifundefined{{{}}}{{\newlength{{\{}}}}}{{}}\makeatother%""".format(newlengthName(),newlengthName())
-            self.add_latex_line(code,"WRITE_AND_LABEL")
+            self.add_latex_line(code,"OPEN_WRITE_AND_LABEL")
             self.newlengthDone = True
     def add_write_line(self,Id,value):
         r"""Writes in the standard auxiliary file \newwrite an identifier and a value separated by a «:»"""
-        interWriteName = self.newwriteName
-        self.initialize_newwrite()
-        self.add_latex_line(r"\immediate\write\{}{{{}:{}-}}".format(interWriteName,Id,value),"WRITE_AND_LABEL",add_line_jump=False)
+
+        # The initialisation if newwrite is automatically done by the figure. (Augustus, 28, 2014)
+        #self.initialize_newwrite()
+
+        #self.figure_mother.add_latex_line(r"\immediate\write\{}{{{}:{}-}}".format(self.figure_mother.newwriteName,Id,value),"WRITE_AND_LABEL")
         #self.add_latex_line(r"\phystricksAppendToFile{%s:%s-}"%(Id,value),"WRITE_AND_LABEL")
 
     @lazy_attribute
@@ -1107,9 +1136,9 @@ class pspicture(object):
         """
         d={}
         try :
-            f=open(self.interWriteFile,"r")
+            f=open(self.figure_mother.interWriteFile,"r")
         except IOError :
-            print "Warning: the auxiliary file %s seems not to exist. Compile your LaTeX file."%self.interWriteFile
+            print "Warning: the auxiliary file %s seems not to exist. Compile your LaTeX file."%self.figure_mother.interWriteFile
             if global_vars.perform_tests :
                 raise ValueError,"I cannot say that a test succeed if I cannot determine the bounding box"
             if global_vars.create_formats["test"] :
@@ -1123,7 +1152,7 @@ class pspicture(object):
             value=els.split(':')[1]
             d[key]=value
 
-        f=open(self.interWriteFile,"w")
+        f=open(self.figure_mother.interWriteFile,"w")
         for k in d.keys():
             f.write("%s:%s-\n"%(k,d[k]))
         f.close()
@@ -1131,7 +1160,7 @@ class pspicture(object):
     def get_Id_value(self,Id,counter_name="NO NAME ?",default_value=0):
         if Id not in self.id_values_dict.keys():
             if not global_vars.silent:
-                print "Warning: the auxiliary file %s does not contain the id «%s». Compile your LaTeX file."%(self.interWriteFile,Id)
+                print "Warning: the auxiliary file %s does not contain the id «%s». Compile your LaTeX file."%(self.figure_mother.interWriteFile,Id)
                 # I removed the following raise because if was preventing \setlength to be written in the pstricks file.
                 # September, 15, 2012
                 #raise PhystricksTestError(justification="id not found; Compile your LaTeX file.",pspict=self,code=2)
@@ -1174,11 +1203,14 @@ class pspicture(object):
         h=hashlib.new("sha1")
         h.update(tex_expression.encode("utf8"))
         interId=h.hexdigest()
-        if interId not in self.already_used_interId :
-            self.initialize_newlength()
-            self.add_latex_line(r"\setlength{{\{}}}{{\{}{{{}}}}}%".format(newlengthName(),dimension_name,tex_expression),"WRITE_AND_LABEL")
-            self.add_write_line(interId,r"\the\%s"%newlengthName())
-            self.already_used_interId.append(interId)
+        if interId not in self.figure_mother.already_used_interId :
+            #self.initialize_newlength()
+            self.figure_mother.add_latex_line(r"\setlength{{\{}}}{{\{}{{{}}}}}%".format(newlengthName(),dimension_name,tex_expression),"WRITE_AND_LABEL")
+            value=r"\the\%s"%newlengthName()
+            self.figure_mother.add_latex_line(r"\immediate\write\{}{{{}:{}-}}".format(self.figure_mother.newwriteName,interId,value),"WRITE_AND_LABEL")
+
+            #self.add_write_line(interId,r"\the\%s"%newlengthName())
+            self.figure_mother.already_used_interId.append(interId)
         read_value=self.get_Id_value(interId,"dimension %s"%dimension_name,default_value="0pt")
         dimenPT=float(read_value.replace("pt",""))
         return dimenPT/30           # 30 is the conversion factor : 1pt=(1/3)mm

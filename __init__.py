@@ -164,6 +164,10 @@ def MultiplePictures(name,n,script_filename=None):
         subfigure=fig.new_subfigure("name"+str(i),"LabelSubFig"+name+str(i))
         picture=subfigure.new_pspicture(name+"pspict"+str(i))
         picture.figure_mother=fig
+
+        # The subfigure share the same file to write the lengths. 
+        #  (no more used since the figure manages the write and lables, Augustus, 28, 2014)
+        #picture.interWriteFile=picture.figure_mother.name+".phystricks.aux"
         pspicts.append(picture)
     return pspicts,fig
 
