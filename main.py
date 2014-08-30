@@ -1202,7 +1202,7 @@ class pspicture(object):
         import hashlib
         h=hashlib.new("sha1")
         h.update(tex_expression.encode("utf8"))
-        interId=h.hexdigest()
+        interId=dimension_name+h.hexdigest()
         if interId not in self.figure_mother.already_used_interId :
             #self.initialize_newlength()
             self.figure_mother.add_latex_line(r"\setlength{{\{}}}{{\{}{{{}}}}}%".format(newlengthName(),dimension_name,tex_expression),"WRITE_AND_LABEL")
