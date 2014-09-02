@@ -1157,7 +1157,8 @@ class pspicture(object):
             f.write("%s:%s-\n"%(k,d[k]))
         f.close()
         return d
-    def get_Id_value(self,Id,counter_name="NO NAME ?",default_value=0):
+    #def get_Id_value(self,Id,counter_name="NO NAME ?",default_value=0):
+    def get_Id_value(self,Id,default_value=0):
         if Id not in self.id_values_dict.keys():
             if not global_vars.silent:
                 print "Warning: the auxiliary file %s does not contain the id «%s». Compile your LaTeX file."%(self.figure_mother.interWriteFile,Id)
@@ -1169,7 +1170,8 @@ class pspicture(object):
             if global_vars.create_formats["test"] :
                 raise ValueError, "I cannot create a test file when I'm unable to compute the bounding box."
             return default_value
-        return self.id_values_dict[Id]
+        value = self.id_values_dict[Id]
+        return value
     def get_counter_value(self,counter_name,default_value=0):
         """
         return the value of the (LaTeX) counter <name> at this point of the LaTeX file
@@ -1211,7 +1213,8 @@ class pspicture(object):
 
             #self.add_write_line(interId,r"\the\%s"%newlengthName())
             self.figure_mother.already_used_interId.append(interId)
-        read_value=self.get_Id_value(interId,"dimension %s"%dimension_name,default_value="0pt")
+        #read_value=self.get_Id_value(interId,"dimension %s"%dimension_name,default_value="0pt")
+        read_value=self.get_Id_value(interId,default_value="0pt")
         dimenPT=float(read_value.replace("pt",""))
         return dimenPT/30           # 30 is the conversion factor : 1pt=(1/3)mm
     def get_box_size(self,tex_expression):
