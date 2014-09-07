@@ -1096,6 +1096,9 @@ class Mark(object):
                 beta=self.angle
                 return graph_mark_point.get_polar_point(d,beta)
 
+            if position=="center":
+                return default
+
             if position=="corner":
                 if self.x>=0:
                     lx=dimx*0.5
@@ -1781,6 +1784,7 @@ class GraphOfAPoint(GraphOfAnObject):
         symbol_dict["x"]="$\\times$"
         symbol_dict["o"]="$o$"
         symbol_dict["diamond"]="$\diamondsuit$"
+        symbol_dict[""]="none"
         if self.parameters.symbol!="none":
             s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(numerical=True,pspict=pspict),symbol_dict[self.parameters.symbol],self.params(language="tikz",refute=["symbol","dotangle"]),"DOTANGLE")
             if self.parameters.dotangle != None :
