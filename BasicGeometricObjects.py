@@ -1674,7 +1674,7 @@ class GraphOfAPoint(GraphOfAnObject):
         Return the result in degree.
         """
         return self.polar_coordinates()[1]
-    def coordinates(self,numerical=False,pspict=None):
+    def coordinates(self,numerical=False,digits=10,pspict=None):
         """
         Return the coordinates of the point as a string.
 
@@ -1690,8 +1690,8 @@ class GraphOfAPoint(GraphOfAnObject):
         If a pspicture is given, we divide by xunit and yunit to normalize.
         """
         if numerical :
-            x=numerical_approx(self.x)
-            y=numerical_approx(self.y)
+            x=numerical_approx(self.x,digits=digits)
+            y=numerical_approx(self.y,digits=digits)
         else :
             x = self.x
             y = self.y
@@ -1784,8 +1784,9 @@ class GraphOfAPoint(GraphOfAnObject):
         symbol_dict["x"]="$\\times$"
         symbol_dict["o"]="$o$"
         symbol_dict["diamond"]="$\diamondsuit$"
-        symbol_dict[""]="none"
-        if self.parameters.symbol!="none":
+        if self.parameters.symbol=='none' :
+            print("AAIooIuxafG -- faire '' au lieu de 'none'")
+        if self.parameters.symbol not in ["none",""]:
             s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(numerical=True,pspict=pspict),symbol_dict[self.parameters.symbol],self.params(language="tikz",refute=["symbol","dotangle"]),"DOTANGLE")
             if self.parameters.dotangle != None :
                 s=s.replace("DOTANGLE",str(self.parameters.dotangle))
@@ -4310,6 +4311,11 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         sage: print H.pstricks_code()
         \pscurve[linestyle=solid,linecolor=brown](-1.00000000000000,1.00000000000000)(1.00000000000000,1.00000000000000)(1.00000000000000,-1.00000000000000)(-1.00000000000000,-1.00000000000000)
         """
+
+        # Explanation of 295815047.
+        # It seems to me that very large lines like the ones describing a curve cause 
+        #  ! TeX capacity exceeded, sorry [pool size=6179214].
+
         l = []
         try:
             params=self.context_object.params(language="pstricks")
@@ -4327,7 +4333,7 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         params=self.params(language="tikz")
         l.append("\draw [{0}] plot [smooth,tension=1] coordinates {{".format(params))
         for p in self.points_list:
-            l.append(p.coordinates(numerical=True,pspict=pspict))
+            l.append(p.coordinates(numerical=True,digits=3,pspict=pspict))  # 295815047.
         l.append("};")
         return "".join(l)
     def latex_code(self,language,pspict=None):
@@ -5649,8 +5655,6 @@ class BoundingBox(object):
         self.ymax = max(self.ymax,bb.ymax)
     def append(self,graph,pspict):
         if pspict==None:
-            print "coGOtl; je vais faire un raise"
-            print graph
             raise ValueError
         if isinstance(graph,list):
             raise KeyError,"%s is a list"%graph

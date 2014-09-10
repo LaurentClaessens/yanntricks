@@ -371,9 +371,6 @@ class figure(object):
     def AjouteCode(self,liste_code):
         raise DeprecationWarning        # Septembre 18, 2013
         self.code.extend(liste_code)
-    #@lazy_attribute                # I do not remember exactly why I wanted a lazy_attribute here
-                                    # I cannot because I want to make the text depend on fig.no_fig() that comes
-                                    # more or less at the end of the script.     February 21, 2013
     def LaTeX_lines(self):
         """
         Return the lines to be included in your LaTeX file.
@@ -414,7 +411,7 @@ ou
         code="\immediate\openout\{}={}%".format(self.newwriteName,self.interWriteFile)
         self.add_latex_line(code,"OPEN_WRITE_AND_LABEL")
 
-        code=r"\immediate\closeout\{}%".format(self.newwriteName)+"\n"         # the \n was added on February 26, 2013
+        code=r"\immediate\closeout\{}%".format(self.newwriteName)+"\n"
         self.add_latex_line(code,"CLOSE_WRITE_AND_LABEL")
 
         # Now we check that the file phystricks.aux exists. If not, we create it.
@@ -508,6 +505,7 @@ ou
         print self.LaTeX_lines()
         print "---------------------------------------------------"
         # One only send the "no error" signal if we are performing a list of tests.
+
         if self.send_noerror :
             raise PhystricksNoError(self)
             
@@ -561,14 +559,6 @@ class PspictureToOtherOutputs(object):
     self.input_code_pdf is the code to be input in the file that contains the picture. This is what replaces the pstricks code in the final figure.
     """
     def __init__(self,pspict):
-
-        # Why the intermediate file _bbb with "bad bounding box" ?
-        # dvips creates a bad bounding box when there are marks while (0,0) do not belong to the bounding box.
-        # The solution used here was given by Christoph Bersch on September 8, 2008 in the thread
-        # «pstricks-add question (bug?): bounding box changes with usepackage»
-        # on comp.text.tex
-        # It uses epstool.       February 22, 2013
-
         self.pspict = pspict
         self.name = self.pspict.name
         self.file_for_eps = SmallComputations.Fichier("Picture_%s-for_eps.tex"%(self.name))
@@ -642,7 +632,7 @@ class PspictureToOtherOutputs(object):
         #x_cmsize=100*numerical_approx(self.pspict.xsize*self.pspict.xunit)
         #y_cmsize=100*numerical_approx(self.pspict.ysize*self.pspict.yunit)
         x_cmsize=100*self.pspict.visual_xsize()
-        y_cmsize=100*self.pspict.visual_ysize()     # Use of pspicture.visual_xsize. March 3, 2013
+        y_cmsize=100*self.pspict.visual_ysize()
         commande_e = "sage-native-execute convert -density 1000 %s -resize %sx%s %s"%(self.file_eps.chemin,str(x_cmsize),str(y_cmsize),self.file_png.chemin)
         #commande_e = "inkscape -f %s -e %s -D -d 600"%(self.file_pdf.chemin,self.file_png.chemin)
         #inkscape -f test.pdf -l test.svg
