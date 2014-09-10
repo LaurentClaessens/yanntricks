@@ -380,6 +380,9 @@ class GraphOfAnObject(object):
         """
         self.marque = True
         self.mark = Mark(self,dist,angle,text,automatic_place=automatic_place,mark_point=mark_point)
+        # We need to immediately add the LaTeX lines about box sizes, no waiting fig.conclude. This is to allow several pictures
+        # to use the same points and marks.
+        self.mark._central_point=self.mark.central_point()
     def add_option(self,opt):
         self.options.add_option(opt)
     def get_option(opt):
@@ -1043,6 +1046,7 @@ class Mark(object):
                           position (dist;angle) from the point.
 
         """
+        self._central_point=None
         self.mark_point=mark_point
         self.graph = graph
         self.parent = graph
@@ -1058,7 +1062,6 @@ class Mark(object):
         else :
             self.x=self.dist*cos(alpha)
             self.y=self.dist*sin(alpha)
-
     def central_point(self,pspict=None):
         """
         return the central point of the mark, that is the point where the mark arrives.
@@ -1066,7 +1069,8 @@ class Mark(object):
         The central point of the mark is computed from self.graph.mark_point()
         Thus an object that wants to accept a mark needs a method mark_point that returns the point on which the mark will be put.
         """
-
+        if self._central_point:
+            return self._central_point
         if self.mark_point :
             graph_mark_point=self.mark_point
         else :
@@ -1075,18 +1079,30 @@ class Mark(object):
         default=graph_mark_point.get_polar_point(self.dist,self.angle,pspict)
 
         if self.automatic_place :
-            try :
-                pspict=self.automatic_place[0]
-                if isinstance(pspict,list):
-                    pspict=pspict[-1]
-                position=self.automatic_place[1]
-            except TypeError :
-                pspict=self.automatic_place
-                position="corner"
 
-            dimx,dimy = pspict.get_box_size(self.text)
-            dimx=float(dimx)/pspict.xunit
-            dimy=float(dimy)/pspict.yunit
+            autom=self.automatic_place
+            if isinstance(autom,main.pspicture):
+                print("You should not use 'automatic_place' like that")
+                pspict=autom
+                position="corner"
+            else :
+                pspict=self.automatic_place[0]
+                position=self.automatic_place[1]
+
+            # Suppressed on September, 10, 2014
+            #except TypeError :
+            #    pspict=self.automatic_place
+            #    position="corner"
+
+            # The idea here is to allow to use the same point in several pictures and to ask
+            # each figure to remember the box size.
+            if not isinstance(pspict,list):
+                pspict=[pspict]
+
+            for psp in pspict:
+                dimx,dimy = psp.get_box_size(self.text)
+                dimx=float(dimx)/psp.xunit
+                dimy=float(dimy)/psp.yunit
  
             if position=="for axes":
                 seg=self.automatic_place[2]
@@ -1639,9 +1655,9 @@ class GraphOfAPoint(GraphOfAnObject):
         P.psName = self.psName
         P.parameters.symbol="none"
         return P.pstricks_code(None)+"\n"
-    def polar_coordinates(self):
+    def polar_coordinates(self,origin=None):
         """
-        Return the polar coordinates of the point as a tuple (r,angle) where angle is given in degree.
+        Return the polar coordinates of the point as a tuple (r,angle) where angle is AngleMeasure
 
         EXAMPLES::
 
@@ -1654,26 +1670,33 @@ class GraphOfAPoint(GraphOfAnObject):
             (2, AngleMeasure, degree=90.0000000000000,radian=1/2*pi)
             sage: Point(-1,0).polar_coordinates()
             (1, AngleMeasure, degree=180.000000000000,radian=pi)
+
+        If 'origin' is given, it is taken as origin of the polar coordinates.
         """
-        r=self.norm()
-        if self.x==0:
+        if not origin:
+            origin=Point(0,0)
+        Q=self+AffineVector(origin,Point(0,0))
+        r=Q.norm()
+        if Q.x==0:
             radian=pi/2
         else :
-            radian=arctan(self.y/self.x)
-        if self.x<0:
-            if self.y>0:
-                radian=pi/2-radian
-            if self.y<=0:
+            radian=arctan(Q.y/Q.x)
+        if Q.x<0:
+            if Q.y>0:
+                # This is an erro corrected on September, 10, 2014
+                #radian=pi/2-radian
+                radian=radian+pi
+            if Q.y<=0:
                 radian=pi+radian
         angle=AngleMeasure(value_radian=radian)
         return r,angle
-    def angle(self):
+    def angle(self,origin=None):
         """
         Return the angle of the segment from (0,0) and self.
 
         Return the result in degree.
         """
-        return self.polar_coordinates()[1]
+        return self.polar_coordinates(origin=origin)[1]
     def coordinates(self,numerical=False,digits=10,pspict=None):
         """
         Return the coordinates of the point as a string.

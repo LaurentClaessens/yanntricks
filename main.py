@@ -1152,9 +1152,6 @@ class pspicture(object):
         if Id not in self.id_values_dict.keys():
             if not global_vars.silent:
                 print "Warning: the auxiliary file %s does not contain the id «%s». Compile your LaTeX file."%(self.figure_mother.interWriteFile,Id)
-                # I removed the following raise because if was preventing \setlength to be written in the pstricks file.
-                # September, 15, 2012
-                #raise PhystricksTestError(justification="id not found; Compile your LaTeX file.",pspict=self,code=2)
             if global_vars.perform_tests :
                 raise PhystricksTestError(justification="No tests file found.",pspict=self)
             if global_vars.create_formats["test"] :
@@ -1188,20 +1185,14 @@ class pspicture(object):
         dimension_name is a valid LaTeX macro that can be applied to a LaTeX expression and that return a number. Like
         widthof, depthof, heightof, totalheightof
         """
-        # Simpler Id creation (Augustus, 27 2014)
-        #interId = dimension_name+self.name+self.NomPointLibre.next()
-
         import hashlib
         h=hashlib.new("sha1")
         h.update(tex_expression.encode("utf8"))
         interId=dimension_name+h.hexdigest()
         if interId not in self.figure_mother.already_used_interId :
-            #self.initialize_newlength()
             self.figure_mother.add_latex_line(r"\setlength{{\{}}}{{\{}{{{}}}}}%".format(newlengthName(),dimension_name,tex_expression),"WRITE_AND_LABEL")
             value=r"\the\%s"%newlengthName()
             self.figure_mother.add_latex_line(r"\immediate\write\{}{{{}:{}-}}".format(self.figure_mother.newwriteName,interId,value),"WRITE_AND_LABEL")
-
-            #self.add_write_line(interId,r"\the\%s"%newlengthName())
             self.figure_mother.already_used_interId.append(interId)
         #read_value=self.get_Id_value(interId,"dimension %s"%dimension_name,default_value="0pt")
         read_value=self.get_Id_value(interId,default_value="0pt")
@@ -1233,11 +1224,9 @@ class pspicture(object):
 
         This functionality creates an intermediate file.
         """
-
         height = self.get_box_dimension(tex_expression,"totalheightof")
         width = self.get_box_dimension(tex_expression,"widthof")
         return width,height
-
     def dilatation(self,fact):
         self.dilatation_X(fact)
         self.dilatation_Y(fact)
