@@ -383,6 +383,9 @@ class GraphOfAnObject(object):
         # We need to immediately add the LaTeX lines about box sizes, no waiting fig.conclude. This is to allow several pictures
         # to use the same points and marks.
         self.mark._central_point=self.mark.central_point()
+        if not self.mark._central_point :
+            print(self)
+            raise
     def add_option(self,opt):
         self.options.add_option(opt)
     def get_option(opt):
@@ -1081,13 +1084,15 @@ class Mark(object):
         if self.automatic_place :
 
             autom=self.automatic_place
-            if isinstance(autom,main.pspicture):
+            if not isinstance(autom,tuple):
                 print("You should not use 'automatic_place' like that")
                 pspict=autom
                 position="corner"
             else :
                 pspict=self.automatic_place[0]
                 position=self.automatic_place[1]
+                if position=="" :
+                    position="corner"
 
             # Suppressed on September, 10, 2014
             #except TypeError :
@@ -1147,6 +1152,9 @@ class Mark(object):
         return self.graph.math_bounding_box(pspict)
     def bounding_box(self,pspict=None):
         central_point=self.central_point(pspict)
+        if not central_point:
+            print(self.parent)
+            raise
         bb=BoundingBox(central_point,central_point)
         dimx,dimy=pspict.get_box_size(self.text)
         try :
