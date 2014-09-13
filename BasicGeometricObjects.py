@@ -1443,6 +1443,8 @@ class GraphOfAPoint(GraphOfAnObject):
         # size of a bounding box.
         #if max(abs(self.x),abs(self.y))>500:
         #    raise ValueError,"I don't believe you want a point with coordinates {0},{1}".format(self.x,self.y)
+    def numerical_approx(self):
+        return Point(numerical_approx(self.x),numerical_approx(self.y))
     def projection(self,seg,direction=None,advised=False):
         """
         Return the projection of the point on the given segment.
@@ -1902,6 +1904,8 @@ class GraphOfAPoint(GraphOfAnObject):
         return Point(-self.x,-self.y)
     def __mul__(self,r):
         return Point(r*self.x,r*self.y)
+    def __div__(self,r):
+        return Point(self.x/r,self.y/r)
     def __rmul__(self,r):
         return self.__mul__(r)
     def __str__(self):
@@ -2637,7 +2641,7 @@ class GraphOfASegment(GraphOfAnObject):
         if xunit==None or yunit==None:
             raise TypeError,"When you are here, you have to furnish xunit,yunit or a pspict."
         return visual_length(self,l,xunit,yunit,pspict)
-    def add_size_extemity(self,l):
+    def add_size_extremity(self,l):
         """
         Add a length <l> at the extremity of the segment. Return a new object.
         """
@@ -2664,8 +2668,8 @@ class GraphOfASegment(GraphOfAnObject):
         """
         Return a new Segment with extra length lI at the initial side and lF at the final side. 
         """
-        F=self.add_size_extemity(lF).F
-        I=self.inverse().add_size_extemity(lI).F
+        F=self.add_size_extremity(lF).F
+        I=self.inverse().add_size_extremity(lI).F
         v = Segment(I,F)
         return self.return_deformations(v)
     def dilatation(self,coef):

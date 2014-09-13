@@ -600,6 +600,7 @@ class AngleMeasure(object):
     def __rmul__(self,coef):
         return self*coef
     def __sub__(self,other):
+        return self+(-other)
         return AngleMeasure(value_radian=self.radian-other.radian)
     def __add__(self,other):
         """
