@@ -322,6 +322,9 @@ def ParametricCurve(f1,f2,interval=(None,None)):
 
     return BasicGeometricObjects.GraphOfAParametricCurve(f1,f2,llamI,llamF)
 
+def RightAngle(d1,d2,l,n1,n2):
+    return BasicGeometricObjects.GraphOfARightAngle(d1,d2,l,n1,n2)
+
 def PolarCurve(fr,ftheta=None):
     """
     return the parametric curve (:class:`ParametricCurve`) corresponding to the 

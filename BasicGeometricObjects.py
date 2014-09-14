@@ -2223,12 +2223,10 @@ class GraphOfASegment(GraphOfAnObject):
 
         """
         return Distance(self.I,self.F)
-
     @lazy_attribute
     def advised_mark_angle(self):
         x = self.angle()+AngleMeasure(value_degree=90)
         return x
-
     def phyFunction(self):
         if self.horizontal:
             # The trick to define a constant function is explained here:
@@ -2262,7 +2260,6 @@ class GraphOfASegment(GraphOfAnObject):
         Ixmax=Intersection(self,bxmax)[0]
         Iymin=Intersection(self,bymin)[0]
         Iymax=Intersection(self,bymax)[0]
-
         l=[]
         if Ixmin.y>= ymin and Ixmin.y <= ymax :
             l.append(Ixmin)
@@ -2345,12 +2342,10 @@ class GraphOfASegment(GraphOfAnObject):
         f1=phyFunction(self.I.x+x*(self.F.x-self.I.x)/l)
         f2=phyFunction(self.I.y+x*(self.F.y-self.I.y)/l)
         return ParametricCurve(f1,f2,(0,l))
-
     def copy(self):
         v=Segment(self.I,self.F)
         v.arrow_type=self.arrow_type
         return v
-
     def get_regular_points(self,dx):
         """
         Notice that it does not return the last point of the segment, unless the length is a multiple of dx.
@@ -2518,7 +2513,13 @@ class GraphOfASegment(GraphOfAnObject):
         """
         s=self.orthogonal()
         return s.fix_origin(P)
-
+    def parallel_trough(self,P):
+        """ 
+        return a segment parallel to self passing trough P
+        """
+        v=self.F-self.I
+        Q=P+v
+        return Segment(P,Q)
     def decomposition(self,v):
         """
         return the decomposition of `self` into a `v`-component and a normal component.
@@ -5444,6 +5445,37 @@ class GraphOfABarDiagram(object):
         for P in self.numbering_marks(pspict):
             bb.append(P.mark,pspict)
         return bb
+    def latex_code(self,language=None,pspict=None):
+        return ""
+
+class GraphOfARightAngle(GraphOfAnObject):
+    def __init__(self,d1,d2,l,n1,n2):
+        """
+        two lines and a distance.
+
+        n1 and n2 are 0 or 1 and indicating which sector has to be marked.
+        """
+        GraphOfAnObject.__init__(self,self)
+        self.d1=d1
+        self.d2=d2
+        self.l=l
+        self.n1=n1
+        self.n2=n2
+        self.intersection=Intersection(d1,d2)[0]
+    def action_on_pspict(self,pspict):
+        circle=Circle(self.intersection,self.l)
+        P1=Intersection(circle,self.d1)[self.n1]
+        P2=Intersection(circle,self.d2)[self.n2]
+        Q=P1+P2-self.intersection
+        l1=Segment(Q,P1)
+        l2=Segment(Q,P2)
+        l1.parameters=self.parameters.copy()
+        l2.parameters=self.parameters.copy()
+        pspict.DrawGraphs(l1,l2)
+    def bounding_box(self,pspict):
+        return BoundingBox()
+    def math_bounding_box(self,pspict):
+        return BoundingBox()
     def latex_code(self,language=None,pspict=None):
         return ""
 
