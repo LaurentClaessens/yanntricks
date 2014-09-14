@@ -4564,19 +4564,19 @@ class GraphOfAPolygon(GraphOfAnObject):
     def __init__(self,points_list):
         GraphOfAnObject.__init__(self,self)
         self.points_list=points_list
-        self.edges_list=[]
+        self.edges=[]
         self.edge=Segment(Point(0,0),Point(1,1))    # This is an arbitrary segment that only serves to have a
                                                     # "model" for the parameters.
         for i in range(0,len(self.points_list)):
             segment=Segment(self.points_list[i],self.points_list[(i+1)%len(self.points_list)])
-            self.edges_list.append(segment)
+            self.edges.append(segment)
         self.draw_edges=True
         self.independent_edge=False
     def make_edges_independent(self):
         """
         make the edges customisation independent the one to the other.
         """
-        for s in self.edges_list :
+        for s in self.edges :
             s.parameters=Parameters()
         self.independent_edge=True
     def no_edges(self):
@@ -4599,17 +4599,17 @@ class GraphOfAPolygon(GraphOfAnObject):
         """
         a=[]
         if self.parameters._hatched or self.parameters._filled :
-            custom=CustomSurface(self.edges_list)
+            custom=CustomSurface(self.edges)
             custom.parameters=self.parameters.copy()
             a.append(custom.latex_code(language=language,pspict=pspict))
 
         if self.parameters.color!=None:
             self.draw_edges=True
-            for edge in self.edges_list:
+            for edge in self.edges:
                 edge.parameters.color=self.parameters.color
 
         if self.draw_edges:
-            for edge in self.edges_list:
+            for edge in self.edges:
                 if not self.independent_edge :
                     edge.parameters=self.edge.parameters
                     if self.parameters.color!=None:
