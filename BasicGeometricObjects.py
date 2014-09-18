@@ -970,7 +970,7 @@ class GraphOfACircle(GraphOfAnObject):
                         af=numerical_approx(angleF)
                         ar=numerical_approx(self.radius)
                         return "\draw [{0}] {1} arc ({2}:{3}:{4}); ".format( self.params(language="tikz"),A.coordinates(numerical=True,pspict=pspict),ai,af,ar)
-                    if self.parameters.visual:
+                    else :
                         # To draw part of an ellips, see
                         #http://tex.stackexchange.com/questions/123158/tikz-using-the-ellipse-command-with-a-start-and-end-angle-instead-of-an-arc
                         rx=numerical_approx(self.radius/pspict.xunit)
@@ -3261,91 +3261,6 @@ class GraphOfAVectorField(GraphOfAnObject,GeometricVectorField):
             code.append(v.latex_code(language=language,pspict=pspict))
         return "\n".join(code)
 
-# GraphOfARectangle once inherited from GeometricRectangle):   (June 26, 2014)
-class GraphOfARectangle(GraphOfAnObject):
-    """
-    The parameters of the four lines are by default the same, but they can be adapted separately.
-
-    graph_N returns the north side as a phystricks.Segment object
-    The parameters of the four sides have to be set independently.
-
-    The drawing is done by \psframe, so that, in principle, all the options are available.
-    """
-    def __init__(self,NW,SE):
-        GraphOfAnObject.__init__(self,self)
-        self.NW = NW
-        self.SE = SE
-        self.SW = Point(self.NW.x,self.SE.y)
-        self.NE = Point(self.SE.x,self.NW.y)
-        self.mx=self.NW.x
-        self.Mx=self.SE.x
-        self.my=self.SE.y
-        self.My=self.NW.y
-        self.rectangle = self.obj
-
-        self.segment_N=Segment(self.NW,self.NE)
-        self.segment_S=Segment(self.SW,self.SE)
-        self.segment_E=Segment(self.NE,self.SE)
-        self.segment_W=Segment(self.NW,self.SW)
-        self.segments=[self.segment_N,self.segment_S,self.segment_E,self.segment_W]
-        for s in self.segments:
-            s.parameters=None
-    def polygon(self):
-        polygon= Polygon(self.NW,self.NE,self.SE,self.SW)
-        polygon.parameters=self.parameters.copy()
-        return polygon
-    def first_diagonal(self):
-        return Segment(self.NW,self.SE)
-    def second_diagonal(self):
-        return Segment(self.SW,self.NE)
-    def center(self):
-        return self.first_diagonal().center()
-    def default_associated_graph_class(self):
-        """Return the class which is the Graph associated type"""
-        return GraphOfARectangle
-
-    def _segment(self,side):
-        bare_name = "graph_"+side
-        if not bare_name in self.__dict__.keys():
-            line = self.__getattribute__("segment_"+side)()
-            #line.parameters=self.parameters.copy()
-            self.__dict__[bare_name]=line
-        return  self.__dict__[bare_name]
-    def __getattr__(self,attrname):
-        if "graph_" in attrname:
-            return self._segment(attrname[6])
-        raise AttributeError
-    def bounding_box(self,pspict=None):
-        return BoundingBox(self.NW,self.SE)
-    def math_bounding_box(self,pspict=None):
-        return self.bounding_box(pspict)
-    def latex_code(self,language=None,pspict=None):
-        """
-        We are drawing the psframe AND the segments.
-        The aim is to be able to use the frame for filling, being still able to customise separately the edges.
-        """
-        return self.polygon().latex_code(language=language,pspict=pspict)
-
-        # Drawing of rectangle is now completely passed to Polygon.
-        #    June 26, 2014
-        #for s in self.segments:
-        #    if s.parameters==None:
-        #        s.parameters=self.parameters.copy()
-        #a=[]
-        #cNE=self.rectangle.NE.coordinates(numerical=True)
-        #cSW=self.rectangle.SW.coordinates(numerical=True)
-        #if language=="pstricks":
-        #    a.append("\psframe["+self.params(language="pstricks")+"]"+cSW+cNE)
-        #if language=="tikz":
-        #    k=self.params(language="tikz")
-        #    if "none" in k:
-        #        print(self)
-        #        print(self.parameters)
-        #        raise TypeError
-        #    a.append("\draw [{0}] {1} rectangle {2}; ".format(self.params(language="tikz"),cSW,cNE))
-        #for s in self.segments :
-        #    a.append(s.latex_code(language=language,pspict=pspict))
-        #return "\n".join(a)
 
 class GraphOfAnAngle(GraphOfAnObject):
     """
@@ -4602,21 +4517,110 @@ class GraphOfAPolygon(GraphOfAnObject):
             custom=CustomSurface(self.edges)
             custom.parameters=self.parameters.copy()
             a.append(custom.latex_code(language=language,pspict=pspict))
-
         if self.parameters.color!=None:
             self.draw_edges=True
             for edge in self.edges:
                 edge.parameters.color=self.parameters.color
-
         if self.draw_edges:
             for edge in self.edges:
                 if not self.independent_edge :
                     edge.parameters=self.edge.parameters
                     if self.parameters.color!=None:
                         edge.parameters.color=self.parameters.color
-
                 a.append(edge.latex_code(language=language,pspict=pspict))
         return "\n".join(a)
+
+
+# GraphOfARectangle once inherited from GeometricRectangle):   (June 26, 2014)
+class GraphOfARectangle(GraphOfAPolygon):
+    """
+    The parameters of the four lines are by default the same, but they can be adapted separately.
+
+    graph_N returns the north side as a phystricks.Segment object
+    The parameters of the four sides have to be set independently.
+
+    The drawing is done by \psframe, so that, in principle, all the options are available.
+    """
+    def __init__(self,NW,SE):
+        #GraphOfAnObject.__init__(self,self)
+        self.NW = NW
+        self.SE = SE
+        self.SW = Point(self.NW.x,self.SE.y)
+        self.NE = Point(self.SE.x,self.NW.y)
+        GraphOfAPolygon.__init__(self,[self.SW,self.SE,self.NE,self.NW])
+        self.mx=self.NW.x
+        self.Mx=self.SE.x
+        self.my=self.SE.y
+        self.My=self.NW.y
+        self.rectangle = self.obj
+
+        self.segment_N=Segment(self.NW,self.NE)
+        self.segment_S=Segment(self.SW,self.SE)
+        self.segment_E=Segment(self.NE,self.SE)
+        self.segment_W=Segment(self.NW,self.SW)
+        # Use self.edges instead of self.segments (September, 18, 2014)
+        #self.segments=[self.segment_N,self.segment_S,self.segment_E,self.segment_W]
+        for s in self.edges:
+            s.parameters.style="none"
+    def polygon(self):
+        polygon= Polygon(self.NW,self.NE,self.SE,self.SW)
+        polygon.parameters=self.parameters.copy()
+        return polygon
+    def first_diagonal(self):
+        return Segment(self.NW,self.SE)
+    def second_diagonal(self):
+        return Segment(self.SW,self.NE)
+    def center(self):
+        return self.first_diagonal().center()
+    def default_associated_graph_class(self):
+        """Return the class which is the Graph associated type"""
+        return GraphOfARectangle
+
+    def _segment(self,side):
+        bare_name = "graph_"+side
+        if not bare_name in self.__dict__.keys():
+            line = self.__getattribute__("segment_"+side)()
+            #line.parameters=self.parameters.copy()
+            self.__dict__[bare_name]=line
+        return  self.__dict__[bare_name]
+    def __getattr__(self,attrname):
+        if "graph_" in attrname:
+            return self._segment(attrname[6])
+        raise AttributeError
+
+    # Inherited from GraphOfAPolygon
+
+    #def bounding_box(self,pspict=None):
+    #    return BoundingBox(self.NW,self.SE)
+    #def math_bounding_box(self,pspict=None):
+    #    return self.bounding_box(pspict)
+    #def latex_code(self,language=None,pspict=None):
+    #    """
+    #    We are drawing the psframe AND the segments.
+    #    The aim is to be able to use the frame for filling, being still able to customise separately the edges.
+    #    """
+    #    return self.polygon().latex_code(language=language,pspict=pspict)
+
+        # Drawing of rectangle is now completely passed to Polygon.
+        #    June 26, 2014
+        #for s in self.segments:
+        #    if s.parameters==None:
+        #        s.parameters=self.parameters.copy()
+        #a=[]
+        #cNE=self.rectangle.NE.coordinates(numerical=True)
+        #cSW=self.rectangle.SW.coordinates(numerical=True)
+        #if language=="pstricks":
+        #    a.append("\psframe["+self.params(language="pstricks")+"]"+cSW+cNE)
+        #if language=="tikz":
+        #    k=self.params(language="tikz")
+        #    if "none" in k:
+        #        print(self)
+        #        print(self.parameters)
+        #        raise TypeError
+        #    a.append("\draw [{0}] {1} rectangle {2}; ".format(self.params(language="tikz"),cSW,cNE))
+        #for s in self.segments :
+        #    a.append(s.latex_code(language=language,pspict=pspict))
+        #return "\n".join(a)
 
 class GraphOfAParametricCurve(GraphOfAnObject):
     def __init__(self,f1,f2,llamI,llamF):

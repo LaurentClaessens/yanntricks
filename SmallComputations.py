@@ -927,10 +927,25 @@ class ConversionAngles(object):
 DegreeConversions=ConversionAngles(SR(180)/pi,360,exit_attribute="degree",create_function=DegreeAngleMeasure)
 RadianConversions=ConversionAngles(pi/180,2*pi,exit_attribute="radian",create_function=RadianAngleMeasure)
 
+class degreeUnit(object):
+    def __call__(self,x,number=False,keep_max=None,converting=True,numerical=False):
+        return DegreeConversions.conversion(x,number=number,keep_max=keep_max,converting=converting,numerical=numerical)
+    def __rmul__(self,x):
+        return AngleMeasure(value_degree=x)
+
+class radianUnit(object):
+    def __call__(self,x,number=False,keep_max=None,converting=True,numerical=False):
+        return RadianConversions.conversion(x,number=number,keep_max=keep_max,converting=converting,numerical=numerical)
+    def __rmul__(self,x):
+        return AngleMeasure(value_radian=x)
+
+degree=degreeUnit()
+radian=radianUnit()
+
 simplify_degree=DegreeConversions.simplify
 simplify_radian=RadianConversions.simplify
-degree=DegreeConversions.conversion
-radian=RadianConversions.conversion
+#degree=DegreeConversions.conversion
+#radian=RadianConversions.conversion
 
 def split_list(starting_list,fun,cut_ymin,cut_ymax):
     ldel=[]
