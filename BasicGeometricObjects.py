@@ -4411,7 +4411,6 @@ class GraphOfACustomSurface(GraphOfAnObject):
         if self.parameters._filled or self.parameters._hatched :
             l=[]
             for obj in self.graphList :
-
                 obj_code=obj.latex_code(language="tikz",pspict=pspict)
                 l.append( draw_to_fill(obj_code) )
 
@@ -4459,7 +4458,7 @@ class GraphOfACustomSurface(GraphOfAnObject):
         self.curve2
         in the case of surface between curves.
 
-        If one wants to surface to be filled or hatched, on has to ask explicitly.
+        If one wants the surface to be filled or hatched, on has to ask explicitly.
         """
         if language=="pstricks":
             return self.pstricks_code(pspict)
@@ -4530,7 +4529,6 @@ class GraphOfAPolygon(GraphOfAnObject):
                 a.append(edge.latex_code(language=language,pspict=pspict))
         return "\n".join(a)
 
-
 # GraphOfARectangle once inherited from GeometricRectangle):   (June 26, 2014)
 class GraphOfARectangle(GraphOfAPolygon):
     """
@@ -4558,10 +4556,15 @@ class GraphOfARectangle(GraphOfAPolygon):
         self.segment_S=Segment(self.SW,self.SE)
         self.segment_E=Segment(self.NE,self.SE)
         self.segment_W=Segment(self.NW,self.SW)
+
         # Use self.edges instead of self.segments (September, 18, 2014)
         #self.segments=[self.segment_N,self.segment_S,self.segment_E,self.segment_W]
-        for s in self.edges:
-            s.parameters.style="none"
+
+        # Putting the style of the edges to none makes the 
+        # CustomSurface (and then filling and hatching) not work because the edges'LaTeX code is use to create the tikz path
+        # defining the surface.
+        #for s in self.edges:
+        #    s.parameters.style="none"
     def polygon(self):
         polygon= Polygon(self.NW,self.NE,self.SE,self.SW)
         polygon.parameters=self.parameters.copy()
