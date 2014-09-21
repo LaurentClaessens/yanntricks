@@ -382,10 +382,18 @@ class GraphOfAnObject(object):
         self.mark = Mark(self,dist,angle,text,automatic_place=automatic_place,mark_point=mark_point)
         # We need to immediately add the LaTeX lines about box sizes, no waiting fig.conclude. This is to allow several pictures
         # to use the same points and marks.
-        self.mark._central_point=self.mark.central_point()
-        if not self.mark._central_point :
-            print(self)
-            raise
+
+        # By the way, one cannot compute the self.mark.central_point() here because the axes are not yet computed.
+
+        if automatic_place :
+            pspict=automatic_place[0]
+            dimx,dimy = pspict.get_box_size(text)
+
+        # No more like that   (September, 21, 2014)
+        #self.mark._central_point=self.mark.central_point()
+        #if not self.mark._central_point :
+        #    print(self)
+        #    raise
     def add_option(self,opt):
         self.options.add_option(opt)
     def get_option(opt):
@@ -2819,7 +2827,6 @@ class GraphOfASegment(GraphOfAnObject):
         if self.arrow_type=="segment":
             if coef<=0:
                 coef=-coef
-        #P=Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef)    # Remove this line after debug ... removed on November, 13, 2012
         v = Segment(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
         return self.return_deformations(v)
     def __add__(self,other):
@@ -4349,7 +4356,7 @@ class GraphOfACustomSurface(GraphOfAnObject):
     def __init__(self,args):
         GraphOfAnObject.__init__(self,self)
         #self.add_option("fillstyle=vlines,linestyle=none")  
-        self.add_option("fillstyle=none,linestyle=none")    # Change that default on November, 8, 2012
+        self.add_option("fillstyle=none,linestyle=none")
         self.graphList=args
     def bounding_box(self,pspict=None):
         bb=BoundingBox()
@@ -5635,7 +5642,6 @@ class BoundingBox(object):
 
     """
     def __init__(self,P1=None,P2=None,xmin=1000,xmax=-1000,ymin=1000,ymax=-1000,parent=None,mother=None):
-        # mx,Mx,my,My are now progressively banished.  February 19,2013
         self.xmin=xmin
         self.xmax=xmax
         self.ymin=ymin
@@ -5655,7 +5661,6 @@ class BoundingBox(object):
                 print "The attribute {1} of the object {0} seems to have problems".format(obj,fun)
                 print "The message was :"
                 print message
-                #raise       February 19, 2013
                 raise main.NoMathBoundingBox(obj,fun)
         else :
             if check_too_large :
