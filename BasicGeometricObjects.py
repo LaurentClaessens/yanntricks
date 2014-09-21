@@ -232,7 +232,7 @@ def _vector_latex_code(segment,language=None,pspict=None):
         a = "\draw [{0}] {1} -- {2};".format(params,segment.I.coordinates(numerical=True,pspict=pspict),segment.F.coordinates(numerical=True,pspict=pspict))
     if segment.marque :
         P = segment.F
-        P.parameters.symbol = "none"
+        P.parameters.symbol = ""
         P.put_mark(segment.mark.dist,segment.mark.angle,segment.mark.text)
         a = a + P.latex_code(language,pspict)
     return a
@@ -1663,7 +1663,7 @@ class GraphOfAPoint(GraphOfAnObject):
         """Return the code of creating a pstgeonode. The argument is a Point of GraphOfAPoint"""
         P = Point(self.x,self.y)
         P.psName = self.psName
-        P.parameters.symbol="none"
+        P.parameters.symbol=""
         return P.pstricks_code(None)+"\n"
     def polar_coordinates(self,origin=None):
         """
@@ -1818,7 +1818,7 @@ class GraphOfAPoint(GraphOfAnObject):
         symbol_dict["o"]="$o$"
         symbol_dict["diamond"]="$\diamondsuit$"
         if self.parameters.symbol=='none' :
-            print("AAIooIuxafG -- faire '' au lieu de 'none'")
+            print("You should use '' instead of 'none'")
         if self.parameters.symbol not in ["none",""]:
             s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(numerical=True,pspict=pspict),symbol_dict[self.parameters.symbol],self.params(language="tikz",refute=["symbol","dotangle"]),"DOTANGLE")
             if self.parameters.dotangle != None :
@@ -3853,7 +3853,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         a = []
         if self.marque :
             P = self.mark_point()
-            P.parameters.symbol="none"
+            P.parameters.symbol=""
             P.marque = True
             P.mark = self.mark
             pspict.DrawGraph(P)
@@ -5360,7 +5360,7 @@ class GraphOfAnHistogram(GraphOfAnObject):
         for box in self.box_list :
             P=box.rectangle.segment_N.mark_point()
             P.put_mark(0.2,90,"$"+str(box.n)+"$",automatic_place=(pspict,"S"))
-            P.parameters.symbol="none"
+            P.parameters.symbol=""
             pspict.DrawGraph(P)
     def bounding_box(self,pspict):
         bb=BoundingBox()
@@ -5430,7 +5430,7 @@ class GraphOfABarDiagram(object):
         if self.numbering:
             for i,h in enumerate(self.Y):
                 P=Point(self.X[i],h)
-                P.parameters.symbol="none"
+                P.parameters.symbol=""
                 P.put_mark(0.2,90,"\({{:.{}f}}\)".format(self.numbering_decimals).format(h),automatic_place=(pspict,"S"))
                 nb.append(P)
         return nb
@@ -5557,10 +5557,10 @@ class GraphOfASudokuGrid(object):
         numbering=[]
         for i in range(0,9):
             A=Point(  (i+1)*self.length-self.length/2,self.length/2  )
-            A.parameters.symbol="none"
+            A.parameters.symbol=""
             A.put_mark(0,0,string.uppercase[i])
             B=Point(-self.length/2,-i*self.length-self.length/2)
-            B.parameters.symbol="none"
+            B.parameters.symbol=""
             B.put_mark(0,0,string.digits[i+1])
             numbering.append(A)
             numbering.append(B)
@@ -5578,7 +5578,7 @@ class GraphOfASudokuGrid(object):
         for i,li in enumerate(lines):
             for j,c in enumerate(li.split(",")):
                 A=Point(   j*self.length+self.length/2, -i*self.length-self.length/2  )
-                A.parameters.symbol="none"
+                A.parameters.symbol=""
                 if c=="i":
                     A.put_mark(3*self.length/9,-90,"\ldots",automatic_place=(pspict,"N"))
                 if c in [  str(k) for k in range(-9,10)  ] :
