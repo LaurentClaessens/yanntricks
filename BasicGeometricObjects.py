@@ -233,7 +233,7 @@ def _vector_latex_code(segment,language=None,pspict=None):
     if segment.marque :
         P = segment.F
         P.parameters.symbol = ""
-        P.put_mark(segment.mark.dist,segment.mark.angle,segment.mark.text)
+        P.put_mark(segment.mark.dist,segment.mark.angle,segment.mark.text,automatic_place=(pspict,''))
         a = a + P.latex_code(language,pspict)
     return a
 
@@ -378,6 +378,10 @@ class GraphOfAnObject(object):
 
         mark_point is a function which returns the position of the mark point.
         """
+
+        if automatic_place==False:
+            raise "You have to pass a pspicture"
+
         self.marque = True
 
         autom=automatic_place
@@ -400,8 +404,11 @@ class GraphOfAnObject(object):
 
         # By the way, one cannot compute the self.mark.central_point() here because the axes are not yet computed.
 
+        if not isinstance(pspict,list):
+            pspict=[pspict]
         if automatic_place :
-            dimx,dimy = pspict.get_box_size(text)
+            for psp in pspict:
+                dimx,dimy = psp.get_box_size(text)
 
         # No more like that   (September, 21, 2014)
         #self.mark._central_point=self.mark.central_point()
@@ -1104,7 +1111,6 @@ class Mark(object):
         if self.automatic_place :
             pspict=self.automatic_place[0]
             position=self.automatic_place[1]
-
 
             # Suppressed on September, 10, 2014
             #except TypeError :
