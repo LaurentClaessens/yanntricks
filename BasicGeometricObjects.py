@@ -379,14 +379,28 @@ class GraphOfAnObject(object):
         mark_point is a function which returns the position of the mark point.
         """
         self.marque = True
-        self.mark = Mark(self,dist,angle,text,automatic_place=automatic_place,mark_point=mark_point)
+
+        autom=automatic_place
+        third=None
+        if not isinstance(autom,tuple):
+            print("You should not use 'automatic_place' like that")
+            pspict=autom
+            position="corner"
+        else :
+            pspict=automatic_place[0]
+            position=automatic_place[1]
+            if position=="for axes":
+                third=automatic_place[2]
+            if position=="" :
+                position="corner"
+
+        self.mark = Mark(self,dist,angle,text,automatic_place=(pspict,position,third),mark_point=mark_point)
         # We need to immediately add the LaTeX lines about box sizes, no waiting fig.conclude. This is to allow several pictures
         # to use the same points and marks.
 
         # By the way, one cannot compute the self.mark.central_point() here because the axes are not yet computed.
 
         if automatic_place :
-            pspict=automatic_place[0]
             dimx,dimy = pspict.get_box_size(text)
 
         # No more like that   (September, 21, 2014)
@@ -574,8 +588,6 @@ class GraphOfASingleAxe(GraphOfAnObject):
         bar_angle=SR(self.mark_angle).n(digits=7)    # pstricks does not accept too large numbers
         for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,self.Dx,self.mark_origin):
             P=(x*self.base).F
-            #P.parameters.symbol="|"
-            #P.add_option("dotangle=%s"%str(bar_angle))
             P.psName="ForTheBar"   # Since this point is not supposed to
                                        # be used, all of them have the same ps name.
 
@@ -1090,17 +1102,9 @@ class Mark(object):
         default=graph_mark_point.get_polar_point(self.dist,self.angle,pspict)
 
         if self.automatic_place :
+            pspict=self.automatic_place[0]
+            position=self.automatic_place[1]
 
-            autom=self.automatic_place
-            if not isinstance(autom,tuple):
-                print("You should not use 'automatic_place' like that")
-                pspict=autom
-                position="corner"
-            else :
-                pspict=self.automatic_place[0]
-                position=self.automatic_place[1]
-                if position=="" :
-                    position="corner"
 
             # Suppressed on September, 10, 2014
             #except TypeError :
