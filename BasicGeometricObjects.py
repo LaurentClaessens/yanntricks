@@ -368,6 +368,9 @@ class GraphOfAnObject(object):
         self.separator_name="DEFAULT"
         self.in_math_bounding_box=True
         self.in_bounding_box=True
+        self._draw_edges=False
+    def draw_edges(self):
+        self._draw_edges=True
     def wave(self,dx,dy):                   # dx is the wave length and dy is the amplitude
         self.wavy = True
         self.waviness = Waviness(self,dx,dy)
@@ -1210,8 +1213,8 @@ class FillParameters(object):
     Represent the parameters of filling a surface.
     """
     def __init__(self):
-        self.color= "lightgray"
-        self.style= "solid"
+        self.color = "lightgray"
+        self.style = "solid"
     def add_to_options(self,opt):
         """
         add `self` to a set of options.
@@ -4368,6 +4371,7 @@ class GraphOfACustomSurface(GraphOfAnObject):
         #self.add_option("fillstyle=vlines,linestyle=none")  
         self.add_option("fillstyle=none,linestyle=none")
         self.graphList=args
+        self.edges=Parameters()
     def bounding_box(self,pspict=None):
         bb=BoundingBox()
         for obj in self.graphList :
@@ -4458,9 +4462,6 @@ class GraphOfACustomSurface(GraphOfAnObject):
                 options="color="+color
             a.append("\\fill [{}] ".format(options)+code)
 
-        #for obj in self.graphList :
-        #    a.append(obj.latex_code(language="tikz",pspict=pspict))
-        #a.append(";")
         return "\n".join(a)
     def latex_code(self,language=None,pspict=None):
         """
@@ -4477,10 +4478,16 @@ class GraphOfACustomSurface(GraphOfAnObject):
 
         If one wants the surface to be filled or hatched, on has to ask explicitly.
         """
+        a=[]
         if language=="pstricks":
-            return self.pstricks_code(pspict)
+            a.append(self.pstricks_code(pspict))
         if language=="tikz":
-            return self.tikz_code(pspict)
+            a.append(self.tikz_code(pspict))
+        if self._draw_edges :
+            for obj in self.graphList :
+                obj.parameters = self.edges.copy()
+                a.append(obj.latex_code(language=language,pspict=pspict))
+        return '\n'.join(a)
 
 class GraphOfAPolygon(GraphOfAnObject):
     """
