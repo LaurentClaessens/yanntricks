@@ -597,6 +597,8 @@ class AngleMeasure(object):
             return AngleMeasure(value_degree=360+self.degree)
     def __mul__(self,coef):
         return AngleMeasure(value_radian=coef*self.radian)
+    def __div__(self,coef):
+        return AngleMeasure(value_radian=self.radian/coef)
     def __rmul__(self,coef):
         return self*coef
     def __sub__(self,other):
@@ -652,6 +654,7 @@ class AngleMeasure(object):
         return "AngleMeasure, degree=%s,radian=%s"%(str(numerical_approx(self.degree)),str(self.radian))
     def __repr__(self):
         return self.__str__()
+
 
 class PolarCoordinates(object):
     def __init__(self,r,value_degree=None,value_radian=None):
@@ -946,6 +949,7 @@ simplify_degree=DegreeConversions.simplify
 simplify_radian=RadianConversions.simplify
 #degree=DegreeConversions.conversion
 #radian=RadianConversions.conversion
+FullAngle=AngleMeasure(value_degree=360)
 
 def split_list(starting_list,fun,cut_ymin,cut_ymax):
     ldel=[]

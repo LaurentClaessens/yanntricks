@@ -456,6 +456,10 @@ class GraphOfAnObject(object):
             code=code.replace("plotpoints","samples")
         return code
         #return self.options.code(language=language)
+    def math_bounding_box(self,pspict):
+        return self.bounding_box(pspict)
+    def latex_code(self,pspict):
+        return ""
 
 def visual_length(v,l,xunit=None,yunit=None,pspict=None):
     """
@@ -5618,6 +5622,33 @@ class GraphOfASudokuGrid(object):
     def latex_code(self,language=None,pspict=None):
         return ""
 
+class GraphOfAFractionPieDiagram(GraphOfAnObject):
+    def __init__(self,center,radius,a,b):
+        """
+        The pie diagram for the fraction 'a/b' inside the circle of given center and radius.
+
+        2/4 and 1/2 are not treated in the same way becaise 2/4 divides the pie into 4 parts (and fills 2) while 1/2 divides into 2 parts.
+        """
+        GraphOfAnObject.__init__(self,self)
+        self.center=center
+        self.radius=radius
+        self.numerator=a
+        self.denominator=b
+        self.circle=Circle(self.center,self.radius)
+        self.circular_sector=CircularSector(self.center,self.radius,0,a*FullAngle/b)
+    def bounding_box(self,pspict):
+        return self.circle.bounding_box(pspict)
+    def latex_code(self,language=None,pspict=None):
+        return ""
+    def action_on_pspict(self,pspict):
+        import numpy
+        l=[self.circular_sector]
+        for k in numpy.linspace(0,360,self.denominator,endpoint=False):
+            s=Segment(  self.circle.get_point(k),self.center  )
+            s.parameters.style="dashed"
+            l.append(s)
+        pspict.DrawGraph(l)
+        
 class BoundingBox(object):
     r"""
     Represent the bounding box of something.

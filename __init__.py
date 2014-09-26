@@ -171,6 +171,18 @@ def MultiplePictures(name,n,script_filename=None):
         pspicts.append(picture)
     return pspicts,fig
 
+def IndependentPictures(name,n):
+    """
+    Return a tuple of a list of 'n' pspictures and 'n' figures.
+    """
+    pspicts=[]
+    figs=[]
+    for i in range(0,n):
+        pspict,fig = SinglePicture(name+str(i))
+        pspicts.append(pspict)
+        figs.append(fig)
+    return pspicts,figs
+
 def SubsetFigures(old_pspicts,old_fig,l):
     r"""
     Return a subset of a figure with subfigures.
@@ -968,6 +980,18 @@ def Circle(center,radius,angleI=0,angleF=360):
     """
     # TODO: in the last example, the radian value should be 2*pi.
     return BasicGeometricObjects.GraphOfACircle(center,radius,angleI=angleI,angleF=angleF)
+
+def CircularSector(center,radius,a,b):
+    circle=Circle(center,radius)
+    P=circle.get_point(a)
+    Q=circle.get_point(b)
+    l1=Segment( circle.center,P  )
+    l2=circle.graph(a,b)
+    l3=Segment(Q,circle.center)
+    return CustomSurface(l1,l2,l3)
+
+def FractionPieDiagram(center,radius,a,b):
+    return BasicGeometricObjects.GraphOfAFractionPieDiagram(center,radius,a,b)
 
 def Rectangle(*args,**arg):
     """
