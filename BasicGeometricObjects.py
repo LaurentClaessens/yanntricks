@@ -5635,19 +5635,27 @@ class GraphOfAFractionPieDiagram(GraphOfAnObject):
         self.numerator=a
         self.denominator=b
         self.circle=Circle(self.center,self.radius)
-        self.circular_sector=CircularSector(self.center,self.radius,0,a*FullAngle/b)
+        self._circular_sector=None
+    def circular_sector(self):
+        if not self._circular_sector :
+            cs=CircularSector(self.center,self.radius,0,self.numerator*FullAngle//self.denominator)
+            cs.parameters.filled()
+            cs.parameters.fill.color="lightgray"
+            self._circular_sector=cs
+        return self._circular_sector
     def bounding_box(self,pspict):
         return self.circle.bounding_box(pspict)
     def latex_code(self,language=None,pspict=None):
         return ""
     def action_on_pspict(self,pspict):
         import numpy
-        l=[self.circular_sector]
+        l=[self.circular_sector()]
         for k in numpy.linspace(0,360,self.denominator,endpoint=False):
             s=Segment(  self.circle.get_point(k),self.center  )
             s.parameters.style="dashed"
             l.append(s)
-        pspict.DrawGraph(l)
+        l.append(self.circle)
+        pspict.DrawGraphs(l)
         
 class BoundingBox(object):
     r"""
