@@ -2964,7 +2964,6 @@ class GraphOfASegment(GraphOfAnObject):
         for v in self.arrow_list:
             a.append(v.latex_code(pspict=pspict,language=language))
         return "\n".join(a)
-
     def pstricks_code(self,pspict=None):
         return self.latex_code(language="pstricks",pspict=pspict)
     def tikz_code(self,pspict=None):
@@ -4536,28 +4535,29 @@ class GraphOfAPolygon(GraphOfAnObject):
         return bb
     def bounding_box(self,pspict=None):
         return self.math_bounding_box(pspict)
-    def latex_code(self,language=None,pspict=None):
+    def action_on_pspict(self,pspict):
         """
         If self.parameters.color is not None, it will be the color of the edges.
 
         If one wants to fill or hatch, one has to ask explicitly.
         """
-        a=[]
         if self.parameters._hatched or self.parameters._filled :
             custom=CustomSurface(self.edges)
             custom.parameters=self.parameters.copy()
-            a.append(custom.latex_code(language=language,pspict=pspict))
+            pspict.DrawGraph(custom)
         if self.parameters.color!=None:
             self.draw_edges=True
             for edge in self.edges:
                 edge.parameters.color=self.parameters.color
         if self.draw_edges:
             for edge in self.edges:
+                print("LCVooOOsJBlkr",edge.marque)
                 if not self.independent_edge :
                     edge.parameters=self.edge.parameters
                     if self.parameters.color!=None:
                         edge.parameters.color=self.parameters.color
-                a.append(edge.latex_code(language=language,pspict=pspict))
+                print("LCVooOOsJBlkr",edge.marque)
+                pspict.DrawGraph(edge)
         return "\n".join(a)
 
 # GraphOfARectangle once inherited from GeometricRectangle):   (June 26, 2014)
