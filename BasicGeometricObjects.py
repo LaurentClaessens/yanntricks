@@ -2641,7 +2641,10 @@ class GraphOfASegment(GraphOfAnObject):
         - ``angle`` - the value of the rotation angle (in radian).
 
         """
-        v = PolarSegment(self.I,self.polaires().r,self.polaires().degree+angle)
+        a=angle
+        if isinstance(angle,AngleMeasure):
+            a=angle.degree
+        v = PolarSegment(self.I,self.polaires().r,self.polaires().degree+a)
         return self.return_deformations(v)
     def get_visual_length(self,xunit=None,yunit=None,pspict=None):
         """
