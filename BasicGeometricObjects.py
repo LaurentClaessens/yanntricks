@@ -458,7 +458,7 @@ class GraphOfAnObject(object):
         #return self.options.code(language=language)
     def math_bounding_box(self,pspict):
         return self.bounding_box(pspict)
-    def latex_code(self,pspict):
+    def latex_code(self,pspict,language=None):
         return ""
 
 def visual_length(v,l,xunit=None,yunit=None,pspict=None):
@@ -4551,14 +4551,11 @@ class GraphOfAPolygon(GraphOfAnObject):
                 edge.parameters.color=self.parameters.color
         if self.draw_edges:
             for edge in self.edges:
-                print("LCVooOOsJBlkr",edge.marque)
                 if not self.independent_edge :
                     edge.parameters=self.edge.parameters
                     if self.parameters.color!=None:
                         edge.parameters.color=self.parameters.color
-                print("LCVooOOsJBlkr",edge.marque)
                 pspict.DrawGraph(edge)
-        return "\n".join(a)
 
 # GraphOfARectangle once inherited from GeometricRectangle):   (June 26, 2014)
 class GraphOfARectangle(GraphOfAPolygon):
@@ -5283,8 +5280,7 @@ class GraphOfACircle3D(GraphOfAnObject):
         return self.curve2d.math_bounding_box(pspict)
     def action_on_pspict(self,pspict):
         pspict.DrawGraphs(self.curve2d)
-    def latex_code(self,language=None,pspict=None):
-        return ""
+
 class HistogramBox(GraphOfAnObject):
     """
     describes a box in an histogram.
