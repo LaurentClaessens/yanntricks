@@ -596,6 +596,8 @@ class AngleMeasure(object):
         if self.degree < 0 :
             return AngleMeasure(value_degree=360+self.degree)
     def __mul__(self,coef):
+        if isinstance(coef,degreeUnit) or isinstance(coef,radianUnit):
+            return self
         return AngleMeasure(value_radian=coef*self.radian)
     # The following is floordiv to be used with //
     # I do not know why __div__ does not work. I use it in GraphOfAFractionPieDiagram
