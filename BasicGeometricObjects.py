@@ -1133,7 +1133,7 @@ class Mark(object):
                 dimx,dimy = psp.get_box_size(self.text)
                 dimx=float(dimx)/psp.xunit
                 dimy=float(dimy)/psp.yunit
- 
+
             if position=="for axes":
                 seg=self.automatic_place[2]
                 alpha=seg.angle().radian
@@ -1163,6 +1163,8 @@ class Mark(object):
                 return default.translate(dimx*0.5,0)
             if position=="E":
                 return default.translate(-dimx*0.5,0)
+            print("Something wrong. I think the 'position' argument is not good :",position)
+            raise ValueError
         else :
             return default
     def math_bounding_box(self,pspict=None):
