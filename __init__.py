@@ -986,6 +986,13 @@ def Circle(center,radius,angleI=0,angleF=360):
     # TODO: in the last example, the radian value should be 2*pi.
     return BasicGeometricObjects.GraphOfACircle(center,radius,angleI=angleI,angleF=angleF)
 
+def CircleOA(O,A):
+    """
+    return a circle with center 'O' and passing through the point 'A'
+    """
+    radius=distance(O,A)
+    return Circle(O,radius)
+
 def CircularSector(center,radius,a,b):
     circle=Circle(center,radius)
     P=circle.get_point(a)

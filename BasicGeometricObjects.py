@@ -2172,7 +2172,6 @@ class GraphOfASegment(GraphOfAnObject):
         If the line is vertical, raise a ZeroDivisionError
         """
         return SR(self.Dy)/self.Dx
-
     @lazy_attribute
     def independent(self):
         """
@@ -2192,27 +2191,23 @@ class GraphOfASegment(GraphOfAnObject):
         3/2
         """
         return self.I.y-self.I.x*(self.slope)
-
     def get_point(self,x):
         """
         Return the point of abscisses 'x' on the line.
         """
         return Point(x,self.slope*x+self.independent)
-
     @lazy_attribute
     def vertical(self):
         vert = False
         if self.I.x == self.F.x :
             vert = True
         return vert
-
     @lazy_attribute
     def horizontal(self):
         horiz = False
         if self.I.y == self.F.y :
             horiz = True
         return horiz
-
     @lazy_attribute
     def equation(self):
         """
@@ -2235,7 +2230,6 @@ class GraphOfASegment(GraphOfAnObject):
             self.coefs = [1,-1/self.slope,self.independent/self.slope]
         x,y=var('x,y')
         return self.coefs[0]*x+self.coefs[1]*y+self.coefs[2] == 0
- 
     @lazy_attribute
     def length(self):
         """
@@ -2524,16 +2518,29 @@ class GraphOfASegment(GraphOfAnObject):
         if advised:
             v.advised_mark_angle=self.angle().degree+90
         return self.return_deformations(v)
-    def orthogonal(self):
+    def mediator(self):
         """
-        return the segment with a rotation of 90 degree. The new segment is still attached to the same point.
+        return the segment which is orthogonal to the center of 'self'.
+        """
+        normal=self.get_normal_vector()
+        P1=self.center()+normal
+        P2=self.center()-normal
+        return Segment(P1,P2)
+    def orthogonal(self,point=None):
+        """
+        return the segment with a rotation of 90 degree. The new segment is, by default, still attached to the same point.
+
+        If 'point' is given, the segment will be attached to that point
 
         Not to be confused with self.get_normal_vector
         """
         new_Dx=-self.Dy
         new_Dy=self.Dx
         v=Segment(self.I,Point(self.I.x+new_Dx,self.I.y+new_Dy))
-        return self.return_deformations(v)
+        defo=self.return_deformations(v)
+        if not point:
+            return defo
+        defo=defo.fix_origin(point)
     def orthogonal_trough(self,P):
         """
         return a segment orthogonal to self passing trough P.
@@ -2661,7 +2668,6 @@ class GraphOfASegment(GraphOfAnObject):
             return Dy
         else: 
             return sqrt(Dx**2+Dy**2)
-
     def visual_length(self,l,xunit=None,yunit=None,pspict=None):
         """
         return a segment with the same initial point, but with visual length  `l`
