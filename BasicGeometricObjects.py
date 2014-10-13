@@ -2518,7 +2518,7 @@ class GraphOfASegment(GraphOfAnObject):
         if advised:
             v.advised_mark_angle=self.angle().degree+90
         return self.return_deformations(v)
-    def mediator(self):
+    def bisector(self):
         """
         return the segment which is orthogonal to the center of 'self'.
         """
