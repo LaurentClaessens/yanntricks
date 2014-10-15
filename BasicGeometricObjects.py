@@ -2133,6 +2133,7 @@ class GraphOfASegment(GraphOfAnObject):
         self.arrow_type=arrow_type
         GraphOfAnObject.__init__(self,self)
         self.arrow_list=[]
+        self.measure=None
     @lazy_attribute
     def Dx(self):
         return self.F.x-self.I.x
@@ -2236,7 +2237,6 @@ class GraphOfASegment(GraphOfAnObject):
         return the length of the segment
 
         EXAMPLES::
-
 
             sage: from phystricks import *
             sage: Segment(Point(1,1),Point(2,2)).length
@@ -2408,6 +2408,10 @@ class GraphOfASegment(GraphOfAnObject):
         P=self.proportion(position,advised=False)
         v=AffineVector(P,self.F).fix_size(size)
         self.arrow_list.append(v)
+    def put_measure(self,distance,mark_distance,mark_angle,name,mark,automatic_place):
+        measure=MeasureLength(self,distance)
+        measure.put_mark(distance_mark,mark_angle,name,automatic_place)
+        self.measure=measure
     def Point(self):
         """
         Return the point X such that as free vector, 0->X == self
@@ -2948,6 +2952,9 @@ class GraphOfASegment(GraphOfAnObject):
             return self.bounding_box(pspict)
         else :
             return BoundingBox()
+    def action_on_pspict(self,pspict):
+        if self.measure :
+            pspict.DrawGraph(self.measure)
     def latex_code(self,language=None,pspict=None):
         """
         Return the LaTeX's code (pstricks or tikz) of a Segment when is is seen as a segment
@@ -5496,6 +5503,8 @@ class GraphOfARightAngle(GraphOfAnObject):
         two lines and a distance.
 
         n1 and n2 are 0 or 1 and indicating which sector has to be marked.
+        'n1' if for the intersection with d1. If 'n1=0' then we choose the intersection nearest to d1.I
+        Similarly for n2
         """
         GraphOfAnObject.__init__(self,self)
         self.d1=d1
@@ -5506,8 +5515,18 @@ class GraphOfARightAngle(GraphOfAnObject):
         self.intersection=Intersection(d1,d2)[0]
     def action_on_pspict(self,pspict):
         circle=Circle(self.intersection,self.l)
-        P1=Intersection(circle,self.d1)[self.n1]
-        P2=Intersection(circle,self.d2)[self.n2]
+        K=Intersection(circle,self.d1)
+        L=Intersection(circle,self.d2)
+        K.sort(key=lambda P:Distance_sq(P,self.d1.I))
+        L.sort(key=lambda P:Distance_sq(P,self.d2.I))
+        if self.n1==0:
+            P1=K[0]
+        if self.n1==1:
+            P1=K[1]
+        if self.n2==0:
+            P2=L[0]
+        if self.n2==1:
+            P2=L[1]
         Q=P1+P2-self.intersection
         l1=Segment(Q,P1)
         l2=Segment(Q,P2)
