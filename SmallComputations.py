@@ -642,6 +642,8 @@ class AngleMeasure(object):
                 return AngleMeasure(value_radian=self.radian+other)
             else :
                 raise TypeError, "I do not know how to add {0} with {1}".format(type(self),type(other))
+    def __neg__(self):
+        return AngleMeasure(value_degree=-self.degree)
     def __call__(self):
         return self.degree
     def __div__(self,coef):
