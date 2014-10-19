@@ -2408,9 +2408,9 @@ class GraphOfASegment(GraphOfAnObject):
         P=self.proportion(position,advised=False)
         v=AffineVector(P,self.F).fix_size(size)
         self.arrow_list.append(v)
-    def put_measure(self,distance,mark_distance,mark_angle,name,mark,automatic_place):
-        measure=MeasureLength(self,distance)
-        measure.put_mark(distance_mark,mark_angle,name,automatic_place)
+    def put_measure(self,measure_distance,mark_distance,mark_angle,name,automatic_place):
+        measure=MeasureLength(self,measure_distance)
+        measure.put_mark(mark_distance,mark_angle,name,automatic_place=automatic_place)
         self.measure=measure
     def Point(self):
         """
