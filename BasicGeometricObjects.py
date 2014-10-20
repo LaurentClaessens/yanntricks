@@ -1918,7 +1918,10 @@ class GraphOfAPoint(GraphOfAnObject):
                 dx = v.x
                 dy = v.y
             except AttributeError :
-                raise TypeError, "You seem to add myself with something which is not a Point neither a Vector. Sorry, but I'm going to crash."
+                print("VSWooXmhSzY")
+                print(v.Dx())
+                print(v.Dx)
+                raise TypeError, "You seem to add myself with something which is not a Point neither a Vector. Sorry, but I'm going to crash : {},{}".format(v,type(v))
         return Point(self.x+dx,self.y+dy)
     def __sub__(self,v):
         if isinstance(v,tuple):
@@ -2414,7 +2417,7 @@ class GraphOfASegment(GraphOfAnObject):
         measure=MeasureLength(self,measure_distance)
         measure.put_mark(mark_distance,mark_angle,name,automatic_place=automatic_place)
         self.added_objects.append(measure)
-    def put_code(self,n=1,d=0.1,l=0.1,angle=45):
+    def put_code(self,n=1,d=0.1,l=0.1,angle=45,pspict=None):
         """
         add small line at the center of the segment.
 
@@ -2423,12 +2426,19 @@ class GraphOfASegment(GraphOfAnObject):
         'l' is the (visual) length of the segment
         'angle' is the angle with 'self'.
         """
-        vect=AffineVector(self.I,self.F).fix_size(d)
-        center=self.midpoint()
+        vect=AffineVector(self.I,self.F).fix_visual_size(d,pspict)
+        center=self.midpoint(advised=False)
         positions=[]
         if n%2==1:
-            for k in range( -(n-1)/2,(n-1)/2 ):
-                positions.append()
+            for k in range( int(-(n-1)/2),int((n-1)/2) ):
+                positions.append(center+k*vect)
+        if n%2==0:
+            for k in range( int(-n/2),int(n/2) ):
+                positions.append(center+k*vect)
+        mini1=self.rotation(angle).fix_visual_size(l)
+        for P in positions:
+            mini=mini1+AffineVector(mini1.midpoint(),P)
+            self.added_objects.append(mini)
     def Point(self):
         """
         Return the point X such that as free vector, 0->X == self
@@ -2438,7 +2448,7 @@ class GraphOfASegment(GraphOfAnObject):
         return self.F-self.I
     def center(self,advised=True):
         return self.midpoint(advised=advised)
-    def midpoint(self,advised):
+    def midpoint(self,advised=True):
         P = self.proportion(0.5,advised)
         return P
     def AffineVector(self):
@@ -2691,7 +2701,7 @@ class GraphOfASegment(GraphOfAnObject):
             return Dy
         else: 
             return sqrt(Dx**2+Dy**2)
-    def visual_length(self,l,xunit=None,yunit=None,pspict=None):
+    def fix_visual_size(self,l,xunit=None,yunit=None,pspict=None):
         """
         return a segment with the same initial point, but with visual length  `l`
         """
@@ -2699,8 +2709,10 @@ class GraphOfASegment(GraphOfAnObject):
             xunit=pspict.xunit
             yunit=pspict.yunit
         if xunit==None or yunit==None:
-            raise TypeError,"When you are here, you have to furnish xunit,yunit or a pspict."
+            return self.fix_size(l)
         return visual_length(self,l,xunit,yunit,pspict)
+    def visual_length(self,l,xunit=None,yunit=None,pspict=None):
+        raise DeprecationWarning,"Use 'fix_visual_size' instead"
     def add_size_extremity(self,l):
         """
         Add a length <l> at the extremity of the segment. Return a new object.
@@ -5679,6 +5691,8 @@ class GraphOfAFractionPieDiagram(GraphOfAnObject):
         self.radius=radius
         self.numerator=a
         self.denominator=b
+        if a>b:
+            raise ValueError,"Numerator is larger than denominator"
         self.circle=Circle(self.center,self.radius)
         self._circular_sector=None
     def circular_sector(self):
@@ -5693,13 +5707,19 @@ class GraphOfAFractionPieDiagram(GraphOfAnObject):
     def latex_code(self,language=None,pspict=None):
         return ""
     def action_on_pspict(self,pspict):
-        import numpy
-        l=[self.circular_sector()]
-        for k in numpy.linspace(0,360,self.denominator,endpoint=False):
-            s=Segment(  self.circle.get_point(k),self.center  )
-            s.parameters.style="dashed"
-            l.append(s)
-        l.append(self.circle)
+        if self.denominator==self.numerator:
+            cs=Circle(self.center,self.radius)
+            cs.parameters.filled()
+            cs.parameters.fill.color="lightgray"
+            l=[cs]
+        else :
+            import numpy
+            l=[self.circular_sector()]
+            for k in numpy.linspace(0,360,self.denominator,endpoint=False):
+                s=Segment(  self.circle.get_point(k),self.center  )
+                s.parameters.style="dashed"
+                l.append(s)
+            l.append(self.circle)
         pspict.DrawGraphs(l)
         
 class BoundingBox(object):
