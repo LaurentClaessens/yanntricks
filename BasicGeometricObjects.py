@@ -2132,7 +2132,8 @@ class GraphOfASegment(GraphOfAnObject):
         self.F = B
         self.arrow_type=arrow_type
         GraphOfAnObject.__init__(self,self)
-        self.arrow_list=[]
+        self.added_objects=[]
+        #self.arrow_list=[]
         self.measure=None
     @lazy_attribute
     def Dx(self):
@@ -2407,11 +2408,21 @@ class GraphOfASegment(GraphOfAnObject):
         """
         P=self.proportion(position,advised=False)
         v=AffineVector(P,self.F).fix_size(size)
-        self.arrow_list.append(v)
+        self.added_objects.append(v)
+        #self.arrow_list.append(v)
     def put_measure(self,measure_distance,mark_distance,mark_angle,name,automatic_place):
         measure=MeasureLength(self,measure_distance)
         measure.put_mark(mark_distance,mark_angle,name,automatic_place=automatic_place)
-        self.measure=measure
+        self.added_objects.append(measure)
+    def put_code(self,n=1,l=0.1,angle=45):
+        """
+        add small line at the center of the segment.
+
+        If 'n' is given, add 'n' small lines.
+
+        'l' is the (visual) length of the segment
+        'angle' is the angle with 'self'.
+        """
     def Point(self):
         """
         Return the point X such that as free vector, 0->X == self
@@ -2953,8 +2964,8 @@ class GraphOfASegment(GraphOfAnObject):
         else :
             return BoundingBox()
     def action_on_pspict(self,pspict):
-        if self.measure :
-            pspict.DrawGraph(self.measure)
+        for obj in self.added_objects :
+            pspict.DrawGraphs(obj)
     def latex_code(self,language=None,pspict=None):
         """
         Return the LaTeX's code (pstricks or tikz) of a Segment when is is seen as a segment
@@ -2976,8 +2987,8 @@ class GraphOfASegment(GraphOfAnObject):
                 if language=="tikz":
                     a=[]
                     a.append("\draw [{2}] {0} -- {1};".format(self.I.coordinates(numerical=True,pspict=pspict),self.F.coordinates(numerical=True,pspict=pspict),self.params(language="tikz")))
-        for v in self.arrow_list:
-            a.append(v.latex_code(pspict=pspict,language=language))
+        #for v in self.arrow_list:
+        #    a.append(v.latex_code(pspict=pspict,language=language))
         return "\n".join(a)
     def pstricks_code(self,pspict=None):
         return self.latex_code(language="pstricks",pspict=pspict)
