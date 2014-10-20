@@ -2404,7 +2404,7 @@ class GraphOfASegment(GraphOfAnObject):
         The arrow is pointed from self.I to self.F and is by default put at the middle of the
         segment.
 
-        The arrow is a vector of size (by default 0.01). 
+        The arrow is a vector of size (by default) 0.01. 
         """
         P=self.proportion(position,advised=False)
         v=AffineVector(P,self.F).fix_size(size)
@@ -2414,15 +2414,21 @@ class GraphOfASegment(GraphOfAnObject):
         measure=MeasureLength(self,measure_distance)
         measure.put_mark(mark_distance,mark_angle,name,automatic_place=automatic_place)
         self.added_objects.append(measure)
-    def put_code(self,n=1,l=0.1,angle=45):
+    def put_code(self,n=1,d=0.1,l=0.1,angle=45):
         """
         add small line at the center of the segment.
 
-        If 'n' is given, add 'n' small lines.
-
+        'n' add 'n' small lines.
+        'd' is the distance between two of them
         'l' is the (visual) length of the segment
         'angle' is the angle with 'self'.
         """
+        vect=AffineVector(self.I,self.F).fix_size(d)
+        center=self.midpoint()
+        positions=[]
+        if n%2==1:
+            for k in range( -(n-1)/2,(n-1)/2 ):
+                positions.append()
     def Point(self):
         """
         Return the point X such that as free vector, 0->X == self
@@ -2431,6 +2437,8 @@ class GraphOfASegment(GraphOfAnObject):
         """
         return self.F-self.I
     def center(self,advised=True):
+        return self.midpoint(advised=advised)
+    def midpoint(self,advised):
         P = self.proportion(0.5,advised)
         return P
     def AffineVector(self):
