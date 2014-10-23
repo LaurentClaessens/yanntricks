@@ -2421,7 +2421,7 @@ class GraphOfASegment(GraphOfAnObject):
         """
         add small line at the center of the segment.
 
-        'n' add 'n' small lines.
+        'n' add 'n' small lines. Default is 1
         'd' is the distance between two of them
         'l' is the (visual) length of the segment
         'angle' is the angle with 'self'.
@@ -2430,10 +2430,11 @@ class GraphOfASegment(GraphOfAnObject):
         center=self.midpoint(advised=False)
         positions=[]
         if n%2==1:
-            for k in range( int(-(n-1)/2),int((n-1)/2) ):
+            for k in range( int(-(n-1)/2),int((n-1)/2)+1 ):
                 positions.append(center+k*vect)
         if n%2==0:
-            for k in range( int(-n/2),int(n/2) ):
+            import numpy
+            for k in numpy.linspace(-n/2+0.5,n/2-0.5,n):
                 positions.append(center+k*vect)
         mini1=self.rotation(angle).fix_visual_size(l)
         for P in positions:
