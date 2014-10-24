@@ -460,7 +460,9 @@ class GraphOfAnObject(object):
     def action_on_pspict(self,pspict):
         for obj in self.added_objects :
             pspict.DrawGraphs(obj)
-        self.specifi_action_on_pspict(pspict)
+        # One cannot make try ... except AttributeError since it should silently pass a real AttributeError in the implementation if specific_action_on_pspict
+        if "specific_action_on_pspict" in dir(self):
+            self.specific_action_on_pspict(pspict)
     def math_bounding_box(self,pspict):
         return self.bounding_box(pspict)
     def latex_code(self,pspict,language=None):
@@ -4585,6 +4587,7 @@ class GraphOfAPolygon(GraphOfAnObject):
             v1=AffinVector(A,P).fix_origin(P).fix_size(1)
             v2=AffinVector(C,P).fix_origin(P).fix_size(1)
             Q=(v1+v2).F
+            self.added_objects.append( Segment(P,Q)  )
     def math_bounding_box(self,pspict=None):
         bb=BoundingBox()
         for P in self.points_list:

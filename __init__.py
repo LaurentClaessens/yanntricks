@@ -1524,7 +1524,7 @@ class Cuboid(object):
         return bb
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
-    def action_on_pspict(self,pspict):
+    def specific_action_on_pspict(self,pspict):
         for P in self.c1:
             pspict.DrawGraphs(P)
         for P in self.c2:
