@@ -369,6 +369,7 @@ class GraphOfAnObject(object):
         self.in_math_bounding_box=True
         self.in_bounding_box=True
         self._draw_edges=False
+        self.added_objects=[]
     def draw_edges(self):
         self._draw_edges=True
     def wave(self,dx,dy):                   # dx is the wave length and dy is the amplitude
@@ -456,6 +457,10 @@ class GraphOfAnObject(object):
             code=code.replace("plotpoints","samples")
         return code
         #return self.options.code(language=language)
+    def action_on_pspict(self,pspict):
+        for obj in self.added_objects :
+            pspict.DrawGraphs(obj)
+        self.specifi_action_on_pspict(pspict)
     def math_bounding_box(self,pspict):
         return self.bounding_box(pspict)
     def latex_code(self,pspict,language=None):
@@ -2135,7 +2140,6 @@ class GraphOfASegment(GraphOfAnObject):
         self.F = B
         self.arrow_type=arrow_type
         GraphOfAnObject.__init__(self,self)
-        self.added_objects=[]
         #self.arrow_list=[]
         self.measure=None
     @lazy_attribute
@@ -2984,9 +2988,6 @@ class GraphOfASegment(GraphOfAnObject):
             return self.bounding_box(pspict)
         else :
             return BoundingBox()
-    def action_on_pspict(self,pspict):
-        for obj in self.added_objects :
-            pspict.DrawGraphs(obj)
     def latex_code(self,language=None,pspict=None):
         """
         Return the LaTeX's code (pstricks or tikz) of a Segment when is is seen as a segment
@@ -3922,7 +3923,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         if not self.pieces:
             return self.get_point(self.Mx)
         return self.pieces[-1].mark_point()
-    def action_on_pspict(self,pspict):
+    def specific_action_on_pspict(self,pspict):
         a = []
         if self.marque :
             P = self.mark_point()
@@ -4575,6 +4576,15 @@ class GraphOfAPolygon(GraphOfAnObject):
         When X.no_edges() is used, the edges of the polygon will not be drawn.
         """
         self.draw_edges=False
+    def put_mark(self,dist,text_list,mark_point=None,pspict=pspict):
+        n=len(self.points_list)
+        for i,P in enumerate(self.points_list):
+            text=text_list[i]
+            A=self.points_list[(i-1)%n]
+            B=self.points_list[(i+1)%n]
+            v1=AffinVector(A,P).fix_origin(P).fix_size(1)
+            v2=AffinVector(C,P).fix_origin(P).fix_size(1)
+            Q=(v1+v2).F
     def math_bounding_box(self,pspict=None):
         bb=BoundingBox()
         for P in self.points_list:
@@ -4582,7 +4592,7 @@ class GraphOfAPolygon(GraphOfAnObject):
         return bb
     def bounding_box(self,pspict=None):
         return self.math_bounding_box(pspict)
-    def action_on_pspict(self,pspict):
+    def specific_action_on_pspict(self,pspict):
         """
         If self.parameters.color is not None, it will be the color of the edges.
 
@@ -5325,7 +5335,7 @@ class GraphOfACircle3D(GraphOfAnObject):
         return self.curve2d.bounding_box(pspict)
     def math_bounding_box(self,pspict=None):
         return self.curve2d.math_bounding_box(pspict)
-    def action_on_pspict(self,pspict):
+    def specific_action_on_pspict(self,pspict):
         pspict.DrawGraphs(self.curve2d)
 
 class HistogramBox(GraphOfAnObject):
@@ -5408,7 +5418,7 @@ class GraphOfAnHistogram(GraphOfAnObject):
             if b.d_xmax not in x_list :
                 x_list.append(b.d_xmax)
         return x_list
-    def action_on_pspict(self,pspict):
+    def specific_action_on_pspict(self,pspict):
         pspict.axes.no_graduation()
         pspict.axes.do_mx_enlarge=False
         pspict.axes.do_my_enlarge=False
@@ -5458,7 +5468,7 @@ class GraphOfAMoustache(GraphOfAnObject):
         self.delta_y=delta_y
         self.minimum=minimum
         self.maximum=maximum
-    def action_on_pspict(self,pspict):
+    def specific_action_on_pspict(self,pspict):
         my=self.delta_y-self.h/2
         My=self.delta_y+self.h/2
         h1=Segment(Point(self.minimum,my),Point(self.minimum,My))
@@ -5508,7 +5518,7 @@ class GraphOfABarDiagram(object):
                 P.put_mark(0.2,90,"\({{:.{}f}}\)".format(self.numbering_decimals).format(h),automatic_place=(pspict,"S"))
                 nb.append(P)
         return nb
-    def action_on_pspict(self,pspict):
+    def specific_action_on_pspict(self,pspict):
         for P in self.numbering_marks(pspict):
             pspict.DrawGraph(P)
         for l in self.lines_list:
@@ -5545,7 +5555,7 @@ class GraphOfARightAngle(GraphOfAnObject):
         self.n1=n1
         self.n2=n2
         self.intersection=Intersection(d1,d2)[0]
-    def action_on_pspict(self,pspict):
+    def specific_action_on_pspict(self,pspict):
         circle=Circle(self.intersection,self.l)
         K=Intersection(circle,self.d1)
         L=Intersection(circle,self.d2)
@@ -5634,7 +5644,7 @@ class GraphOfASudokuGrid(object):
         self.question=sudoku_substitution(question)
         self.length=length       # length of a cell
 
-    def action_on_pspict(self,pspict):
+    def specific_action_on_pspict(self,pspict):
         import string
 
         vlines=[]
@@ -5707,7 +5717,7 @@ class GraphOfAFractionPieDiagram(GraphOfAnObject):
         return self.circle.bounding_box(pspict)
     def latex_code(self,language=None,pspict=None):
         return ""
-    def action_on_pspict(self,pspict):
+    def specific_action_on_pspict(self,pspict):
         if self.denominator==self.numerator:
             cs=Circle(self.center,self.radius)
             cs.parameters.filled()
