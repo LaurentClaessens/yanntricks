@@ -1204,6 +1204,8 @@ class Mark(object):
         bb.add_object(pt2,pspict)
         bb.parent=self
         return bb
+    def action_on_pspict(self,pspict=None):
+        pass
     def pstricks_code(self,pspict=None):
         l=[]
         central_point=self.central_point(pspict)
@@ -2558,14 +2560,23 @@ class GraphOfASegment(GraphOfAnObject):
         if advised:
             v.advised_mark_angle=self.angle().degree+90
         return self.return_deformations(v)
-    def bisector(self):
+    def bisector(self,code=None):
         """
         return the segment which is orthogonal to the center of 'self'.
         """
         normal=self.get_normal_vector()
-        P1=self.center()+normal
-        P2=self.center()-normal
-        return Segment(P1,P2)
+        M=self.center()
+        P1=M+normal
+        P2=M-normal
+        seg=Segment(P1,P2)
+        if code:
+            s1=Segment(self.I,M)
+            s2=Segment(M,self.F)
+            s1.put_code(n=code[0],d=code[1],l=code[2],angle=code[3],pspict=code[4])
+            s2.put_code(n=code[0],d=code[1],l=code[2],angle=code[3],pspict=code[4])
+            seg.added_objects.append(s1)
+            seg.added_objects.append(s2)
+        return seg
     def orthogonal(self,point=None):
         """
         return the segment with a rotation of 90 degree. The new segment is, by default, still attached to the same point.
@@ -2585,8 +2596,9 @@ class GraphOfASegment(GraphOfAnObject):
         """
         return a segment orthogonal to self passing trough P.
         """
-        s=self.orthogonal()
-        return s.fix_origin(P)
+        s=self.orthogonal().fix_origin(P)
+        Q=Intersection(s,self)[0]
+        return Segment(P,Q)
     def parallel_trough(self,P):
         """ 
         return a segment parallel to self passing trough P
@@ -4578,16 +4590,19 @@ class GraphOfAPolygon(GraphOfAnObject):
         When X.no_edges() is used, the edges of the polygon will not be drawn.
         """
         self.draw_edges=False
-    def put_mark(self,dist,text_list,mark_point=None,pspict=pspict):
+    def put_mark(self,dist,text_list,mark_point=None,pspict=None):
         n=len(self.points_list)
         for i,P in enumerate(self.points_list):
             text=text_list[i]
             A=self.points_list[(i-1)%n]
             B=self.points_list[(i+1)%n]
-            v1=AffinVector(A,P).fix_origin(P).fix_size(1)
-            v2=AffinVector(C,P).fix_origin(P).fix_size(1)
-            Q=(v1+v2).F
-            self.added_objects.append( Segment(P,Q)  )
+            v1=AffineVector(A,P).fix_origin(P).fix_size(1)
+            v2=AffineVector(B,P).fix_origin(P).fix_size(1)
+            vect=(v1+v2).fix_size(dist)
+            Q=P+vect
+            angle=Segment(P,Q).angle()
+            P.put_mark(0.2,angle,text,automatic_place=(pspict,"corner"))
+            self.added_objects.append(P)
     def math_bounding_box(self,pspict=None):
         bb=BoundingBox()
         for P in self.points_list:
@@ -5192,7 +5207,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             llam = float(PAs[i])
             v=self.get_normal_vector(llam)
             vp=v.F-v.I
-            w=Vector(vp.x*yunit/xunit,vp.y*xunit/yunit).visual_length(dy,xunit,yunit)
+            w=Vector(vp.x*yunit/xunit,vp.y*xunit/yunit).fix_visual_size(dy,xunit,yunit)
             PTs.append( self.get_point(llam)+w*(-1)**i )
         PTs.append(self.get_point(Mll))
         return PTs
@@ -5521,7 +5536,7 @@ class GraphOfABarDiagram(object):
                 P.put_mark(0.2,90,"\({{:.{}f}}\)".format(self.numbering_decimals).format(h),automatic_place=(pspict,"S"))
                 nb.append(P)
         return nb
-    def specific_action_on_pspict(self,pspict):
+    def action_on_pspict(self,pspict):
         for P in self.numbering_marks(pspict):
             pspict.DrawGraph(P)
         for l in self.lines_list:

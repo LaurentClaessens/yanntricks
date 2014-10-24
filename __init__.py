@@ -1152,10 +1152,9 @@ class Grid(object):
         return self.options.sousOptions(OptionsStyleLigne())
     def optionsParams(self):
         return self.options.sousOptions(["Dx","Dy"])
-    def drawing(self):
+    def action_on_pspict(self,pspict):
         a = []
         # ++++++++++++ Border ++++++++ 
-        #self.draw_border = False        # 16 oct 2010 : no more border  # commented this line on 14 March 2011
         if self.draw_border :
             # Right border
             if self.draw_vertical_grid :
@@ -1205,12 +1204,14 @@ class Grid(object):
                 S = Segment( Point(self.BB.xmin,y),Point(self.BB.xmax,y) )
                 S.merge_options(self.main_horizontal)
                 a.append(S)
-        return a
+        pspict.DrawGraphs(a)
     def latex_code(self,language=None,pspict=None):
-        a=[]
-        for element in self.drawing():
-            a.append(element.latex_code(language=language,pspict=pspict))
-        return "\n".join(a)
+        return ""
+        # October 24, 2014
+        #a=[]
+        #for element in self.drawing():
+        #    a.append(element.latex_code(language=language,pspict=pspict))
+        #return "\n".join(a)
 
 class AxesUnit(object):
     def __init__(self,numerical_value,latex_symbol=""):
@@ -1524,7 +1525,7 @@ class Cuboid(object):
         return bb
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
-    def specific_action_on_pspict(self,pspict):
+    def action_on_pspict(self,pspict):
         for P in self.c1:
             pspict.DrawGraphs(P)
         for P in self.c2:
