@@ -5923,6 +5923,8 @@ class BoundingBox(object):
         rect=Rectangle(self.SW(),self.NE())
         rect.parameters.color="cyan"
         return rect.latex_code(language=language,pspict=pspict)
+    def action_on_pspict(self,pspict=None):
+        pass
     def bounding_box(self,pspict=None):
         return self
     def math_bounding_box(self,pspict=None):

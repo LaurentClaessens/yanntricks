@@ -834,7 +834,7 @@ class pspicture(object):
         self.figure_mother=None
         self.language="tikz"
         self.pstricks_code_list = []
-        self.specific_needs = ""    # See the class PspictureToOtherOutputs
+        #self.specific_needs = ""    # See the class PspictureToOtherOutputs
                                      # specific_needs becomes an attribute of figure instead of pspict (November, 9, 2012)
         self.newwriteDone = False
 
@@ -897,6 +897,7 @@ class pspicture(object):
         self.write_and_label_separator_list=SeparatorList()
         self.write_and_label_separator_list.new_separator("WRITE_AND_LABEL")
 
+        self.already_warned_CompileYourLaTeXFile=False
 
     @lazy_attribute
     def contenu_pstricks(self):
@@ -1128,7 +1129,9 @@ class pspicture(object):
         try :
             f=open(self.figure_mother.interWriteFile,"r")
         except IOError :
-            print "Warning: the auxiliary file %s seems not to exist. Compile your LaTeX file."%self.figure_mother.interWriteFile
+            if not self.already_warned_CompileYourLaTeXFile:
+                print "Warning: the auxiliary file %s seems not to exist. Compile your LaTeX file."%self.figure_mother.interWriteFile
+                self.already_warned_CompileYourLaTeXFile=True
             if global_vars.perform_tests :
                 raise ValueError,"I cannot say that a test succeed if I cannot determine the bounding box"
             if global_vars.create_formats["test"] :
@@ -1151,7 +1154,9 @@ class pspicture(object):
     def get_Id_value(self,Id,default_value=0):
         if Id not in self.id_values_dict.keys():
             if not global_vars.silent:
-                print "Warning: the auxiliary file %s does not contain the id «%s». Compile your LaTeX file."%(self.figure_mother.interWriteFile,Id)
+                if not self.already_warned_CompileYourLaTeXFile:
+                    print "Warning: the auxiliary file %s does not contain the id «%s». Compile your LaTeX file."%(self.figure_mother.interWriteFile,Id)
+                    self.already_warned_CompileYourLaTeXFile=True
             if global_vars.perform_tests :
                 raise PhystricksTestError(justification="No tests file found.",pspict=self)
             if global_vars.create_formats["test"] :
