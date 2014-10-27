@@ -4569,8 +4569,9 @@ class GraphOfAPolygon(GraphOfAnObject):
     """
     def __init__(self,points_list):
         GraphOfAnObject.__init__(self,self)
-        self.points_list=points_list
         self.edges=[]
+        self.vertices=points_list
+        self.points_list=self.vertices
         self.edge=Segment(Point(0,0),Point(1,1))    # This is an arbitrary segment that only serves to have a
                                                     # "model" for the parameters.
         for i in range(0,len(self.points_list)):
