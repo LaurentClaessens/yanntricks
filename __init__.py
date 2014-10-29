@@ -213,6 +213,19 @@ def SubsetFigures(old_pspicts,old_fig,l):
         pspict.append(old_pspicts[i])
     return pspict,fig
 
+def test_imaginary_part(z,epsilon=0.0001):
+    """
+    If z has an imaginary part smaller than 'epsilon', return the real part and print a message.
+
+    with the colateral effect that it returns a numerical approximation.
+    """
+    if z.is_real() and "I" not in str(z):
+        return z
+    if abs( numerical_approx(z.imag_part()) )<epsilon:
+        print("I am removing a (probably fake) imaginary part")
+        return numerical_approx( z.real_part() )
+    print("It seems that an imaginary part is not so small. I keep it, but it will probably create problems later in the LaTeX file.")
+    return z
 
 def Intersection(f,g,a=None,b=None,numerical=False):
     """
@@ -247,6 +260,10 @@ def Intersection(f,g,a=None,b=None,numerical=False):
         k=f-g
         xx=SmallComputations.find_roots_recursive(k.sage,a,b)
         pts=[  Point(x,f(x)) for x in xx ]
+        for P in pts:
+            if "I" in P.coordinates():
+                print("There should not be imaginary part")
+                raise
         return pts
 
     x,y=var('x,y')
@@ -255,8 +272,15 @@ def Intersection(f,g,a=None,b=None,numerical=False):
     for s in soluce:
         a=s[0].rhs()
         b=s[1].rhs()
+        a=test_imaginary_part(a)
+        b=test_imaginary_part(b)
         pts.append(Point(a,b))
     pts.sort(lambda P,Q:cmp(P.x,Q.x))
+    for P in pts:
+        if "I" in P.coordinates():
+            print("There should not be imaginary part")
+            print(f.equation,g.equation)
+            raise
     return pts
 
 def EnsurephyFunction(f):

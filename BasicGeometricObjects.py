@@ -2448,6 +2448,14 @@ class GraphOfASegment(GraphOfAnObject):
         for P in positions:
             mini=mini1+AffineVector(mini1.midpoint(),P)
             self.added_objects.append(mini)
+    def divide_in_two(self,n=1,d=0.1,l=0.1,angle=45,pspict=None):
+        M=self.midpoint()
+        s1=Segment(self.I,M)
+        s2=Segment(M,self.F)
+        s1.put_code(n=n,d=d,l=l,pspict=pspict)
+        s2.put_code(n=n,d=d,l=l,pspict=pspict)
+        self.added_objects.extend(s1.added_objects)
+        self.added_objects.extend(s2.added_objects)
     def Point(self):
         """
         Return the point X such that as free vector, 0->X == self
@@ -3022,7 +3030,12 @@ class GraphOfASegment(GraphOfAnObject):
                     a.append("\pstLineAB[%s]{%s}{%s}"%(self.params(language="pstricks"),self.I.psName,self.F.psName))
                 if language=="tikz":
                     a=[]
-                    a.append("\draw [{2}] {0} -- {1};".format(self.I.coordinates(numerical=True,pspict=pspict),self.F.coordinates(numerical=True,pspict=pspict),self.params(language="tikz")))
+                    c1=self.I.coordinates(numerical=True,pspict=pspict)
+                    c2=self.F.coordinates(numerical=True,pspict=pspict)
+                    if 'I' in c1 or "I" in c2 :
+                        print(self.I,self.F)
+                        raise
+                    a.append("\draw [{2}] {0} -- {1};".format(c1,c2,self.params(language="tikz")))
         #for v in self.arrow_list:
         #    a.append(v.latex_code(pspict=pspict,language=language))
         return "\n".join(a)
@@ -4591,8 +4604,11 @@ class GraphOfAPolygon(GraphOfAnObject):
         When X.no_edges() is used, the edges of the polygon will not be drawn.
         """
         self.draw_edges=False
-    def put_mark(self,dist,text_list,mark_point=None,pspict=None):
+    def put_mark(self,dist,text_list=None,mark_point=None,pspict=None):
         n=len(self.points_list)
+        if not text_list:
+            import string
+            text_list=[   "\( {} \)".format(x) for x in  string.ascii_uppercase[0:n]  ]
         for i,P in enumerate(self.points_list):
             text=text_list[i]
             A=self.points_list[(i-1)%n]
@@ -5588,6 +5604,13 @@ class GraphOfARightAngle(GraphOfAnObject):
             P2=L[0]
         if self.n2==1:
             P2=L[1]
+        if "I" in P1.coordinates():
+            print("RKXTooEGijdq","P1")
+            raise
+        if "I" in P2.coordinates():
+            print("ZGRZooFXJBXE","P2")
+            print(circle.equation,self.d2.equation)
+            raise
         Q=P1+P2-self.intersection
         l1=Segment(Q,P1)
         l2=Segment(Q,P2)
