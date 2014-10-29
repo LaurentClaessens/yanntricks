@@ -215,23 +215,25 @@ def SubsetFigures(old_pspicts,old_fig,l):
 
 def test_imaginary_part(z,epsilon=0.0001):
     """
-    If z has an imaginary part smaller than 'epsilon', return the real part and print a message.
+    Return a tuple '(isreal,w)' where 'isreal' is a boolean saying if 'z' is real (in the sense that it is real and does not contain 'I' in its string representation) and 'w' is 'z' when the imaginary part is larger than epsilon and an 'numerical_approx' of 'z' when its imaginary part is smaller than 'epsilon'
 
-    with the colateral effect that it returns a numerical approximation.
+    With the colateral effect that it returns a numerical approximation.
     """
     if z.is_real() and "I" not in str(z):
-        return z
+        return True,z
     if abs( numerical_approx(z.imag_part()) )<epsilon:
         print("I am removing a (probably fake) imaginary part")
-        return numerical_approx( z.real_part() )
-    print("It seems that an imaginary part is not so small. I keep it, but it will probably create problems later in the LaTeX file.")
-    return z
+        return True,numerical_approx( z.real_part() )
+    print("It seems that an imaginary part is not so small.")
+    return False,z
 
-def Intersection(f,g,a=None,b=None,numerical=False):
+def Intersection(f,g,a=None,b=None,numerical=False,only_real=True):
     """
     When f and g are objects with an attribute equation, return the list of points of intersections.
 
     The list of point is sorted by order of `x` coordinates.
+
+    If 'only_real' is True, return only the real solutions.
 
     EXAMPLES::
 
@@ -272,9 +274,10 @@ def Intersection(f,g,a=None,b=None,numerical=False):
     for s in soluce:
         a=s[0].rhs()
         b=s[1].rhs()
-        a=test_imaginary_part(a)
-        b=test_imaginary_part(b)
-        pts.append(Point(a,b))
+        ok1,a=test_imaginary_part(a)
+        ok2,b=test_imaginary_part(b)
+        if ok1 and ok2 :
+            pts.append(Point(a,b))
     pts.sort(lambda P,Q:cmp(P.x,Q.x))
     for P in pts:
         if "I" in P.coordinates():
