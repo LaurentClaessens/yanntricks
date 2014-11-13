@@ -1231,7 +1231,7 @@ class Grid(object):
                 S = Segment( Point(self.BB.xmin,y),Point(self.BB.xmax,y) )
                 S.merge_options(self.main_horizontal)
                 a.append(S)
-        pspict.DrawGraphs(a)
+        pspict.DrawGraphs(a,separator_name=self.separator_name)
     def latex_code(self,language=None,pspict=None):
         return ""
         # October 24, 2014

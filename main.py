@@ -1266,13 +1266,17 @@ class pspicture(object):
         if not obj:
             obj=self
         self.record_bounding_box.append(obj)
-    def DrawGraphs(self,*args):
+    def DrawGraphs(self,*args,**arg):
+        if "separator_name" not in arg.keys():
+            separator_name="DEFAULT"
+        else:
+            separator_name=arg["separator_name"]
         for gr in args:
             try :
                 for h in gr:
-                    self.DrawGraph(h)
+                    self.DrawGraph(h,separator_name=separator_name)
             except TypeError:
-                self.DrawGraph(gr)
+                self.DrawGraph(gr,separator_name=separator_name)
     def DrawGraph(self,graph,separator_name=None):
         """
         Draw an object of type `GraphOfASomething`.
@@ -1330,8 +1334,7 @@ class pspicture(object):
         #self.DrawGraph(self.axes)
         self.draw_default_axes=True
     def DrawDefaultGrid(self):
-        bb=self.math_bounding_box()
-        self.grid.BB = bb
+        self.grid.BB = self.math_bounding_box()
         Dx=self.grid.Dx
         Dy=self.grid.Dy
         # Make the grid end on its "big" subdivisions.
@@ -1350,6 +1353,9 @@ class pspicture(object):
         if separator_name=="WRITE_AND_LABEL" or separator_name=="CLOSE_WRITE_AND_LABEL":
             self.write_and_label_separator_list[separator_name].add_latex_line(ligne,add_line_jump=add_line_jump)
         else:
+            print("FXSOooFOwiBP",separator_name)
+            if separator_name=="GRID":
+                print(ligne)
             self.separator_list[separator_name].add_latex_line(ligne,add_line_jump=add_line_jump)
     def force_math_bounding_box(self,g):
         """
