@@ -1353,9 +1353,6 @@ class pspicture(object):
         if separator_name=="WRITE_AND_LABEL" or separator_name=="CLOSE_WRITE_AND_LABEL":
             self.write_and_label_separator_list[separator_name].add_latex_line(ligne,add_line_jump=add_line_jump)
         else:
-            print("FXSOooFOwiBP",separator_name)
-            if separator_name=="GRID":
-                print(ligne)
             self.separator_list[separator_name].add_latex_line(ligne,add_line_jump=add_line_jump)
     def force_math_bounding_box(self,g):
         """
