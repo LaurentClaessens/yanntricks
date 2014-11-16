@@ -66,14 +66,22 @@ def SubGridArray(mx,Mx,Dx,num_subX):
 def MainGridArray(mx,Mx,Dx):
         """
         Return the list of number that are
-        1. integer multiple of Dy
+        1. integer multiple of Dx
         2. between mx and Mx
 
         If mx=-1.4 and Dx=0.5, the first element of the list will be -1
         If mx=-1.5 and Dx=0.5, the first element of the list will be -1.5
+        If mx=0 and Dx=1, the first element of the list will be 0.
         """
         #for y in range(MultipleBigger(self.BB.my,self.Dy),MultipleLower(self.BB.My,self.Dy)+1,self.Dy):
+        m=mx/Dx
+        if not m.is_integer():
+            m = floor(mx/Dx - 1)
+        M=Mx/Dx
+        if not M.is_integer():
+            M = ceil(Mx/Dx + 1)
         a=[]
+        # These two lines are cancelling all the previous ones.
         m = floor(mx/Dx - 1)
         M = ceil(Mx/Dx + 1)
         for i in range(m,M):

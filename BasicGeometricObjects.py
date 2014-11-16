@@ -641,8 +641,11 @@ class GraphOfASingleAxe(GraphOfAnObject):
     def math_bounding_box(self,pspict):
         # The math_bounding box does not take into account the things that are inside the picture
         # (not even if this are default axes)
-        s = self.segment(pspict=pspict)
-        bb=s.bounding_box(pspict)
+        bb=BoundingBox()
+        for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,self.Dx,self.mark_origin):
+            P=(x*self.base).F
+            bb.addX(P.x)
+            bb.addY(P.y)
         return bb
     def latex_code(self,language,pspict):
         """
