@@ -2426,7 +2426,7 @@ class GraphOfASegment(GraphOfAnObject):
         self.added_objects.append(v)
         #self.arrow_list.append(v)
     def put_measure(self,measure_distance,mark_distance,mark_angle,name,automatic_place):
-        mes=self.get_measure(measure_distance,mark_distance,mark_angle,name,automatic_place)
+        measure=self.get_measure(measure_distance,mark_distance,mark_angle,name,automatic_place)
         self.added_objects.append(measure)
     def get_measure(self,measure_distance,mark_distance,mark_angle,name,automatic_place):
         """
