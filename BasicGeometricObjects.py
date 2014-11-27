@@ -2435,7 +2435,12 @@ class GraphOfASegment(GraphOfAnObject):
         This allows constructions like
         mesL=Segment(F,D).get_measure(-0.2,0.1,90,"\( 10\)",automatic_place=(pspict,"S"))
         and then draw mesL. The Segment(F,D) object is not drawn.
+
+        If 'mark_angle' is 'None', then the angle will be perpendicular to 'self'
         """
+        if mark_angle==None:
+            print(self.angle(),type(self.angle()))
+            mark_angle=self.angle()+90*degree
         measure=MeasureLength(self,measure_distance)
         measure.put_mark(mark_distance,mark_angle,name,automatic_place=automatic_place)
         return measure
