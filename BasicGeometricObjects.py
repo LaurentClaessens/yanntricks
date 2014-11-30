@@ -233,7 +233,8 @@ def _vector_latex_code(segment,language=None,pspict=None):
     if segment.marque :
         P = segment.F
         P.parameters.symbol = ""
-        P.put_mark(segment.mark.dist,segment.mark.angle,segment.mark.text,automatic_place=(pspict,''))
+        mark=segment.mark       # This -1 is quite arbitrary, but there are very pictures with more than one mark.
+        P.put_mark(mark.dist,mark.angle,mark.text,automatic_place=(pspict,''))
         a = a + P.latex_code(language,pspict)
     return a
 
@@ -382,12 +383,11 @@ class GraphOfAnObject(object):
 
         mark_point is a function which returns the position of the mark point.
         """
-
         if automatic_place==False:
             raise "You have to pass a pspicture"
-
+        if self.marque:
+            print("This is a second (or more) mark on the same point")
         self.marque = True
-
         autom=automatic_place
         third=None
         if not isinstance(autom,tuple):
@@ -402,10 +402,12 @@ class GraphOfAnObject(object):
             if position=="" :
                 position="corner"
 
-        self.mark = Mark(self,dist,angle,text,automatic_place=(pspict,position,third),mark_point=mark_point)
+        mark=Mark(self,dist,angle,text,automatic_place=(pspict,position,third),mark_point=mark_point)
+        self.added_objects.append(mark)
+        self.mark=mark
+
         # We need to immediately add the LaTeX lines about box sizes, no waiting fig.conclude. This is to allow several pictures
         # to use the same points and marks.
-
         # By the way, one cannot compute the self.mark.central_point() here because the axes are not yet computed.
 
         if not isinstance(pspict,list):
@@ -1877,7 +1879,8 @@ class GraphOfAPoint(GraphOfAnObject):
     def latex_code(self,language=None,pspict=None,with_mark=False):
         l=[]
         if self.marque and with_mark:
-            l.append(self.mark.latex_code(language=language,pspict=pspict))
+            for mark in self.marks_list:
+                l.append(self.mark.latex_code(language=language,pspict=pspict))
         if language=="pstricks":
             l.append(self.pstricks_code(pspict=pspict))
         if language=="tikz":
