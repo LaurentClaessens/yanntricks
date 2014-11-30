@@ -347,18 +347,14 @@ def ParametricCurve(f1,f2,interval=(None,None)):
     # First, we consider the case in which two functions are given
     llamI=interval[0]
     llamF=interval[1]
-
     if "mx" in dir(f1) :
         if f1.mx != None:
             llamI=f1.mx
             llamF=f1.Mx
-
     f1=EnsurephyFunction(f1)
     f2=EnsurephyFunction(f2)
-
     if isinstance(llamI,AngleMeasure):
         raise
-
     return BasicGeometricObjects.GraphOfAParametricCurve(f1,f2,llamI,llamF)
 
 def RightAngle(d1,d2,l,n1,n2):

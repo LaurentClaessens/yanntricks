@@ -1459,7 +1459,9 @@ def extract_interval_information(curve):
         return 0,curve.length()
     # for circles
     if "angleI" in dir(curve):
-        return curve.angleI,curve.angleF
+        # We know that circles are AngleI and AngleF that are of type 'AngleMeasure'
+        # we are thus returning 'curve.angleI.radian' instead of 'curve.angleI' (November 29, 2014)
+        return curve.angleI.radian,curve.angleF.radian
     return None,None
 
 class GraphOfAPoint(GraphOfAnObject):
@@ -1534,7 +1536,12 @@ class GraphOfAPoint(GraphOfAnObject):
         if advised :
             P.advised_mark_angle=seg.angle().degree+90
         return P
-
+    def symmetric_by(self,Q):
+        """
+        return the central symmetry  with respect to 'Q'
+        """
+        v=Q-self
+        return Q+v
     def get_polar_point(self,r,theta,pspict=None):
         """
         Return the point located at distance r and angle theta from point self.
@@ -4238,6 +4245,8 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         self.curve2.llamI=self.mx2
         self.curve2.llamF=self.Mx2
 
+        self.draw_Isegment=True
+        self.draw_Fsegment=True
         self.Isegment=Segment(self.curve2.get_point(self.mx2,advised=False),self.curve1.get_point(self.mx1,advised=False))
         self.Fsegment=Segment(self.curve1.get_point(self.Mx1,advised=False),self.curve2.get_point(self.Mx2,advised=False))
 
@@ -4285,8 +4294,10 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
     
         a.append(self.curve1.latex_code(language=language,pspict=pspict))
         a.append(self.curve2.latex_code(language=language,pspict=pspict))
-        a.append(reIsegment.latex_code(language=language,pspict=pspict))
-        a.append(reFsegment.latex_code(language=language,pspict=pspict))
+        if self.draw_Isegment :
+            a.append(reIsegment.latex_code(language=language,pspict=pspict))
+        if self.draw_Fsegment :
+            a.append(reFsegment.latex_code(language=language,pspict=pspict))
         return "\n".join(a)
 
 class GraphOfAnInterpolationCurve(GraphOfAnObject):
