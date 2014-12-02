@@ -2792,7 +2792,7 @@ class GraphOfASegment(GraphOfAnObject):
         if self.arrow_type=="vector":
             return self.normalize(l)
         return self.return_deformations(v)
-    def add_size(self,lI,lF):
+    def add_size(self,lI=0,lF=0):
         """
         Return a new Segment with extra length lI at the initial side and lF at the final side. 
         """
