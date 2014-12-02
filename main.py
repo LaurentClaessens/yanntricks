@@ -829,6 +829,8 @@ class pspicture(object):
 
         """
         self.name = name        # self.name is used in order to name the intermediate files when one produces the eps file.
+        self.comment=""         # A comment. This is not used to create the picture; the purpose is to remember a specific feature to be
+                                #            tested when recompiling.
         self.tikzfilename="tikz"+self.name
         self.mother=None
         self.figure_mother=None
