@@ -2463,6 +2463,10 @@ class GraphOfASegment(GraphOfAnObject):
         'l' is the (visual) length of the segment
         'angle' is the angle with 'self'.
         """
+        ao=self.get_code(n=n,d=d,l=l,angle=angle,pspict=pspict)
+        self.added_objects.extend(ao)
+    def get_code(self,n=1,d=0.1,l=0.1,angle=45,pspict=None):
+        ao=[]
         vect=AffineVector(self.I,self.F).fix_visual_size(d,pspict)
         center=self.midpoint(advised=False)
         positions=[]
@@ -2476,7 +2480,8 @@ class GraphOfASegment(GraphOfAnObject):
         mini1=self.rotation(angle).fix_visual_size(l)
         for P in positions:
             mini=mini1+AffineVector(mini1.midpoint(),P)
-            self.added_objects.append(mini)
+            ao.append(mini)
+        return ao
     def divide_in_two(self,n=1,d=0.1,l=0.1,angle=45,pspict=None):
         M=self.midpoint()
         s1=Segment(self.I,M)
