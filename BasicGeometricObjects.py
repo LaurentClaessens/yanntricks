@@ -2482,14 +2482,18 @@ class GraphOfASegment(GraphOfAnObject):
             mini=mini1+AffineVector(mini1.midpoint(),P)
             ao.append(mini)
         return ao
-    def divide_in_two(self,n=1,d=0.1,l=0.1,angle=45,pspict=None):
+    def get_divide_in_two(self,n=1,d=0.1,l=0.1,angle=45,pspict=None):
         M=self.midpoint()
         s1=Segment(self.I,M)
         s2=Segment(M,self.F)
         s1.put_code(n=n,d=d,l=l,pspict=pspict)
         s2.put_code(n=n,d=d,l=l,pspict=pspict)
-        self.added_objects.extend(s1.added_objects)
-        self.added_objects.extend(s2.added_objects)
+        a=s1.added_objects
+        a.extend(s2.added_objects)
+        return a
+    def divide_in_two(self,n=1,d=0.1,l=0.1,angle=45,pspict=None):
+        a=self.get_divide_in_two(n=n,d=d,l=l,angle=angle,pspict=pspict)
+        self.added_objects.extend( a )
     def Point(self):
         """
         Return the point X such that as free vector, 0->X == self
