@@ -972,7 +972,7 @@ class GraphOfACircle(GraphOfAnObject):
         return "\n".join(a)
 
         # Now circles are also parametric curves. This makes everything much easier.  June, 30 2014
-        raise DeprecationWarning
+        raise DeprecationWarning   # 2014
         if False :
             angleI=degree(self.angleI,number=True,converting=False,keep_max=True)
             angleF=degree(self.angleF,number=True,converting=False,keep_max=True)
@@ -2777,7 +2777,7 @@ class GraphOfASegment(GraphOfAnObject):
             return self.fix_size(l)
         return visual_length(self,l,xunit,yunit,pspict)
     def visual_length(self,l,xunit=None,yunit=None,pspict=None):
-        raise DeprecationWarning,"Use 'fix_visual_size' instead"
+        raise DeprecationWarning,"Use 'fix_visual_size' instead" #2014
     def add_size_extremity(self,l):
         """
         Add a length <l> at the extremity of the segment. Return a new object.
@@ -5867,7 +5867,7 @@ class BoundingBox(object):
             self.add_math_object(P2,check_too_large=False)
 
         if parent :
-            raise DeprecationWarning,"Use mother instead"
+            raise DeprecationWarning,"Use mother instead"   # 2014
         self.mother=mother
     def add_object(self,obj,pspict=None,fun="bounding_box",check_too_large=True):
         try :

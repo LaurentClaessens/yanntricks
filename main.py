@@ -368,9 +368,6 @@ class figure(object):
         pspict.mother=self
         pspict.figure_mother=self
         self.record_pspicture.append(pspict)
-    def AjouteCode(self,liste_code):
-        raise DeprecationWarning        # Septembre 18, 2013
-        self.code.extend(liste_code)
     def LaTeX_lines(self):
         """
         Return the lines to be included in your LaTeX file.
@@ -953,14 +950,15 @@ class pspicture(object):
 
         self.xsize=self.bounding_box(self).xsize()
         self.ysize=self.bounding_box(self).ysize()
-
-        import os
-        print(self.tikzfilename)
-        tikz_pdf_filename=self.tikzfilename+".pdf"
-        if os.path.isfile(tikz_pdf_filename):
-            print("The tikz file {0} exists. I remove it.".format(tikz_pdf_filename))
-            import shutil
-            shutil.os.remove(tikz_pdf_filename)
+    
+        # We do no more remove the pdf file because tikz has its md5 stuff that make the work. (December 6, 2014)
+        #import os
+        #print(self.tikzfilename)
+        #tikz_pdf_filename=self.tikzfilename+".pdf"
+        #if os.path.isfile(tikz_pdf_filename):
+        #    print("The tikz file {0} exists. I remove it.".format(tikz_pdf_filename))
+        #    import shutil
+        #    shutil.os.remove(tikz_pdf_filename)
 
         return self.separator_list.code()
 
