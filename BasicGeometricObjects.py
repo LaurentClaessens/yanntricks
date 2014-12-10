@@ -5948,15 +5948,16 @@ class BoundingBox(object):
         self.ymin = min(self.ymin,bb.ymin)
         self.xmax = max(self.xmax,bb.xmax)
         self.ymax = max(self.ymax,bb.ymax)
-    def append(self,graph,pspict):
-        if pspict==None:
-            raise ValueError
+    def append(self,graph,pspict=None):
+
+        #if pspict==None:
+        #    raise ValueError
         if isinstance(graph,list):
             raise KeyError,"%s is a list"%graph
         if not pspict :
             print "You should provide a pspict in order to add",graph
         try :
-            bb=graph.bounding_box(pspict)
+            bb=graph.bounding_box(pspict=pspict)
         except (ValueError,AttributeError),msg :
             print "Something got wrong with %s"%str(graph)
             print msg
