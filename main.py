@@ -983,8 +983,6 @@ class pspicture(object):
         # TODO : take it into account.
 
         # Creating the bounding box
-        #list_to_be_drawn = [a.graph for a in self.record_draw_graph if a.take_graph]
-
         list_to_be_drawn = [a for a in self.record_draw_graph if a.take_graph]
 
         list_used_separators=[]
