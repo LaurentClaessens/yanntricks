@@ -2399,7 +2399,7 @@ class GraphOfASegment(GraphOfAnObject):
            this is why we add by hand the last point in GetWavyPoint
         """
         n = floor(self.length/dx)
-        return [self.proportion(float(i)/n) for i in range(0,n)]
+        return [self.get_point_proportion(float(i)/n) for i in range(0,n)]
     def get_wavy_points(self,dx,dy):
         """
         Return a list of points that make a wave around the segment.
@@ -2413,6 +2413,9 @@ class GraphOfASegment(GraphOfAnObject):
         PIs.append(self.F)
         return PIs
     def proportion(self,p,advised=True):
+        print("You should use 'get_point_proportion' instead")
+        return self.get_point_proportion(p,advised)
+    def get_point_proportion(self,p,advised=True):
         """
         Return a point on the segment which is at the position
         (p-1)*I+p*F
@@ -2431,7 +2434,7 @@ class GraphOfASegment(GraphOfAnObject):
 
         The arrow is a vector of size (by default) 0.01. 
         """
-        P=self.proportion(position,advised=False)
+        P=self.get_point_proportion(position,advised=False)
         v=AffineVector(P,self.F).fix_size(size)
         self.added_objects.append(v)
         #self.arrow_list.append(v)
@@ -2504,7 +2507,7 @@ class GraphOfASegment(GraphOfAnObject):
     def center(self,advised=True):
         return self.midpoint(advised=advised)
     def midpoint(self,advised=True):
-        P = self.proportion(0.5,advised)
+        P = self.get_point_proportion(0.5,advised)
         return P
     def AffineVector(self):
         return AffineVector(self.I,self.F)
