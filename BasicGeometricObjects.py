@@ -2414,6 +2414,7 @@ class GraphOfASegment(GraphOfAnObject):
         return PIs
     def proportion(self,p,advised=True):
         print("You should use 'get_point_proportion' instead")
+        raise DeprecationWarning
         return self.get_point_proportion(p,advised)
     def get_point_proportion(self,p,advised=True):
         """
