@@ -564,6 +564,8 @@ class GraphOfASingleAxe(GraphOfAnObject):
 
                 #raise ValueError,"The size of {0} is not yet defined.".format(self) # this message is hard-checked at position 27319 in main.py
                                                                                     # do not change it.
+        #if isinstance(self.C,function):
+        #    print("If it crashes here it is most probably because you are using 'O' as base point while 'O' is a function in Sage. You have to define 'O=Point(0,0)' for example")
         return Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
     def add_option(self,opt):
         self.options.add_option(opt)
