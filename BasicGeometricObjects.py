@@ -376,7 +376,8 @@ class GraphOfAnObject(object):
     def wave(self,dx,dy):                   # dx is the wave length and dy is the amplitude
         self.wavy = True
         self.waviness = Waviness(self,dx,dy)
-    def put_mark(self,dist,angle,text,mark_point=None,automatic_place=False):
+    def get_mark(self,dist,angle,text,mark_point=None,automatic_place=False):
+
         """
         If you want to put a mark on an object
         P.put_mark(0.1,-90,"text",automatic_place=(pspict,"N"))
@@ -403,8 +404,6 @@ class GraphOfAnObject(object):
                 position="corner"
 
         mark=Mark(self,dist,angle,text,automatic_place=(pspict,position,third),mark_point=mark_point)
-        self.added_objects.append(mark)
-        self.mark=mark
 
         # We need to immediately add the LaTeX lines about box sizes, no waiting fig.conclude. This is to allow several pictures
         # to use the same points and marks.
@@ -415,12 +414,17 @@ class GraphOfAnObject(object):
         if automatic_place :
             for psp in pspict:
                 dimx,dimy = psp.get_box_size(text)
+        return mark
 
         # No more like that   (September, 21, 2014)
         #self.mark._central_point=self.mark.central_point()
         #if not self.mark._central_point :
         #    print(self)
         #    raise
+    def put_mark(self,dist,angle,text,mark_point=None,automatic_place=False):
+        mark=self.get_mark(dist,angle,text,mark_point=None,automatic_place=False)
+        self.added_objects.append(mark)
+        self.mark=mark
     def add_option(self,opt):
         self.options.add_option(opt)
     def get_option(opt):
