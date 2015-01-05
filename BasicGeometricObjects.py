@@ -403,6 +403,8 @@ class GraphOfAnObject(object):
             if position=="" :
                 position="corner"
 
+        if angle is None :
+            angle=self.angle().degree+90
         mark=Mark(self,dist,angle,text,automatic_place=(pspict,position,third),mark_point=mark_point)
 
         # We need to immediately add the LaTeX lines about box sizes, no waiting fig.conclude. This is to allow several pictures
@@ -422,7 +424,7 @@ class GraphOfAnObject(object):
         #    print(self)
         #    raise
     def put_mark(self,dist,angle,text,mark_point=None,automatic_place=False):
-        mark=self.get_mark(dist,angle,text,mark_point=None,automatic_place=False)
+        mark=self.get_mark(dist,angle,text,mark_point=None,automatic_place=automatic_place)
         self.added_objects.append(mark)
         self.mark=mark
     def add_option(self,opt):
