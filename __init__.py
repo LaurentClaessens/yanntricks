@@ -235,6 +235,11 @@ def Intersection(f,g,a=None,b=None,numerical=False,only_real=True):
 
     If 'only_real' is True, return only the real solutions.
 
+    Only numerical approximations are returned as there are some errors otherwise. As an example the following 
+    solving return points that are not even near from the circle x**2+y**2=9
+    solve(    [   -1/3*sqrt(3)*y + 1/3*sqrt(3)*(-0.19245008972987399*sqrt(3) - 3) + x == 0,x^2 + y^2 - 9 == 0    ],[x,y]   )
+    Position : 313628350
+
     EXAMPLES::
 
         sage: from phystricks import *
@@ -274,6 +279,7 @@ def Intersection(f,g,a=None,b=None,numerical=False,only_real=True):
     for s in soluce:
         a=s[0].rhs()
         b=s[1].rhs()
+        z=a**2+b**2
         ok1,a=test_imaginary_part(a)
         ok2,b=test_imaginary_part(b)
         if ok1 and ok2 :

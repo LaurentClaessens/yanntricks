@@ -2249,6 +2249,8 @@ class GraphOfASegment(GraphOfAnObject):
         return the equation of the line under the form
         x + by + c = 0
 
+        Coefficients 'b' and 'c' are numerical approximations. See position : 313628350 in __init__.py
+
         EXAMPLES::
 
             sage: from phystricks import *
@@ -2264,7 +2266,8 @@ class GraphOfASegment(GraphOfAnObject):
         if not (self.vertical or self.horizontal) :
             self.coefs = [1,-1/self.slope,self.independent/self.slope]
         x,y=var('x,y')
-        return self.coefs[0]*x+self.coefs[1]*y+self.coefs[2] == 0
+        coefs=[ numerical_approx(s) for s in self.coefs  ]
+        return coefs[0]*x+coefs[1]*y+coefs[2] == 0
     @lazy_attribute
     def length(self):
         """
