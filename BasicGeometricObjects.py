@@ -3415,7 +3415,6 @@ class GraphOfAVectorField(GraphOfAnObject,GeometricVectorField):
             code.append(v.latex_code(language=language,pspict=pspict))
         return "\n".join(code)
 
-
 class GraphOfAnAngle(GraphOfAnObject):
     """
     self.mark_angle is the angle at which self.mark_point will be placed. By default it is at the middle. 
