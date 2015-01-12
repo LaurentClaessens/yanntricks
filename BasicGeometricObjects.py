@@ -3007,6 +3007,8 @@ class GraphOfASegment(GraphOfAnObject):
                 other=other.fix_origin(self.I)
             v=Vector(self.F.x-self.I.x+other.F.x-other.I.x, self.F.y-self.I.y+other.F.y-other.I.y,)
             return self.return_deformations(v.origin(self.I))
+        elif isinstance(other,tuple):
+            return self.return_deformations(  Segment(self.I+other,self.F+other)  )
         else:
             raise TypeError,"I do not know how to sum %s with %s"%(self,other)
     def __sub__(self,other):
