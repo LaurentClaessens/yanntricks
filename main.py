@@ -1272,7 +1272,7 @@ class pspicture(object):
         for gr in args:
             try :
                 for h in gr:
-                    self.DrawGraph(h,separator_name=separator_name)
+                    self.DrawGraphs(h,separator_name=separator_name)
             except TypeError:
                 self.DrawGraph(gr,separator_name=separator_name)
     def DrawGraph(self,graph,separator_name=None):
