@@ -5644,24 +5644,37 @@ class GraphOfARightAngle(GraphOfAnObject):
         GraphOfAnObject.__init__(self,self)
         self.d1=d1
         self.d2=d2
+
+        # If the intersection point is one of the initial or final point of d1 or d2, then the sorting
+        # in 'specific_action_on_pspict' does not work.
+        # This happens in RightAngle(  Segment(D,E),Segment(D,F),l=0.2, n1=1,n2=1 ) because the same point 'D' is given
+        # for both d1 and d2.
+        # We need d1.I, d1.F, d2.I and d2.F to be four distinct points.
+        if self.d1.I==self.d2.I or self.d1.I==self.d2.F or self.d1.F==self.d2.I or self.d1.F==self.d2.F:
+            self.d1=d1.dilatation(1.5)
+            self.d2=d2.dilatation(1.5)
+
         self.l=l
         self.n1=n1
         self.n2=n2
         self.intersection=Intersection(d1,d2)[0]
     def specific_action_on_pspict(self,pspict):
         circle=Circle(self.intersection,self.l)
+
         K=Intersection(circle,self.d1)
-        L=Intersection(circle,self.d2)
         K.sort(key=lambda P:Distance_sq(P,self.d1.I))
+        L=Intersection(circle,self.d2)
         L.sort(key=lambda P:Distance_sq(P,self.d2.I))
         if self.n1==0:
             P1=K[0]
         if self.n1==1:
             P1=K[1]
+
         if self.n2==0:
             P2=L[0]
         if self.n2==1:
             P2=L[1]
+
         if "I" in P1.coordinates():
             print("RKXTooEGijdq","P1")
             raise
