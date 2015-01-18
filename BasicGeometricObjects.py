@@ -383,6 +383,8 @@ class GraphOfAnObject(object):
         P.put_mark(0.1,-90,"text",automatic_place=(pspict,"N"))
 
         mark_point is a function which returns the position of the mark point.
+
+        If you give no position (i.e. no "S","N", etc.) the position will be automatic regarding the angle.
         """
         if automatic_place==False:
             raise "You have to pass a pspicture"
@@ -394,17 +396,30 @@ class GraphOfAnObject(object):
         if not isinstance(autom,tuple):
             print("You should not use 'automatic_place' like that")
             pspict=autom
-            position="corner"
+            position=""
         else :
             pspict=automatic_place[0]
             position=automatic_place[1]
             if position=="for axes":
                 third=automatic_place[2]
-            if position=="" :
-                position="corner"
 
         if angle is None :
-            angle=self.angle().degree+90
+            try :
+                angle=self.advised_mark_angle
+            except AttributeError :
+                angle=self.angle().degree+90
+        if position=="" :
+            position="corner"
+            alpha=AngleMeasure(value_degree=angle).positive()
+            deg=alpha.degree
+            if deg==0:
+                position="W"
+            if deg==90:
+                position="S"
+            if deg==180:
+                position="E"
+            if deg==180+90:
+                position="N"
         mark=Mark(self,dist,angle,text,automatic_place=(pspict,position,third),mark_point=mark_point)
 
         # We need to immediately add the LaTeX lines about box sizes, no waiting fig.conclude. This is to allow several pictures
