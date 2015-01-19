@@ -1889,10 +1889,14 @@ class GraphOfAPoint(GraphOfAnObject):
         symbol_dict["x"]="$\\times$"
         symbol_dict["o"]="$o$"
         symbol_dict["diamond"]="$\diamondsuit$"
+        try :
+            effective_symbol=symbol_dict[self.parameters.symbol]
+        except KeyError:
+            effective_symbol=self.parameters.symbol
         if self.parameters.symbol=='none' :
             print("You should use '' instead of 'none'")
         if self.parameters.symbol not in ["none",""]:
-            s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(numerical=True,pspict=pspict),symbol_dict[self.parameters.symbol],self.params(language="tikz",refute=["symbol","dotangle"]),"DOTANGLE")
+            s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(numerical=True,pspict=pspict),effective_symbol,self.params(language="tikz",refute=["symbol","dotangle"]),"DOTANGLE")
             if self.parameters.dotangle != None :
                 s=s.replace("DOTANGLE",str(self.parameters.dotangle))
             else :
