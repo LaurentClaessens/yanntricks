@@ -4695,7 +4695,7 @@ class GraphOfAPolygon(GraphOfAnObject):
             vect=(v1+v2).fix_size(dist)
             Q=P+vect
             angle=Segment(P,Q).angle()
-            P.put_mark(0.2,angle,text,automatic_place=(pspict,"corner"))
+            P.put_mark(dist,angle,text,automatic_place=(pspict,"center"))
             self.added_objects.append(P)
     def math_bounding_box(self,pspict=None):
         bb=BoundingBox()
