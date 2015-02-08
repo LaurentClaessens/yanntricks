@@ -709,6 +709,7 @@ class GraphOfACircle(GraphOfAnObject):
     - ``self.angleI`` - (default=0) the beginning angle of the arc (degree).
 
     - ``self.angleF`` - (default=360) the ending angle of the arc (degree).
+    - ``visual`` - (default=False) if 'True', the radius is taken as a 'visual' length.
 
 
     OUTPUT:
@@ -734,7 +735,7 @@ class GraphOfACircle(GraphOfAnObject):
         \pstArcOAB[linestyle=solid,linecolor=black]{Xaaac}{Xaaaa}{Xaaab}
 
     """
-    def __init__(self,center,radius,angleI=0,angleF=360):
+    def __init__(self,center,radius,angleI=0,angleF=360,visual=False):
         self.center = center
         self.radius = radius
         GraphOfAnObject.__init__(self,self)
@@ -742,6 +743,7 @@ class GraphOfACircle(GraphOfAnObject):
         self._parametric_curve=None
         self.angleI = AngleMeasure(value_degree=angleI)
         self.angleF = AngleMeasure(value_degree=angleF)
+        self.visual=visual
     @lazy_attribute
     def equation(self):
         """
@@ -766,14 +768,12 @@ class GraphOfACircle(GraphOfAnObject):
         """
         x,y=var('x,y')
         return (x-self.center.x)**2+(y-self.center.y)**2-self.radius**2==0
-    
     def phyFunction(self):
         """
         return the function corresponding to
         the graph of the *upper* part of the circle
         """
-
-    def parametric_curve(self,a=None,b=None):
+    def parametric_curve(self,a=None,b=None,pspict=None):
 
         """
         Return the parametric curve associated to the circle.
@@ -784,8 +784,15 @@ class GraphOfACircle(GraphOfAnObject):
         """
         if self._parametric_curve is None :
             x=var('x')
-            f1 = phyFunction(self.center.x+self.radius*cos(x))
-            f2 = phyFunction(self.center.y+self.radius*sin(x))
+            if self.visual is True:
+                if pspict is None :
+                    print("You are trying to draw something with 'visual==True' when not giving a pspict")
+                    raise ValueError
+                f1 = phyFunction(self.center.x+self.radius*pspict.xunit*cos(x))
+                f2 = phyFunction(self.center.y+self.radius*pspict.yunit*sin(x))
+            else :
+                f1 = phyFunction(self.center.x+self.radius*cos(x))
+                f2 = phyFunction(self.center.y+self.radius*sin(x))
             try :
                 ai=self.angleI.radian
                 af=self.angleF.radian
@@ -799,7 +806,6 @@ class GraphOfACircle(GraphOfAnObject):
             return curve
         else :
             return curve.graph(a,b)
-
     def get_point(self,theta,advised=True,numerical=False):
         """
         Return a point at angle <theta> (degree) on the circle. 
@@ -820,7 +826,6 @@ class GraphOfACircle(GraphOfAnObject):
         - ``advised`` - (default=True) if True, compute an advised mark angle for each point
                                         this is CPU-intensive.
 
-
         OUTPUT:
         a list of points
 
@@ -840,7 +845,6 @@ class GraphOfACircle(GraphOfAnObject):
         from numpy import arange
         theta=arange(mx,Mx,step=Dtheta)
         return [self.get_point(t,advised) for t in theta]
-
     def get_tangent_vector(self,theta):
         return PolarPoint(1,theta+90).origin(self.get_point(theta,advised=False))
     def get_tangent_segment(self,theta):
@@ -2675,6 +2679,17 @@ class GraphOfASegment(GraphOfAnObject):
     def orthogonal_trough(self,P):
         """
         return a segment orthogonal to self passing trough P.
+
+        The starting point is P.
+
+        Remark : this one does not work 
+        seg=Segment(A,B).orthogonal_trough(B)
+        because it returns a null-sized segment (seg.I==seg.F)
+
+        Use 
+        seg=Segment(B,A).orthogonal()
+        instead.
+
         """
         s=self.orthogonal().fix_origin(P)
         Q=Intersection(s,self)[0]
@@ -3466,7 +3481,8 @@ class GraphOfAnAngle(GraphOfAnObject):
         self.O=O
         self.B=B
         if r==None:
-            r=0.2*Segment(A,O).length()
+            #r=0.2*Segment(A,O).length()
+            r=0.3           # change of the default since we are now giving a 'visual' length (February 8, 2015)
         self.r=r
         self.angleA=AffineVector(O,A).angle()
         self.angleB=AffineVector(O,B).angle()
@@ -3480,8 +3496,8 @@ class GraphOfAnAngle(GraphOfAnObject):
         GraphOfAnObject.__init__(self,self)
         self.advised_mark_angle=self.media.degree       # see the choice of angle in the docstring
         self.mark_angle=self.media
-    def circle(self):
-        return Circle(self.O,self.r).graph(self.angleI,self.angleF)
+    def circle(self,pspict=None):
+        return Circle(self.O,self.r,visual=True,pspict=pspict).graph(self.angleI,self.angleF)
     def measure(self):
         return AngleMeasure(value_degree=self.angleF.degree-self.angleI.degree)
     def graph(self):

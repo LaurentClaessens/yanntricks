@@ -983,7 +983,7 @@ def Vector(*args):
         y=args[0].y
     return AffineVector(Point(0,0),Point(x,y))
 
-def Circle(center,radius,angleI=0,angleF=360):
+def Circle(center,radius,angleI=0,angleF=360,visual=False):
     """
     Return a circle of given radius and center.
 
@@ -995,6 +995,8 @@ def Circle(center,radius,angleI=0,angleF=360):
     
     - ``angleI`` - (default=0) If you want an arc of circle, this is the beginning angle.
     - ``angleF`` - (default=0) If you want an arc of circle, this is the ending angle.
+    - ``visual`` - (default=False) if 'True', the radius is taken as a 'visual' length. This option only affects the underlying parametric curve and then the graph. It is probably buggy to attempt to get normal and tangent vectors when a dilatation is performed when 'visual' is True.
+
 
     OUTPUT:
 
@@ -1013,7 +1015,7 @@ def Circle(center,radius,angleI=0,angleF=360):
 
     """
     # TODO: in the last example, the radian value should be 2*pi.
-    return BasicGeometricObjects.GraphOfACircle(center,radius,angleI=angleI,angleF=angleF)
+    return BasicGeometricObjects.GraphOfACircle(center,radius,angleI=angleI,angleF=angleF,visual=visual)
 
 def CircleOA(O,A):
     """
