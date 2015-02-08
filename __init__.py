@@ -983,7 +983,7 @@ def Vector(*args):
         y=args[0].y
     return AffineVector(Point(0,0),Point(x,y))
 
-def Circle(center,radius,angleI=0,angleF=360,visual=False):
+def Circle(center,radius,angleI=0,angleF=360,visual=False,pspict=None):
     """
     Return a circle of given radius and center.
 
@@ -1015,7 +1015,10 @@ def Circle(center,radius,angleI=0,angleF=360,visual=False):
 
     """
     # TODO: in the last example, the radian value should be 2*pi.
-    return BasicGeometricObjects.GraphOfACircle(center,radius,angleI=angleI,angleF=angleF,visual=visual)
+    if visual and not pspict :
+        print("You cannot try to use 'visual' not giving a pspicture")
+        raise ValueError
+    return BasicGeometricObjects.GraphOfACircle(center,radius,angleI=angleI,angleF=angleF,visual=visual,pspict=pspict)
 
 def CircleOA(O,A):
     """

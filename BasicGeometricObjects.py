@@ -524,7 +524,6 @@ def visual_length(v,l,xunit=None,yunit=None,pspict=None):
         from phystricks import Vector
         return Vector(x,y)
 
-
 def visual_polar(P,r,theta,pspict=None):
     """
     Return a point at VISUAL coordinates (r,theta) from the point P.
@@ -537,6 +536,15 @@ def visual_polar(P,r,theta,pspict=None):
     v=Vector( cos(alpha)/xunit,sin(alpha)/yunit  )
     w=visual_length(v,r,pspict=pspict)
     return P+w
+
+def visual_polar_coordinates(P,pspict=None):
+    """
+    return the visual polar coordinates of 'P'
+    """
+    xunit=pspict.xunit
+    yunit=pspict.yunit
+    Q=Point(xunit*P.x,yunit*P.y)
+    return Q.polar_coordinates()
 
 class GraphOfASingleAxe(GraphOfAnObject):
     def __init__(self,C,base,mx,Mx,pspict=None):
@@ -735,7 +743,7 @@ class GraphOfACircle(GraphOfAnObject):
         \pstArcOAB[linestyle=solid,linecolor=black]{Xaaac}{Xaaaa}{Xaaab}
 
     """
-    def __init__(self,center,radius,angleI=0,angleF=360,visual=False):
+    def __init__(self,center,radius,angleI=0,angleF=360,visual=False,pspict=None):
         self.center = center
         self.radius = radius
         GraphOfAnObject.__init__(self,self)
@@ -744,6 +752,7 @@ class GraphOfACircle(GraphOfAnObject):
         self.angleI = AngleMeasure(value_degree=angleI)
         self.angleF = AngleMeasure(value_degree=angleF)
         self.visual=visual
+        self.pspict=pspict
     @lazy_attribute
     def equation(self):
         """
@@ -767,14 +776,17 @@ class GraphOfACircle(GraphOfAnObject):
             (y + 1)^2 + (x + 1)^2 - 2 == 0
         """
         x,y=var('x,y')
-        return (x-self.center.x)**2+(y-self.center.y)**2-self.radius**2==0
+        if not self.visual :
+            return (x-self.center.x)**2+(y-self.center.y)**2-self.radius**2==0
+        Rx=self.radius/self.pspict.xunit
+        Ry=self.radius/self.pspict.yunit
+        return (x-self.center.x)**2/Rx**2+(y-self.center.y)**2/Ry**2==1
     def phyFunction(self):
         """
         return the function corresponding to
         the graph of the *upper* part of the circle
         """
-    def parametric_curve(self,a=None,b=None,pspict=None):
-
+    def parametric_curve(self,a=None,b=None):
         """
         Return the parametric curve associated to the circle.
 
@@ -785,11 +797,11 @@ class GraphOfACircle(GraphOfAnObject):
         if self._parametric_curve is None :
             x=var('x')
             if self.visual is True:
-                if pspict is None :
+                if self.pspict is None :
                     print("You are trying to draw something with 'visual==True' when not giving a pspict")
                     raise ValueError
-                f1 = phyFunction(self.center.x+self.radius*pspict.xunit*cos(x))
-                f2 = phyFunction(self.center.y+self.radius*pspict.yunit*sin(x))
+                f1 = phyFunction(self.center.x+self.radius*cos(x)/self.pspict.xunit)
+                f2 = phyFunction(self.center.y+self.radius*sin(x)/self.pspict.yunit)
             else :
                 f1 = phyFunction(self.center.x+self.radius*cos(x))
                 f2 = phyFunction(self.center.y+self.radius*sin(x))
@@ -897,7 +909,7 @@ class GraphOfACircle(GraphOfAnObject):
         """
         Return a graph of the circle between the two angles given in degree
         """
-        C = GraphOfACircle(self.center,self.radius,angleI,angleF)
+        C = GraphOfACircle(self.center,self.radius,angleI,angleF,visual=self.visual,pspict=self.pspict)
         C.parameters=self.parameters.copy()
         return C
     def __str__(self):
@@ -997,69 +1009,6 @@ class GraphOfACircle(GraphOfAnObject):
         else :
             a.append( G.latex_code(language=language,pspict=pspict))
         return "\n".join(a)
-
-        # Now circles are also parametric curves. This makes everything much easier.  June, 30 2014
-        raise DeprecationWarning   # 2014
-        if False :
-            angleI=degree(self.angleI,number=True,converting=False,keep_max=True)
-            angleF=degree(self.angleF,number=True,converting=False,keep_max=True)
-            if angleI == 0 and angleF == 360 :
-                if language=="pstricks":
-                    PsA = Point(self.center.x-self.radius,self.center.y)        
-                    a = PsA.create_PSpoint()
-                    a = a + self.center.create_PSpoint()
-                    a = a + "\pstCircleOA["+self.params()+"]{"+self.center.psName+"}{"+PsA.psName+"}"
-                    return a
-                    # Some remarks :
-                    # Besoin d'un point sur le cercle pour le tracer avec \pstCircleOA,"")
-                    # La commande pscircle ne tient pas compte des xunit et yunit => inutilisable.
-                    #self.add_latex_line("\pscircle["+params+"]("+Cer.center.psName+"){"+str(Cer.radius)+"}")
-                if language=="tikz":
-                    rx=numerical_approx(self.radius)
-                    ry=numerical_approx(rx)
-                    if self.parameters.visual:
-                        rx=numerical_approx(self.radius/pspict.xunit)
-                        ry=numerical_approx(self.radius/pspict.yunit)
-                    code="""
-                    \coordinate (P) at (${0} + (0:{1} and {2})$);
-                    \draw[{3}] (${0} + (0:{1} and {2})$(P) arc (0:360:{1} and {2});
-                    """.format(self.center.coordinates(numerical=True,pspict=pspict),rx,ry,self.params(language="tikz"))
-                    return code
-
-            else :
-                if language=="pstricks":
-                    PsA = self.get_point(angleI)
-                    PsB = self.get_point(angleF)
-                    a = PsA.create_PSpoint() + PsB.create_PSpoint() + self.center.create_PSpoint()
-                    a = a+"\pstArcOAB[%s]{%s}{%s}{%s}"%(self.params(),self.center.psName,PsA.psName,PsB.psName)
-                    return a
-                if language=="tikz":
-                    # From http://tex.stackexchange.com/questions/66216/draw-arc-in-tikz-when-center-of-circle-is-specified
-                    #c=self.center.coordinates(numerical=True).replace("(","([shift= {{ ({0}:{1})}}]".format(angleI,self.radius))
-                    #return "\draw [{0}] {1} arc ({2}:{3}:{4}) ".format( self.params(language="tikz"),c,angleI,angleF,self.radius )
-                    if not self.parameters.visual :
-                        A = self.get_point(angleI)
-                        ai=numerical_approx(angleI)
-                        af=numerical_approx(angleF)
-                        ar=numerical_approx(self.radius)
-                        return "\draw [{0}] {1} arc ({2}:{3}:{4}); ".format( self.params(language="tikz"),A.coordinates(numerical=True,pspict=pspict),ai,af,ar)
-                    else :
-                        # To draw part of an ellips, see
-                        #http://tex.stackexchange.com/questions/123158/tikz-using-the-ellipse-command-with-a-start-and-end-angle-instead-of-an-arc
-                        rx=numerical_approx(self.radius/pspict.xunit)
-                        ry=numerical_approx(self.radius/pspict.yunit)
-                        code="""
-                        \coordinate (P) at (${0} + ({4}:{1} and {2})$);
-                        \draw[{3}] (${0} + ({4}:{1} and {2})$(P) arc ({4}:{5}:{1} and {2});
-                        """.format(self.center.coordinates(pspict=pspict),rx,ry,self.params(language="tikz"),angleI,self.angleF)
-                        return code
-
-
-# Suppressed on June 26, 2014
-#class GeometricRectangle(object):
-#    """
-#    The four points of the square are designated by NW,NE,SW and SE.
-#    """
 
 def OptionsStyleLigne():
     return ["linecolor","linestyle"]
@@ -3496,8 +3445,10 @@ class GraphOfAnAngle(GraphOfAnObject):
         GraphOfAnObject.__init__(self,self)
         self.advised_mark_angle=self.media.degree       # see the choice of angle in the docstring
         self.mark_angle=self.media
-    def circle(self,pspict=None):
-        return Circle(self.O,self.r,visual=True,pspict=pspict).graph(self.angleI,self.angleF)
+    def circle(self,visual=False,pspict=None):
+        angleI=visual_polar_coordinates(Point( cos(self.angleI.radian),sin(self.angleI.radian) ),pspict)[1]
+        angleF=visual_polar_coordinates(Point( cos(self.angleF.radian),sin(self.angleF.radian) ),pspict)[1]
+        return Circle(self.O,self.r,visual=visual,pspict=pspict).graph(angleI,angleF)
     def measure(self):
         return AngleMeasure(value_degree=self.angleF.degree-self.angleI.degree)
     def graph(self):
@@ -3511,11 +3462,11 @@ class GraphOfAnAngle(GraphOfAnObject):
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def bounding_box(self,pspict=None):
-        return self.circle().bounding_box(pspict)
+        return self.circle(visual=True,pspict=pspict).bounding_box(pspict)
     def mark_point(self):
-        return self.circle().get_point(self.mark_angle)
+        return self.circle(visual=True,pspict=pspict).get_point(self.mark_angle)
     def latex_code(self,language=None,pspict=None):
-        circle=self.circle()
+        circle=self.circle(visual=True,pspict=pspict)
         circle.parameters=self.parameters.copy()
         return circle.latex_code(language=language,pspict=pspict)
 
