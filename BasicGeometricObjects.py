@@ -1712,7 +1712,10 @@ class GraphOfAPoint(GraphOfAnObject):
         Q=self+AffineVector(origin,Point(0,0))
         r=Q.norm()
         if Q.x==0:
-            radian=pi/2
+            if Q.y>0:
+                radian=pi/2
+            else :
+                radian=3*pi/2
         else :
             radian=arctan(Q.y/Q.x)
         if Q.x<0:
@@ -1771,7 +1774,6 @@ class GraphOfAPoint(GraphOfAnObject):
         return GraphOfAPoint(self)
     def copy(self):
         return Point(self.x,self.y)
-
     def mark_point(self,pspict=None):
         return self
     def bounding_box(self,pspict=None):
