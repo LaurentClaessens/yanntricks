@@ -598,7 +598,7 @@ class GraphOfASingleAxe(GraphOfAnObject):
         return Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
     def add_option(self,opt):
         self.options.add_option(opt)
-    def mark_point(self):
+    def mark_point(self,pspict=None):
         return self.segment().F
     def no_numbering(self):
         self.numbering=False
@@ -1099,7 +1099,7 @@ class Mark(object):
         if self.mark_point :
             graph_mark_point=self.mark_point
         else :
-            graph_mark_point=self.graph.mark_point()
+            graph_mark_point=self.graph.mark_point(pspict=pspict)
 
         default=graph_mark_point.get_polar_point(self.dist,self.angle,pspict)
 
@@ -1772,7 +1772,7 @@ class GraphOfAPoint(GraphOfAnObject):
     def copy(self):
         return Point(self.x,self.y)
 
-    def mark_point(self):
+    def mark_point(self,pspict=None):
         return self
     def bounding_box(self,pspict=None):
         """
@@ -3011,7 +3011,7 @@ class GraphOfASegment(GraphOfAnObject):
             return "<segment I=%s F=%s>"%(str(self.I),str(self.F))
         if self.arrow_type=="vector":
             return "<vector I=%s F=%s>"%(str(self.I),str(self.F))
-    def mark_point(self):
+    def mark_point(self,pspict=None):
         """
         return the point on which a mark has to be placed if we use the method put_mark.
 
@@ -3110,7 +3110,7 @@ class GraphOfAMeasureLength(GraphOfASegment):
             C.mark.graph=C
             bb.AddBB(C.bounding_box(pspict))
         return bb
-    def mark_point(self):
+    def mark_point(self,pspict=None):
         return self.mseg.center()
     def latex_code(self,language=None,pspict=None):
         a=[]
@@ -3140,7 +3140,7 @@ class GraphOfAText(GraphOfAnObject):
         self.rectangle.parameters.filled()
         self.rectangle.parameters.fill.color="white"
         self.rectangle.parameters.style="none"
-    def mark_point(self):
+    def mark_point(self,pspict=None):
         return self.P
     def math_bounding_box(self,pspict=None):
         return self.mark.math_bounding_box(pspict)
@@ -3429,6 +3429,9 @@ class GraphOfAnAngle(GraphOfAnObject):
         self.A=A
         self.O=O
         self.B=B
+        if r :                          # This is for detecting non-automatic radius (remove after a recompilation MGVTooMpMAKD)
+            if r<0.2 or r>0.5 :
+                raise
         if r==None:
             #r=0.2*Segment(A,O).length()
             r=0.3           # change of the default since we are now giving a 'visual' length (February 8, 2015)
@@ -3463,7 +3466,7 @@ class GraphOfAnAngle(GraphOfAnObject):
         return self.bounding_box(pspict)
     def bounding_box(self,pspict=None):
         return self.circle(visual=True,pspict=pspict).bounding_box(pspict)
-    def mark_point(self):
+    def mark_point(self,pspict=None):
         return self.circle(visual=True,pspict=pspict).get_point(self.mark_angle)
     def latex_code(self,language=None,pspict=None):
         circle=self.circle(visual=True,pspict=pspict)
@@ -3986,7 +3989,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         return bb
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
-    def mark_point(self):
+    def mark_point(self,pspict=None):
         if not self.pieces:
             return self.get_point(self.Mx)
         return self.pieces[-1].mark_point()
@@ -4354,7 +4357,7 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         return self.get_minmax_data()['ymin']
     def ymax(self):
         return self.get_minmax_data()['ymax']
-    def mark_point(self):
+    def mark_point(self,pspict=None):
         return self.points_list[-1]
     def bounding_box(self,pspict=None):
         """
