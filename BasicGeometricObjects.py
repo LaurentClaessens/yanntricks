@@ -1099,8 +1099,11 @@ class Mark(object):
         if self.mark_point :
             graph_mark_point=self.mark_point
         else :
-            graph_mark_point=self.graph.mark_point(pspict=pspict)
-
+            try :
+                graph_mark_point=self.graph.mark_point(pspict=pspict)
+            except TypeError :          # Happens when mark_point is redefined as a 'lambda' function
+                graph_mark_point=self.graph.mark_point()
+   
         default=graph_mark_point.get_polar_point(self.dist,self.angle,pspict)
 
         if self.automatic_place :
@@ -3036,10 +3039,9 @@ class GraphOfASegment(GraphOfAnObject):
             1/2*pi + arctan(3/2)
         """
         if self.arrow_type == "vector" :
-            P=self.F.copy()
+            return self.F.copy()
         else :
-            P=self.center().copy()
-        return P
+            return self.center().copy()
     def bounding_box(self,pspict):
         if self.in_bounding_box:
             return BoundingBox(self.I,self.F)       # If you change this, maybe you have to adapt math_bounding_box
@@ -5563,7 +5565,7 @@ class GraphOfAMoustache(GraphOfAnObject):
         s2=Segment(Point(self.Q3,self.delta_y),Point(self.maximum,self.delta_y))
         h2=Segment(Point(self.maximum,my),Point(self.maximum,My))
         pspict.DrawGraphs(h1,h2,s1,box,med,s2)
-    def mark_point(self):
+    def mark_point(self,pspict=None):
         return Point(self.maximum,self.delta_y)
     def math_bounding_box(self,pspict):
         return self.bounding_box(pspict)
