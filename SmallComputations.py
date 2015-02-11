@@ -560,13 +560,40 @@ class AngleMeasure(object):
     """
     # TODO : take into account the following thread:
     # http://ask.sagemath.org/question/332/add-a-personnal-coercion-rule
-    def __init__(self,value_degree=None,value_radian=None):
+    def __init__(self,angle_measure=None,value_degree=None,value_radian=None,keep_negative=False):
         dep_value_degree=value_degree
         dep_value_radian=value_radian
+
+        # 'GraphOfACircle' creates its angleI like that :
+        #    self.angleI = AngleMeasure(value_degree=angleI,keep_negative=True)
+        #  in this case, 'value_degree' can be either a number, either a 'AngleMeasure' because the user has choice when writing something like
+        #     cir=Circle(O,A,angleI=...,angleF=...)
         if isinstance(value_degree,AngleMeasure):
-            value_degree=value_degree.degree
-        if value_degree == None :
-            value_degree=degree(value_radian,keep_max=True)
+            angle_measure=value_degree
+            value_degree=None
+            value_radian=None
+        if isinstance(value_radian,AngleMeasure):
+            angle_measure=value_radian
+            value_degree=None
+            value_radian=None
+
+        if angle_measure :
+            value_degree=angle_measure.degree
+            value_radian=angle_measure.radian
+        else:
+            if value_degree is not None:
+                value_radian=radian(value_degree,keep_max=True)
+                #print("BGTNooTvpNJe cet angle est",numerical_approx(value_degree),numerical_approx(value_radian))
+                if keep_negative and value_degree < 0 and value_radian > 0:
+                    print("This is strange ...")
+                    value_radian=value_radian-2*pi
+            if value_degree == None :
+                value_degree=degree(value_radian,keep_max=True)
+                if keep_negative and value_radian < 0 and value_degree > 0:
+                    print("This is strange ...")
+                    value_degree=value_degree-360
+
+        # From here 'value_degree' and 'value_radian' are fixed and we make some check.
 
         s=numerical_approx(value_degree)
         k=abs(s).frac()
@@ -575,8 +602,6 @@ class AngleMeasure(object):
             #print "dep_radian",dep_value_radian,numerical_approx(dep_value_radian)
             value_degree=s.integer_part()
 
-        if value_radian == None :
-            value_radian=radian(value_degree,keep_max=True) # keep_max=True from November, 8, 2012
         self.degree=value_degree
         self.radian=value_radian
         if self.degree>359 and self.radian < 0.1:
@@ -673,13 +698,13 @@ class AngleMeasure(object):
 class PolarCoordinates(object):
     def __init__(self,r,value_degree=None,value_radian=None):
         self.r = r
-        self.measure=AngleMeasure(value_degree,value_radian)
+        self.measure=AngleMeasure(value_degree=value_degree,value_radian=value_radian)
         self.degree=self.measure.degree
         self.radian=self.measure.radian
     def __str__(self):
         return "PolarCoordinates, r=%s,degree=%s,radian=%s"%(str(self.r),str(self.degree),str(self.radian))
 
-def PointToPolaire(P=None,x=None,y=None):
+def PointToPolaire(P=None,x=None,y=None,origin=None):
     """
     Return the polar coordinates of a point.
 
@@ -701,6 +726,42 @@ def PointToPolaire(P=None,x=None,y=None):
         sage: print PointToPolaire(x=1,y=1)
         PolarCoordinates, r=sqrt(2),degree=45,radian=1/4*pi
     """
+    if origin:
+        Ox=origin.x
+        Oy=origin.y
+    if not origin:
+        Ox=0
+        Oy=0
+    if P:
+        Px=P.x
+        Py=P.y
+    else :
+        Px=x
+        Py=y
+    Qx=Px-Ox
+    Qy=Py-Oy
+    r=sqrt(  Qx**2+Qy**2 )
+    if Qx==0:
+        if Qy>0:
+            radian=pi/2
+        else :
+            radian=3*pi/2
+    else :
+        radian=arctan(Qy/Qx)
+    if Qx<0:
+        if Qy>0:
+            # This is an error corrected on September, 10, 2014
+            #radian=pi/2-radian
+            radian=radian+pi
+        if Qy<=0:
+            radian=pi+radian
+    # Only positive values (February 11, 2015)
+    if radian < 0 :
+        radian=radian+2*pi
+    return PolarCoordinates(r,value_radian=radian)
+
+    # The following is the old version, before fusion with GraphOfAPoint.polar_coordinates()
+    raise DeprecationWarning
     if P:
         x=P.x
         y=P.y

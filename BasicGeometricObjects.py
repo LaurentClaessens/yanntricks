@@ -749,8 +749,10 @@ class GraphOfACircle(GraphOfAnObject):
         GraphOfAnObject.__init__(self,self)
         self.diameter = 2*self.radius
         self._parametric_curve=None
-        self.angleI = AngleMeasure(value_degree=angleI)
-        self.angleF = AngleMeasure(value_degree=angleF)
+        self.angleI = AngleMeasure(value_degree=angleI,keep_negative=True)
+        self.angleF = AngleMeasure(value_degree=angleF,keep_negative=True)
+        a=numerical_approx(self.angleI.degree)
+        b=numerical_approx(self.angleF.degree)
         self.visual=visual
         self.pspict=pspict
     @lazy_attribute
@@ -909,7 +911,9 @@ class GraphOfACircle(GraphOfAnObject):
         """
         Return a graph of the circle between the two angles given in degree
         """
-        C = GraphOfACircle(self.center,self.radius,angleI,angleF,visual=self.visual,pspict=self.pspict)
+        if angleI.degree==330:
+            raise
+        C = GraphOfACircle(self.center,self.radius,angleI=angleI,angleF=angleF,visual=self.visual,pspict=self.pspict)
         C.parameters=self.parameters.copy()
         return C
     def __str__(self):
@@ -1715,36 +1719,14 @@ class GraphOfAPoint(GraphOfAnObject):
 
         Only return positive angles (between 0 and 2*pi)
         """
-        if not origin:
-            origin=Point(0,0)
-        Q=self+AffineVector(origin,Point(0,0))
-        r=Q.norm()
-        if Q.x==0:
-            if Q.y>0:
-                radian=pi/2
-            else :
-                radian=3*pi/2
-        else :
-            radian=arctan(Q.y/Q.x)
-        if Q.x<0:
-            if Q.y>0:
-                # This is an error corrected on September, 10, 2014
-                #radian=pi/2-radian
-                radian=radian+pi
-            if Q.y<=0:
-                radian=pi+radian
-        # Only positive values (February 11, 2015)
-        if radian < 0 :
-            radian=radian+2*pi
-        angle=AngleMeasure(value_radian=radian)
-        return r,angle
+        return SmallComputations.PointToPolaire(self,origin=origin)
     def angle(self,origin=None):
         """
         Return the angle of the segment from (0,0) and self.
 
         Return the result in degree.
         """
-        return self.polar_coordinates(origin=origin)[1]
+        return self.polar_coordinates(origin=origin).degree
     def coordinates(self,numerical=False,digits=10,pspict=None):
         """
         Return the coordinates of the point as a string.
@@ -3446,31 +3428,40 @@ class GraphOfAnAngle(GraphOfAnObject):
                 raise
         if r==None:
             #r=0.2*Segment(A,O).length()
-            r=0.3           # change of the default since we are now giving a 'visual' length (February 8, 2015)
+            r=0.5           # change of the default since we are now giving a 'visual' length (February 8, 2015)
         self.r=r
         self.angleA=AffineVector(O,A).angle()
         self.angleB=AffineVector(O,B).angle()
-        a=self.angleA.degree
-        b=self.angleB.degree
 
-        # removed on February 11, 2015
-        #if a > b:
-        #    a=a-360
+        # I think that one dos not have to check and fix what angle is first here
+        # because the angles are re-computed in self.circle.
 
-        self.angleI=AngleMeasure(value_degree=min(a,b))
-        self.angleF=AngleMeasure(value_degree=max(a,b))
+        self.angleI=self.angleA
+        self.angleF=self.angleB
 
-        if abs(self.angleI.degree+63)<1 :
-            raise
-
+        a=self.angleI.degree
+        b=self.angleF.degree
         self.media=AngleMeasure(value_degree=(b+a)/2)
         GraphOfAnObject.__init__(self,self)
         self.advised_mark_angle=self.media.degree       # see the choice of angle in the docstring
         self.mark_angle=self.media
     def circle(self,visual=False,pspict=None):
-        angleI=visual_polar_coordinates(Point( cos(self.angleI.radian),sin(self.angleI.radian) ),pspict)[1]
-        angleF=visual_polar_coordinates(Point( cos(self.angleF.radian),sin(self.angleF.radian) ),pspict)[1]
-        return Circle(self.O,self.r,visual=visual,pspict=pspict).graph(angleI,angleF)
+        angleI=visual_polar_coordinates(Point( cos(self.angleI.radian),sin(self.angleI.radian) ),pspict).measure
+        angleF=visual_polar_coordinates(Point( cos(self.angleF.radian),sin(self.angleF.radian) ),pspict).measure
+
+        a=numerical_approx(angleI.degree)
+        b=numerical_approx(angleF.degree)
+        if a > b:
+            a=a-360
+            self.angleI=AngleMeasure(value_degree=a)
+
+        a=numerical_approx(self.angleI.degree)
+        b=numerical_approx(self.angleF.degree)
+
+        if self.angleI.degree>self.angleF.degree:
+            print('This should not happen')
+            raise ValueError
+        return Circle(self.O,self.r,visual=visual,pspict=pspict).graph(self.angleI,self.angleF)
     def measure(self):
         return AngleMeasure(value_degree=self.angleF.degree-self.angleI.degree)
     def graph(self):
