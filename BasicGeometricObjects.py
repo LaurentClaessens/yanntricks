@@ -911,8 +911,6 @@ class GraphOfACircle(GraphOfAnObject):
         """
         Return a graph of the circle between the two angles given in degree
         """
-        if angleI.degree==330:
-            raise
         C = GraphOfACircle(self.center,self.radius,angleI=angleI,angleF=angleF,visual=self.visual,pspict=self.pspict)
         C.parameters=self.parameters.copy()
         return C
@@ -1723,10 +1721,8 @@ class GraphOfAPoint(GraphOfAnObject):
     def angle(self,origin=None):
         """
         Return the angle of the segment from (0,0) and self.
-
-        Return the result in degree.
         """
-        return self.polar_coordinates(origin=origin).degree
+        return self.polar_coordinates(origin=origin)            # No more degree. February 11, 2015
     def coordinates(self,numerical=False,digits=10,pspict=None):
         """
         Return the coordinates of the point as a string.
