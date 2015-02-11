@@ -1707,8 +1707,13 @@ class GraphOfAPoint(GraphOfAnObject):
             (2, AngleMeasure, degree=90.0000000000000,radian=1/2*pi)
             sage: Point(-1,0).polar_coordinates()
             (1, AngleMeasure, degree=180.000000000000,radian=pi)
+            sage: alpha=-pi*(arctan(2)/pi - 2)
+            sage: Point(cos(alpha),sin(alpha)).polar_coordinates()
+            (1, AngleMeasure, degree=180.000000000000,radian=pi)
 
         If 'origin' is given, it is taken as origin of the polar coordinates.
+
+        Only return positive angles (between 0 and 2*pi)
         """
         if not origin:
             origin=Point(0,0)
@@ -1723,11 +1728,14 @@ class GraphOfAPoint(GraphOfAnObject):
             radian=arctan(Q.y/Q.x)
         if Q.x<0:
             if Q.y>0:
-                # This is an erro corrected on September, 10, 2014
+                # This is an error corrected on September, 10, 2014
                 #radian=pi/2-radian
                 radian=radian+pi
             if Q.y<=0:
                 radian=pi+radian
+        # Only positive values (February 11, 2015)
+        if radian < 0 :
+            radian=radian+2*pi
         angle=AngleMeasure(value_radian=radian)
         return r,angle
     def angle(self,origin=None):
@@ -3444,10 +3452,17 @@ class GraphOfAnAngle(GraphOfAnObject):
         self.angleB=AffineVector(O,B).angle()
         a=self.angleA.degree
         b=self.angleB.degree
-        if a > b:
-            a=a-360
+
+        # removed on February 11, 2015
+        #if a > b:
+        #    a=a-360
+
         self.angleI=AngleMeasure(value_degree=min(a,b))
         self.angleF=AngleMeasure(value_degree=max(a,b))
+
+        if abs(self.angleI.degree+63)<1 :
+            raise
+
         self.media=AngleMeasure(value_degree=(b+a)/2)
         GraphOfAnObject.__init__(self,self)
         self.advised_mark_angle=self.media.degree       # see the choice of angle in the docstring
