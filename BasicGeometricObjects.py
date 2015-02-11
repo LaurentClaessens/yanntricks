@@ -1467,6 +1467,13 @@ class GraphOfAPoint(GraphOfAnObject):
         # size of a bounding box.
         #if max(abs(self.x),abs(self.y))>500:
         #    raise ValueError,"I don't believe you want a point with coordinates {0},{1}".format(self.x,self.y)
+
+        ax=abs(numerical_approx(self.x))
+        if ax<0.00001 and ax>0 :
+            self.x=0
+        ay=abs(numerical_approx(self.y))
+        if ay<0.00001 and ay>0 :
+            self.y=0
     def numerical_approx(self):
         return Point(numerical_approx(self.x),numerical_approx(self.y))
     def projection(self,seg,direction=None,advised=False):

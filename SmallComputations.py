@@ -568,22 +568,22 @@ class AngleMeasure(object):
         #    self.angleI = AngleMeasure(value_degree=angleI,keep_negative=True)
         #  in this case, 'value_degree' can be either a number, either a 'AngleMeasure' because the user has choice when writing something like
         #     cir=Circle(O,A,angleI=...,angleF=...)
-        if isinstance(value_degree,AngleMeasure):
-            angle_measure=value_degree
-            value_degree=None
-            value_radian=None
-        if isinstance(value_radian,AngleMeasure):
-            angle_measure=value_radian
-            value_degree=None
-            value_radian=None
-
+        for k in [value_degree,value_radian]:
+            if isinstance(k,AngleMeasure):
+                angle_measure=k
+                value_degree=None
+                value_radian=None
+        for k in [value_degree,value_radian]:
+            if isinstance(k,PolarCoordinates):
+                angle_measure=k
+                value_degree=None
+                value_radian=None
         if angle_measure :
             value_degree=angle_measure.degree
             value_radian=angle_measure.radian
         else:
             if value_degree is not None:
                 value_radian=radian(value_degree,keep_max=True)
-                #print("BGTNooTvpNJe cet angle est",numerical_approx(value_degree),numerical_approx(value_radian))
                 if keep_negative and value_degree < 0 and value_radian > 0:
                     print("This is strange ...")
                     value_radian=value_radian-2*pi
@@ -1007,12 +1007,16 @@ RadianConversions=ConversionAngles(pi/180,2*pi,exit_attribute="radian",create_fu
 
 class degreeUnit(object):
     def __call__(self,x,number=False,keep_max=None,converting=True,numerical=False):
+        if isinstance(x,PolarCoordinates) or isinstance(x,AngleMeasure):
+            return x.degree
         return DegreeConversions.conversion(x,number=number,keep_max=keep_max,converting=converting,numerical=numerical)
     def __rmul__(self,x):
         return AngleMeasure(value_degree=x)
 
 class radianUnit(object):
     def __call__(self,x,number=False,keep_max=None,converting=True,numerical=False):
+        if isinstance(x,PolarCoordinates) or isinstance(x,AngleMeasure):
+            return x.radian
         return RadianConversions.conversion(x,number=number,keep_max=keep_max,converting=converting,numerical=numerical)
     def __rmul__(self,x):
         return AngleMeasure(value_radian=x)
