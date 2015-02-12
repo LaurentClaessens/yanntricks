@@ -404,10 +404,13 @@ class GraphOfAnObject(object):
                 third=automatic_place[2]
 
         if angle is None :
-            try :
-                angle=self.advised_mark_angle
-            except AttributeError :
-                angle=self.angle().degree+90
+            if isinstance(self,GraphOfAnAngle):
+                angle=self.advised_mark_angle(pspict=pspict)
+            else:
+                try :
+                    angle=self.advised_mark_angle
+                except AttributeError :
+                    angle=self.angle().degree+90
         if position=="" :
             position="corner"
             alpha=AngleMeasure(value_degree=angle).positive()
@@ -3442,29 +3445,24 @@ class GraphOfAnAngle(GraphOfAnObject):
         self.angleI=self.angleA
         self.angleF=self.angleB
 
-        a=self.angleI.degree
-        b=self.angleF.degree
-        self.media=AngleMeasure(value_degree=(b+a)/2)
         GraphOfAnObject.__init__(self,self)
-        self.advised_mark_angle=self.media.degree       # see the choice of angle in the docstring
-        self.mark_angle=self.media
-    def circle(self,visual=False,pspict=None):
-        angleI=visual_polar_coordinates(Point( cos(self.angleI.radian),sin(self.angleI.radian) ),pspict).measure
-        angleF=visual_polar_coordinates(Point( cos(self.angleF.radian),sin(self.angleF.radian) ),pspict).measure
+        #self.mark_angle=self.media
+    def visual_angleIF(self,pspict):
+        aI1=visual_polar_coordinates(Point( cos(self.angleI.radian),sin(self.angleI.radian) ),pspict).measure
+        aF1=visual_polar_coordinates(Point( cos(self.angleF.radian),sin(self.angleF.radian) ),pspict).measure
 
-        a=numerical_approx(angleI.degree)
-        b=numerical_approx(angleF.degree)
+        a=numerical_approx(aI1.degree)
+        b=numerical_approx(aF1.degree)
         if a > b:
             a=a-360
-            self.angleI=AngleMeasure(value_degree=a)
-
-        a=numerical_approx(self.angleI.degree)
-        b=numerical_approx(self.angleF.degree)
-
-        if self.angleI.degree>self.angleF.degree:
-            print('This should not happen')
-            raise ValueError
-        return Circle(self.O,self.r,visual=visual,pspict=pspict).graph(self.angleI,self.angleF)
+            aI2=AngleMeasure(value_degree=a)
+        else :
+            aI2=aI1
+        aF2=aF1
+        return aI2,aF2
+    def circle(self,visual=False,pspict=None):
+        visualI,visualF=self.visual_angleIF(pspict)
+        return Circle(self.O,self.r,visual=visual,pspict=pspict).graph(visualI,visualF)
     def measure(self):
         return AngleMeasure(value_degree=self.angleF.degree-self.angleI.degree)
     def graph(self):
@@ -3479,8 +3477,11 @@ class GraphOfAnAngle(GraphOfAnObject):
         return self.bounding_box(pspict)
     def bounding_box(self,pspict=None):
         return self.circle(visual=True,pspict=pspict).bounding_box(pspict)
+    def advised_mark_angle(self,pspict):
+        visualI,visualF=self.visual_angleIF(pspict=pspict)
+        return (visualI.degree+visualF.degree)/2
     def mark_point(self,pspict=None):
-        return self.circle(visual=True,pspict=pspict).get_point(self.mark_angle)
+        return self.circle(visual=True,pspict=pspict).get_point(self.advised_mark_angle(pspict=pspict))
     def latex_code(self,language=None,pspict=None):
         circle=self.circle(visual=True,pspict=pspict)
         circle.parameters=self.parameters.copy()
