@@ -376,7 +376,7 @@ class GraphOfAnObject(object):
     def wave(self,dx,dy):                   # dx is the wave length and dy is the amplitude
         self.wavy = True
         self.waviness = Waviness(self,dx,dy)
-    def get_mark(self,dist,angle,text,mark_point=None,automatic_place=False):
+    def get_mark(self,dist,angle,text,mark_point=None,automatic_place=False,added_angle=0):
 
         """
         If you want to put a mark on an object
@@ -412,6 +412,7 @@ class GraphOfAnObject(object):
             except AttributeError :
                 angle=self.angle().degree+90
 
+        angle=angle+added_angle
         if position=="" :
             position="corner"
             if isinstance(self,GraphOfAnAngle):
@@ -444,8 +445,8 @@ class GraphOfAnObject(object):
         #if not self.mark._central_point :
         #    print(self)
         #    raise
-    def put_mark(self,dist,angle,text,mark_point=None,automatic_place=False):
-        mark=self.get_mark(dist,angle,text,mark_point=None,automatic_place=automatic_place)
+    def put_mark(self,dist,angle,text,mark_point=None,automatic_place=False,added_angle=0):
+        mark=self.get_mark(dist,angle,text,mark_point=None,automatic_place=automatic_place,added_angle=added_angle)
         self.added_objects.append(mark)
         self.mark=mark
     def add_option(self,opt):
