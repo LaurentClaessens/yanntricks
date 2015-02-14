@@ -404,15 +404,19 @@ class GraphOfAnObject(object):
                 third=automatic_place[2]
 
         if angle is None :
-            if isinstance(self,GraphOfAnAngle):
-                angle=self.advised_mark_angle(pspict=pspict)
-            else:
+            print(self.advised_mark_angle(pspict=pspict))
+            try:
                 try :
+                    angle=self.advised_mark_angle(pspict=pspict)   # Mainely GraphOfAnAngle
+                except TypeError:
                     angle=self.advised_mark_angle
-                except AttributeError :
-                    angle=self.angle().degree+90
+            except AttributeError :
+                angle=self.angle().degree+90
+
         if position=="" :
             position="corner"
+            if isinstance(self,GraphOfAnAngle):
+                position="center"
             alpha=AngleMeasure(value_degree=angle).positive()
             deg=alpha.degree
             if deg==0:
@@ -544,8 +548,20 @@ def visual_polar_coordinates(P,pspict=None):
     """
     return the visual polar coordinates of 'P'
     """
-    xunit=pspict.xunit
-    yunit=pspict.yunit
+    if isinstance(pspict,list):
+        xu=pspict[0].xunit
+        yu=pspict[0].xunit
+        xunits=[ psp.xunit==xu for psp in pspict ]
+        yunits=[ psp.yunit==yu for psp in pspict ]
+        if sum(xunits)==len(xunits) and sum(yunits)==len(yunits):
+            xunit=xu
+            yunit=yu
+        else :
+            print("Probably more than one picture with different dilatations ...")
+            raise ValueError
+    else :
+        xunit=pspict.xunit
+        yunit=pspict.yunit
     Q=Point(xunit*P.x,yunit*P.y)
     return Q.polar_coordinates()
 
