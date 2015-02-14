@@ -404,7 +404,6 @@ class GraphOfAnObject(object):
                 third=automatic_place[2]
 
         if angle is None :
-            print(self.advised_mark_angle(pspict=pspict))
             try:
                 try :
                     angle=self.advised_mark_angle(pspict=pspict)   # Mainely GraphOfAnAngle
@@ -2453,7 +2452,6 @@ class GraphOfASegment(GraphOfAnObject):
         If 'mark_angle' is 'None', then the angle will be perpendicular to 'self'
         """
         if mark_angle==None:
-            print(self.angle(),type(self.angle()))
             mark_angle=self.angle()+90*degree
         measure=MeasureLength(self,measure_distance)
         measure.put_mark(mark_distance,mark_angle,name,automatic_place=automatic_place)
