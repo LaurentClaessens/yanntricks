@@ -100,10 +100,18 @@ from phystricks.SmallComputations import *
 # TODO : In figureHYeBZVj, the grid begins at negative numbers. Why ? (see smath also available on gitorious)
 # TODO : waving functions behaves badly when X and Y dilatations are differents. See figureHYeBZVj
 
+def no_symbol(*arg):
+    for l in arg:
+        try:
+            for P in l:
+                no_symbol(P)
+        except TypeError:
+            print("PYAIooONprMa pas de symbole pour",l)
+            l.parameters.symbol=""
+
 class PhystricksCheckBBError(Exception):
     def __init__(self):
         pass
-
 
 def GenericFigure(nom,script_filename=None):
     """
