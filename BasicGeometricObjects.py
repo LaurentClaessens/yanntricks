@@ -238,6 +238,7 @@ def _vector_latex_code(segment,language=None,pspict=None):
         a = a + P.latex_code(language,pspict)
     return a
 
+
 def Distance_sq(P,Q):
     """ return the squared distance between P and Q """
     return (P.x-Q.x)**2+(P.y-Q.y)**2
@@ -404,11 +405,8 @@ class GraphOfAnObject(object):
                 third=automatic_place[2]
 
         if angle is None :
-            try:
-                try :
-                    angle=self.advised_mark_angle(pspict=pspict)   # Mainely GraphOfAnAngle
-                except TypeError:
-                    angle=self.advised_mark_angle
+            try :
+                angle=self.advised_mark_angle(pspict=pspict)
             except AttributeError :
                 angle=self.angle().degree+90
 
@@ -1124,6 +1122,7 @@ class Mark(object):
             try :
                 graph_mark_point=self.graph.mark_point(pspict=pspict)
             except TypeError :          # Happens when mark_point is redefined as a 'lambda' function
+                                        #  or when an other TypeError is raised ...
                 graph_mark_point=self.graph.mark_point()
    
         default=graph_mark_point.get_polar_point(self.dist,self.angle,pspict)
@@ -1494,6 +1493,12 @@ class GraphOfAPoint(GraphOfAnObject):
         ay=abs(numerical_approx(self.y))
         if ay<0.00001 and ay>0 :
             self.y=0
+    def advised_mark_angle(self,pspict):
+        if self._advised_mark_angle:
+            return self._advised_mark_angle
+        else :
+            print("No advised mark angle for this point")
+            raise AttributeError
     def numerical_approx(self):
         return Point(numerical_approx(self.x),numerical_approx(self.y))
     def projection(self,seg,direction=None,advised=False):
@@ -1544,7 +1549,7 @@ class GraphOfAPoint(GraphOfAnObject):
         seg2=direction.fix_origin(self)
         P=main.Intersection(seg,seg2)[0]
         if advised :
-            P.advised_mark_angle=seg.angle().degree+90
+            P._advised_mark_angle=seg.angle().degree+90
         return P
     def symmetric_by(self,Q):
         """
@@ -2256,6 +2261,11 @@ class GraphOfASegment(GraphOfAnObject):
         if not (self.vertical or self.horizontal) :
             self.coefs = [1,-1/self.slope,self.independent/self.slope]
         x,y=var('x,y')
+        #print("FYPUooEcyzQn",self.I.coordinates(),self.F.coordinates())
+        Ix=numerical_approx(self.I.x)
+        Iy=numerical_approx(self.I.y)
+        Fx=numerical_approx(self.F.x)
+        Fy=numerical_approx(self.F.y)
         coefs=[ numerical_approx(s) for s in self.coefs  ]
         return coefs[0]*x+coefs[1]*y+coefs[2] == 0
     @lazy_attribute
@@ -2271,10 +2281,8 @@ class GraphOfASegment(GraphOfAnObject):
 
         """
         return Distance(self.I,self.F)
-    @lazy_attribute
-    def advised_mark_angle(self):
-        x = self.angle()+AngleMeasure(value_degree=90)
-        return x
+    def advised_mark_angle(self,pspict=None):
+        return self.angle()+AngleMeasure(value_degree=90)
     def phyFunction(self):
         if self.horizontal:
             # The trick to define a constant function is explained here:
@@ -2425,7 +2433,7 @@ class GraphOfASegment(GraphOfAnObject):
         """
         P = self.I*(1-p) + self.F*p
         if advised:
-            P.advised_mark_angle=self.angle().degree+90
+            P._advised_mark_angle=self.angle().degree+90
         return P
     def put_arrow(self,position=0.5,size=0.01):
         """
@@ -2608,7 +2616,7 @@ class GraphOfASegment(GraphOfAnObject):
         """
         v = Segment(self.I.projection(segment),self.F.projection(segment))
         if advised:
-            v.advised_mark_angle=self.angle().degree+90
+            v._advised_mark_angle=self.angle().degree+90
         return self.return_deformations(v)
     def bisector(self,code=None):
         """
@@ -3108,9 +3116,10 @@ class GraphOfAMeasureLength(GraphOfASegment):
         self.delta=seg.rotation(-90).fix_size(self.dist)
         self.mseg=seg.translate(self.delta)
         GraphOfASegment.__init__(self,self.mseg.I,self.mseg.F)
-        self.advised_mark_angle=self.delta.angle()
         self.mI=self.mseg.I
         self.mF=self.mseg.F
+    def advised_mark_angle(self,pspict=None):
+        return self.delta.angle()
     def math_bounding_box(self,pspict=None):
         return BoundingBox()
         # I return a "empty" bounding box because I don't want to
@@ -3463,6 +3472,7 @@ class GraphOfAnAngle(GraphOfAnObject):
 
         GraphOfAnObject.__init__(self,self)
         #self.mark_angle=self.media
+        self._mark_angle=None
     def visual_angleIF(self,pspict):
         aI1=visual_polar_coordinates(Point( cos(self.angleI.radian),sin(self.angleI.radian) ),pspict).measure
         aF1=visual_polar_coordinates(Point( cos(self.angleF.radian),sin(self.angleF.radian) ),pspict).measure
@@ -3487,17 +3497,22 @@ class GraphOfAnAngle(GraphOfAnObject):
         """
         theta is degree or AngleMeasure
         """
-        self.mark_angle=AngleMeasure(theta)
-        self.advised_mark_angle=degree(theta,number=True,converting=False)
+        self._mark_angle=AngleMeasure(value_degree=theta)
+        #self._advised_mark_angle=degree(theta,number=True,converting=False)
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def bounding_box(self,pspict=None):
+        C= self.circle(visual=True,pspict=pspict)
+        bb=C.bounding_box(pspict)
         return self.circle(visual=True,pspict=pspict).bounding_box(pspict)
     def advised_mark_angle(self,pspict):
+        if self._mark_angle:
+            return self._mark_angle
         visualI,visualF=self.visual_angleIF(pspict=pspict)
         return (visualI.degree+visualF.degree)/2
     def mark_point(self,pspict=None):
-        return self.circle(visual=True,pspict=pspict).get_point(self.advised_mark_angle(pspict=pspict))
+        ama=self.advised_mark_angle(pspict)
+        return self.circle(visual=True,pspict=pspict).get_point(ama)
     def latex_code(self,language=None,pspict=None):
         circle=self.circle(visual=True,pspict=pspict)
         circle.parameters=self.parameters.copy()
@@ -3526,7 +3541,7 @@ def general_funtion_get_point(fun,x,advised=True):
                 angle_n=degree(atan(ca)+pi/2)
                 if fun.derivative(2)(x) > 0:
                     angle_n=angle_n+180
-                P.advised_mark_angle=angle_n
+                P._advised_mark_angle=angle_n
         return P
 
 class NonAnalyticParametricCurve(GraphOfAnObject):
@@ -4975,10 +4990,10 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         P = Point(self.f1(llam),self.f2(llam))
         if advised :
             try :
-                P.advised_mark_angle=self.get_normal_vector(llam).angle()
+                P._advised_mark_angle=self.get_normal_vector(llam).angle()
             except TypeError :
                 print "It seems that something got wrong somewhere in the computation of the advised mark angle. Return 0 as angle."
-                P.advised_mark_angle=0
+                P._advised_mark_angle=0
         return P
     def get_tangent_vector(self,llam,advised=False):
         """
