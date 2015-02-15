@@ -508,11 +508,9 @@ def visual_length(v,l,xunit=None,yunit=None,pspict=None):
     .. image:: Picture_FIGLabelFigtestVisualLengthPICTtestVisualLength-for_eps.png
 
     """
-    print("XHOEooUPLjyV  début de visual_length")
     if pspict:
         xunit=pspict.xunit
         yunit=pspict.yunit
-    print('SMDRooUecrqo',xunit,yunit)
     Dx=v.Dx
     Dy=v.Dy
     if not v.vertical :
@@ -522,7 +520,6 @@ def visual_length(v,l,xunit=None,yunit=None,pspict=None):
             x=-x
         y=slope*x
     else:
-        print("GDMVooTzAclw ce vecteur est vertical")
         x=0
         y=l/yunit
         if Dy<0:
@@ -544,11 +541,8 @@ def visual_polar(P,r,theta,pspict=None):
     xunit=pspict.xunit
     yunit=pspict.yunit
     alpha=pi*theta/180
-    print("BOWUooEEJyPD alpha :",alpha)
     v=Vector( cos(alpha)/xunit,sin(alpha)/yunit  )
-    print("OMKZooUiPOFo v",v.I.coordinates(),v.F.coordinates())
     w=visual_length(v,r,pspict=pspict)
-    print("TQOKooEQvuRE w",w.I.coordinates(),w.F.coordinates())
     return P+w
 
 def visual_polar_coordinates(P,pspict=None):
@@ -683,10 +677,8 @@ class GraphOfASingleAxe(GraphOfAnObject):
             #a=circle.get_point(bar_angle,numerical=True)
             #b=circle.get_point(bar_angle+180,numerical=True)
 
-            print('CVHYooMJLRqI',bar_angle)
             a=visual_polar(P,0.1,bar_angle,pspict)
             b=visual_polar(P,0.1,bar_angle+180,pspict)
-            print("QVBVooEEHCnX",P.coordinates(),a.coordinates(),b.coordinates())
 
             seg=Segment(a,b)
             bars_list.append(seg)
