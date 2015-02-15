@@ -2478,6 +2478,7 @@ class GraphOfASegment(GraphOfAnObject):
         ao=self.get_code(n=n,d=d,l=l,angle=angle,pspict=pspict)
         self.added_objects.extend(ao)
     def get_code(self,n=1,d=0.1,l=0.1,angle=45,pspict=None):
+        #TODO : the angle given here should be visual
         ao=[]
         vect=AffineVector(self.I,self.F).fix_visual_size(d,pspict)
         center=self.midpoint(advised=False)
@@ -3454,9 +3455,6 @@ class GraphOfAnAngle(GraphOfAnObject):
         self.A=A
         self.O=O
         self.B=B
-        if r :                          # This is for detecting non-automatic radius (remove after a recompilation MGVTooMpMAKD)
-            if r<0.2 or r>0.5 :
-                raise
         if r==None:
             #r=0.2*Segment(A,O).length()
             r=0.5           # change of the default since we are now giving a 'visual' length (February 8, 2015)

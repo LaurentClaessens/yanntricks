@@ -106,7 +106,6 @@ def no_symbol(*arg):
             for P in l:
                 no_symbol(P)
         except TypeError:
-            print("PYAIooONprMa pas de symbole pour",l)
             l.parameters.symbol=""
 
 class PhystricksCheckBBError(Exception):
