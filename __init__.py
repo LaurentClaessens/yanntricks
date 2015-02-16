@@ -1034,6 +1034,13 @@ def CircleOA(O,A):
     radius=distance(O,A)
     return Circle(O,radius)
 
+def CircleAB(A,B):
+    """
+    return a circle with diameter [AB]
+    """
+    center=Segment(A,B).midpoint()
+    return CircleOA(center,A)
+
 def CircularSector(center,radius,a,b):
     circle=Circle(center,radius)
     P=circle.get_point(a)
