@@ -2295,6 +2295,13 @@ class GraphOfASegment(GraphOfAnObject):
         if not (self.vertical or self.horizontal) :
             x=var('x')
             return phyFunction( self.slope*x+self.independent )
+    def symmetric_by(self,O):
+        """
+        return a segment wich is symmetric to 'self' with respect to the point 'O'
+        """
+        A=self.I.symmetric_by(O)
+        B=self.F.symmetric_by(O)
+        return Segment(A,B)
     def inside_bounding_box(self,bb=None,xmin=None,xmax=None,ymin=None,ymax=None):
         """
         Return a segment that is the part of self contained inside the given bounding box.
@@ -4696,11 +4703,13 @@ class GraphOfAPolygon(GraphOfAnObject):
         When X.no_edges() is used, the edges of the polygon will not be drawn.
         """
         self.draw_edges=False
-    def put_mark(self,dist,text_list=None,mark_point=None,pspict=None):
+    def put_mark(self,dist,text_list=None,points_names=None,mark_point=None,pspict=None):
         n=len(self.points_list)
-        if not text_list:
+        if not text_list and not points_names:
             import string
             text_list=[   "\( {} \)".format(x) for x in  string.ascii_uppercase[0:n]  ]
+        if points_names :
+            text_list=[   "${}$".format(x) for x in points_names   ]
         for i,P in enumerate(self.points_list):
             text=text_list[i]
             A=self.points_list[(i-1)%n]
