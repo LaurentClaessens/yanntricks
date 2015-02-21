@@ -988,8 +988,15 @@ class pspicture(object):
         # STEP : update the bounding box
         for x in list_to_be_drawn :
             self.BB.append(x.graph,self)
-            if not isinstance(x.graph,BasicGeometricObjects.Mark):
-                self.math_BB.append(x.graph,self)
+
+            # The math_BB is updated in DrawGraph    February 21, 2015
+            # This allow to enlarge the BB by hand with something like
+            #    pspict.math_BB.ymax+=1
+            # placed after DrawGraph
+            #if not isinstance(x.graph,BasicGeometricObjects.Mark):
+            #    self.math_BB.append(x.graph,self)
+
+
         # STEP : add the axes
         if self.draw_default_axes:
             self.axes.add_bounding_box(self.math_BB,self)     # Here the axes take into account the content of pspict.
@@ -1307,7 +1314,7 @@ class pspicture(object):
                 self.record_draw_graph.append(x)
         except AttributeError,msg :
             pass            # This happens when the graph has no mark; that is most of the time.
-        #self.math_BB.append(graph,self)
+        self.math_BB.append(graph,self)
         graph.action_on_pspict(self)
     def DrawDefaultAxes(self):
         """

@@ -4714,7 +4714,7 @@ class GraphOfAPolygon(GraphOfAnObject):
             import string
             text_list=[   "\( {} \)".format(x) for x in  string.ascii_uppercase[0:n]  ]
         if points_names :
-            text_list=[   "${}$".format(x) for x in points_names   ]
+            text_list=[    "\( {} \)".format(x) for x in points_names   ]
         for i,P in enumerate(self.points_list):
             text=text_list[i]
             A=self.points_list[(i-1)%n]
@@ -6037,16 +6037,20 @@ class BoundingBox(object):
             raise KeyError,"%s is a list"%graph
         if not pspict :
             print "You should provide a pspict in order to add",graph
-        try :
-            if self.math:
+        on=False
+        if self.math:
+            try :
                 bb=graph.math_bounding_box(pspict=pspict)
-            else:
+            except AttributeError :
+                on=True
+        if not self.math or on :
+            try :
                 bb=graph.bounding_box(pspict=pspict)
-        except (ValueError,AttributeError),msg :
-            print "Something got wrong with %s"%str(graph)
-            print msg
-            print "If you want to debug me, you should add a raise here."
-            raise
+            except (ValueError,AttributeError),msg :
+                print "Something got wrong with %s"%str(graph)
+                print msg
+                print "If you want to debug me, you should add a raise here."
+                raise
         self.AddBB(bb)
     def add_math_graph(self,graphe,pspict=None):
         try :

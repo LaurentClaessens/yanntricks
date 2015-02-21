@@ -1201,6 +1201,7 @@ class Grid(object):
     def optionsParams(self):
         return self.options.sousOptions(["Dx","Dy"])
     def action_on_pspict(self,pspict):
+        print(self.BB)
         a = []
         # ++++++++++++ Border ++++++++ 
         if self.draw_border :
