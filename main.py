@@ -854,7 +854,7 @@ class pspicture(object):
         self.yunit = 1
         self.LabelSep = 1
         self.BB = BasicGeometricObjects.BoundingBox(mother=self)
-        self.math_BB = BasicGeometricObjects.BoundingBox()     # self.BB and self.math_BB serve to add some objects by hand.
+        self.math_BB = BasicGeometricObjects.BoundingBox(math=True)     # self.BB and self.math_BB serve to add some objects by hand.
                                             # If you need the bounding box, use self.bounding_box()
                                             # or self.math_bounding_box()
         self.axes=BasicGeometricObjects.Axes(Point(0,0),BasicGeometricObjects.BoundingBox(),pspict=self)
@@ -966,7 +966,6 @@ class pspicture(object):
         return numerical_approx(self.xsize*self.xunit)
     def visual_ysize(self):
         return numerical_approx(self.ysize*self.yunit)
-
     def create_latex_code(self,language=None,pspict=None):
         """
         Fix the bounding box and create the separator "PSTRICKS CODE".
@@ -1308,6 +1307,7 @@ class pspicture(object):
                 self.record_draw_graph.append(x)
         except AttributeError,msg :
             pass            # This happens when the graph has no mark; that is most of the time.
+        #self.math_BB.append(graph,self)
         graph.action_on_pspict(self)
     def DrawDefaultAxes(self):
         """
@@ -1338,7 +1338,6 @@ class pspicture(object):
         # Make the grid end on its "big" subdivisions.
         self.grid.BB.xmin=SmallComputations.MultipleLower(self.grid.BB.xmin,Dx)
         self.grid.BB.xmax=SmallComputations.MultipleBigger(self.grid.BB.xmax,Dx)
-
         self.grid.BB.ymin=SmallComputations.MultipleLower(self.grid.BB.ymin,Dy)
         self.grid.BB.ymax=SmallComputations.MultipleBigger(self.grid.BB.ymax,Dy)
         self.DrawGraph(self.grid)

@@ -1809,9 +1809,14 @@ class GraphOfAPoint(GraphOfAnObject):
         [1] If you dont't know what is the "bounding box", or if you don't want to fine tune it, you don't care.
         """
         if pspict==None:
-            raise TypeError, "You should consider to give a pspict as argument. Otherwise the boundig box of %s could be bad"%str(self)
-        Xradius=0.1/pspict.xunit
-        Yradius=0.1/pspict.yunit
+            print("You should consider to give a pspict as argument. Otherwise the boundig box of %s could be bad"%str(self))
+            xunit=1
+            yunit=1
+        else :
+            xunit=pspict.xunit
+            yunit=pspict.yunit
+        Xradius=0.1/xunit
+        Yradius=0.1/yunit
         bb = BoundingBox(Point(self.x-Xradius,self.y-Yradius),Point(self.x+Xradius,self.y+Yradius))
         for P in self.record_add_to_bb:
             bb.AddPoint(P)
@@ -5928,20 +5933,24 @@ class BoundingBox(object):
 
     In the first call, the bounding box is not the same as in the second call.
 
+    If 'math' is True, it always try to include 'math_bounding_box' instead of 'bounding_box'
+
     """
-    def __init__(self,P1=None,P2=None,xmin=1000,xmax=-1000,ymin=1000,ymax=-1000,parent=None,mother=None):
+    def __init__(self,P1=None,P2=None,xmin=1000,xmax=-1000,ymin=1000,ymax=-1000,parent=None,mother=None,math=False):
         self.xmin=xmin
         self.xmax=xmax
         self.ymin=ymin
         self.ymax=ymax
+        self.mother=mother
+        self.math=math
         if P1 :
             self.add_math_object(P1,check_too_large=False)
             self.add_math_object(P2,check_too_large=False)
-
         if parent :
             raise DeprecationWarning,"Use mother instead"   # 2014
-        self.mother=mother
     def add_object(self,obj,pspict=None,fun="bounding_box",check_too_large=True):
+        if self.math:
+            fun="math_bounding_box"
         try :
             bb=obj.__getattribute__(fun)(pspict=pspict)
         except AttributeError,message :
@@ -6029,7 +6038,10 @@ class BoundingBox(object):
         if not pspict :
             print "You should provide a pspict in order to add",graph
         try :
-            bb=graph.bounding_box(pspict=pspict)
+            if self.math:
+                bb=graph.math_bounding_box(pspict=pspict)
+            else:
+                bb=graph.bounding_box(pspict=pspict)
         except (ValueError,AttributeError),msg :
             print "Something got wrong with %s"%str(graph)
             print msg
@@ -6053,6 +6065,7 @@ class BoundingBox(object):
 
         The given circle will be deformed by the coefficient xunit and yunid and the be added to `self`.
         """
+        raise DeprecationWarning,"use 'append' instead"     # February 21, 2015
         self.AddPoint( Point( Cer.center.x-Cer.radius/xunit,Cer.center.y-Cer.radius/yunit ) )
         self.AddPoint( Point( Cer.center.x+Cer.radius/xunit,Cer.center.y+Cer.radius/yunit ) )
     def AddAxes(self,axes):
