@@ -2170,8 +2170,6 @@ class GraphOfASegment(GraphOfAnObject):
         GraphOfAnObject.__init__(self,self)
         #self.arrow_list=[]
         self.measure=None
-        if self.length()<0.01:
-            raise
     @lazy_attribute
     def Dx(self):
         return self.F.x-self.I.x
@@ -2274,7 +2272,6 @@ class GraphOfASegment(GraphOfAnObject):
         Iy=numerical_approx(self.I.y)
         Fx=numerical_approx(self.F.x)
         Fy=numerical_approx(self.F.y)
-        print(self.I.coordinates(numerical=True),self.F.coordinates(numerical=True))
         coefs=[ numerical_approx(s) for s in self.coefs  ]
         return coefs[0]*x+coefs[1]*y+coefs[2] == 0
     @lazy_attribute
