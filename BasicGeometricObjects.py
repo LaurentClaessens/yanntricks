@@ -2170,6 +2170,8 @@ class GraphOfASegment(GraphOfAnObject):
         GraphOfAnObject.__init__(self,self)
         #self.arrow_list=[]
         self.measure=None
+        if self.length()<0.01:
+            raise
     @lazy_attribute
     def Dx(self):
         return self.F.x-self.I.x
@@ -2268,11 +2270,11 @@ class GraphOfASegment(GraphOfAnObject):
         if not (self.vertical or self.horizontal) :
             self.coefs = [1,-1/self.slope,self.independent/self.slope]
         x,y=var('x,y')
-        #print("FYPUooEcyzQn",self.I.coordinates(),self.F.coordinates())
         Ix=numerical_approx(self.I.x)
         Iy=numerical_approx(self.I.y)
         Fx=numerical_approx(self.F.x)
         Fy=numerical_approx(self.F.y)
+        print(self.I.coordinates(numerical=True),self.F.coordinates(numerical=True))
         coefs=[ numerical_approx(s) for s in self.coefs  ]
         return coefs[0]*x+coefs[1]*y+coefs[2] == 0
     @lazy_attribute
@@ -2669,20 +2671,22 @@ class GraphOfASegment(GraphOfAnObject):
         """
         return a segment orthogonal to self passing trough P.
 
-        The starting point is P.
+        The starting point is 'P' and the final point is the intersection with 'self'
 
-        Remark : this one does not work 
-        seg=Segment(A,B).orthogonal_trough(B)
-        because it returns a null-sized segment (seg.I==seg.F)
+        If these two points are the same --when d^2(P,Q)<0.001 (happens when 'P' belongs to 'self'), the end point is not guaranteed.
 
-        Use 
+        By the way, when you want
+        Segment(A,B).orthogonal_trough(B)
+        you can use
         seg=Segment(B,A).orthogonal()
         instead.
-
         """
         s=self.orthogonal().fix_origin(P)
         Q=Intersection(s,self)[0]
-        return Segment(P,Q)
+        if (P.x-Q.x)**2+(P.y-Q.y)**2 <0.001 :
+            return s
+        else :
+            return Segment(P,Q)
     def parallel_trough(self,P):
         """ 
         return a segment parallel to self passing trough P
