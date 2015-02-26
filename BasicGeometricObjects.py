@@ -1591,6 +1591,9 @@ class GraphOfAPoint(GraphOfAnObject):
             yP=r*sin(alpha)/B
             return self.translate(Vector(xP,yP))
         return Point(self.x+r*cos(alpha),self.y+r*sin(alpha))
+    def rotation(self,alpha):
+        pc=self.polar_coordinates()
+        return PolarPoint(pc.r,pc.degree+alpha)
     def value_on_line(self,line):
         """
         Return the value of the equation of a line on `self`.
