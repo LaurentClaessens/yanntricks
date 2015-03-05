@@ -653,7 +653,7 @@ def add_latex_line_entete(truc,position=""):
     truc.add_latex_line("% http://student.ulb.ac.be/~lclaesse/phystricks-doc.pdf ",position)
     truc.add_latex_line("% http://student.ulb.ac.be/~lclaesse/phystricks-documentation/_build/html/index.html ",position)
     truc.add_latex_line("% and the projects phystricks and phystricks-doc at ",position)
-    truc.add_latex_line("% http://gitorious.org/~moky",position)
+    truc.add_latex_line("% https://github.com/LaurentClaessens/phystricks",position)
 
 class SeparatorList(object):
     """
