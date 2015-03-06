@@ -5451,6 +5451,7 @@ class GraphOfACircle3D(GraphOfAnObject):
         self.parameters.plotpoints=10*max(self.radius_u,self.radius_v)
         self.angleI=angleI
         self.angleF=angleF
+        self.divide=False
     @lazy_attribute
     def points_list(self):
         l=[]
@@ -5468,6 +5469,16 @@ class GraphOfACircle3D(GraphOfAnObject):
         curve=GraphOfAnInterpolationCurve(proj_points_list)
         curve.parameters=self.parameters.copy()
         return curve
+    def xmin(self):
+        """
+        return the visually --in the sense of the projection on the screen, not in the sense of xunit,yunit-- minimal x point of the circle
+        """
+        return min(  self.curve2d.points_list,key=lambda P:P.x  )
+    def xmax(self):
+        """
+        return the visually --in the sense of the projection on the screen, not in the sense of xunit,yunit-- maximal x point of the circle
+        """
+        return max(  self.curve2d.points_list,key=lambda P:P.x  )
     def get_point(self,angle):
         return self.center+cos(angle)*self.u+sin(angle)*self.v  
     def get_point2d(self,angle):
@@ -5481,7 +5492,14 @@ class GraphOfACircle3D(GraphOfAnObject):
     def math_bounding_box(self,pspict=None):
         return self.curve2d.math_bounding_box(pspict)
     def specific_action_on_pspict(self,pspict):
-        pspict.DrawGraphs(self.curve2d)
+        if not self.divide:
+            pspict.DrawGraphs(self.curve2d)
+        if self.divide:
+            c1=self.graph(0,pi)
+            c2=self.graph(pi,2*pi)
+            c1.parameters.style="dashed"
+            pspict.DrawGraphs(c1,c2)
+
 
 class HistogramBox(GraphOfAnObject):
     """
