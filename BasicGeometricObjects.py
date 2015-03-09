@@ -4493,7 +4493,7 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         params=self.params(language="tikz")
         l.append("\draw [{0}] plot [smooth,tension=1] coordinates {{".format(params))
         for p in self.points_list:
-            l.append(p.coordinates(numerical=True,digits=3,pspict=pspict))  # 295815047.
+            l.append(p.coordinates(numerical=True,digits=3,pspict=pspict))  # see 295815047.
         l.append("};")
         return "".join(l)
     def latex_code(self,language,pspict=None):
@@ -6052,9 +6052,6 @@ class BoundingBox(object):
         self.xmax = max(self.xmax,bb.xmax)
         self.ymax = max(self.ymax,bb.ymax)
     def append(self,graph,pspict=None):
-
-        #if pspict==None:
-        #    raise ValueError
         if isinstance(graph,list):
             raise KeyError,"%s is a list"%graph
         if not pspict :
