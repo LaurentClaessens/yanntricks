@@ -1605,6 +1605,9 @@ class Cuboid(object):
     def latex_code(self,language=None,pspict=None):
         return ""   # Everything is in action_on_pspict
 
+def BoxDiagram(values,h,delta_y):
+    return BasicGeometricObjects.GraphOfABoxDiagram(values,h,delta_y)
+
 def Moustache(minimum,Q1,M,Q3,maximum,h,delta_y=0):
     """
     Q1 and Q3 are first and third quartiles; M is the median.
