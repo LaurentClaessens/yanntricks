@@ -4381,7 +4381,7 @@ class GraphOfASurfaceBetweenParametricCurves(GraphOfAnObject):
         return "\n".join(a)
 
 class GraphOfAnInterpolationCurve(GraphOfAnObject):
-    def __init__(self,points_list,context_object=None):
+    def __init__(self,points_list,context_object=None,mode=None):
         GraphOfAnObject.__init__(self,self)
         self.parameters.color="brown"
         self.points_list=points_list
@@ -4390,6 +4390,7 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         self.context_object=context_object
         if self.context_object is None:
             self.contex_object=self
+        self.mode=mode
     def get_minmax_data(self):
         """
         Return a dictionary whose keys give the xmin, xmax, ymin, and ymax
@@ -4489,12 +4490,47 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         return "".join(l)
     def tikz_code(self,pspict=None):
         pl=self.points_list
-        if self.parameters.trivial:
+        if self.mode=="trivial":
             a=[]
             for i in range(0,len(pl)-1):
                 seg= Segment(pl[i],pl[i+1])
                 seg.parameters=self.parameters.copy()
                 a.append(seg.latex_code(language="tikz",pspict=pspict))
+            return "\n".join(a)
+        elif self.mode=="quadratic":
+            pieces=[]
+            par=LagrangePolynomial(  pl[0],pl[1],pl[2]).graph(pl[0].x,pl[1].x)
+            pieces.append(par)
+            for i in range(1,len(pl)-1):
+                p1=pl[i-1]
+                p2=pl[i]
+                p3=pl[i+1]
+                par=LagrangePolynomial(  p1,p2,p3).graph(p1.x,p2.x)
+                par.parameters=self.parameters.copy()
+                pieces.append(par)
+            par=pieces[-1]
+            mx=par.mx
+            Mx=pl[-1].x
+            pieces[-1]=par.graph(mx,Mx)
+            return "\n".join(  [   par.latex_code(language="tikz",pspict=pspict) for par in pieces  ]   )
+        elif isinstance(self.mode,int):
+            n=self.mode
+            a=[]
+            if n%2==1:
+                print("You need a even degree")
+                raise ValueError
+            for i in range(0,len(pl)-1):
+                pts=[]
+                if (n-2)/2>i:
+                    pts=pl[0:n]
+                elif i>n-(n-2)/2:
+                    pts=pl[-n:]
+                else:
+                    mid=int(n/2)
+                    pts=pl[ i-mid+1:i+mid+1  ]     # Here we assume 'n' to be even
+                K=LagrangePolynomial(pts).graph( pl[i].x,pl[i+1].x )
+                K.parameters=self.parameters.copy()
+                a.append(  K.latex_code(language="tikz",pspict=pspict)  )
             return "\n".join(a)
         else :
             l = []
@@ -4504,6 +4540,7 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
                 l.append(p.coordinates(numerical=True,digits=3,pspict=pspict))  # see 295815047.
             l.append("};")
             return "".join(l)
+        raise
 
 
     def latex_code(self,language,pspict=None):
@@ -5437,7 +5474,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 
             curve=InterpolationCurve(points_list)
             curve.parameters=self.parameters.copy()
-            curve.parameters.trivial=True
+            curve.mode="trivial"
             a.append( curve.latex_code(language=language,pspict=pspict))
 
             

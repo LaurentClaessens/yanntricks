@@ -601,7 +601,7 @@ def HermiteInterpolation(points_list):
     f=sum(P.values())
     return phyFunction(f.expand())
 
-def InterpolationCurve(points_list,context_object=None):
+def InterpolationCurve(points_list,context_object=None,mode=None):
     """
     determine an interpolation curve from a list of points.
 
@@ -639,7 +639,7 @@ def InterpolationCurve(points_list,context_object=None):
 
     InterpolationCurve is used in order to produce implicit plot and wavy functions.
     """
-    return BasicGeometricObjects.GraphOfAnInterpolationCurve(points_list,context_object)
+    return BasicGeometricObjects.GraphOfAnInterpolationCurve(points_list,context_object,mode=mode)
 
 
 def ImplicitCurve(f,xrange,yrange,plot_points=100):
