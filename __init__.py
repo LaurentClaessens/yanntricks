@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2014
+# copyright (c) Laurent Claessens, 2009-2015
 # email: moky.math@gmail.com
 
 # The documentation is compiled by
@@ -185,7 +185,9 @@ def IndependentPictures(name,n):
     pspicts=[]
     figs=[]
     for i in range(0,n):
-        pspict,fig = SinglePicture(name+str(i))
+        # One has to latinize to be in grade of making subfigures :
+        # if not one gets thinks like \newcommand{\CaptionFigHPMIooTkqUKW0}{blahblah}  which does not work in LaTeX
+        pspict,fig = SinglePicture(name+SmallComputations.latinize(str(i)))
         pspicts.append(pspict)
         figs.append(fig)
     return pspicts,figs

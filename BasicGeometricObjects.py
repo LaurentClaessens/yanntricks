@@ -1304,6 +1304,8 @@ class Parameters(object):
         self._hatched=False
         self.visual=None        # If True, it means that one wants the object to be non deformed by xunit,yunit
         self.interesting_attributes=["color","symbol","style","plotpoints","dotangle"]
+        self.force_smoothing=None
+        self.trivial=False   # For Interpolation curve, only draw a piecewise affine approximation.
     def copy(self):
         cop=Parameters()
         cop.visual=self.visual
@@ -4486,16 +4488,24 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
             l.append(p.coordinates(numerical=True,pspict=pspict))
         return "".join(l)
     def tikz_code(self,pspict=None):
-        l = []
-        #try:
-        #    params=self.context_object.params(language="tikz")
-        #except AttributeError :
-        params=self.params(language="tikz")
-        l.append("\draw [{0}] plot [smooth,tension=1] coordinates {{".format(params))
-        for p in self.points_list:
-            l.append(p.coordinates(numerical=True,digits=3,pspict=pspict))  # see 295815047.
-        l.append("};")
-        return "".join(l)
+        pl=self.points_list
+        if self.parameters.trivial:
+            a=[]
+            for i in range(0,len(pl)-1):
+                seg= Segment(pl[i],pl[i+1])
+                seg.parameters=self.parameters.copy()
+                a.append(seg.latex_code(language="tikz",pspict=pspict))
+            return "\n".join(a)
+        else :
+            l = []
+            params=self.params(language="tikz")
+            l.append("\draw [{0}] plot [smooth,tension=1] coordinates {{".format(params))
+            for p in pl:
+                l.append(p.coordinates(numerical=True,digits=3,pspict=pspict))  # see 295815047.
+            l.append("};")
+            return "".join(l)
+
+
     def latex_code(self,language,pspict=None):
         if language=="pstricks":
             return self.pstricks_code(pspict)
@@ -4888,8 +4898,9 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         self.Mx = llamF
         self.parameters.color = "blue"
         self.plotstyle = "curve"
-        self.parameters.plotpoints = "1000"
+        self.parameters.plotpoints = 1000
         self.record_arrows=[]
+        self.parameters.force_smoothing=False       # plot with regularly spaced points. In this case self.parameters.plotpoints will not be exact.
         #TODO: if I remove the protection "if self.llamI", sometimes it 
         # tries to make self.get_point(self.llamI) with self.llamI==None
         # In that case the crash is interesting since it is a segfault instead of an exception.
@@ -5416,11 +5427,20 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             if plotpoints==None :
                 plotpoints=100
             import numpy
-            Llam=numpy.linspace(initial,final,plotpoints)
+            if self.parameters.force_smoothing :
+                print("Searching for points ...",plotpoints)
+                Llam=self.get_regular_parameter(initial,final,self.arc_length()/plotpoints,initial_point=True,final_point=False)
+                print("... done")
+            else :
+                Llam=numpy.linspace(initial,final,plotpoints)
             points_list=[ self.get_point(x,advised=False) for x in Llam ]
+
             curve=InterpolationCurve(points_list)
             curve.parameters=self.parameters.copy()
+            curve.parameters.trivial=True
             a.append( curve.latex_code(language=language,pspict=pspict))
+
+            
                 #Everything is InterpolationCurve. June 27, 2014
                 #params=params+",smooth,domain={0}:{1}".format(str(initial),str(final))
                 #x=var('x')
