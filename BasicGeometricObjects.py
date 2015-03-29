@@ -3093,6 +3093,8 @@ class GraphOfASegment(GraphOfAnObject):
             return self.bounding_box(pspict)
         else :
             return BoundingBox()
+    def representative_points(self):
+        return [self.I,self.F]
     def latex_code(self,language=None,pspict=None):
         """
         Return the LaTeX's code (pstricks or tikz) of a Segment when is is seen as a segment
@@ -4668,13 +4670,13 @@ class GraphOfACustomSurface(GraphOfAnObject):
         if self.parameters._filled or self.parameters._hatched :
             l=[]
             for obj in self.graphList :
-                obj_code=obj.latex_code(language="tikz",pspict=pspict)
-                l.append( draw_to_fill(obj_code) )
-
-                #if isinstance(obj,GraphOfASegment):
-                #    l.append( obj.I.coordinates(numerical=True)+" -- "+obj.F.coordinates(numerical=True) )
-                #else :
-                #    l.append(obj.latex_code(language="tikz",pspict=pspict).replace(";",""))
+                try:
+                    l.extend( [p.coordinates(numerical=True,digits=3,pspict=pspict) for p in obj.representative_points()] )
+                except AttributeError :
+                    print(obj)
+                    raise
+                    obj_code=obj.latex_code(language="tikz",pspict=pspict)
+                    l.append( draw_to_fill(obj_code) )
             l.append(" cycle;")
             code=" -- ".join(l)
             if self.parameters._hatched :
@@ -4697,7 +4699,7 @@ class GraphOfACustomSurface(GraphOfAnObject):
             if self.parameters._filled:
                 options="color="+color
             a.append("\\fill [{}] ".format(options)+code)
-
+    
         return "\n".join(a)
     def latex_code(self,language=None,pspict=None):
         """
@@ -4915,7 +4917,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
 
         ATTRIBUTES:
 
-        - ``plotpoints`` - (default=1000)  number of points to be computed.
+        - ``plotpoints`` - (default=50)  number of points to be computed.
                            If the function seems wrong, increase that number.
                            It can happen with functions like sin(1/x) close to zero:
                             such a function have too fast oscillations.
@@ -4935,7 +4937,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         self.Mx = llamF
         self.parameters.color = "blue"
         self.plotstyle = "curve"
-        self.parameters.plotpoints = 1000
+        self.parameters.plotpoints = 50
         self.record_arrows=[]
         self.parameters.force_smoothing=False       # plot with regularly spaced points. In this case self.parameters.plotpoints will not be exact.
         #TODO: if I remove the protection "if self.llamI", sometimes it 
@@ -5407,7 +5409,8 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         a=[]
         a.append("<The parametric curve given by")
         a.append("x(t)=%s"%repr(self.f1.sage(x=t)))
-        a.append("y(t)=%s>"%repr(self.f2.sage(x=t)))
+        a.append("y(t)=%s"%repr(self.f2.sage(x=t)))
+        a.append("between {} and {}>".format(self.mx,self.Mx))
         return "\n".join(a)
 
     # Use the generic method 'params' from 'GraphOfAnObject'.  June 27, 2014
@@ -5449,6 +5452,20 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         return bb
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
+    def representative_points(self):
+        initial = numerical_approx(self.llamI)      # Avoid the string "pi" in the latex code.
+        final = numerical_approx(self.llamF)
+        plotpoints=self.parameters.plotpoints
+        if plotpoints==None :
+            plotpoints=100
+        if self.parameters.force_smoothing :
+            print("Searching for points ...",plotpoints)
+            Llam=self.get_regular_parameter(initial,final,self.arc_length()/plotpoints,initial_point=True,final_point=False)
+            print("... done")
+        else :
+            import numpy
+            Llam=numpy.linspace(initial,final,plotpoints)
+        return [ self.get_point(x,advised=False) for x in Llam ]
     def latex_code(self,language=None,pspict=None):
         a=[]
         if self.wavy :
@@ -5457,20 +5474,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             curve.parameters=self.parameters.copy()
             a.append(curve.latex_code(language=language,pspict=pspict))
         else:
-            initial = numerical_approx(self.llamI)      # Avoid the string "pi" in the latex code.
-            final = numerical_approx(self.llamF)
-            params=self.params(language="tikz")
-            plotpoints=self.parameters.plotpoints
-            if plotpoints==None :
-                plotpoints=100
-            import numpy
-            if self.parameters.force_smoothing :
-                print("Searching for points ...",plotpoints)
-                Llam=self.get_regular_parameter(initial,final,self.arc_length()/plotpoints,initial_point=True,final_point=False)
-                print("... done")
-            else :
-                Llam=numpy.linspace(initial,final,plotpoints)
-            points_list=[ self.get_point(x,advised=False) for x in Llam ]
+            points_list=self.representative_points()
 
             curve=InterpolationCurve(points_list)
             curve.parameters=self.parameters.copy()
