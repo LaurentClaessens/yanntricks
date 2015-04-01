@@ -848,7 +848,7 @@ class GraphOfACircle(GraphOfAnObject):
         - ``theta`` - the angle given in degree.
         """
         return self.parametric_curve().get_point(radian(theta,numerical=numerical),advised=advised)
-    def get_regular_points(self,mx,Mx,l,advised=True):
+    def get_regular_points(self,mx,Mx,l=None,n=None,advised=True):
         """
         return regularly spaced points on the circle
 
@@ -857,6 +857,7 @@ class GraphOfACircle(GraphOfAnObject):
         - ``mx`` - initial angle (degree).
         - ``Mx`` - final angle (degree).
         - ``l`` - distance between two points (arc length).
+        - ``n`` - number of points
         - ``advised`` - (default=True) if True, compute an advised mark angle for each point
                                         this is CPU-intensive.
 
@@ -872,12 +873,17 @@ class GraphOfACircle(GraphOfAnObject):
             ['<Point(2,0)>', '<Point(2*cos(1/2),2*sin(1/2))>', '<Point(2*cos(1),2*sin(1))>', '<Point(2*cos(3/2),2*sin(3/2))>']
 
         """
-        Dtheta=(180/pi)*(l/self.radius)
+        if mx==Mx:
+            return [ self.get_point(mx) ]
+        if l is not None:
+            Dtheta=(180/pi)*(l/self.radius)
+        if n is not None:
+            Dtheta=(Mx-mx)/n
         if Dtheta==0:
             raise ValueError,"Dtheta is zero"
         pts=[]
         from numpy import arange
-        theta=arange(mx,Mx,step=Dtheta)
+        theta=[RR(x) for x in arange(mx,Mx,step=Dtheta)]        # arange return 'numpy.int32' that cannot be passed into a cosine.
         return [self.get_point(t,advised) for t in theta]
     def get_tangent_vector(self,theta):
         return PolarPoint(1,theta+90).origin(self.get_point(theta,advised=False))
@@ -1000,6 +1006,14 @@ class GraphOfACircle(GraphOfAnObject):
         if angleI<270 and angleF>270 :
             bb.addY(self.center.y-self.radius)
         return bb
+    def representative_points(self):
+        if self.parameters.plotpoints:
+            pp=self.parameters.plotpoints
+        else :
+            pp=50
+        print('supress this ss',self,self.angleI,self.angleF)
+        ss= self.get_regular_points(mx=degree(self.angleI),Mx=degree(self.angleF),n=pp,advised=False)
+        return self.get_regular_points(mx=degree(self.angleI),Mx=degree(self.angleF),n=pp,advised=False)
     def latex_code(self,language=None,pspict=None):
         alphaI = radian(self.angleI,number=True,keep_max=True)
         alphaF = radian(self.angleF,number=True,keep_max=True)
@@ -3889,6 +3903,12 @@ class GraphOfAphyFunction(GraphOfAnObject):
 
         curve = self.parametric_curve()
         return curve.get_regular_points(mx,Mx,dx)
+    def length(self):
+        curve = self.parametric_curve()
+        return curve.length()
+    def representative_points(self):
+        dx=self.length()/self.parameters.plotpoints
+        return self.get_regular_points(self.mx,self.Mx,dx)
     def get_wavy_points(self,mx,Mx,dx,dy):
         print("SKBooMaOvCE")
         curve=self.parametric_curve()
@@ -4393,6 +4413,8 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         if self.context_object is None:
             self.contex_object=self
         self.mode=mode
+    def representative_points(self):
+        return self.points_list
     def get_minmax_data(self):
         """
         Return a dictionary whose keys give the xmin, xmax, ymin, and ymax
@@ -4951,7 +4973,6 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         #   In order to produce that, we use the Sage's function repr and the syntax f(x=t)
         t=var('t')
         return "%s | %s "%(SubstitutionMathPsTricks(repr(self.f1.sage(x=t)).replace("pi","3.1415")),  SubstitutionMathPsTricks(repr(self.f2.sage(x=t)).replace("pi","3.1415")) )
-
     @lazy_attribute
     def speed(self):
         r"""
@@ -4967,7 +4988,6 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             x |--> sqrt(sin(x)^2 + 4*cos(2*x)^2)
         """
         return sqrt( self.f1.derivative().sage**2+self.f2.derivative().sage**2 )
-
     def tangent_angle(self,llam):
         """"Return the angle of the tangent (radian)"""
         dx=self.f1.derivative()(llam)
@@ -5265,7 +5285,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
     def get_normal_point(self,x,dy):
         vecteurNormal =  self.get_normal_vector(x)
         return self.get_point(x).translate(self.get_normal_vector.fix_size(dy))
-    def arc_length(self,mll=None,Mll=None):
+    def length(self,mll=None,Mll=None):
         """
         numerically returns the arc length on the curve between two bounds of the parameters.
 
@@ -5294,6 +5314,9 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         if Mll==None :
             Mll=self.llamF
         return numerical_integral(self.speed,mll,Mll)[0]
+    def arc_length(self,mll=None,Mll=None):
+        print("You should use 'length' instead.")
+        return self.length(mll=mll,Mll=Mll)
     def get_parameter_at_length(self,l):
         """
         return the value of the parameter corresponding to the given arc length.
