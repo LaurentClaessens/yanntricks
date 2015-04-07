@@ -3165,6 +3165,8 @@ class GraphOfAMeasureLength(GraphOfASegment):
         #return BoundingBox()
     def bounding_box(self,pspict=None):
         bb=self.mseg.bounding_box(pspict)
+        for ob in self.added_objects :
+            bb.AddBB(ob.bounding_box(pspict))
         if self.marque:
             C=self.mseg.center()
             C.marque=self.marque
