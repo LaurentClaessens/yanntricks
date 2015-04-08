@@ -943,7 +943,7 @@ class pspicture(object):
         self.create_latex_code(language="tikz",pspict=self)
         add_latex_line_entete(self)
         self.add_latex_line("\\tikzsetnextfilename{{{0}}}".format(self.tikzfilename),"BEGIN PSPICTURE")
-        self.add_latex_line("\\begin{{tikzpicture}}[xscale={0},yscale={1},inner sep=0pt,outer sep=0pt]".format(1,1),"BEGIN PSPICTURE")
+        self.add_latex_line("\\begin{{tikzpicture}}[xscale={0},yscale={1},inner sep=2.25pt,outer sep=0pt]".format(1,1),"BEGIN PSPICTURE")
         #self.add_latex_line("\pgfmathdeclarefunction{radsin}{1}{\pgfmathparse{sin(deg(#1))}}","BEFORE PSPICTURE")
         #self.add_latex_line("\pgfmathdeclarefunction{radcos}{1}{\pgfmathparse{cos(deg(#1))}}","BEFORE PSPICTURE")
         self.add_latex_line("\\end{tikzpicture}","END PSPICTURE")
@@ -1206,7 +1206,7 @@ class pspicture(object):
         #read_value=self.get_Id_value(interId,"dimension %s"%dimension_name,default_value="0pt")
         read_value=self.get_Id_value(interId,default_value="0pt")
         dimenPT=float(read_value.replace("pt",""))
-        return dimenPT/30           # 30 is the conversion factor : 1pt=(1/3)mm
+        return (dimenPT)/30           # 30 is the conversion factor : 1pt=(1/3)mm
     def get_box_size(self,tex_expression):
         """
         return as 2-uple the dimensions of a LaTeX box containing an expression.
