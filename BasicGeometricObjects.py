@@ -4806,17 +4806,7 @@ class GraphOfAPolygon(GraphOfAnObject):
     def math_bounding_box(self,pspict=None):
         bb=BoundingBox()
         for P in self.points_list:
-            print("j'ai")
-            print("X : ",bb.xmin,bb.xmax)
-            print("Y : ",bb.ymin,bb.ymax)
-            print("J'ajoute le point",P.x,P.y)
             bb.append(P,pspict)
-            print("j'obtiens")
-            print("X : ",bb.xmin,bb.xmax)
-            print("Y : ",bb.ymin,bb.ymax)
-        print("Avec tout ces points, ça donne")
-        print("X : ",bb.xmin,bb.xmax)
-        print("Y : ",bb.ymin,bb.ymax)
         return bb
     def bounding_box(self,pspict=None):
         return self.math_bounding_box(pspict)
