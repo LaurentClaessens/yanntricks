@@ -5835,7 +5835,7 @@ class GraphOfABarDiagram(object):
         return ""
 
 class GraphOfARightAngle(GraphOfAnObject):
-    def __init__(self,d1,d2,l,n1,n2):
+    def __init__(self,d1,d2,r,n1,n2):
         """
         two lines and a distance.
 
@@ -5856,12 +5856,12 @@ class GraphOfARightAngle(GraphOfAnObject):
             self.d1=d1.dilatation(1.5)
             self.d2=d2.dilatation(1.5)
 
-        self.l=l
+        self.r=r
         self.n1=n1
         self.n2=n2
         self.intersection=Intersection(d1,d2)[0]
     def specific_action_on_pspict(self,pspict):
-        circle=Circle(self.intersection,self.l)
+        circle=Circle(self.intersection,self.r)
 
         K=Intersection(circle,self.d1)
         K.sort(key=lambda P:Distance_sq(P,self.d1.I))
@@ -5877,13 +5877,6 @@ class GraphOfARightAngle(GraphOfAnObject):
         if self.n2==1:
             P2=L[1]
 
-        if "I" in P1.coordinates():
-            print("RKXTooEGijdq","P1")
-            raise
-        if "I" in P2.coordinates():
-            print("ZGRZooFXJBXE","P2")
-            print(circle.equation,self.d2.equation)
-            raise
         Q=P1+P2-self.intersection
         l1=Segment(Q,P1)
         l2=Segment(Q,P2)
