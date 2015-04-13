@@ -380,7 +380,7 @@ def RightAngle(d1,d2,r,n1,n2):
     """
     return BasicGeometricObjects.GraphOfARightAngle(d1,d2,r,n1,n2)
 
-def RightAngleAOB(A,O,B,r=0.3,n1=0,n2=0):
+def RightAngleAOB(A,O,B,r=0.3,n1=0,n2=1):
     """
     return the right angle between Segment(A,O) and Segment(O,B)
     """
