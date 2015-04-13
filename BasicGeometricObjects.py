@@ -1030,8 +1030,7 @@ class GraphOfACircle(GraphOfAnObject):
             alphaF=2*pi
         G = self.parametric_curve(alphaI,alphaF)
         G.parameters=self.parameters.copy()
-        G.parameters.plotpoints=500
-
+        G.parameters.plotpoints=100
         a=[]
         if self.parameters._filled or self.parameters._hatched:
             custom=CustomSurface( [self.parametric_curve(alphaI,alphaF)] )
@@ -3129,8 +3128,8 @@ class GraphOfASegment(GraphOfAnObject):
                     a.append("\pstLineAB[%s]{%s}{%s}"%(self.params(language="pstricks"),self.I.psName,self.F.psName))
                 if language=="tikz":
                     a=[]
-                    c1=self.I.coordinates(numerical=True,pspict=pspict)
-                    c2=self.F.coordinates(numerical=True,pspict=pspict)
+                    c1=self.I.coordinates(numerical=True,digits=3,pspict=pspict)
+                    c2=self.F.coordinates(numerical=True,digits=3,pspict=pspict)
                     if 'I' in c1 or "I" in c2 :
                         print(self.I,self.F)
                         raise
@@ -4517,11 +4516,18 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
     def tikz_code(self,pspict=None):
         pl=self.points_list
         if self.mode=="trivial":
+            # One cannot draw each segment separately : this causes the parameters.style='dashed' to not work for example.
+            import numpy
             a=[]
-            for i in range(0,len(pl)-1):
-                seg= Segment(pl[i],pl[i+1])
-                seg.parameters=self.parameters.copy()
-                a.append(seg.latex_code(language="tikz",pspict=pspict))
+            sublen=max(len(pl)/500,1)   # We draw packs of 100 points
+            list_of_list=numpy.array_split(pl,sublen)
+            for spl in list_of_list :
+                params=self.params(language="tikz")
+                a.append("\draw [{0}] {1};".format(params,"--".join(   [x.coordinates(numerical=True,digits=3) for x in spl]  ) ))
+                #for i in range(0,len(spl)-1):
+                #    seg= Segment(spl[i],spl[i+1])
+                #    seg.parameters=self.parameters.copy()
+                #    a.append(seg.latex_code(language="tikz",pspict=pspict))
             return "\n".join(a)
         elif self.mode=="quadratic":
             pieces=[]
