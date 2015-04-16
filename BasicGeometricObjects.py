@@ -3505,7 +3505,7 @@ class GraphOfAnAngle(GraphOfAnObject):
         self.angleA=AffineVector(O,A).angle()
         self.angleB=AffineVector(O,B).angle()
 
-        # I think that one dos not have to check and fix what angle is first here
+        # I think that one does not have to check and fix what angle is first here
         # because the angles are re-computed in self.circle.
 
         self.angleI=self.angleA
@@ -4529,11 +4529,7 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
             list_of_list=numpy.array_split(pl,sublen)
             for spl in list_of_list :
                 params=self.params(language="tikz")
-                a.append("\draw [{0}] {1};".format(params,"--".join(   [x.coordinates(numerical=True,digits=3) for x in spl]  ) ))
-                #for i in range(0,len(spl)-1):
-                #    seg= Segment(spl[i],spl[i+1])
-                #    seg.parameters=self.parameters.copy()
-                #    a.append(seg.latex_code(language="tikz",pspict=pspict))
+                a.append("\draw [{0}] {1};".format(params,"--".join(   [x.coordinates(numerical=True,digits=3,pspict=pspict) for x in spl]  ) ))
             return "\n".join(a)
         elif self.mode=="quadratic":
             pieces=[]
@@ -4840,7 +4836,6 @@ class GraphOfAPolygon(GraphOfAnObject):
         if self.draw_edges:
             for edge in self.edges:
                 if not self.independent_edge :
-                    print("AIEEooLdUmhc",self.edge.parameters.linewidth)
                     edge.parameters=self.edge.parameters
                     if self.parameters.color!=None:
                         edge.parameters.color=self.parameters.color
@@ -5514,7 +5509,6 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             a.append(curve.latex_code(language=language,pspict=pspict))
         else:
             points_list=self.representative_points()
-
             curve=InterpolationCurve(points_list)
             curve.parameters=self.parameters.copy()
             curve.mode="trivial"
