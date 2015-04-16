@@ -480,10 +480,14 @@ class GraphOfAnObject(object):
         for attr in [x for x in self.parameters.interesting_attributes if x not in refute]:
             value=self.parameters.__getattribute__(attr)
             if value != None:
-                l.append(attr+"="+str(value))
+                if attr=="linewidth":
+                    l.append("linewidth="+str(value)+"pt")
+                else:
+                    l.append(attr+"="+str(value))
         code=",".join(l)
         if language=="tikz":
             code=code.replace("plotpoints","samples")
+            code=code.replace("linewidth","line width")
         return code
         #return self.options.code(language=language)
     def action_on_pspict(self,pspict):
@@ -1316,9 +1320,10 @@ class Parameters(object):
         self._filled=False
         self._hatched=False
         self.visual=None        # If True, it means that one wants the object to be non deformed by xunit,yunit
-        self.interesting_attributes=["color","symbol","style","plotpoints","dotangle"]
+        self.interesting_attributes=["color","symbol","style","plotpoints","dotangle","linewidth"]
         self.force_smoothing=None
         self.trivial=False   # For Interpolation curve, only draw a piecewise affine approximation.
+        self.linewidth=None
     def copy(self):
         cop=Parameters()
         cop.visual=self.visual
@@ -1331,6 +1336,7 @@ class Parameters(object):
         cop.symbol=self.symbol
         cop.color=self.color
         cop.dotangle=self.dotangle
+        cop.linewidth=self.linewidth
         return cop
     def filled(self):
         self._filled=True
@@ -4834,6 +4840,7 @@ class GraphOfAPolygon(GraphOfAnObject):
         if self.draw_edges:
             for edge in self.edges:
                 if not self.independent_edge :
+                    print("AIEEooLdUmhc",self.edge.parameters.linewidth)
                     edge.parameters=self.edge.parameters
                     if self.parameters.color!=None:
                         edge.parameters.color=self.parameters.color
