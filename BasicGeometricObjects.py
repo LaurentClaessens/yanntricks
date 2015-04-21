@@ -4781,6 +4781,9 @@ class GraphOfAPolygon(GraphOfAnObject):
             self.edges.append(segment)
         self.draw_edges=True
         self.independent_edge=False
+    def rotation(self,angle):
+        pts=[  P.rotation(angle) for P in self.points_list  ]
+        return Polygon(pts)
     def make_edges_independent(self):
         """
         make the edges customisation independent the one to the other.
