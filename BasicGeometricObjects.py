@@ -503,7 +503,7 @@ class GraphOfAnObject(object):
 
 def visual_length(v,l,xunit=None,yunit=None,pspict=None):
     """
-    Return a vector in the direction of v that has *visual* length l taking xunit and yunit into accout.
+    Return a vector in the direction of v that has *visual* length l taking xunit and yunit into account.
 
     In the following example, the cyan vectors are deformed the the X-dilatation while the
     brown vectors are of length 2.
@@ -5871,22 +5871,34 @@ class GraphOfARightAngle(GraphOfAnObject):
         self.n1=n1
         self.n2=n2
         self.intersection=Intersection(d1,d2)[0]
+    def inter_point(self,I,F,n,pspict):
+        v1=AffineVector(I,F)
+        v=visual_length(v1,l=1,pspict=pspict)
+        if n==0:
+            P1=I - self.r*v
+        if n==1:
+            P1=I + self.r*v
+        return P1
+
     def specific_action_on_pspict(self,pspict):
-        circle=Circle(self.intersection,self.r)
+    
+        if False :          # No more used (April 23, 2015)
+            circle=Circle(self.intersection,self.r)
+            K=Intersection(circle,self.d1)
+            K.sort(key=lambda P:Distance_sq(P,self.d1.I))
+            L=Intersection(circle,self.d2)
+            L.sort(key=lambda P:Distance_sq(P,self.d2.I))
+            if self.n1==0:
+                P1=K[0]
+            if self.n1==1:
+                P1=K[1]
+            if self.n2==0:
+                P2=L[0]
+            if self.n2==1:
+                P2=L[1]
 
-        K=Intersection(circle,self.d1)
-        K.sort(key=lambda P:Distance_sq(P,self.d1.I))
-        L=Intersection(circle,self.d2)
-        L.sort(key=lambda P:Distance_sq(P,self.d2.I))
-        if self.n1==0:
-            P1=K[0]
-        if self.n1==1:
-            P1=K[1]
-
-        if self.n2==0:
-            P2=L[0]
-        if self.n2==1:
-            P2=L[1]
+        P1=self.inter_point(self.intersection,self.d1.F,self.n1,pspict)
+        P2=self.inter_point(self.intersection,self.d2.F,self.n2,pspict)
 
         Q=P1+P2-self.intersection
         l1=Segment(Q,P1)
