@@ -517,14 +517,9 @@ def visual_length(v,l,xunit=None,yunit=None,pspict=None):
         yunit=pspict.yunit
     Dx=v.Dx
     Dy=v.Dy
-    print("UTPAooEssQMa Dx",numerical_approx(Dx))
-    print("UTPAooEssQMa Dy",Dy)
     if not v.vertical :
-        print("YWQVooQGppqU Pas vertical")
         slope=v.slope
         x=l/sqrt(xunit**2+slope**2*yunit**2)
-        print("FGOIooAvPpht l slope",l,slope)
-        print("NKUUooREBjYm",numerical_approx(x))
         if Dx<0:
             x=-x
         y=slope*x
@@ -533,7 +528,6 @@ def visual_length(v,l,xunit=None,yunit=None,pspict=None):
         y=l/yunit
         if Dy<0:
             y=-l/yunit
-    print("WJXUooCeXNGf xunit,yunit",xunit,yunit)
     if hasattr(v,"I"):
         from phystricks import AffineVector
         from phystricks import Vector
@@ -1804,7 +1798,6 @@ class GraphOfAPoint(GraphOfAnObject):
         """
         if numerical :
             x=numerical_approx(self.x,digits=digits)
-            print("CWTWooIYHPox",self.y)
             y=numerical_approx(self.y,digits=digits)
         else :
             x = self.x
@@ -5880,16 +5873,13 @@ class GraphOfARightAngle(GraphOfAnObject):
         self.intersection=Intersection(d1,d2)[0]
     def inter_point(self,I,F,n,pspict):
         v1=AffineVector(I,F)
-        print("CLOZooHOvXld v1.F",v1.F.coordinates(numerical=True,digits=3))
         v=visual_length(v1,l=1,pspict=pspict)
-        print("CLOZooHOvXld v.F",v.F.coordinates(numerical=True,digits=3))
         if n==0:
             P1=I - self.r*v
         if n==1:
             P1=I + self.r*v
         
         rv=self.r*v
-        print("NYXTooQuHZoL I",I,type(I),I.coordinates(numerical=True,digits=3))
         return P1
 
     def specific_action_on_pspict(self,pspict):
@@ -5916,9 +5906,6 @@ class GraphOfARightAngle(GraphOfAnObject):
         l1=Segment(Q,P1)
         l2=Segment(Q,P2)
         
-        print("ZDZOooJIBBIY",P1.coordinates(numerical=True,digits=3))
-        print("ZDZOooJIBBIY",Q.coordinates(numerical=True,digits=3))
-    
         l1.parameters=self.parameters.copy()
         l2.parameters=self.parameters.copy()
         pspict.DrawGraphs(l1,l2)

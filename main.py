@@ -1032,7 +1032,6 @@ class pspicture(object):
                     graph=graph.mother.bounding_box(self)
             separator_name=x.separator_name
             try :
-                print("VPBQooYJJSzf",graph,type(graph))
                 self.add_latex_line(graph.latex_code(language=self.language,pspict=self),separator_name)
                 list_used_separators.append(separator_name)
             except AttributeError,data:
