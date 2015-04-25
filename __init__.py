@@ -1305,7 +1305,7 @@ class AxesUnit(object):
                 l.append((x,text))
         return l
 
-def Angle(A,O,B,r=None):
+def AngleAOB(A,O,B,r=None):
     """
     Return the angle AOB.
 
@@ -1343,6 +1343,11 @@ def Angle(A,O,B,r=None):
 
     """
     return BasicGeometricObjects.GraphOfAnAngle(A,O,B,r)
+
+def Angle(A,O,B,r=None):
+    print("Waring : You should use 'AngleAOB' instead of 'Angle'")
+    return AngleAOB(A,O,B,r=None)
+
 
 def CircleOA(O,A):
     """
