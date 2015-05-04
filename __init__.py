@@ -372,7 +372,7 @@ def ParametricCurve(f1,f2,interval=(None,None)):
         raise
     return BasicGeometricObjects.GraphOfAParametricCurve(f1,f2,llamI,llamF)
 
-def RightAngle(d1,d2,r,n1,n2):
+def RightAngle(d1,d2,n1=0,n2=1,r=0.3):
     """
     'd1' and 'd2' are the two lines.
     'r' is the size of the "edge"
@@ -380,11 +380,11 @@ def RightAngle(d1,d2,r,n1,n2):
     """
     return BasicGeometricObjects.GraphOfARightAngle(d1,d2,r,n1,n2)
 
-def RightAngleAOB(A,O,B,r=0.3,n1=0,n2=1):
+def RightAngleAOB(A,O,B,n1=0,n2=1,r=0.3):
     """
     return the right angle between Segment(A,O) and Segment(O,B)
     """
-    return RightAngle( Segment(A,O),Segment(O,B),r,n1,n2  ) 
+    return RightAngle( Segment(A,O),Segment(O,B),n1,n2,r  ) 
 
 def PolarCurve(fr,ftheta=None):
     """
