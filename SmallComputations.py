@@ -229,27 +229,27 @@ def latinize(word):
         if s.lower() in "abcdefghijklmnopqrstuvwxyz" :
             latin = latin+s
         if s=="1":
-            latin = latin+"O"
+            latin = latin+"ONE"
         if s=="2":
-            latin = latin+"T"
+            latin = latin+"TWO"
         if s=="3":
-            latin = latin+"Th"
+            latin = latin+"THREE"
         if s=="4":
-            latin = latin+"F"
+            latin = latin+"FOR"
         if s=="5":
-            latin = latin+"Fi"
+            latin = latin+"FIVE"
         if s=="6":
-            latin = latin+"S"
+            latin = latin+"SIX"
         if s=="7":
-            latin = latin+"Se"
+            latin = latin+"SEVEN"
         if s=="8":
-            latin = latin+"H"
+            latin = latin+"HEITH"
         if s=="9":
-            latin = latin+"N"
+            latin = latin+"NINE"
         if s=="0":
-            latin = latin+"Z"
+            latin = latin+"ZERO"
         if s==".":
-            latin = latin+"D"
+            latin = latin+"DOT"
     return latin
 
 

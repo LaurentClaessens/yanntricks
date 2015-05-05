@@ -187,7 +187,7 @@ def IndependentPictures(name,n):
     for i in range(0,n):
         # One has to latinize to be in grade of making subfigures :
         # if not one gets thinks like \newcommand{\CaptionFigHPMIooTkqUKW0}{blahblah}  which does not work in LaTeX
-        pspict,fig = SinglePicture(name+SmallComputations.latinize(str(i)))
+        pspict,fig = SinglePicture(name+"oo"+SmallComputations.latinize(str(i)))
         pspicts.append(pspict)
         figs.append(fig)
     return pspicts,figs
@@ -1346,8 +1346,7 @@ def AngleAOB(A,O,B,r=None):
 
 def Angle(A,O,B,r=None):
     print("Waring : You should use 'AngleAOB' instead of 'Angle'")
-    return AngleAOB(A,O,B,r=None)
-
+    return AngleAOB(A,O,B,r=r)
 
 def CircleOA(O,A):
     """
