@@ -1015,7 +1015,6 @@ class GraphOfACircle(GraphOfAnObject):
             pp=self.parameters.plotpoints
         else :
             pp=50
-        print('supress this ss',self,self.angleI,self.angleF)
         ss= self.get_regular_points(mx=degree(self.angleI),Mx=degree(self.angleF),n=pp,advised=False)
         return self.get_regular_points(mx=degree(self.angleI),Mx=degree(self.angleF),n=pp,advised=False)
     def latex_code(self,language=None,pspict=None):
@@ -1496,20 +1495,11 @@ class GraphOfAPoint(GraphOfAnObject):
         self.x=SR(a)
         self.y=SR(b)
         GraphOfAnObject.__init__(self,self)
-        #self.psName = point.psName      # The psName of the point is erased when running Point.__init__
-                                         # This line is no more useful (April 29 2011)
         self.point = self.obj
         self.add_option("PointSymbol=*")
         self._advised_mark_angle=None
         self.psName=GraphOfAPoint.NomPointLibre.next()
         
-        # The following is a good test, but one cannot use it because
-        # sometimes we need the projection of a point on an axe before to compute the bounding box.
-        # In that case, the points defining the axe could still have coordinates like 1000 because it is the "default"
-        # size of a bounding box.
-        #if max(abs(self.x),abs(self.y))>500:
-        #    raise ValueError,"I don't believe you want a point with coordinates {0},{1}".format(self.x,self.y)
-
         ax=abs(numerical_approx(self.x))
         if ax<0.00001 and ax>0 :
             self.x=0
