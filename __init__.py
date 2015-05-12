@@ -108,6 +108,21 @@ def no_symbol(*arg):
         except TypeError:
             l.parameters.symbol=""
 
+def get_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None):
+    """
+    Add the code for equal lenght between segments s1 and s2
+    """
+    c1=s1.get_code(n=n,d=d,l=l,pspict=pspict)
+    c2=s2.get_code(n=n,d=d,l=l,pspict=pspict)
+    return [c1,c2]
+
+def put_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None):
+    codes=get_equal_lengths_code(s1,s2,n,d,l,angle,pspict)
+    c1=codes[0]
+    c2=codes[1]
+    s1.added_objects.extend( c1 )
+    s2.added_objects.extend( c2 )
+
 class PhystricksCheckBBError(Exception):
     def __init__(self):
         pass
