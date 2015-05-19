@@ -4779,7 +4779,6 @@ class GraphOfAPolygon(GraphOfAnObject):
         make the edges customisation independent the one to the other.
         """
         for s in self.edges :
-            #s.parameters=Parameters()
             s.parameters=self.edge.parameters.copy()
         self.independent_edge=True
     def no_edges(self):
