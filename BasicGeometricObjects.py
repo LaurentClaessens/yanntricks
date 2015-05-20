@@ -1045,6 +1045,7 @@ class GraphOfACircle(GraphOfAnObject):
             G.wave(waviness.dx,waviness.dy)
             a.append( G.latex_code(language=language,pspict=pspict))
         else :
+            print("SDIQooPUtLOP",G.parameters.plotpoints)
             a.append( G.latex_code(language=language,pspict=pspict))
         return "\n".join(a)
 
@@ -3547,6 +3548,9 @@ class GraphOfAnAngle(GraphOfAnObject):
     def latex_code(self,language=None,pspict=None):
         circle=self.circle(visual=True,pspict=pspict)
         circle.parameters=self.parameters.copy()
+        print("KIBOooOzYPqo",self.r)
+        print("OFMBooYPsZmm",circle.center.coordinates())
+        print("OFMBooYPsZmm",circle.radius)
         return circle.latex_code(language=language,pspict=pspict)
 
 def general_funtion_get_point(fun,x,advised=True):
@@ -5492,21 +5496,22 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             import numpy
             Llam=numpy.linspace(initial,final,plotpoints)
         return [ self.get_point(x,advised=False) for x in Llam ]
-    def latex_code(self,language=None,pspict=None):
+    def action_on_pspict(self,pspict):
         a=[]
         if self.wavy :
             waviness = self.waviness
             curve=InterpolationCurve(self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy,xunit=pspict.xunit,yunit=pspict.yunit),context_object=self)
             curve.parameters=self.parameters.copy()
-            a.append(curve.latex_code(language=language,pspict=pspict))
+
+            pspict.DrawGraph(curve)
         else:
             points_list=self.representative_points()
+
             curve=InterpolationCurve(points_list)
             curve.parameters=self.parameters.copy()
             curve.mode="trivial"
-            a.append( curve.latex_code(language=language,pspict=pspict))
+            pspict.DrawGraph(curve)
 
-            
                 #Everything is InterpolationCurve. June 27, 2014
                 #params=params+",smooth,domain={0}:{1}".format(str(initial),str(final))
                 #x=var('x')
@@ -5514,8 +5519,9 @@ class GraphOfAParametricCurve(GraphOfAnObject):
                     #if language=="pstricks":
                     #    a.append("\parametricplot[%s]{%s}{%s}{%s}" %(self.params(),str(initial),str(final),self.curve.pstricks()))
         for v in self.record_arrows:
-            a.append(v.latex_code(language=language,pspict=pspict))
-        return "\n".join(a)
+            pspict.DrawGraph(v)
+    def latex_code(self,language=None,pspict=None):
+        return ""
 
 class GraphOfACircle3D(GraphOfAnObject):
     def __init__(self,op,O,A,B,angleI=0,angleF=0):
