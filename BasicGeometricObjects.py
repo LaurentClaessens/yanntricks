@@ -1044,7 +1044,6 @@ class GraphOfACircle(GraphOfAnObject):
             G.wave(waviness.dx,waviness.dy)
             pspict.DrawGraph(G)
         else :
-            print("SDIQooPUtLOP",G.parameters.plotpoints)
             pspict.DrawGraph(G)
     def latex_code(self,language=None,pspict=None):
         return ""
@@ -1772,7 +1771,7 @@ class GraphOfAPoint(GraphOfAnObject):
         Return the angle of the segment from (0,0) and self.
         """
         return self.polar_coordinates(origin=origin)            # No more degree. February 11, 2015
-    def coordinates(self,numerical=False,digits=10,pspict=None):
+    def coordinates(self,numerical=False,digits=None,pspict=None):
         """
         Return the coordinates of the point as a string.
 
@@ -1787,7 +1786,11 @@ class GraphOfAPoint(GraphOfAnObject):
 
         If a pspicture is given, we divide by xunit and yunit to normalize.
         """
+        if digits :
+            numerical=True
         if numerical :
+            if digits==None :
+                digits=10
             x=numerical_approx(self.x,digits=digits)
             y=numerical_approx(self.y,digits=digits)
         else :
@@ -4522,8 +4525,14 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
             sublen=max(len(pl)/500,1)   # We draw packs of 100 points
             list_of_list=numpy.array_split(pl,sublen)
             for spl in list_of_list :
+                # digits is computed in such a way to have a precision of 0.001 (3 digits after the dot)
+                l=[abs(P.x) for P in spl]
+                l.extend(  [abs(P.y) for P in spl]  )
+                namax=max(l)
+                digits=3+ceil(  log(namax,10) )
+                print("HHDIooUUeAZs",digits)
                 params=self.params(language="tikz")
-                a.append("\draw [{0}] {1};".format(params,"--".join(   [x.coordinates(numerical=True,digits=3,pspict=pspict) for x in spl]  ) ))
+                a.append("\draw [{0}] {1};".format(params,"--".join(   [x.coordinates(numerical=True,digits=digits,pspict=pspict) for x in spl]  ) ))
             return "\n".join(a)
         elif self.mode=="quadratic":
             pieces=[]
@@ -5497,7 +5506,6 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             Llam=numpy.linspace(initial,final,plotpoints)
         return [ self.get_point(x,advised=False) for x in Llam ]
     def action_on_pspict(self,pspict):
-        print("IZDRooPMoVJL je passe")
         if self.wavy :
             waviness = self.waviness
             curve=InterpolationCurve(self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy,xunit=pspict.xunit,yunit=pspict.yunit),context_object=self)
@@ -5508,7 +5516,9 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             points_list=self.representative_points()
 
             print("Ceci est à supprimer KIQQooDGLfgu")
-            pspict.DrawGraphs(points_list)
+            for P in points_list:
+                P.parameters.symbol="."
+                pspict.DrawGraphs(P)
 
             curve=InterpolationCurve(points_list)
             curve.parameters=self.parameters.copy()
