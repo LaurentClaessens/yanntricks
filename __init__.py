@@ -1360,7 +1360,7 @@ def AngleAOB(A,O,B,r=None):
     return BasicGeometricObjects.GraphOfAnAngle(A,O,B,r)
 
 def Angle(A,O,B,r=None):
-    print("Waring : You should use 'AngleAOB' instead of 'Angle'")
+    print("Warning : You should use 'AngleAOB' instead of 'Angle'")
     return AngleAOB(A,O,B,r=r)
 
 def CircleOA(O,A):

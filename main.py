@@ -833,8 +833,6 @@ class pspicture(object):
         self.figure_mother=None
         self.language="tikz"
         self.pstricks_code_list = []
-        #self.specific_needs = ""    # See the class PspictureToOtherOutputs
-                                     # specific_needs becomes an attribute of figure instead of pspict (November, 9, 2012)
         self.newwriteDone = False
 
         # self.interWriteFile is redefined in MultiplePictures
@@ -852,6 +850,7 @@ class pspicture(object):
         self.listePoint = []
         self.xunit = 1
         self.yunit = 1
+        self.rotation=None
         self.LabelSep = 1
         self.BB = BasicGeometricObjects.BoundingBox(mother=self)
         self.math_BB = BasicGeometricObjects.BoundingBox(math=True)     # self.BB and self.math_BB serve to add some objects by hand.
@@ -1090,7 +1089,7 @@ class pspicture(object):
             code="\immediate\openout\{}={}%".format(self.newwriteName,self.interWriteFile)
             self.add_latex_line(code,"OPEN_WRITE_AND_LABEL")
 
-            code=r"\immediate\closeout\{}%".format(self.newwriteName)+"\n"         # the \n was added on February 26, 2013
+            code=r"\immediate\closeout\{}%".format(self.newwriteName)+"\n"
             self.add_latex_line(code,"CLOSE_WRITE_AND_LABEL",add_line_jump=False)
             self.newwriteDone = True
 
@@ -1335,8 +1334,6 @@ class pspicture(object):
                                                                     # and it becomes ugly when dilating
                                                                     # Notice that we pass here too early to use self.xunit,self.yunit
         self.axes.BB.add_object(BB)
-        #self.axes.update()     # Removed on April, 8, 2012
-        #self.DrawGraph(self.axes)
         self.draw_default_axes=True
     def DrawDefaultGrid(self):
         self.grid.BB = self.math_bounding_box()
@@ -1409,13 +1406,6 @@ class pspicture(object):
         if not global_vars.no_compilation :
             a = to_other.__getattribute__("input_code_"+global_vars.exit_format)
             try:
-                # This line does not work on the figure CylindresxKDOdy; it raises a ValueError that seems to be
-                # triggered by a zero division somewhere in sage.           February 27, 2013
-                #size=numerical_approx(self.xsize*self.xunit,4)   
-
-                # The following two alternatives work
-                #size=numerical_approx(self.xsize*self.xunit)      
-                # TODO : understand all that and eventually debug.
                 size=numerical_approx(self.xsize,5)*numerical_approx(self.xunit,5)   
             except ValueError :
                 print("self.xsize",self.xsize)

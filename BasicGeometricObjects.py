@@ -1786,24 +1786,29 @@ class GraphOfAPoint(GraphOfAnObject):
 
         If a pspicture is given, we divide by xunit and yunit to normalize.
         """
+        x=self.x
+        y=self.y
+        if pspict :
+            x=x*pspict.xunit
+            y=y*pspict.yunit
+            if pspict.rotation  is not None:
+                ang=pspict.rotation*pi/180
+                nx=x*cos(ang)+y*sin(ang)
+                ny=-x*sin(ang)+y*cos(ang)
+                x=nx
+                y=ny
         if digits :
             numerical=True
         if numerical :
             if digits==None :
                 digits=10
-            x=numerical_approx(self.x,digits=digits)
-            y=numerical_approx(self.y,digits=digits)
-        else :
-            x = self.x
-            y = self.y
+            x=numerical_approx(x,digits=digits)
+            y=numerical_approx(y,digits=digits)
         # This precaution in order to avoid something like 0.125547e-6 because pstricks doesn't like that notation.
         if abs(x) < 0.0001 :
             x=0
         if abs(y) < 0.0001 :
             y=0
-        if pspict :
-            x=x*pspict.xunit
-            y=y*pspict.yunit
         return str("("+str(x)+","+str(y)+")")
     def coordinatesBr(self):
         raise DeprecationWarning  # June 23, 2014
