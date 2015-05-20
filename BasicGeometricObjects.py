@@ -3548,13 +3548,12 @@ class GraphOfAnAngle(GraphOfAnObject):
     def mark_point(self,pspict=None):
         ama=self.advised_mark_angle(pspict)
         return self.circle(visual=True,pspict=pspict).get_point(ama)
-    def latex_code(self,language=None,pspict=None):
+    def action_on_pspict(self,pspict):
         circle=self.circle(visual=True,pspict=pspict)
         circle.parameters=self.parameters.copy()
-        print("KIBOooOzYPqo",self.r)
-        print("OFMBooYPsZmm",circle.center.coordinates())
-        print("OFMBooYPsZmm",circle.radius)
-        return circle.latex_code(language=language,pspict=pspict)
+        pspict.DrawGraph(circle)
+    def latex_code(self,language=None,pspict=None):
+        return ""
 
 def general_funtion_get_point(fun,x,advised=True):
         """
@@ -4530,7 +4529,6 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
                 l.extend(  [abs(P.y) for P in spl]  )
                 namax=max(l)
                 digits=3+ceil(  log(namax,10) )
-                print("HHDIooUUeAZs",digits)
                 params=self.params(language="tikz")
                 a.append("\draw [{0}] {1};".format(params,"--".join(   [x.coordinates(numerical=True,digits=digits,pspict=pspict) for x in spl]  ) ))
             return "\n".join(a)
@@ -4578,8 +4576,6 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
             l.append("};")
             return "".join(l)
         raise
-
-
     def latex_code(self,language,pspict=None):
         if language=="pstricks":
             return self.pstricks_code(pspict)
@@ -4590,7 +4586,6 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         Return a string representation
 
         EXAMPLES::
-
 
         sage: from phystricks.BasicGeometricObjects import *
         sage: print InterpolationCurve([Point(0,0),Point(1,1)])
@@ -5514,12 +5509,6 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             pspict.DrawGraph(curve)
         else:
             points_list=self.representative_points()
-
-            print("Ceci est à supprimer KIQQooDGLfgu")
-            for P in points_list:
-                P.parameters.symbol="."
-                pspict.DrawGraphs(P)
-
             curve=InterpolationCurve(points_list)
             curve.parameters=self.parameters.copy()
             curve.mode="trivial"
