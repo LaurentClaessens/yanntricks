@@ -1017,7 +1017,7 @@ class GraphOfACircle(GraphOfAnObject):
             pp=50
         ss= self.get_regular_points(mx=degree(self.angleI),Mx=degree(self.angleF),n=pp,advised=False)
         return self.get_regular_points(mx=degree(self.angleI),Mx=degree(self.angleF),n=pp,advised=False)
-    def latex_code(self,language=None,pspict=None):
+    def action_on_pspict(self,pspict):
         alphaI = radian(self.angleI,number=True,keep_max=True)
         alphaF = radian(self.angleF,number=True,keep_max=True)
 
@@ -1034,20 +1034,20 @@ class GraphOfACircle(GraphOfAnObject):
         G = self.parametric_curve(alphaI,alphaF)
         G.parameters=self.parameters.copy()
         G.parameters.plotpoints=100
-        a=[]
         if self.parameters._filled or self.parameters._hatched:
             custom=CustomSurface( [self.parametric_curve(alphaI,alphaF)] )
             custom.parameters=self.parameters.copy()
-            a.append(custom.latex_code(language=language,pspict=pspict))
+            pspict.DrawGraph(custom)
 
         if self.wavy:
             waviness = self.waviness
             G.wave(waviness.dx,waviness.dy)
-            a.append( G.latex_code(language=language,pspict=pspict))
+            pspict.DrawGraph(G)
         else :
             print("SDIQooPUtLOP",G.parameters.plotpoints)
-            a.append( G.latex_code(language=language,pspict=pspict))
-        return "\n".join(a)
+            pspict.DrawGraph(G)
+    def latex_code(self,language=None,pspict=None):
+        return ""
 
 def OptionsStyleLigne():
     return ["linecolor","linestyle"]
@@ -5497,7 +5497,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             Llam=numpy.linspace(initial,final,plotpoints)
         return [ self.get_point(x,advised=False) for x in Llam ]
     def action_on_pspict(self,pspict):
-        a=[]
+        print("IZDRooPMoVJL je passe")
         if self.wavy :
             waviness = self.waviness
             curve=InterpolationCurve(self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy,xunit=pspict.xunit,yunit=pspict.yunit),context_object=self)
@@ -5506,6 +5506,9 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             pspict.DrawGraph(curve)
         else:
             points_list=self.representative_points()
+
+            print("Ceci est à supprimer KIQQooDGLfgu")
+            pspict.DrawGraphs(points_list)
 
             curve=InterpolationCurve(points_list)
             curve.parameters=self.parameters.copy()
