@@ -2848,18 +2848,26 @@ class GraphOfASegment(GraphOfAnObject):
         coef=(l+L)/L
         v = coef*self
         return self.return_deformations(v)
-    def fix_size(self,l):
+    def fix_size(self,l,only_F=False,only_I=False):
         """
         return a new vector or segment with size l.
 
         This function has not to be used by the end user. Use self.normalize() instead.
         """
         L=self.length()
+        if only_F and only_I:
+            print("You cannot ask both only F and only I")
+            raise ValueError
         if L == 0:
             print "fix_size problem: this vector has a norm equal to zero"
             return self.copy()
         if self.arrow_type=="segment":
-            v = self.dilatation(l/self.length())
+            if only_F==False and only_I==False:
+                v = self.dilatation(l/self.length())
+            if only_F :
+                v=self.add_size( lF= l-L  )
+            if only_I :
+                v=self.add_size( lI= l-L  )
         if self.arrow_type=="vector":
             return self.normalize(l)
         return self.return_deformations(v)
