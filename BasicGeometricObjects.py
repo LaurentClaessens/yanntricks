@@ -779,8 +779,9 @@ class GraphOfACircle(GraphOfAnObject):
         b=numerical_approx(self.angleF.degree)
         self.visual=visual
         self.pspict=pspict
-    @lazy_attribute
-    def equation(self):
+        self._equation=None
+        self._numerical_equation=None
+    def equation(self,numerical=False):
         """
         Return the equation of `self`.
 
@@ -800,13 +801,42 @@ class GraphOfACircle(GraphOfAnObject):
             sage: circle=CircleOA(Point(-1,-1),Point(0,0))
             sage: circle.equation()
             (y + 1)^2 + (x + 1)^2 - 2 == 0
+
+        If 'numerical' is True, return numerical approximations of the coefficients.
         """
+        if numerical==True and self._numerical_equation is not None:
+            return self._numerical_equation
+        if numerical==False and self._equation is not None:
+            return self._equation
+
         x,y=var('x,y')
         if not self.visual :
-            return (x-self.center.x)**2+(y-self.center.y)**2-self.radius**2==0
+            cx=self.center.x
+            cy=self.center.y
+            cr=self.radius
+            self._equation = (x-cx)**2+(y-cy)**2-cr**2==0
+            if not numerical :
+                return self._equation
+            if numerical :
+                cx=numerical_approx(cx)
+                cy=numerical_approx(cy)
+                cr=numerical_approx(cr)
+                self._numerical_equation = (x-cx)**2+(y-cy)**2-cr**2==0
+                return self._numerical_equation
+
         Rx=self.radius/self.pspict.xunit
         Ry=self.radius/self.pspict.yunit
-        return (x-self.center.x)**2/Rx**2+(y-self.center.y)**2/Ry**2==1
+
+        if numerical==False :
+            self._equation = (x-self.center.x)**2/Rx**2+(y-self.center.y)**2/Ry**2-1==0
+            return self._equation
+        if numerical==True :
+            Rx=numerical_approximation(Rx)
+            Ry=numerical_approximation(Ry)
+            cx=numerical_approximation(self.center.x)
+            cy=numerical_approximation(self.center.y)
+            self._numerical_equation = (x-cx)**2/Rx**2+(y-cy)**2/Ry**2-1==0
+            return self._numerical_equation
     def phyFunction(self):
         """
         return the function corresponding to

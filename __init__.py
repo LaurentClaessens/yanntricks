@@ -287,7 +287,7 @@ def Intersection(f,g,a=None,b=None,numerical=False,only_real=True):
     If 'numerical' is True, it search for the intersection points of the functions 'f' and 'g' (it only work with functions). In this case an interval is required.
     """
 
-    if numerical :
+    if numerical and "sage" in dir(f) :
         k=f-g
         xx=SmallComputations.find_roots_recursive(k.sage,a,b)
         pts=[  Point(x,f(x)) for x in xx ]
@@ -299,7 +299,10 @@ def Intersection(f,g,a=None,b=None,numerical=False,only_real=True):
 
     x,y=var('x,y')
     pts=[]
-    soluce=solve([f.equation,g.equation],[x,y])
+    if numerical :
+        soluce=solve([f.equation(numerical=True),g.equation(numerical=True)],[x,y])
+    else :
+        soluce=solve([f.equation(),g.equation()],[x,y])
     for s in soluce:
         a=s[0].rhs()
         b=s[1].rhs()
