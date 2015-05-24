@@ -5418,20 +5418,20 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             Dll = dl/v
             grand = Mll
             petit = ll
-            if abs(Vcurve.arc_length(ll,ll+Dll)) > dl :
+            if abs(Vcurve.length(ll,ll+Dll)) > dl :
                 grand = ll+Dll
-                while abs(Vcurve.arc_length(ll,petit)) > dl :
+                while abs(Vcurve.length(ll,petit)) > dl :
                     petit = (grand+petit)/2
             else :
                 petit = ll+Dll
-                while abs(Vcurve.arc_length(ll,grand)) < dl :
+                while abs(Vcurve.length(ll,grand)) < dl :
                     grand = 2*grand - ll
             ell = (petit+grand)/2
-            while abs(Vcurve.arc_length( ll, ell )-dl) > prop_precision:
+            while abs(Vcurve.length( ll, ell )-dl) > prop_precision:
                 if prop_precision == 0:
                     raise ValueError,"prop_precision is zero. Something sucks. You probably want to launch me in an infinite loop. dl=%s"%str(dl)
                 ell = (grand+petit)/2
-                if Vcurve.arc_length(ll,ell) > dl :
+                if Vcurve.length(ll,ell) > dl :
                     grand = ell
                 else :
                     petit = ell
