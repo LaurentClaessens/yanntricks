@@ -5379,7 +5379,7 @@ class GraphOfAParametricCurve(GraphOfAnObject):
         pass 
     def get_regular_parameter(self,mll,Mll,dl,initial_point=False,final_point=False,xunit=1,yunit=1):
         """ 
-        returns a list of values of the parameter such that the corresponding points are equally spaced by dl.
+        return a list of values of the parameter such that the corresponding points are equally spaced by dl.
         Here, we compute the distance using the method arc_length.
 
         INPUT:
