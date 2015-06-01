@@ -324,6 +324,8 @@ class figure(object):
         self.add_latex_line("\centering","BEFORE SUBFIGURES")
     def no_figure(self):
         self.figure_environment=False
+    def rotation(self,angle):
+        self.rotation_angle=angle
     def dilatation_X(self,fact):
         """ Makes a dilatation of the whole picture in the X direction. A contraction if the coefficient is lower than 1 """
         self.xunit = self.xunit * fact
@@ -850,7 +852,7 @@ class pspicture(object):
         self.listePoint = []
         self.xunit = 1
         self.yunit = 1
-        self.rotation=None
+        self.rotation_angle=None
         self.LabelSep = 1
         self.BB = BasicGeometricObjects.BoundingBox(mother=self)
         self.math_BB = BasicGeometricObjects.BoundingBox(math=True)     # self.BB and self.math_BB serve to add some objects by hand.

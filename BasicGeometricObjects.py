@@ -1821,8 +1821,8 @@ class GraphOfAPoint(GraphOfAnObject):
         if pspict :
             x=x*pspict.xunit
             y=y*pspict.yunit
-            if pspict.rotation  is not None:
-                ang=pspict.rotation*pi/180
+            if pspict.rotation_angle  is not None:
+                ang=pspict.rotation_angle*pi/180
                 nx=x*cos(ang)+y*sin(ang)
                 ny=-x*sin(ang)+y*cos(ang)
                 x=nx
