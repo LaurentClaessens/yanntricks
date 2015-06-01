@@ -328,11 +328,15 @@ class figure(object):
         self.rotation_angle=angle
     def dilatation_X(self,fact):
         """ Makes a dilatation of the whole picture in the X direction. A contraction if the coefficient is lower than 1 """
+        raise# It seem to me that one never use dilatation on the figure (always on the pspicture)
         self.xunit = self.xunit * fact
     def dilatation_Y(self,fact):
+        raise   # It seem to me that one never use dilatation on the figure (always on the pspicture)
         self.yunit = self.yunit * fact
     def dilatation(self,fact):
         """ dilatations or contract that picture in both directions with the same coefficient """
+
+        raise# It seem to me that one never use dilatation on the figure (always on the pspicture)
         self.dilatation_X(fact)
         self.dilatation_Y(fact)
     def new_subfigure(self,caption,name=None):
@@ -1244,6 +1248,8 @@ class pspicture(object):
         self.xunit = self.xunit * fact
     def dilatation_Y(self,fact):
         self.yunit = self.yunit * fact
+    def rotation(self,angle):
+        self.rotation_angle=angle
     def fixe_tailleX(self,l):
         self.dilatation_X(l/self.BB.tailleX())
     def fixe_tailleY(self,l):
