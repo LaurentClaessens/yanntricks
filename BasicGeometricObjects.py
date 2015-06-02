@@ -377,7 +377,7 @@ class GraphOfAnObject(object):
     def wave(self,dx,dy):                   # dx is the wave length and dy is the amplitude
         self.wavy = True
         self.waviness = Waviness(self,dx,dy)
-    def get_mark(self,dist,angle,text,mark_point=None,automatic_place=False,added_angle=None):
+    def get_mark(self,dist,angle,text,mark_point=None,automatic_place=False,added_angle=None,pspict=None):
 
         """
         If you want to put a mark on an object
@@ -388,7 +388,10 @@ class GraphOfAnObject(object):
         If you give no position (i.e. no "S","N", etc.) the position will be automatic regarding the angle.
         """
         if automatic_place==False:
-            raise "You have to pass a pspicture"
+            if pspict:
+                automatic_place=(pspict,"")
+            else :
+                raise "You have to pass a pspicture"
         if self.marque:
             print("This is a second (or more) mark on the same point")
         self.marque = True
@@ -444,8 +447,8 @@ class GraphOfAnObject(object):
         #if not self.mark._central_point :
         #    print(self)
         #    raise
-    def put_mark(self,dist,angle,text,mark_point=None,automatic_place=False,added_angle=None):
-        mark=self.get_mark(dist,angle,text,mark_point=None,automatic_place=automatic_place,added_angle=added_angle)
+    def put_mark(self,dist,angle,text,mark_point=None,automatic_place=False,added_angle=None,pspict=None):
+        mark=self.get_mark(dist,angle,text,mark_point=None,automatic_place=automatic_place,added_angle=added_angle,pspict=pspict)
         self.added_objects.append(mark)
         self.mark=mark
     def add_option(self,opt):
@@ -3249,7 +3252,9 @@ class GraphOfAText(GraphOfAnObject):
     def mark_point(self,pspict=None):
         return self.P
     def math_bounding_box(self,pspict=None):
-        return self.mark.math_bounding_box(pspict)
+        # a text has no math_bounding_box because the axes do not want to fit them.
+        #return self.mark.math_bounding_box(pspict)         # June 1, 2015
+        return BoundingBox()
     def bounding_box(self,pspict=None):
         return self.mark.bounding_box(pspict)
     def latex_code(self,language=None,pspict=None):
@@ -4013,8 +4018,11 @@ class GraphOfAphyFunction(GraphOfAnObject):
                 y=self(x)
             except ZeroDivisionError :
                 valid=False
-            if y.is_infinity():
-                valid=False
+            try :
+                if y.is_infinity():
+                    valid=False
+            except AttributeError :
+                pass            # When drawing non-analytic function, y is numpy.float64
             if valid :
                 ymax=max(ymax,y)
                 ymin=min(ymin,y)

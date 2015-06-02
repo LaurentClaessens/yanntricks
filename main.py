@@ -1183,7 +1183,7 @@ class pspicture(object):
         NOTE :
 
         If you ask for the page with for example  `page = pspict.get_counter_value("page")` the given page
-        will be the one at which LaTeX think the figure is. I recall that a figure is a floating object;
+        will be the one at which LaTeX thinks the figure is. I recall that a figure is a floating object;
         if you have 10 of them in a row, the page number could be incorrect.
         """
         # Make LaTeX write the value of the counter in a specific file
