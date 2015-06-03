@@ -4142,29 +4142,27 @@ class GraphOfAphyFunction(GraphOfAnObject):
         curve.parameters=self.parameters.copy()
         return curve
     def action_on_pspict(self,pspict):
-        gr=self.representative_graph_object()
-        pspict.DrawGraph(gr)
-    def specific_action_on_pspict(self,pspict):
-        a = []
+        still_have_to_draw=True
         if self.marque :
             P = self.mark_point()
             P.parameters.symbol=""
             P.marque = True
             P.mark = self.mark
             pspict.DrawGraph(P)
-        if self.cut_ymin:
-            pspict.DrawGraphs( self.pieces  )
-        elif self.wavy :          
+        if self.wavy :          
             waviness = self.waviness
             curve=self.parametric_curve()
             curve.parameters=self.parameters.copy()
             curve.wave(self.waviness.dx,self.waviness.dy)
             pspict.DrawGraph(curve)
-
-            #All the wave stuff on phyFunction is now using parametric curve.
+            still_have_to_draw=False
+        if self.cut_ymin:
+            pspict.DrawGraphs( self.pieces  )
+            still_have_to_draw=False
+        if still_have_to_draw :
+            gr=self.representative_graph_object()
+            pspict.DrawGraph(gr)
             #TODO : we have to implement y_cut to InterpolationCurve
-            #curve=InterpolationCurve( self.get_wavy_points(waviness.mx,waviness.Mx,waviness.dx,waviness.dy),context_object=self)
-            #pspict.DrawGraph(curve)
     def pstricks_code(self,pspict=None):
         raise DeprecationWarning   # June 24 2014
         if not self.wavy and not self.do_cut_y:
@@ -6277,6 +6275,8 @@ class BoundingBox(object):
                 print "Something got wrong with %s"%str(graph)
                 print msg
                 print "If you want to debug me, you should add a raise here."
+                print("HURVooBiLyiI",graph,type(graph))
+                print("MRLWooXAmSHT",self.math,on)
                 raise
         self.AddBB(bb)
     def add_math_graph(self,graphe,pspict=None):
