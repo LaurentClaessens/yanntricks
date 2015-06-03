@@ -251,7 +251,7 @@ def test_imaginary_part(z,epsilon=0.0001):
     if is_real(z) and "I" not in str(z):
         return True,z
     if abs( numerical_approx(z.imag_part()) )<epsilon:
-        print("I am removing a (probably fake) imaginary part")
+        #print("I am removing a (probably fake) imaginary part")
         return True,numerical_approx( z.real_part() )
     print("It seems that an imaginary part is not so small.")
     return False,z
