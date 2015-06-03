@@ -386,13 +386,13 @@ class figure(object):
             a.append("\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
             a.append("\\input{%s}"%(self.nFich))
         else :
-            text="""\\begin{wrapfigure}{r}{WIDTH}
-   \\vspace{-0.5cm}        % à adapter.
-   \centering
-   INCLUSION
-\end{wrapfigure}
-ou
-\\begin{center}
+            #text="""\\begin{wrapfigure}{r}{WIDTH}
+#   \\vspace{-0.5cm}        % à adapter.
+#   \centering
+#   INCLUSION
+#\end{wrapfigure}
+#ou
+            text="""\\begin{center}
    INCLUSION
 \end{center}""".replace("INCLUSION","\\input{%s}"%(self.nFich))
             if len(self.record_pspicture)==1:
