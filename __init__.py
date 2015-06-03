@@ -237,19 +237,35 @@ def SubsetFigures(old_pspicts,old_fig,l):
         pspict.append(old_pspicts[i])
     return pspict,fig
 
+def is_real(z):
+    if isinstance(z,int):
+        return True
+    return z.is_real()
+
 def test_imaginary_part(z,epsilon=0.0001):
     """
     Return a tuple '(isreal,w)' where 'isreal' is a boolean saying if 'z' is real (in the sense that it is real and does not contain 'I' in its string representation) and 'w' is 'z' when the imaginary part is larger than epsilon and an 'numerical_approx' of 'z' when its imaginary part is smaller than 'epsilon'
 
     With the colateral effect that it returns a numerical approximation.
     """
-    if z.is_real() and "I" not in str(z):
+    if is_real(z) and "I" not in str(z):
         return True,z
     if abs( numerical_approx(z.imag_part()) )<epsilon:
         print("I am removing a (probably fake) imaginary part")
         return True,numerical_approx( z.real_part() )
     print("It seems that an imaginary part is not so small.")
     return False,z
+
+def test_imaginary_part_point(P,epsilon=0.0001):
+    """
+    return the tuple '(isreal,P)' whith the same description of 'test_imaginary_part'
+    """
+    realx,x=test_imaginary_part(P.x)
+    realy,y=test_imaginary_part(P.y)
+    on=False
+    if realx and realy:
+        on=True
+    return on,Point(x,y)
 
 def Intersection(f,g,a=None,b=None,numerical=False,only_real=True):
     """

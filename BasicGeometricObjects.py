@@ -4467,7 +4467,9 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
     def __init__(self,points_list,context_object=None,mode=None):
         GraphOfAnObject.__init__(self,self)
         self.parameters.color="brown"
+
         self.points_list=points_list
+
         self.I=self.points_list[0]
         self.F=self.points_list[-1]
         self.context_object=context_object
@@ -5556,8 +5558,19 @@ class GraphOfAParametricCurve(GraphOfAnObject):
             print("... done")
         else :
             import numpy
-            Llam=numpy.linspace(initial,final,plotpoints)
-        return [ self.get_point(x,advised=False) for x in Llam ]
+            # If not RR, the elements of Llam are type numpy.float64. In this case, computing the sqrt of negative return NaN instead of complex.
+            # Then we cannot remove the probably fake imaginary part. It happens for the function sqrt(cos(x)) with x=3*pi/2. 
+            Llam=[ RR(s) for s in  numpy.linspace(initial,final,plotpoints)]
+        pts = [ self.get_point(x,advised=False) for x in Llam ]
+
+        pl=[]
+        for P in pts:
+            isreal,Q=test_imaginary_part_point(P)
+            if not isreal:
+                print("There is a not so small imaginary part ... prepare to crash or something")
+            pl.append(Q)
+        return pl
+
     def action_on_pspict(self,pspict):
         if self.wavy :
             waviness = self.waviness
