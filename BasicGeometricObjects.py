@@ -4132,6 +4132,18 @@ class GraphOfAphyFunction(GraphOfAnObject):
         if not self.pieces:
             return self.get_point(self.Mx)
         return self.pieces[-1].mark_point()
+    def representative_graph_object(self):
+        """
+        Return is the object that will be drawn. It serves to control the chain function --> parametric_curve --> interpolation curve
+        """
+        deb = numerical_approx(self.mx) 
+        fin = numerical_approx(self.Mx)
+        curve=self.parametric_curve().graph(deb,fin)
+        curve.parameters=self.parameters.copy()
+        return curve
+    def action_on_pspict(self,pspict):
+        gr=self.representative_graph_object()
+        pspict.DrawGraph(gr)
     def specific_action_on_pspict(self,pspict):
         a = []
         if self.marque :
@@ -4163,10 +4175,7 @@ class GraphOfAphyFunction(GraphOfAnObject):
         return ""
     def latex_code(self,language=None,pspict=None):
         if not self.wavy and not self.do_cut_y:
-            deb = numerical_approx(self.mx) 
-            fin = numerical_approx(self.Mx)
-            curve=self.parametric_curve().graph(deb,fin)
-            return curve.latex_code(language=language,pspict=pspict)
+            return self.representative_graph_object().latex_code(language=language,pspict=pspict)
         return ""
     def __call__(self,xe,numerical=False):
         """
