@@ -381,7 +381,9 @@ class figure(object):
         """
         a=[]
         for pspict in self.child_pspictures:
-            a.append("Note : ",pspict.comment.decode('utf8'))
+            comment=pspict.comment.decode('utf8')
+            if comment != "":
+                a.append("Note : "+comment)
         from latex_to_be import pseudo_caption
         if self.figure_environment:
             a.append("The result is on figure \\ref{"+self.name+"}. % From file "+self.script_filename)
