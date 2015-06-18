@@ -146,6 +146,7 @@ def SinglePicture(name,script_filename=None):
     """ Return the tuple of pspicture and figure that one needs in 90% of the cases. """
     fig = GenericFigure(name,script_filename)
     pspict=fig.new_pspicture(name)
+    fig.child_pspictures.append(pspict)
     return pspict,fig
 
 def MultiplePictures(name,n,script_filename=None):
@@ -186,9 +187,10 @@ def MultiplePictures(name,n,script_filename=None):
         subfigure=fig.new_subfigure("name"+str(i),"LabelSubFig"+name+str(i))
         picture=subfigure.new_pspicture(name+"pspict"+str(i))
         picture.figure_mother=fig
+        fig.child_pspictures.append(picture)
 
         # The subfigure share the same file to write the lengths. 
-        #  (no more used since the figure manages the write and lables, Augustus, 28, 2014)
+        #  (no more used since the figure manages the write and labels, Augustus, 28, 2014)
         #picture.interWriteFile=picture.figure_mother.name+".phystricks.aux"
         pspicts.append(picture)
     return pspicts,fig
@@ -896,12 +898,10 @@ def SurfaceUnderFunction(f,mx,Mx):
         line1=Segment(Point(mx,0),Point(Mx,0))
         line2=f.parametric_curve(mx,Mx)
         surf = BasicGeometricObjects.SurfaceBetweenLines(line1,line2)
-        surf.add_option("fillstyle=vlines,linestyle=none")  
         return surf
     f2=phyFunction(0)
     f2.nul_function=True     # Serves to compute the bounding box, see 2252914222
     return SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
-    #return BasicGeometricObjects.SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
 
 def Polygon(*args):
     """

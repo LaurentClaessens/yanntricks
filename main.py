@@ -285,6 +285,7 @@ class figure(object):
         self.code = []
         self.record_subfigure = []
         self.record_pspicture=[]
+        self.child_pspictures=[]
 
         self.send_noerror = False
         self.language="tikz"
@@ -379,6 +380,8 @@ class figure(object):
         Return the lines to be included in your LaTeX file.
         """
         a=[]
+        for pspict in self.child_pspictures:
+            a.append("Note : ",pspict.comment.decode('utf8'))
         from latex_to_be import pseudo_caption
         if self.figure_environment:
             a.append("The result is on figure \\ref{"+self.name+"}. % From file "+self.script_filename)
