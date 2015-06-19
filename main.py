@@ -23,7 +23,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from sage.all import *
-import codecs, sys
+import sys
 
 import BasicGeometricObjects
 import SmallComputations as SmallComputations
@@ -107,7 +107,6 @@ class FigureGenerationSuite(object):
         """
         perform the tests
         """
-
         figure.send_noerror = True
         print ""
         print "********************************************"
@@ -120,7 +119,7 @@ class FigureGenerationSuite(object):
             print " ============= %s ============="%str(self.test_list[i])
             try:
                 try:
-                    pspict=self.test_list[i]()
+                    self.test_list[i]()
                 except PhystricksTestError,e:
                     print "The test of pspicture %s failed. %s"%(self.test_list[i],e.justification)
                     print e
@@ -301,6 +300,8 @@ class figure(object):
 
         self.nFich=nFich
         self.fichier = SmallComputations.Fichier(self.nFich)
+        self.comment_filename=self.nFich.replace(".pstricks",".comment")        # This intermediate file will contain the comment of the pspict(s)
+                                                                                # for the sake of teses.
 
         # The order of declaration is important, because it is recorded in the Separator.number attribute.
         self.separator_list=SeparatorList()
@@ -317,8 +318,7 @@ class figure(object):
         self.separator_list.new_separator("BEFORE PSPICTURE")
         self.separator_list.new_separator("PSPICTURE")
         self.separator_list.new_separator("AFTER PSPICTURE")
-        # the separators 'BEFORE SUBFIGURE' and 'AFTER ALL' will not be written in the case
-        # of self.figure_environment=False.
+        # the separators 'BEFORE SUBFIGURE' and 'AFTER ALL' will not be written in the case when self.figure_environment=False.
         self.separator_list.new_separator("AFTER ALL")  # caption and \end{figure}
         add_latex_line_entete(self)
         self.add_latex_line("\\begin{figure}[ht]","BEFORE SUBFIGURES")
@@ -375,15 +375,19 @@ class figure(object):
         pspict.mother=self
         pspict.figure_mother=self
         self.record_pspicture.append(pspict)
-    def LaTeX_lines(self):
-        """
-        Return the lines to be included in your LaTeX file.
-        """
+    def comments(self):
         a=[]
         for pspict in self.child_pspictures:
             comment=pspict.comment.decode('utf8')
             if comment != "":
                 a.append("Note : "+comment)
+        return "\n".join(a)
+    def LaTeX_lines(self):
+        """
+        Return the lines to be included in your LaTeX file.
+        """
+        a=[]
+        a.append(self.comments())
         from latex_to_be import pseudo_caption
         if self.figure_environment:
             a.append("The result is on figure \\ref{"+self.name+"}. % From file "+self.script_filename)
@@ -510,9 +514,14 @@ class figure(object):
             self.fichier.file.write(to_be_written)
             self.fichier.file.close()
         print "--------------- For your LaTeX file ---------------"
-        print self.LaTeX_lines()
+        print(self.LaTeX_lines())
         print "---------------------------------------------------"
-        # One only send the "no error" signal if we are performing a list of tests.
+        # One only sends the "no error" signal if we are performing a list of tests.
+
+        import codecs
+        f=codecs.open(self.comment_filename,"w",encoding='utf8')
+        f.write(self.comments())
+        f.close()
 
         if self.send_noerror :
             raise PhystricksNoError(self)
