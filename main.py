@@ -805,7 +805,7 @@ class pspicture(object):
 
     METHODS:
 
-    - `self.pstricks_code()` - contains the pstricks code of what has to be between \begin{pspicture} and \end{pspicture}. This is not the environment itself, neither the definition of xunit, yunit.
+    - `self.latex_code()` - contains the tikz code of what has to be between \begin{tikz} and \end{tikz}. This is not the environment itself, neither the definition of xunit, yunit.
 
     - `self.contenu_pstricks` - is the whole code including the x/yunit and \begin{pspicture}...\end{pspicture}.
                                 This is in fact a `lazy_attribute`.
@@ -937,6 +937,7 @@ class pspicture(object):
         
         - The value of LabelSep is the distance between an angle and the label of the angle. It is by default 1, but if there is a dilatation, the visual effect is bad.
         """
+        raise DeprecationWarning
         self.create_latex_code(self,language="pstricks")
         if self.LabelSep == 1 :
             self.LabelSep = 2/(self.xunit+self.yunit)
@@ -1070,6 +1071,7 @@ class pspicture(object):
 
         This is called by :func:`contenu_pstricks`
         """
+        raise DeprecationWarning
         self.create_language_code
         return self.separator_list["PSTRICKS CODE"].code()
 
@@ -1438,14 +1440,6 @@ class pspicture(object):
             include_line = a.replace('WIDTH',str(size)+"cm")
         else:
             include_line="\\includegraphicsSANSRIEN"    # If one does not compile, the inclusion make no sense
-
-        # This is for png or eps
-        #if global_vars.exit_format not in ["pstricks","pdf"]:
-        #    a = to_other.__getattribute__("input_code_"+global_vars.exit_format)
-        #    size=numerical_approx(self.xsize*self.xunit,4)
-        #    return a.replace('WIDTH',str(size)+"cm")
-    
-        #return "\ifpdf {0}\n \else {1}\n \\fi".format(to_other.input_code_pdf,self.contenu_pstricks)
 
         if self.language=="tikz":
             return self.contenu_tikz

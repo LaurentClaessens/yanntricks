@@ -386,10 +386,6 @@ def ParametricCurve(f1,f2,interval=(None,None)):
         sage: f2=phyFunction(x**2)
         sage: F=ParametricCurve(f1,f2).graph(-2,3)
         sage: G=ParametricCurve(f1,f2,mx=-2,Mx=3)
-        sage: print F.pstricks_code()
-        \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{-2.00000000000000}{3.00000000000000}{t | t^2 }
-        sage: F.pstricks_code()==G.pstricks_code()
-        True
 
     Notice that due to several `@lazy_attribute`, changing the components after creation could produce funny results.
 
@@ -649,12 +645,11 @@ def InterpolationCurve(points_list,context_object=None,mode=None):
 
     OPTIONAL INPUT:
 
-    - ``context_object`` -  the object that is going to use the InterpolationCurve's pstricks_code.
+    - ``context_object`` -  the object that is going to use the InterpolationCurve's latex code.
                             ImplicitCurve and wavy curves are using InterpolationCurve as "backend"
-                            for the pstricks_code.
+                            for the latex code.
                             Here we use the context_object in order to take this one into account
                             when determining the parameters (color, ...).
-                            See :func:`self.pstricks_code()`.
 
     EXAMPLES:
 
@@ -936,18 +931,6 @@ def CustomSurface(*args):
         sage: h=Segment(Point(0,1),Point(1,1))
         sage: v=Segment(Point(1,1),Point(1,0))
         sage: surf=CustomSurface(arc,h,v)
-        sage: print unify_point_name(surf.pstricks_code())
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](0,1.00000000000000){Xaaaa}
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaab}
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaac}
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,0){Xaaad}
-        \pscustom[linestyle=none,linecolor=black,fillstyle=vlines]{
-        \parametricplot[plotstyle=curve,linestyle=solid,plotpoints=1000,linecolor=blue]{0.000000000000000}{1.57079632679490}{cos(t) | sin(t) }
-        <BLANKLINE>
-        \pstLineAB[linestyle=solid,linecolor=black]{Xaaaa}{Xaaab}
-        <BLANKLINE>
-        \pstLineAB[linestyle=solid,linecolor=black]{Xaaac}{Xaaad}
-        }
 
     The border is not drawn.
 
@@ -983,10 +966,6 @@ def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
     the color AND the style::
 
         sage: surf.f1.parameters.color="red"
-        sage: print "red" in surf.pstricks_code(),"solid" in surf.pstricks_code()
-        True True
-
-    Notice that the output of `surf.pstricks_code()` is too long to be written here.
 
     You can also try to control the option linestyle (use add_option).
 
@@ -1171,10 +1150,6 @@ def AffineVector(A=None,B=None):
             vect=A
     vect.arrow_type="vector"
     return vect
-# the following is thanks to the python's french usenet group
-#https://groups.google.com/group/fr.comp.lang.python/browse_thread/thread/5b19cfac661df251?hl=fr#
-#http://users.rcn.com/python/download/Descriptor.htm
-#vect.pstricks_code = types.MethodType(_vector_pstricks_code, vect, Segment)
 
 class Grid(object):
     """
@@ -1436,14 +1411,8 @@ def Point(a,b):
         sage: print P
         <Point(x^2,1)>
 
-    Notice that the coordinates of the point have to be numerical in order to be passed to pstricks at the end::
+    Notice that the coordinates of the point have to be numerical in order to be passed to tikz (and then LaTeX) at the end::
 
-        sage: print P.pstricks_code()
-        Traceback (most recent call last):
-        ...
-        TypeError: cannot evaluate symbolic expression numerically
-
-                
     """
     return BasicGeometricObjects.GraphOfAPoint(a,b)
 
@@ -1817,20 +1786,8 @@ def unify_point_name(s):
         sage: from phystricks import *
         sage: P=Point(3,4)
         sage: S = Segment(Point(1,1),Point(2,2))
-        sage: print S.pstricks_code()       # random
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){aaad}
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](2.00000000000000,2.00000000000000){aaae}
-        <BLANKLINE>
-        \pstLineAB[linestyle=solid,linecolor=black]{aaad}{aaae}
-
 
     However, using the function unify_point_name, the returned string begins with "Xaaaa" ::
-
-        sage: print unify_point_name(S.pstricks_code())
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaaa}
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](2.00000000000000,2.00000000000000){Xaaab}
-        <BLANKLINE>
-        \pstLineAB[linestyle=solid,linecolor=black]{Xaaaa}{Xaaab}
 
     Notice that the presence of "X" is necessary in order to avoid
     conflicts when one of the points original name is one of the new points name as in the following example ::
@@ -1842,15 +1799,8 @@ def unify_point_name(s):
     Without the additional X,
 
     1. The first "xxxx" would be changed to "aaaa".
-    2. When changing "aaaa" into "aaab", the first one
-            would be changed too.
+    2. When changing "aaaa" into "aaab", the first one would be changed too.
 
-    ::
-
-        sage: P=Point(-1,1)
-        sage: P.put_mark(0.3,90,"$A$")
-        sage: unify_point_name(P.mark.pstricks_code())
-        u'\\pstGeonode[](-1.00000000000000,1.30000000000000){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$A$}}'
     """
     import re
 

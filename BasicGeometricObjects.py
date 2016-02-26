@@ -793,7 +793,7 @@ class GraphOfACircle(GraphOfAnObject):
 
             sage: circle=CircleOA(Point(-1,-1),Point(0,0))
             sage: circle.equation()
-            (y + 1)^2 + (x + 1)^2 - 2 == 0
+            (x + 1)^2 + (y + 1)^2 - 2 == 0
 
         If 'numerical' is True, return numerical approximations of the coefficients.
         """
@@ -896,8 +896,11 @@ class GraphOfACircle(GraphOfAnObject):
             sage: from phystricks import *
             sage: C=Circle(Point(0,0),2)
             sage: pts=C.get_regular_points(0,90,1)
-            sage: [str(p) for p in pts]
-            ['<Point(2,0)>', '<Point(2*cos(1/2),2*sin(1/2))>', '<Point(2*cos(1),2*sin(1))>', '<Point(2*cos(3/2),2*sin(3/2))>']
+            sage: len(pts)
+            4
+
+        The points in the previous examples are approximatively :
+        ['<Point(2,0)>', '<Point(2*cos(1/2),2*sin(1/2))>', '<Point(2*cos(1),2*sin(1))>', '<Point(2*cos(3/2),2*sin(3/2))>']
 
         """
         if mx==Mx:
@@ -1253,6 +1256,7 @@ class Mark(object):
     def action_on_pspict(self,pspict=None):
         pass
     def pstricks_code(self,pspict=None):
+        raise DeprecationWarning
         l=[]
         central_point=self.central_point(pspict)
         #TODO : Use create_PSpoint instead of \pstGeonode.
@@ -1265,6 +1269,7 @@ class Mark(object):
         return code
     def latex_code(self,language=None,pspict=None):
         if language=="pstricks":
+            raise DeprecationWarning
             return self.pstricks_code(pspict=pspict)
         if language=="tikz":
             return self.tikz_code(pspict=pspict)
@@ -1288,23 +1293,6 @@ class FillParameters(object):
         OUTPUT:
 
         Return `opt` with added properties.
-
-        EXAMPLES::
-
-            sage: from phystricks.BasicGeometricObjects import *
-            sage: opt=Options()
-            sage: fill=FillParameters()
-            sage: fill.color="blue"
-            sage: fill.add_to_options(opt)
-            sage: opt.code()
-            u'fillcolor=blue,fillstyle=solid'
-
-        ::
-
-            sage: fill.style="MyStyle"
-            sage: fill.add_to_options(opt)
-            sage: opt.code()
-            u'fillcolor=blue,fillstyle=MyStyle'
 
         """
         if self.color :
@@ -1372,8 +1360,6 @@ class Parameters(object):
             sage: from phystricks.BasicGeometricObjects import *
             sage: seg=Segment(Point(0,0),Point(1,1))
             sage: seg.parameters.add_option("linewidth","1mm")
-            sage: seg.pstricks_code()
-            klmklm
 
         However the better way to add something like
         linewidth=1mm
@@ -1761,6 +1747,7 @@ class GraphOfAPoint(GraphOfAnObject):
         return GraphOfAPoint             # Graph is also a method of Sage
     def create_PSpoint(self):
         """Return the code of creating a pstgeonode. The argument is a Point of GraphOfAPoint"""
+        raise DeprecationWarning       # pstricks_code should no more be used anywhere
         P = Point(self.x,self.y)
         P.psName = self.psName
         P.parameters.symbol=""
@@ -1874,6 +1861,7 @@ class GraphOfAPoint(GraphOfAnObject):
         bb=BoundingBox(xmin=self.point.x,xmax=self.point.x,ymin=self.point.y,ymax=self.point.y)
         return bb
     def pstricks_code(self,pspict=None,with_mark=False):
+        raise DeprecationWarning
         return "\pstGeonode["+self.params(language="pstricks")+"]"+self.coordinates(numerical=True,pspict=pspict)+"{"+self.psName+"}"
     def tikz_code(self,pspict=None):
         symbol_dict={}
@@ -1904,6 +1892,7 @@ class GraphOfAPoint(GraphOfAnObject):
             for mark in self.marks_list:
                 l.append(self.mark.latex_code(language=language,pspict=pspict))
         if language=="pstricks":
+            raise DeprecationWarning
             l.append(self.pstricks_code(pspict=pspict))
         if language=="tikz":
             l.append(self.tikz_code(pspict=pspict))
@@ -2079,7 +2068,7 @@ class GraphOfAnImplicitCurve(GraphOfAnObject,GeometricImplicitCurve):
             sage: from phystricks.BasicGeometricObjects import *
             sage: x,y=var('x,y')
             sage: implicit_curve=GeometricImplicitCurve(x**2+x==3)
-            sage: F=GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2)).pstricks_code()
+            sage: F=GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2))
 
     NOTES:
 
@@ -3140,6 +3129,7 @@ class GraphOfASegment(GraphOfAnObject):
         #    a.append(v.latex_code(pspict=pspict,language=language))
         return "\n".join(a)
     def pstricks_code(self,pspict=None):
+        raise DeprecationWarning
         return self.latex_code(language="pstricks",pspict=pspict)
     def tikz_code(self,pspict=None):
         return self.latex_code(language="tikz",pspict=pspict)
@@ -3186,8 +3176,6 @@ class GraphOfAMeasureLength(GraphOfASegment):
         vF.parameters=self.parameters.copy()
         a.append(vI.latex_code(language=language,pspict=pspict))
         a.append(vF.latex_code(language=language,pspict=pspict))
-        #if self.marque :
-        #    a.append(self.mark.pstricks_code(pspict))
         return "\n".join(a)
 
 class GraphOfAText(GraphOfAnObject):
@@ -4503,6 +4491,7 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         """
         return self.bounding_box(pspict)
     def pstricks_code(self,pspict=None):
+        raise DeprecationWarning
         """
         return the pstricks code of the interpolation curve trough the given points
 
@@ -4594,6 +4583,7 @@ class GraphOfAnInterpolationCurve(GraphOfAnObject):
         raise
     def latex_code(self,language,pspict=None):
         if language=="pstricks":
+            raise DeprecationWarning
             return self.pstricks_code(pspict)
         if language=="tikz":
             return self.tikz_code(pspict)
@@ -4667,6 +4657,7 @@ class GraphOfACustomSurface(GraphOfAnObject):
             bb.AddBB(obj.math_bounding_box(pspict))
         return bb
     def pstricks_code(self,pspict=None):
+        raise DeprecationWarning
         # I cannot add all the obj.pstricks_code() inside the \pscustom because we cannot have \pstGeonode inside \pscustom
         # Thus I have to hack the code in order to bring all the \pstGeonode before the opening of \pscustom
         a=[]
@@ -4764,6 +4755,7 @@ class GraphOfACustomSurface(GraphOfAnObject):
         """
         a=[]
         if language=="pstricks":
+            raise DeprecationWarning
             a.append(self.pstricks_code(pspict))
         if language=="tikz":
             a.append(self.tikz_code(pspict))
