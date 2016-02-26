@@ -755,20 +755,10 @@ class GraphOfACircle(GraphOfAnObject):
 
         sage: from phystricks import *
         sage: circle=Circle(Point(-1,1),3)
-        sage: print unify_point_name(circle.pstricks_code())
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-4.00000000000000,1.00000000000000){Xaaaa}
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-1.00000000000000,1.00000000000000){Xaaab}
-        \pstCircleOA[linestyle=solid,linecolor=black]{Xaaab}{Xaaaa}
     
     If you want the same circle but between the angles 45 and 78::
         
         sage: other_circle=circle.graph(45,78)
-        sage: print unify_point_name(other_circle.pstricks_code())
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](1.12132034355964,3.12132034355964){Xaaaa}
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-0.376264927546722,3.93444280220142){Xaaab}
-        \pstGeonode[PointSymbol=none,linestyle=solid,linecolor=black](-1.00000000000000,1.00000000000000){Xaaac}
-        \pstArcOAB[linestyle=solid,linecolor=black]{Xaaac}{Xaaaa}{Xaaab}
-
     """
     def __init__(self,center,radius,angleI=0,angleF=360,visual=False,pspict=None):
         self.center = center
@@ -1884,40 +1874,6 @@ class GraphOfAPoint(GraphOfAnObject):
         bb=BoundingBox(xmin=self.point.x,xmax=self.point.x,ymin=self.point.y,ymax=self.point.y)
         return bb
     def pstricks_code(self,pspict=None,with_mark=False):
-        r"""
-        Return the pstricks code of the point
-
-        INPUT:
-        - ``with_mark`` - (default : False) if it is true, return the pstrick code
-                                of the mark in the same time. This is only used by the axes.
-        OUTPUT:
-        string
-
-        This function is not supposed to be used by the end-user.
-
-        When the point has a mark, the code of the mark is not included here because 
-        :func:`DrawGraph` automatically adds the mark to the list of objects
-        to be drawn.
-        However, some constructions want to include the pstricks code of points in its own
-        pstricks code. In that case we want the code of the mark to be part of the code
-        of the point.
-        This is the case of the axes. The pstricks code of the axes have to be in one block
-        including the markes. For that usage, we use with_mark=True
-        
-        EXAMPLE::
-
-            sage: from phystricks import *
-            sage: P=Point(1,1)
-            sage: P.put_mark(0.3,45,"$P$")
-
-        By default the code of the mark does not appears in the code of the point:
-        sage: unify_point_name(P.pstricks_code())
-        u'\\pstGeonode[PointSymbol=*,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaaa}'
-
-        If we specify with_mark=True, then we see the code of the mark:
-        sage: unify_point_name(P.pstricks_code(with_mark=True))
-        u'\\pstGeonode[](1.21213203435596,1.21213203435596){Xaaaa}\n\\rput(Xaaaa){\\rput(0;0){$P$}}\n\\pstGeonode[PointSymbol=*,linestyle=solid,linecolor=black](1.00000000000000,1.00000000000000){Xaaab}'
-        """
         return "\pstGeonode["+self.params(language="pstricks")+"]"+self.coordinates(numerical=True,pspict=pspict)+"{"+self.psName+"}"
     def tikz_code(self,pspict=None):
         symbol_dict={}
@@ -6083,6 +6039,8 @@ class GraphOfASudokuGrid(object):
                     A.put_mark(0,0,c)
                 content.append(A)
         pspict.DrawGraphs(vlines,hlines,content,numbering)
+    def action_on_pspict(self,pspict):
+        pass
     # No need to give a precise bounding box. Since the elements will be inserted with pspict.DrawGraph,
     # their BB will be counted in the global BB.
     def math_bounding_box(self,pspict):

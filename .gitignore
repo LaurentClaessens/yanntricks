@@ -8,3 +8,4 @@ tests/*
 .kk.log
 .directory
 documentation/*
+vieux/*
