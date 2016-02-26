@@ -28,6 +28,8 @@ import sys
 import BasicGeometricObjects
 import SmallComputations as SmallComputations
 
+from GraphOfAPoint import PointsNameList
+
 from phystricks import WrapperStr
 var=WrapperStr(var)
 
@@ -828,7 +830,7 @@ class pspicture(object):
 
     The name of the pspict is used to produce intermediate filesnames, and other names.
     """
-    NomPointLibre = BasicGeometricObjects.PointsNameList()
+    NomPointLibre = PointsNameList()
 
     def __init__(self,name="CAN_BE_A_PROBLEM_IF_TRY_TO_PRODUCE_EPS_OR_PDF"):
         r"""
