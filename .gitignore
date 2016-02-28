@@ -9,3 +9,4 @@ tests/*
 .directory
 documentation/*
 vieux/*
+instance.vim

@@ -1,6 +1,5 @@
 # -*- coding: utf8 -*-
 
-
 ###########################################################################
 #   This is part of the module phystricks
 #
@@ -24,10 +23,12 @@
 from __future__ import division
 from __future__ import unicode_literals
 
-import math
 from sage.all import *
 
 from GraphOfAnObject import GraphOfAnObject
+from Constructors import *
+from Utilities import *
+
 
 def PointsNameList():
     """
@@ -47,7 +48,8 @@ def PointsNameList():
     """
     # The fact that this function return 4 character strings is hard-coded here 
     #   and that 4 is hard-coded in the function unify_point_name
-    alphabet=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+    import string
+    alphabet=string.ascii_letters
     for i in alphabet:
         for j in alphabet:
             for k in alphabet:
@@ -123,12 +125,9 @@ class GraphOfAPoint(GraphOfAnObject):
             pass
 
         if direction is None:
-            direction=Segment(  self, self+(  1,-1/self.slope    )  )
+            direction=Segment(  self, self+(  1,-1/seg.slope    )  )
 
-        print("projection : direction",direction.I.coordinates(),direction.F.coordinates())
-
-        #seg2=direction.fix_origin(self)
-        P=main.Intersection(seg,direction)[0]
+        P=Intersection(seg,direction)[0]
         if advised :
             P._advised_mark_angle=seg.angle().degree+90
         return P

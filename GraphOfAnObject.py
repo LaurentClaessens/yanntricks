@@ -22,6 +22,69 @@
 
 from Parameters import Parameters
 
+class Options(object):
+    """
+    Describe the drawing options of pstricks objects.
+
+    ATTRIBUTES :
+        self.DicoOptions : dictionnary which contains the options
+    METHODS :
+        self.merge_options(opt) : opt is an other object of the class Options. The method merges the two in the sense that opt is not
+                        changed, but 
+                        1. if opt contains a key more, it is added to self
+                        2. if a key of opt is different of the one of self, self is changed
+    """
+    def __init__(self):
+        self.DicoOptions = {}
+    # On ajoute une des options en donnant genre
+    # LineColor=blue,LineStyle=dashed
+    # Ou alors en donnant un dictionnaire genre
+    # {"Dx":1,"Dy":3}
+    def add_option(self,opt):
+        if opt :            # If the argument is empty.
+            try:
+                for op in opt.split(","):
+                    s = op.split("=")
+                    self.DicoOptions[s[0]] = s[1]
+            except AttributeError :
+                for op in opt.keys():
+                    self.DicoOptions[op] = opt[op]
+
+    def remove_option(self,opt):
+        del(self.DicoOptions[opt])
+    def merge_options(self,opt):
+        for op in opt.DicoOptions.keys():
+            self.add_option({op:opt[op]})
+    def extend_options(self,Opt):
+        for opt in Opt.DicoOptions.keys():
+            self.add_option(opt+"="+Opt.DicoOptions[opt])
+    # Afiter est une liste de noms d'options, et cette méthode retourne une instance de Options qui a juste ces options-là, 
+    # avec les valeurs de self.
+    def sousOptions(self,AFiter):
+        O = Options()
+        for op in self.DicoOptions.keys() :
+            if op in AFiter : O.add_option(op+"="+self.DicoOptions[op])
+        return O
+    def style_ligne(self):
+        return self.sousOptions(OptionsStyleLigne())
+    def code(self,language=None):
+        a = []
+        if language=="pstricks":
+            for op in self.DicoOptions.keys():
+                a.append(op+"="+self.DicoOptions[op])
+                a.append(",")
+            del a[-1:]
+            return "".join(a)
+        if language=="tikz":
+            a=[]
+            for at in ["linecolor","linestyle"]:
+                k=self.DicoOptions[at]
+                if k and k!="none" :
+                    a.append(k)
+            return ",".join(a)
+    def __getitem__(self,opt):
+        return self.DicoOptions[opt]
+
 class GraphOfAnObject(object):
     """ This class is supposed to be used to create other "GraphOfA..." by inheritance. It is a superclass. """
     # self.record_add_to_bb is a list of points to be added to the bounding box.

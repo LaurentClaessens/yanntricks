@@ -15,12 +15,21 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2015
+# copyright (c) Laurent Claessens, 2009-2016
 # email: moky.math@gmail.com
 
 # The documentation is compiled by
 # sage -sh
 # make html
+
+from __future__ import division
+from __future__ import unicode_literals
+
+from sage.all import *
+
+from Constructors import Point
+from Constructors import Segment
+
 
 """
 A collection of tools for building LaTeX-pstricks figures with python.
@@ -28,10 +37,6 @@ A collection of tools for building LaTeX-pstricks figures with python.
 COMMAND LINE ARGUMENTS:
 
     - ``--pdf`` - Create the PDF files of the pictures.
-
-    - ``--dvi`` - Create the DVI files only.
-
-    - ``--eps`` - the picture arrives as an \includegraphics of a eps. It also creates the `eps` file.
 
     - ``--png`` - the picture arrives as an \includegraphics of a png. It also creates the `png` file.
 
@@ -48,14 +53,9 @@ COMMAND LINE ARGUMENTS:
         - Here we are really speaking about pspicture. There will be one file of one 
           \includegraphics for each pspicture. This is not figure-wise.
 
-        - Using `--pdf`, `--create-png`, etc. create the picture from an auxiliary
-          LaTeX file that will we compiled and converted on the fly. As a consequence,
-          customizations (e.g. fonts) will not be taken into account. 
-          See `pspict.specific_needs`
-
-    - ``--create-tests`` - create a `tmp` file in which the pspicture is written.
-
-    - ``--tests`` - compares the produced pspicture with the corresponding `tmp` file and
+    - ``--create-tests`` (Deprecated)  - create a `tmp` file in which the pspicture is written.
+ 
+    - ``--tests`` (Deprecated)    - compares the produced pspicture with the corresponding `tmp` file and
                     raises a ValueError if it does not correspond.
                     If this option is set, nothing is written on the disk.
 
@@ -63,11 +63,6 @@ COMMAND LINE ARGUMENTS:
 
                     See :class:`TestPspictLaTeXCode`
 """
-
-from __future__ import division
-from __future__ import unicode_literals
-
-from sage.all import *
 
 """
 TEST :
@@ -272,74 +267,6 @@ def test_imaginary_part_point(P,epsilon=0.0001):
         on=True
     return on,Point(x,y)
 
-def Intersection(f,g,a=None,b=None,numerical=False,only_real=True):
-    """
-    When f and g are objects with an attribute equation, return the list of points of intersections.
-
-    The list of point is sorted by order of `x` coordinates.
-
-    If 'only_real' is True, return only the real solutions.
-
-    Only numerical approximations are returned as there are some errors otherwise. As an example the following 
-    solving return points that are not even near from the circle x**2+y**2=9
-    solve(    [   -1/3*sqrt(3)*y + 1/3*sqrt(3)*(-0.19245008972987399*sqrt(3) - 3) + x == 0,x^2 + y^2 - 9 == 0    ],[x,y]   )
-    Position : 313628350
-
-    EXAMPLES::
-
-        sage: from phystricks import *
-        sage: fun=phyFunction(x**2-5*x+6)
-        sage: droite=phyFunction(2)
-        sage: pts = Intersection(fun,droite)
-        sage: for P in pts:print P
-        <Point(1,2)>
-        <Point(4,2)>
-
-        sage: f=phyFunction(sin(x))
-        sage: g=phyFunction(cos(x))
-        sage: pts=Intersection(f,g,-2*pi,2*pi,numerical=True)
-        sage: for P in pts:print P
-        <Point(-5.497787143782138,0.707106781186548)>
-        <Point(-2.3561944901923466,-0.707106781186546)>
-        <Point(0.7853981633974484,0.707106781186548)>
-        <Point(3.926990816987241,-0.707106781186547)>
-
-
-    If 'numerical' is True, it search for the intersection points of the functions 'f' and 'g' (it only work with functions). In this case an interval is required.
-    """
-
-    if numerical and "sage" in dir(f) :
-        k=f-g
-        xx=SmallComputations.find_roots_recursive(k.sage,a,b)
-        pts=[  Point(x,f(x)) for x in xx ]
-        for P in pts:
-            if "I" in P.coordinates():
-                print("There should not be imaginary part")
-                raise
-        return pts
-
-    x,y=var('x,y')
-    pts=[]
-    if numerical :
-        soluce=solve([f.equation(numerical=True),g.equation(numerical=True)],[x,y])
-    else :
-        soluce=solve([f.equation(),g.equation()],[x,y])
-    for s in soluce:
-        a=s[0].rhs()
-        b=s[1].rhs()
-        z=a**2+b**2
-        ok1,a=test_imaginary_part(a)
-        ok2,b=test_imaginary_part(b)
-        if ok1 and ok2 :
-            pts.append(Point(a,b))
-    pts.sort(lambda P,Q:cmp(P.x,Q.x))
-    for P in pts:
-        if "I" in P.coordinates():
-            print("There should not be imaginary part")
-            print(f.equation,g.equation)
-            raise
-    return pts
-
 def EnsurephyFunction(f):
     if "sage" in dir(f):        # This tests in the same time if the type if phyFunction or GraphOfAphyFunction
         k = phyFunction(f.sage)
@@ -356,13 +283,6 @@ def EnsureParametricCurve(curve):
         return curve.parametric_curve()
     else :
         return curve
-
-def PolarSegment(P,r,theta):
-    """
-    returns a segment on the base point P (class Point) of length r angle theta (degree)
-    """
-    alpha = radian(theta)
-    return Segment(P, Point(P.x+r*cos(alpha),P.y+r*sin(alpha)) )
 
 def ParametricCurve(f1,f2,interval=(None,None)):
     """
@@ -1105,52 +1025,6 @@ def Rectangle(*args,**arg):
         SE=bb.SE()
     return BasicGeometricObjects.GraphOfARectangle(NW,SE)
 
-def AffineVector(A=None,B=None):
-    """
-    return an affine vector.
-
-    An affine vector is a vector whose origin is not specifically (0,0).
-
-    EXAMPLES:
-        
-    An affine vector can be given by two points::
-
-        sage: from phystricks import *
-        sage: print AffineVector(Point(1,1),Point(pi,sqrt(2)))
-        <vector I=<Point(1,1)> F=<Point(pi,sqrt(2))>>
-
-    It can be simply derived from a segment::
-
-        sage: segment=Segment( Point(1,1),Point(2,2)  )
-        sage: av=AffineVector(segment)
-        sage: print av
-        <vector I=<Point(1,1)> F=<Point(2,2)>>
-
-    If you pass an object which has a method `segment`, the
-    :func:`AffineVector` will provide the corresponding affine vector::
-
-        sage: from phystricks.BasicGeometricObjects import SingleAxe
-        sage: axe=SingleAxe(  Point(-2,2),Vector(1,1),-3,3  )
-        sage: print AffineVector(axe)
-        <vector I=<Point(-5,-1)> F=<Point(1,5)>>
-
-    NOTE:
-
-    The main difference between a :func:`Segment` an :func:`AffineVector` is that
-    the latter will be draw with an arrow. There are also some difference in their
-    behaviour under rotation, dilatation and operations like that.
-
-    """
-    if B :      # If B is given, I suppose that we gave two points
-        vect=Segment(A,B)
-    else :
-        try :
-            vect=A.segment()
-        except AttributeError :
-            vect=A
-    vect.arrow_type="vector"
-    return vect
-
 class Grid(object):
     """
     A grid. This is main lines to appear at regular interval on the picture.
@@ -1387,54 +1261,6 @@ def CircleOA(O,A):
     radius=sqrt( (O.x-A.x)**2+(O.y-A.y)**2 )
     return Circle(O,radius)
 
-def Point(a,b):
-    """
-    return a point.
-
-    INPUT:
-
-    - ``x,y`` - the coordinates of the point. These are numbers.
-
-
-    EXAMPLES::
-
-        sage: from phystricks import *
-        sage: print Point(1,1)
-        <Point(1,1)>
-        sage: print Point(pi,sqrt(2))
-        <Point(pi,sqrt(2))>
-    
-    You can pass variables::
-
-        sage: x=var('x')
-        sage: P=Point(x**2,1)   
-        sage: print P
-        <Point(x^2,1)>
-
-    Notice that the coordinates of the point have to be numerical in order to be passed to tikz (and then LaTeX) at the end::
-
-    """
-    return BasicGeometricObjects.GraphOfAPoint(a,b)
-
-def PolarPoint(r,theta):
-    """
-    return the point at polar coordinates (r,theta).
-
-    INPUT:
-
-    - ``r`` - the distance from origine
-    - ``theta`` - the angle
-
-    EXAMPLES::
-
-        sage: from phystricks import *
-        sage: print PolarPoint(2,45)
-        <Point(sqrt(2),sqrt(2))>
-
-
-    """
-    return Point(r*cos(radian(theta)),r*sin(radian(theta)))
-
 def SingleAxe(C,base,mx,Mx,pspict=None):
     """
     Return an axe.
@@ -1637,37 +1463,6 @@ def BarDiagram(X,Y):
 def SudokuGrid(question,length=1):
     return BasicGeometricObjects.GraphOfASudokuGrid(question,length)
 
-def Segment(A,B=None,vector=None):
-    """
-    Creates a segment.
-
-    The typical use is to give two points.
-    An alternative is to provide a point and a vector.
-
-    EXAMPLES::
-
-        sage: from phystricks import *
-        sage: seg=Segment(  Point(0,0),Point(2,10) )
-        sage: print seg.I            
-        <Point(0,0)>
-        sage: print seg.F
-        <Point(2,10)>
-        sage: seg2=Segment(  Point(-3,4),vector=Vector(1,2) )
-        sage: print seg2.I            
-        <Point(-3,4)>
-        sage: print seg2.F
-        <Point(-2,6)>
-        sage: v=AffineVector(  Point(1,2),Point(-2,5) )
-        sage: seg3=Segment(  Point(-3,4),vector=v )
-        sage: print seg3.I            
-        <Point(-3,4)>
-        sage: print seg3.F
-        <Point(-6,7)>
-    """
-    if vector:
-        B=A+vector
-    return BasicGeometricObjects.GraphOfASegment(A,B)
-
 def Text(P,text,hide=True):
     """
     A text.
@@ -1813,7 +1608,9 @@ def unify_point_name(s):
         if n not in rematch:
             rematch.append(n)
 
-    names=BasicGeometricObjects.PointsNameList()
+
+    from GraphOfAPoint import PointsNameList
+    names=GraphOfAPoint.PointsNameList()
     for m in rematch:
         name=names.next()
         s=s.replace("{%s}"%m,"{X%s}"%name).replace("(%s)"%m,"(X%s)"%name)

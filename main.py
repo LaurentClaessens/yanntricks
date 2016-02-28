@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2015
+# copyright (c) Laurent Claessens, 2009-2016
 # email: moky.math@gmail.com
 
 
@@ -830,7 +830,7 @@ class pspicture(object):
 
     The name of the pspict is used to produce intermediate filesnames, and other names.
     """
-    NomPointLibre = PointsNameList()
+    NomPointLibre = GraphOfAPoint.PointsNameList()
 
     def __init__(self,name="CAN_BE_A_PROBLEM_IF_TRY_TO_PRODUCE_EPS_OR_PDF"):
         r"""
@@ -859,7 +859,7 @@ class pspicture(object):
 
         # self.interWriteFile is redefined in MultiplePictures
 
-        self.NomPointLibre = BasicGeometricObjects.PointsNameList()
+        self.NomPointLibre = GraphOfAPoint.PointsNameList()
         self.record_marks=[]
         self.record_bounding_box=[]
         self.record_draw_graph=[]
