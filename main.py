@@ -29,45 +29,12 @@ import BasicGeometricObjects
 import SmallComputations as SmallComputations
 
 from PointGraph import PointsNameList
+from Exceptions import *
 
 from phystricks import WrapperStr
 var=WrapperStr(var)
 
 from phystricks import *
-
-class PhystricksTestError(Exception):
-    """
-    The exception raised when testing the pspictures.
-
-    See :class:`TestPspictLaTeXCode`.
-    """
-    def __init__(self,expected_text=None,obtained_text=None,justification=None,pspict=None,code=1):
-        """
-        code is 1 or 2.
-        code==1 indicates that the figure has to be visually checked.
-        code==2 indicates that the figure has to be recompiled (LaTeX)
-        """
-        self.expected_text=expected_text
-        self.obtained_text=obtained_text
-        self.justification=justification
-        self.pspict=pspict
-        self.code=code
-        if pspict==None:
-            print "Warning : this error is provided without pspict. Maybe something is wrong."
-    def __str__(self):
-        a=[]
-        a.append("Test failed")
-        a.append(self.justification)
-        return "\n".join(a)
-
-class PhystricksNoError(Exception):
-    def __init__(self,figure):
-        self.figure=figure
-
-
-class NoMathBoundingBox(Exception):
-    def __init__(self,obj,fun):
-        self.message = "Object {0} from class {1} has no attribute {2}".format(obj,type(obj),fun)
 
 class FigureGenerationSuite(object):
     """

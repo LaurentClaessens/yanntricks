@@ -285,6 +285,8 @@ class phyFunctionGraph(ObjectGraph):
         minmax['xmax']=Mx
         ymin=1000
         ymax=-1000
+        print("phyFunctionGraph::get_minmax_date -- plotpoints_list : ")
+        print(self.plotpoints_list(self.parameters.plotpoints,mx,Mx))
         for x in self.plotpoints_list(self.parameters.plotpoints,mx,Mx):
             valid=True
             try :
@@ -297,6 +299,8 @@ class phyFunctionGraph(ObjectGraph):
             except AttributeError :
                 pass            # When drawing non-analytic function, y is numpy.float64
             if valid :
+                print("phyFunctionGraph::get_minmax_data x ",x)
+                print("phyFunctionGraph::get_minmax_data y ",y)
                 ymax=max(ymax,y)
                 ymin=min(ymin,y)
         minmax['ymax']=ymax
@@ -307,6 +311,7 @@ class phyFunctionGraph(ObjectGraph):
     def xmin(self,deb,fin):
         return self.get_minmax_data(deb,fin)['xmin']
     def ymax(self,deb,fin):
+        print("ooFKUPooUqNLHU  phyFunctionGraph::ymax  ",self.get_minmax_data(deb,fin)['ymax'])
         return self.get_minmax_data(deb,fin)['ymax']
     def ymin(self,deb,fin):
         return self.get_minmax_data(deb,fin)['ymin']
@@ -373,11 +378,6 @@ class phyFunctionGraph(ObjectGraph):
             Mx=k[1]
             f=self.graph(mx,Mx)
             self.pieces.append(f)
-    # I use the generic function 'params' from ObjectGraph, June 27, 2014
-    #def params(self,language=None):
-    #    self.conclude_params()
-    #    self.add_option("plotpoints=%s"%str(self.parameters.plotpoints))
-    #    return self.options.code()
     def bounding_box(self,pspict=None):
         bb = BoundingBox()
         if self.do_cut_y and len(self.pieces)>0:

@@ -985,50 +985,6 @@ class SegmentGraph(ObjectGraph):
     def tikz_code(self,pspict=None):
         return self.latex_code(language="tikz",pspict=pspict)
 
-class MeasureLengthGraph(SegmentGraph):
-    def __init__(self,seg,dist=0.1):
-        try :
-            self.segment=seg.segment
-        except AttributeError :
-            self.segment=seg
-        self.dist=dist
-        self.delta=seg.rotation(-90).fix_size(self.dist)
-        self.mseg=seg.translate(self.delta)
-        SegmentGraph.__init__(self,self.mseg.I,self.mseg.F)
-        self.mI=self.mseg.I
-        self.mF=self.mseg.F
-    def advised_mark_angle(self,pspict=None):
-        return self.delta.angle()
-    def math_bounding_box(self,pspict=None):
-        return BoundingBox()
-        # I return a "empty" bounding box because I don't want to
-        # take the measures in consideration when creating the axes.
-        #return self.mseg.math_bounding_box(pspict)
-        #return BoundingBox()
-    def bounding_box(self,pspict=None):
-        bb=self.mseg.bounding_box(pspict)
-        for ob in self.added_objects :
-            bb.AddBB(ob.bounding_box(pspict))
-        if self.marque:
-            C=self.mseg.center()
-            C.marque=self.marque
-            C.mark=self.mark
-            C.mark.graph=C
-            bb.AddBB(C.bounding_box(pspict))
-        return bb
-    def mark_point(self,pspict=None):
-        return self.mseg.center()
-    def latex_code(self,language=None,pspict=None):
-        a=[]
-        C=self.mseg.center()
-        vI=AffineVector(C,self.mI)
-        vF=AffineVector(C,self.mF)
-        vI.parameters=self.parameters.copy()
-        vF.parameters=self.parameters.copy()
-        a.append(vI.latex_code(language=language,pspict=pspict))
-        a.append(vF.latex_code(language=language,pspict=pspict))
-        return "\n".join(a)
-
 def _vector_latex_code(segment,language=None,pspict=None):
     """
     Return the LaTeX's code of a Segment when is is seen as a vector.

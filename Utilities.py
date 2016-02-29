@@ -514,6 +514,11 @@ def check_too_large(obj,pspict=None):
         my=bb.ymin
         Mx=bb.xmax
         My=bb.ymax
+
+        print("ooXVPGooUEHVur Utilities::check_too_large ")
+        print("mx",mx)
+        print("My",My)
+
     except AttributeError:
         print "Object {0} has no method bounding_box.".format(obj)
         mx=obj.mx
@@ -521,20 +526,21 @@ def check_too_large(obj,pspict=None):
         Mx=obj.Mx
         My=obj.My
     if pspict:
+        import Exceptions
         try :
             if mx<pspict.mx_acceptable_BB :
                 print("mx=",mx,"when pspict.mx_acceptable_BB=",pspict.mx_acceptable_BB)
-                raise main.PhystricksCheckBBError()
+                raise Exceptions.PhystricksCheckBBError()
             if my<pspict.my_acceptable_BB :
                 print("my=",my,"when pspict.my_acceptable_BB=",pspict.my_acceptable_BB)
-                raise main.PhystricksCheckBBError()
+                raise Exceptions.PhystricksCheckBBError()
             if Mx>pspict.Mx_acceptable_BB :
                 print("Mx=",Mx,"when pspict.Mx_acceptable_BB=",pspict.Mx_acceptable_BB)
-                raise main.PhystricksCheckBBError()
+                raise Exceptions.PhystricksCheckBBError()
             if My>pspict.My_acceptable_BB:
                 print("My=",My,"when pspict.My_acceptable_BB=",pspict.My_acceptable_BB)
-                raise main.PhystricksCheckBBError()
-        except main.PhystricksCheckBBError :
+                raise Exceptions.PhystricksCheckBBError()
+        except Exceptions.PhystricksCheckBBError :
             print "I don't believe that object {1} has a bounding box as large as {0}".format(bb,obj)
             try :
                 print "The mother of {0} is {1}".format(obj,obj.mother)

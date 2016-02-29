@@ -118,10 +118,6 @@ def put_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None):
     s1.added_objects.extend( c1 )
     s2.added_objects.extend( c2 )
 
-class PhystricksCheckBBError(Exception):
-    def __init__(self):
-        pass
-
 def GenericFigure(nom,script_filename=None):
     """
     This function returns a figure with some default values. It creates coherent label, file name and prints the lines to be appended in the LaTeX file to include the figure.
@@ -275,87 +271,7 @@ def PolarCurve(fr,ftheta=None):
         f2=fr(x=x)*sin(ftheta(x=x))
     return ParametricCurve(f1,f2)
 
-# There is an other CustomSurface later. (october, 6, 2012)
-#def CustomSurface(*args):
-#    if len(args)==1:
-#        args=args[0]
-#    graphList=list(args)
-#    print graphList
-#    raise
-#    return BasicGeometricObjects.CustomSurfaceGraph(graphList)
 
-def MeasureLength(seg,dist=0.1):
-    """
-    When a segment exists, one wants sometimes to denote its length drawing a double-arrow parallel to the segment. This is what this class is intended to.
-
-    The segment (and then the graph associated with the mark) is the parallel one,
-    not the segment given in argument.
-
-    INPUT:
-
-    - ``seg`` - the segment to be measured.
-
-    - ``dist`` - the distance between the segment and the measure.
-
-    The sign of <dist> is an issue. If you give 0.3 you get one result, if you give
-    -0.3, you get the segment on the other side.
-    The algorithm is the following. If v is the vector seg.I --> seg.F and w is the vector from
-    <seg> to the arrow line to be drawn, then (v,w) has the same orientation as (Y,X) where X=(1,0) 
-    and Y=(0,1).
-    The rational is that if the segment is vertical, we want the measure to appear
-    on the right.
-
-    EXAMPLES:
-
-    .. literalinclude:: phystricksIntervalleUn.py
-    .. image:: Picture_FIGLabelFigIntervallePICTIntervalle-for_eps.png
-    
-    In order to check the position of the arrow line,
-    we check the position of the mark_point::
-
-        sage: from phystricks import *
-        sage: O=Point(0,0)
-        sage: A=Point(1,0)
-
-    Horizontal line directed from right to left; the
-    arrow line has to be bellow::
-
-        sage: measureOA=MeasureLength(Segment(O,A),0.1)
-        sage: print measureOA.mark_point()
-        <Point(0.5,-0.100000000000000)>
-
-    Horizontal line directed from left to right::
-
-        sage: measureAO=MeasureLength(Segment(A,O),0.1)
-        sage: print measureAO.mark_point()
-        <Point(0.5,0.100000000000000)>
-
-    Vertical line::
-
-        sage: B=Point(0,2)
-        sage: measureOB=MeasureLength(Segment(O,B),0.1)
-        sage: print measureOB.mark_point()
-        <Point(0.100000000000000,1.0)>
-
-        
-
-    USEFUL ATTRIBUTE:
-
-    - ``self.advised_mark_angle`` - the angle at which we advise you to put the mark.
-                                    It indicates the direction orthogonal to the segment,
-                                    with the orientation given in the discussion about the
-                                    sign of <dist>.
-
-    ::
-
-        sage: m=MeasureLength(Segment( Point(1,1) ,Point(2,2) ),0.1)
-        sage: print m.advised_mark_angle
-        AngleMeasure, degree=315.000000000000,radian=7/4*pi
-
-    You are invited to use advised_mark_angle. If not the position of the mark
-    could be unpredictable.
-    """
-    return BasicGeometricObjects.MeasureLengthGraph(seg,dist)
 
 def LagrangePolynomial(*args):
     """
@@ -407,7 +323,6 @@ def HermiteInterpolation(points_list):
         P[j]=(Q[j](x)/Q[j](xx[j]))*(    parenthese*y[j]+(x-xx[j])*d[j]      )
     f=sum(P.values())
     return phyFunction(f.expand())
-
 
 def ImplicitCurve(f,xrange,yrange,plot_points=100):
     """
