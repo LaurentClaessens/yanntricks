@@ -1,7 +1,22 @@
 from phystricks import *
+from Testing import *
 
 """
 This file contains only doctests with output too long or not sufficiently interesting to be included in the code itself.
+"""
+
+
+
+def testFGetMinMaxData():
+"""
+sage: from phystricks import *
+sage: x,y=var('x,y')
+sage: F=ImplicitCurve(x**2+y**2==sqrt(2),(x,-5,5),(y,-4,4),plot_points=300)
+sage: d=F.get_minmax_data()
+sage: roundingForTest(d)==roundingForTest({'xmin': -1.1890000000000001, 'ymin': -1.1879999999999999, 'ymax': 1.1879999999999999, 'xmax': 1.1890000000000001})
+sage: F.plot_points=10
+sage: d=F.get_minmax_data()       
+sage: roundingForTest(d)=={'xmin': -1.189, 'ymin': -1.188, 'ymax': 1.188, 'xmax': 1.189}
 """
 
 
@@ -109,6 +124,5 @@ sage: curve.pstricks_code()
 
 
 """
-
 
 

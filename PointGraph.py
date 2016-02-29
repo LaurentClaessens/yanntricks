@@ -25,7 +25,7 @@ from __future__ import unicode_literals
 
 from sage.all import *
 
-from GraphOfAnObject import GraphOfAnObject
+from ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
 
@@ -56,17 +56,17 @@ def PointsNameList():
                 for l in alphabet:
                     yield i+j+k+l
 
-class GraphOfAPoint(GraphOfAnObject):
+class PointGraph(ObjectGraph):
     NomPointLibre = PointsNameList()
 
     def __init__(self,a,b):
         self.x=SR(a)
         self.y=SR(b)
-        GraphOfAnObject.__init__(self,self)
+        ObjectGraph.__init__(self,self)
         self.point = self.obj
         self.add_option("PointSymbol=*")
         self._advised_mark_angle=None
-        self.psName=GraphOfAPoint.NomPointLibre.next()
+        self.psName=PointGraph.NomPointLibre.next()
         
         ax=abs(numerical_approx(self.x))
         if ax<0.00001 and ax>0 :
@@ -302,7 +302,7 @@ class GraphOfAPoint(GraphOfAnObject):
         return P
     def default_associated_graph_class(self):
         """Return the class which is the Graph associated type"""
-        return GraphOfAPoint             # Graph is also a method of Sage
+        return PointGraph   
     def create_PSpoint(self):
         """Return the code of creating a pstgeonode. The argument is a Point of GraphOfAPoint"""
         raise DeprecationWarning       # pstricks_code should no more be used anywhere
@@ -333,7 +333,7 @@ class GraphOfAPoint(GraphOfAnObject):
 
         Only return positive angles (between 0 and 2*pi)
         """
-        return SmallComputations.PointToPolaire(self,origin=origin)
+        return PointToPolaire(self,origin=origin)
     def angle(self,origin=None):
         """
         Return the angle of the segment from (0,0) and self.
@@ -391,7 +391,7 @@ class GraphOfAPoint(GraphOfAnObject):
         raise DeprecationWarning  # June 24, 2014
         return self.coordinates()
     def graph_object(self):
-        return GraphOfAPoint(self)
+        return PointGraph(self)
     def copy(self):
         return Point(self.x,self.y)
     def mark_point(self,pspict=None):

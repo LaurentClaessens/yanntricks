@@ -1,0 +1,8 @@
+
+The following should work
+  f=phyFunction(2*x**2-x-1).graph(-0.8,1.3)
+  a=f.coefficient(x,2)
+  b=f.coefficient(x,1)
+  c=f.coefficient(x,0)
+when an attribute is not found, GraphOfAphyFunction should try the attribute of self.sage
+

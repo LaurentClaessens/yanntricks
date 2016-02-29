@@ -228,104 +228,10 @@ def SubsetFigures(old_pspicts,old_fig,l):
     pspict=[]
     for i in l:
         subfigure=fig.new_subfigure("name"+str(i),"LabelSubFig"+name+str(i))
-        #picture=subfigure.new_pspicture(name+"pspict"+str(i))
         subfigure._add_pspicture(old_pspicts[i])
         old_pspicts[i].figure_mother=fig
         pspict.append(old_pspicts[i])
     return pspict,fig
-
-def is_real(z):
-    if type(z) in [int,sage.rings.real_mpfr.RealNumber]:
-        return True
-    return z.is_real()
-
-def test_imaginary_part(z,epsilon=0.0001):
-    """
-    Return a tuple '(isreal,w)' where 'isreal' is a boolean saying if 'z' is real (in the sense that it is real and does not contain 'I' in its string representation) and 'w' is 'z' when the imaginary part is larger than epsilon and an 'numerical_approx' of 'z' when its imaginary part is smaller than 'epsilon'
-
-    With the colateral effect that it returns a numerical approximation.
-    """
-    if is_real(z) and "I" not in str(z):
-        return True,z
-    k=numerical_approx(z)
-    if is_real(k):
-        return True,k
-    if abs( k.imag_part() )<epsilon:
-        #print("I am removing a (probably fake) imaginary part")
-        return True,numerical_approx( z.real_part() )
-    print("It seems that an imaginary part is not so small.")
-    return False,z
-
-def test_imaginary_part_point(P,epsilon=0.0001):
-    """
-    return the tuple '(isreal,P)' whith the same description of 'test_imaginary_part'
-    """
-    realx,x=test_imaginary_part(P.x)
-    realy,y=test_imaginary_part(P.y)
-    on=False
-    if realx and realy:
-        on=True
-    return on,Point(x,y)
-
-def EnsurephyFunction(f):
-    if "sage" in dir(f):        # This tests in the same time if the type if phyFunction or GraphOfAphyFunction
-        k = phyFunction(f.sage)
-    if "phyFunction" in dir(f):
-        k = f.phyFunction()
-    else :
-        k = phyFunction(f)
-    if "nul_function" in dir(f):
-        k.nul_function = f.nul_function
-    return k
-
-def EnsureParametricCurve(curve):
-    if "parametric_curve" in dir(curve):
-        return curve.parametric_curve()
-    else :
-        return curve
-
-def ParametricCurve(f1,f2,interval=(None,None)):
-    """
-    This class describes a parametric curve.
-
-    INPUT:
-
-    - ``f1,f2`` - functions that are the components of the parametric curve.
-    - 'interval' - the interval on which the curve is considered.
-
-    If 'f1' has mx and Mx and interval is not given, they are used.
-
-    OUTPUT:
-    an object ready to be drawn.
-
-    EXAMPLES::
-
-        sage: from phystricks import *
-        sage: x=var('x')
-        sage: f1=phyFunction(x)
-        sage: f2=phyFunction(x**2)
-        sage: F=ParametricCurve(f1,f2).graph(-2,3)
-        sage: G=ParametricCurve(f1,f2,mx=-2,Mx=3)
-
-    Notice that due to several `@lazy_attribute`, changing the components after creation could produce funny results.
-
-    .. literalinclude:: phystricksCycloide.py
-
-    .. image:: Picture_FIGLabelFigCycloidePICTCycloide-for_eps.png
-
-    """
-    # First, we consider the case in which two functions are given
-    llamI=interval[0]
-    llamF=interval[1]
-    if "mx" in dir(f1) :
-        if f1.mx != None:
-            llamI=f1.mx
-            llamF=f1.Mx
-    f1=EnsurephyFunction(f1)
-    f2=EnsurephyFunction(f2)
-    if isinstance(llamI,AngleMeasure):
-        raise
-    return BasicGeometricObjects.GraphOfAParametricCurve(f1,f2,llamI,llamF)
 
 def RightAngle(d1,d2,n1=0,n2=1,r=0.3):
     """
@@ -368,60 +274,6 @@ def PolarCurve(fr,ftheta=None):
         f1=fr(x=x)*cos(ftheta(x=x))
         f2=fr(x=x)*sin(ftheta(x=x))
     return ParametricCurve(f1,f2)
-
-def phyFunction(fun,mx=None,Mx=None):
-    """
-    Represent a function.
-
-    INPUT:
-
-    - ``fun`` - a function.
-    - ``mx,Mx`` - initial and final value of the argument.
-
-    EXAMPLES::
-    
-        sage: from phystricks import *
-        sage: f=phyFunction(cos(x))
-        sage: f(pi/2)
-        0
-
-        sage: g=phyFunction(2*f,0,pi)
-        sage: g(pi)
-        -2
-
-        One can deal with probability distributions :
-        sage: C=RealDistribution('chisquared',10).distribution_function
-        sage: f=phyFunction(C)
-        sage: f(4)
-        0.0451117610789
-
-    EXAMPLES with function for which one don't know analytic form
-
-    .. literalinclude:: phystricksChiSquared.py
-    .. image:: Picture_FIGLabelFigChiSquaredPICTChiSquared-for_eps.png
-
-    OTHER EXAMPLE
-
-    .. literalinclude:: phystricksNonAnalyticOne.py
-    .. image:: Picture_FIGLabelFigNonAnalyticOnePICTNonAnalyticOne-for_eps.png
-
-    """
-    # The first try is that the given expression is already a phyFunction.
-    try:
-        return fun.graph(mx,Mx)     
-    except (AttributeError,TypeError):
-        pass
-
-    # The second try is that `fun` is something that Sage knows.
-    try:
-        sy=symbolic_expression(fun)
-    except TypeError:       # This deals with probability distributions for example.
-        return BasicGeometricObjects.GraphOfAphyFunction(fun,mx,Mx)
-
-        # I'm trying not to use NonAnalytic anymore, July 1, 2014
-        #return BasicGeometricObjects.NonAnalyticFunction(fun,mx,Mx)
-    x=var('x')
-    return BasicGeometricObjects.GraphOfAphyFunction(sy.function(x),mx,Mx)
 
 # There is an other CustomSurface later. (october, 6, 2012)
 #def CustomSurface(*args):
@@ -555,45 +407,6 @@ def HermiteInterpolation(points_list):
         P[j]=(Q[j](x)/Q[j](xx[j]))*(    parenthese*y[j]+(x-xx[j])*d[j]      )
     f=sum(P.values())
     return phyFunction(f.expand())
-
-def InterpolationCurve(points_list,context_object=None,mode=None):
-    """
-    determine an interpolation curve from a list of points.
-
-    INPUT:
-    - ``points_list`` - a list of points that have to be joined.
-
-    OPTIONAL INPUT:
-
-    - ``context_object`` -  the object that is going to use the InterpolationCurve's latex code.
-                            ImplicitCurve and wavy curves are using InterpolationCurve as "backend"
-                            for the latex code.
-                            Here we use the context_object in order to take this one into account
-                            when determining the parameters (color, ...).
-
-    EXAMPLES:
-
-    This example is valid, but will not plot the expected line (this is a feature of `\pscurve`)::
-
-        sage: from phystricks import *
-        sage: F=InterpolationCurve([Point(0,0),Point(1,1)])
-
-    If you want to plot the small segment, you have to add a point in the center::
-
-        sage: F=InterpolationCurve([Point(0,0),Point(0.5,0.5),Point(1,1)])
-
-    The following draws a circle::
-    
-        sage: C=Circle(Point(0,0),1)
-        sage: G=InterpolationCurve([C.get_point(2*pi/i,advised=False) for i in range(1,100)])
-
-    Notice in the lase example the use of advised=False in order to speed up the computation.
-
-    NOTE:
-
-    InterpolationCurve is used in order to produce implicit plot and wavy functions.
-    """
-    return BasicGeometricObjects.GraphOfAnInterpolationCurve(points_list,context_object,mode=mode)
 
 
 def ImplicitCurve(f,xrange,yrange,plot_points=100):
@@ -920,83 +733,6 @@ def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
     curve2=ParametricCurve(x,f2,(mx2,Mx2))
     return SurfaceBetweenParametricCurves(curve1,curve2,(mx1,Mx1),(mx2,Mx2))
 
-def Vector(*args):
-    """
-    From the coordinates x,y, return the corresponding vector, i.e. the affine vector from (0,0) to (x,y).
-
-    You can also only give a Point
-    """
-    try :
-        x=args[0]
-        y=args[1]
-    except IndexError :
-        x=args[0].x
-        y=args[0].y
-    return AffineVector(Point(0,0),Point(x,y))
-
-def Circle(center,radius,angleI=0,angleF=360,visual=False,pspict=None):
-    """
-    Return a circle of given radius and center.
-
-    INPUT:
-
-    - ``center`` - the center of the circle.
-
-    - ``radius`` - the radius of the circle.
-    
-    - ``angleI`` - (default=0) If you want an arc of circle, this is the beginning angle.
-    - ``angleF`` - (default=0) If you want an arc of circle, this is the ending angle.
-    - ``visual`` - (default=False) if 'True', the radius is taken as a 'visual' length. This option only affects the underlying parametric curve and then the graph. It is probably buggy to attempt to get normal and tangent vectors when a dilatation is performed when 'visual' is True.
-
-
-    OUTPUT:
-
-    A circle ready to be drawn
-
-    EXAMPLES:
-
-    The following describes the usual trigonometric circle::
-
-            sage: from phystricks import *
-            sage: circle=Circle(Point(0,0),1)
-            sage: print circle.angleI
-            AngleMeasure, degree=0.000000000000000,radian=0
-            sage: print circle.angleF
-            AngleMeasure, degree=360.000000000000,radian=0
-
-    """
-    # TODO: in the last example, the radian value should be 2*pi.
-    if visual and not pspict :
-        print("You cannot try to use 'visual' not giving a pspicture")
-        raise ValueError
-    return BasicGeometricObjects.GraphOfACircle(center,radius,angleI=angleI,angleF=angleF,visual=visual,pspict=pspict)
-
-def CircleOA(O,A):
-    """
-    return a circle with center 'O' and passing through the point 'A'
-    """
-    radius=distance(O,A)
-    return Circle(O,radius)
-
-def CircleAB(A,B):
-    """
-    return a circle with diameter [AB]
-    """
-    center=Segment(A,B).midpoint()
-    return CircleOA(center,A)
-
-def CircularSector(center,radius,a,b):
-    circle=Circle(center,radius)
-    P=circle.get_point(a)
-    Q=circle.get_point(b)
-    l1=Segment( circle.center,P  )
-    l2=circle.graph(a,b)
-    l3=Segment(Q,circle.center)
-    return CustomSurface(l1,l2,l3)
-
-def FractionPieDiagram(center,radius,a,b):
-    return BasicGeometricObjects.GraphOfAFractionPieDiagram(center,radius,a,b)
-
 def Rectangle(*args,**arg):
     """
     INPUT:
@@ -1189,49 +925,6 @@ class AxesUnit(object):
                 text="$"+latex(pos).replace("TheTag",self.latex_symbol)+"$"  # This risks to be Sage-version dependent.
                 l.append((x,text))
         return l
-
-def AngleAOB(A,O,B,r=None):
-    """
-    Return the angle AOB.
-
-    It represent the angle formed at the point O with the lines
-    OA and OB (in that order).
-
-    INPUT:
-
-    - ``A,O,A`` - points.
-
-    - ``r`` - (default, see below) the radius of the arc circle marking the angle.
-
-    OUTPUT:
-
-    An object ready to be drawn of type :class:`GraphOfAnAngle`.
-
-    If `r` is not given, a default value of 0.2 times the length OA is taken.
-
-    EXAMPLES:
-
-    Notice the difference between AOB and BOA::
-
-        sage: from phystricks import *
-        sage: A=Point(1,1)
-        sage: O=Point(0,0)
-        sage: B=Point(1,0)
-        sage: print Angle(A,O,B).measure()
-        AngleMeasure, degree=-45.0000000000000,radian=-1/4*pi
-        sage: print Angle(B,O,A).measure()
-        AngleMeasure, degree=45.0000000000000,radian=1/4*pi
-
-
-    .. literalinclude:: phystricksTriangleRectangle.py
-    .. image:: Picture_FIGLabelFigTriangleRectanglePICTTriangleRectangle-for_eps.png
-
-    """
-    return BasicGeometricObjects.GraphOfAnAngle(A,O,B,r)
-
-def Angle(A,O,B,r=None):
-    print("Warning : You should use 'AngleAOB' instead of 'Angle'")
-    return AngleAOB(A,O,B,r=r)
 
 def CircleOA(O,A):
     """
@@ -1550,7 +1243,7 @@ def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
 
 def unify_point_name(s):
     r"""
-    Internet s as the pstricks code of something and return a chain with
+    Interpret `s` as the pstricks code of something and return a chain with
     all the points names changed to "Xaaaa", "Xaaab" etc.
 
     Practically, it changes the strings like "{abcd}" to "{Xaaaa}".

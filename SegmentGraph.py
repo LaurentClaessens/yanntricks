@@ -22,16 +22,16 @@
 
 from sage.all import *
 
-from GraphOfAnObject import GraphOfAnObject
+from ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
 
-class GraphOfASegment(GraphOfAnObject):
+class GraphOfASegment(ObjectGraph):
     def __init__(self,A,B,arrow_type="segment"):
         self.I = A
         self.F = B
         self.arrow_type=arrow_type
-        GraphOfAnObject.__init__(self,self)
+        ObjectGraph.__init__(self,self)
         #self.arrow_list=[]
         self.measure=None
     @lazy_attribute

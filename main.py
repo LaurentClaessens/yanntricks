@@ -1313,17 +1313,16 @@ class pspicture(object):
         More generally, it can draw anything that has the methods
 
             1. bounding_box
-            2. pstricks_code
+            2. tikz_code
 
-        The first one should return a bounding box and the second one should return a valid pstricks code as string.
-        If the pstricks code is not valid, LaTeX will get angry but no warning are given here.
+        The first one should return a bounding box and the second one should return a valid tikz code as string.
 
         NOTE:
 
-        More precisely, it does not draw the object now, but it add it (and its mark if applicable) to ``self.record_draw_graph``
-        which is the list of objects to be drawn. Thus it is still possible to modify the object later (even if discouraged).
+        More precisely, it does not draw the object now, but it add it (and its mark if applicable) to ``self.record_draw_graph`` which is the list of objects to be drawn. Thus it is still possible to modify the object later (even if discouraged).
         """
-        if isinstance(graph,BasicGeometricObjects.GraphOfAphyFunction):
+        from GraphOfAphyFunction import GraphOfAphyFunction
+        if isinstance(graph,GraphOfAphyFunction):
             if graph.mx==None or graph.Mx==None:
                 raise TypeError,"You cannot draw phyFunction but only graph."
         if separator_name==None:

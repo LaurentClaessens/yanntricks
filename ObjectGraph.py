@@ -58,8 +58,7 @@ class Options(object):
     def extend_options(self,Opt):
         for opt in Opt.DicoOptions.keys():
             self.add_option(opt+"="+Opt.DicoOptions[opt])
-    # Afiter est une liste de noms d'options, et cette méthode retourne une instance de Options qui a juste ces options-là, 
-    # avec les valeurs de self.
+    # Afiter est une liste de noms d'options, et cette méthode retourne une instance de Options qui a juste ces options-là, avec les valeurs de self.
     def sousOptions(self,AFiter):
         O = Options()
         for op in self.DicoOptions.keys() :
@@ -70,6 +69,7 @@ class Options(object):
     def code(self,language=None):
         a = []
         if language=="pstricks":
+            raise DeprecationWarning,"No more pstricks supported"
             for op in self.DicoOptions.keys():
                 a.append(op+"="+self.DicoOptions[op])
                 a.append(",")
@@ -85,7 +85,7 @@ class Options(object):
     def __getitem__(self,opt):
         return self.DicoOptions[opt]
 
-class GraphOfAnObject(object):
+class ObjectGraph(object):
     """ This class is supposed to be used to create other "GraphOfA..." by inheritance. It is a superclass. """
     # self.record_add_to_bb is a list of points to be added to the bounding box.
     # Typically, when a point has a mark, one can only know the size of the box at the end of the picture 
@@ -122,6 +122,9 @@ class GraphOfAnObject(object):
 
         If you give no position (i.e. no "S","N", etc.) the position will be automatic regarding the angle.
         """
+        from GraphOfAnAngle import GraphOfAnAngle
+        from Constructors import Mark
+        from MathStructures import AngleMeasure
         if automatic_place==False:
             if pspict:
                 automatic_place=(pspict,"")
@@ -166,8 +169,7 @@ class GraphOfAnObject(object):
                 position="N"
         mark=Mark(self,dist,angle,text,automatic_place=(pspict,position,third),mark_point=mark_point)
 
-        # We need to immediately add the LaTeX lines about box sizes, no waiting fig.conclude. This is to allow several pictures
-        # to use the same points and marks.
+        # We need to immediately add the LaTeX lines about box sizes, no waiting fig.conclude. This is to allow several pictures  to use the same points and marks.  
         # By the way, one cannot compute the self.mark.central_point() here because the axes are not yet computed.
 
         if not isinstance(pspict,list):
@@ -176,12 +178,6 @@ class GraphOfAnObject(object):
             for psp in pspict:
                 dimx,dimy = psp.get_box_size(text)
         return mark
-
-        # No more like that   (September, 21, 2014)
-        #self.mark._central_point=self.mark.central_point()
-        #if not self.mark._central_point :
-        #    print(self)
-        #    raise
     def put_mark(self,dist,angle,text,mark_point=None,automatic_place=False,added_angle=None,pspict=None):
         mark=self.get_mark(dist,angle,text,mark_point=None,automatic_place=automatic_place,added_angle=added_angle,pspict=pspict)
         self.added_objects.append(mark)
@@ -227,7 +223,6 @@ class GraphOfAnObject(object):
             code=code.replace("plotpoints","samples")
             code=code.replace("linewidth","line width")
         return code
-        #return self.options.code(language=language)
     def action_on_pspict(self,pspict):
         for obj in self.added_objects :
             pspict.DrawGraphs(obj)
