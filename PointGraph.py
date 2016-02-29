@@ -28,6 +28,7 @@ from sage.all import *
 from ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
+from MathStructures import *
 
 
 def PointsNameList():
@@ -159,8 +160,8 @@ class PointGraph(ObjectGraph):
             <Point(2,3)>
 
         """
-        if isinstance(r,SmallComputations.AngleMeasure):
-            raise TypeError, "This should not happen"
+        if isinstance(r,AngleMeasure):
+            raise ShouldNotHappenException("You are passing AngleMeasure instead of a number (the radius).")
         alpha=radian(theta,number=True)
         if pspict:
             A=pspict.xunit
@@ -379,9 +380,9 @@ class PointGraph(ObjectGraph):
         #    We use the numerical approximation because :
         #       sage: abs(-pi)
         #       -pi        
-        if abs( numerical_approx(x)   ) < 0.0001 :
+        if abs( numerical_approx(x,digits=3) ) < 0.001 :
             x=0
-        if abs(  numerical_approx(y)   ) < 0.0001 :
+        if abs( numerical_approx(y,digits=3) ) < 0.001 :
             y=0
         return str("("+str(x)+","+str(y)+")")
     def coordinatesBr(self):

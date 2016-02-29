@@ -53,20 +53,12 @@ class PhystricksTestError(Exception):
         self.pspict=pspict
         self.code=code
         if pspict==None:
-            #raise ValueError
             print "Warning : this error is provided without pspict. Maybe something is wrong."
     def __str__(self):
         a=[]
         a.append("Test failed")
         a.append(self.justification)
         return "\n".join(a)
-
-        #a.append("Expected:")
-        #a.append(self.expected_text)
-        #a.append("----")
-        #a.append("Got:")
-        #a.append(self.obtained_text)
-        #a.append("---")
 
 class PhystricksNoError(Exception):
     def __init__(self,figure):

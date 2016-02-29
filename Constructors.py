@@ -295,6 +295,7 @@ class BoundingBox(object):
         """
         Raise a ValueError if the bounding box is too large.
         """
+        from Utilities import check_too_large
         check_too_large(self,pspict=pspict)
     def N(self):
         return Segment(self.NW(),self.NE()).center()

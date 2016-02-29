@@ -1028,3 +1028,23 @@ class MeasureLengthGraph(SegmentGraph):
         a.append(vI.latex_code(language=language,pspict=pspict))
         a.append(vF.latex_code(language=language,pspict=pspict))
         return "\n".join(a)
+
+def _vector_latex_code(segment,language=None,pspict=None):
+    """
+    Return the LaTeX's code of a Segment when is is seen as a vector.
+    """
+    params=segment.params(language=language)
+    if language=="pstricks":
+        raise DeprecationWarning
+        a = segment.I.create_PSpoint() + segment.F.create_PSpoint()
+        a = a + "\\ncline["+params+"]{->}{"+segment.I.psName+"}{"+segment.F.psName+"}"
+    if language=="tikz":
+        params=params+",->,>=latex"
+        a = "\draw [{0}] {1} -- {2};".format(params,segment.I.coordinates(numerical=True,pspict=pspict),segment.F.coordinates(numerical=True,pspict=pspict))
+    if segment.marque :
+        P = segment.F
+        P.parameters.symbol = ""
+        mark=segment.mark       # This -1 is quite arbitrary, but there are many pictures with more than one mark.
+        P.put_mark(mark.dist,mark.angle,mark.text,automatic_place=(pspict,''))
+        a = a + P.latex_code(language,pspict)
+    return a

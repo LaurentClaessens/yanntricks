@@ -491,7 +491,7 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval1=(None,None),interval2
     Isegment:        A2 -> A1
 
     OUTPUT:
-    An object ready to be draw.
+    An object ready to be drawn.
 
     EXAMPLES::
 
@@ -541,7 +541,9 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval1=(None,None),interval2
 
     """
     
-    exceptions = [BasicGeometricObjects.CircleGraph,BasicGeometricObjects.SegmentGraph]
+    from CircleGraph import CircleGraph
+    from SegmentGraph import SegmentGraph
+    exceptions = [CircleGraph,SegmentGraph]
     on=True
     for ex in exceptions :
         if isinstance(curve1,ex):

@@ -58,6 +58,7 @@ class InterpolationCurveGraph(ObjectGraph):
         ymin=min([P.y for P in self.points_list])
         ymax=max([P.y for P in self.points_list])
         if dict:
+            from SmallComputations import MyMinMax
             return MyMinMax({'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax})
         else:
             return xmin,xmax,ymin,ymax

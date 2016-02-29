@@ -176,26 +176,6 @@ class Axes(object):
             c.append(self.single_axeY.latex_code(language=language,pspict=pspict))
         return "\n".join(c)
 
-def _vector_latex_code(segment,language=None,pspict=None):
-    """
-    Return the LaTeX's code of a Segment when is is seen as a vector.
-    """
-    params=segment.params(language=language)
-    if language=="pstricks":
-        raise DeprecationWarning
-        a = segment.I.create_PSpoint() + segment.F.create_PSpoint()
-        a = a + "\\ncline["+params+"]{->}{"+segment.I.psName+"}{"+segment.F.psName+"}"
-    if language=="tikz":
-        params=params+",->,>=latex"
-        a = "\draw [{0}] {1} -- {2};".format(params,segment.I.coordinates(numerical=True,pspict=pspict),segment.F.coordinates(numerical=True,pspict=pspict))
-    if segment.marque :
-        P = segment.F
-        P.parameters.symbol = ""
-        mark=segment.mark       # This -1 is quite arbitrary, but there are many pictures with more than one mark.
-        P.put_mark(mark.dist,mark.angle,mark.text,automatic_place=(pspict,''))
-        a = a + P.latex_code(language,pspict)
-    return a
-
 from phystricks.ObjectGraph import ObjectGraph
 
 class SingleAxeGraph(ObjectGraph):
@@ -1992,41 +1972,6 @@ class RightAngleGraph(ObjectGraph):
         return BoundingBox()
     def latex_code(self,language=None,pspict=None):
         return ""
-
-def check_too_large(obj,pspict=None):
-    try:
-        bb=obj.bounding_box(pspict)
-        mx=bb.xmin
-        my=bb.ymin
-        Mx=bb.xmax
-        My=bb.ymax
-    except AttributeError:
-        print "Object {0} has no method bounding_box.".format(obj)
-        mx=obj.mx
-        my=obj.my
-        Mx=obj.Mx
-        My=obj.My
-    if pspict:
-        try :
-            if mx<pspict.mx_acceptable_BB :
-                print("mx=",mx,"when pspict.mx_acceptable_BB=",pspict.mx_acceptable_BB)
-                raise main.PhystricksCheckBBError()
-            if my<pspict.my_acceptable_BB :
-                print("my=",my,"when pspict.my_acceptable_BB=",pspict.my_acceptable_BB)
-                raise main.PhystricksCheckBBError()
-            if Mx>pspict.Mx_acceptable_BB :
-                print("Mx=",Mx,"when pspict.Mx_acceptable_BB=",pspict.Mx_acceptable_BB)
-                raise main.PhystricksCheckBBError()
-            if My>pspict.My_acceptable_BB:
-                print("My=",My,"when pspict.My_acceptable_BB=",pspict.My_acceptable_BB)
-                raise main.PhystricksCheckBBError()
-        except main.PhystricksCheckBBError :
-            print "I don't believe that object {1} has a bounding box as large as {0}".format(bb,obj)
-            try :
-                print "The mother of {0} is {1}".format(obj,obj.mother)
-            except AttributeError :
-                pass
-            raise ValueError
 
 def sudoku_substitution(tableau,symbol_list=[  str(k) for k in range(-4,5) ]):
     """
