@@ -24,7 +24,7 @@ from phystricks.ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
 
-class GraphOfAMark(object):
+class MarkGraph(object):
     def __init__(self,graph,dist,angle,text,mark_point=None,automatic_place=False):
         self._central_point=None
         self.mark_point=mark_point

@@ -73,7 +73,7 @@ class AngleGraph(ObjectGraph):
     def measure(self):
         return AngleMeasure(value_degree=self.angleF.degree-self.angleI.degree)
     def graph(self):
-        return GraphOfAnAngle(self)
+        return AngleGraph(self)
     def set_mark_angle(self,theta):
         """
         theta is degree or AngleMeasure

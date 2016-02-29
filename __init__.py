@@ -239,7 +239,7 @@ def RightAngle(d1,d2,n1=0,n2=1,r=0.3):
     'r' is the size of the "edge"
     'n1' and 'n2' are 0 ot 1 and are determining which of the 4 angles has to be marked (two lines -> 4 angles)
     """
-    return BasicGeometricObjects.GraphOfARightAngle(d1,d2,r,n1,n2)
+    return BasicGeometricObjects.RightAngleGraph(d1,d2,r,n1,n2)
 
 def RightAngleAOB(A,O,B,n1=0,n2=1,r=0.3):
     """
@@ -282,7 +282,7 @@ def PolarCurve(fr,ftheta=None):
 #    graphList=list(args)
 #    print graphList
 #    raise
-#    return BasicGeometricObjects.GraphOfACustomSurface(graphList)
+#    return BasicGeometricObjects.CustomSurfaceGraph(graphList)
 
 def MeasureLength(seg,dist=0.1):
     """
@@ -355,7 +355,7 @@ def MeasureLength(seg,dist=0.1):
     You are invited to use advised_mark_angle. If not the position of the mark
     could be unpredictable.
     """
-    return BasicGeometricObjects.GraphOfAMeasureLength(seg,dist)
+    return BasicGeometricObjects.MeasureLengthGraph(seg,dist)
 
 def LagrangePolynomial(*args):
     """
@@ -413,7 +413,7 @@ def ImplicitCurve(f,xrange,yrange,plot_points=100):
     """
     return the implicit curve given by equation f on the range xrange x yrange
 
-    This is a constructor for the class GraphOfAnImplicitCurve
+    This is a constructor for the class ImplicitCurveGraph
     INPUT:
 
     - ``f`` -- a function of two variables or equation in two variables
@@ -541,7 +541,7 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval1=(None,None),interval2
 
     """
     
-    exceptions = [BasicGeometricObjects.GraphOfACircle,BasicGeometricObjects.GraphOfASegment]
+    exceptions = [BasicGeometricObjects.CircleGraph,BasicGeometricObjects.SegmentGraph]
     on=True
     for ex in exceptions :
         if isinstance(curve1,ex):
@@ -593,7 +593,7 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval1=(None,None),interval2
     except UnboundLocalError :
         pass
 
-    surf = BasicGeometricObjects.GraphOfASurfaceBetweenParametricCurves(c1,c2,(mx1,mx2),(Mx1,Mx2),reverse1,reverse2)
+    surf = BasicGeometricObjects.SurfaceBetweenParametricCurvesGraph(c1,c2,(mx1,mx2),(Mx1,Mx2),reverse1,reverse2)
     surf.add_option("fillstyle=vlines,linestyle=none")  
     return surf
 
@@ -643,8 +643,8 @@ def Polygon(*args):
     if len(args)==1:     # In this case, we suppose that this is a list
         # args is a tupe containing the arguments. If you call
         # Polygon([P,Q]) then args[0] is [P,Q]
-        return BasicGeometricObjects.GraphOfAPolygon(args[0])
-    return BasicGeometricObjects.GraphOfAPolygon(list(args))
+        return BasicGeometricObjects.PolygonGraph(args[0])
+    return BasicGeometricObjects.PolygonGraph(list(args))
 
 def CustomSurface(*args):
     """
@@ -673,7 +673,7 @@ def CustomSurface(*args):
         a=args[0]
     else :
         a=args
-    return BasicGeometricObjects.GraphOfACustomSurface(list(a))
+    return BasicGeometricObjects.CustomSurfaceGraph(list(a))
 
 def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
     r"""
@@ -759,7 +759,7 @@ def Rectangle(*args,**arg):
         # TODO : I should be able to pass directly the dictionary to BoundingBox
         NW=bb.NW()
         SE=bb.SE()
-    return BasicGeometricObjects.GraphOfARectangle(NW,SE)
+    return BasicGeometricObjects.RectangleGraph(NW,SE)
 
 class Grid(object):
     """
@@ -781,7 +781,7 @@ class Grid(object):
                                         It turns out that for aestetical reasons, this is a bad idea to turn it True.
 
 
-    - ``self.main_horizontal`` : an objet of type :class:`GraphOfASegment`. This is the archetype of the horizontal lines
+    - ``self.main_horizontal`` : an objet of type :class:`SegmentGraph`. This is the archetype of the horizontal lines
                                  of the main grid will be drawn.
 
     As an example, in order to have red main horizontal lines::
@@ -938,7 +938,7 @@ def CircleOA(O,A):
 
     OUTPUT:
 
-    A circle ready to be drawn of type :class:`GraphOfACircle`.
+    A circle ready to be drawn of type :class:`CircleGraph`.
 
     EXAMPLES::
 
@@ -986,7 +986,7 @@ def SingleAxe(C,base,mx,Mx,pspict=None):
         sage: from phystricks import *
         sage: axe = SingleAxe(Point(1,1),Vector(0,1),-2,2)
     """
-    return BasicGeometricObjects.GraphOfASingleAxe(C,base,mx,Mx,pspict)
+    return BasicGeometricObjects.SingleAxeGraph(C,base,mx,Mx,pspict)
 
 class ObliqueProjection(object):
     def __init__(self,alpha,k):
@@ -1015,7 +1015,7 @@ class ObliqueProjection(object):
         return Cuboid(self,P,a,b,c)
 
 def Circle3D(op,O,A,B,angleI=0,angleF=2*pi):
-    return BasicGeometricObjects.GraphOfACircle3D(op,O,A,B,angleI,angleF)
+    return BasicGeometricObjects.Circle3DGraph(op,O,A,B,angleI,angleF)
 
 class Vector3D(object):
     def __init__(self,x,y,z):
@@ -1136,25 +1136,25 @@ class Cuboid(object):
         return ""   # Everything is in action_on_pspict
 
 def BoxDiagram(values,h,delta_y):
-    return BasicGeometricObjects.GraphOfABoxDiagram(values,h,delta_y)
+    return BasicGeometricObjects.BoxDiagramGraph(values,h,delta_y)
 
 def Moustache(minimum,Q1,M,Q3,maximum,h,delta_y=0):
     """
     Q1 and Q3 are first and third quartiles; M is the median.
     h is the size of the box
     """
-    return BasicGeometricObjects.GraphOfAMoustache(minimum,Q1,M,Q3,maximum,h,delta_y)
+    return BasicGeometricObjects.MoustacheGraph(minimum,Q1,M,Q3,maximum,h,delta_y)
 
 def Histogram(tuple_box_list):
-    return BasicGeometricObjects.GraphOfAnHistogram(tuple_box_list)
+    return BasicGeometricObjects.HistographGraph(tuple_box_list)
 
 def BarDiagram(X,Y):
     if len(X) != len(Y):
         raise ValueError,"X and Y must be of the same size."
-    return BasicGeometricObjects.GraphOfABarDiagram(X,Y)
+    return BasicGeometricObjects.BarDiagramGraph(X,Y)
 
 def SudokuGrid(question,length=1):
-    return BasicGeometricObjects.GraphOfASudokuGrid(question,length)
+    return BasicGeometricObjects.SudokuGridGraph(question,length)
 
 def Text(P,text,hide=True):
     """
@@ -1168,10 +1168,10 @@ def Text(P,text,hide=True):
 
     - ``hide`` - (default=True) When `True`, the background of the text is hidden by
                     a rectangle. The color and style of that rectangle can be customized,
-                    see :class:`BasicGeometricObjects.GraphOfAText`
+                    see :class:`BasicGeometricObjects.TextGraph`
 
     """
-    return BasicGeometricObjects.GraphOfAText(P,text,hide=hide)
+    return BasicGeometricObjects.TextGraph(P,text,hide=hide)
 
 def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
     """
@@ -1302,8 +1302,8 @@ def unify_point_name(s):
             rematch.append(n)
 
 
-    from GraphOfAPoint import PointsNameList
-    names=GraphOfAPoint.PointsNameList()
+    from PointGraph import PointsNameList
+    names=PointGraph.PointsNameList()
     for m in rematch:
         name=names.next()
         s=s.replace("{%s}"%m,"{X%s}"%name).replace("(%s)"%m,"(X%s)"%name)

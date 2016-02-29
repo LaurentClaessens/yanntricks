@@ -85,7 +85,7 @@ class AngleMeasure(object):
         dep_value_degree=value_degree
         dep_value_radian=value_radian
 
-        # 'GraphOfACircle' creates its angleI like that :
+        # 'CircleGraph' creates its angleI like that :
         #    self.angleI = AngleMeasure(value_degree=angleI,keep_negative=True)
         #  in this case, 'value_degree' can be either a number, either a 'AngleMeasure' because the user has choice when writing something like
         #     cir=Circle(O,A,angleI=...,angleF=...)
@@ -153,7 +153,7 @@ class AngleMeasure(object):
             return self
         return AngleMeasure(value_radian=coef*self.radian)
     # The following is floordiv to be used with //
-    # I do not know why __div__ does not work. I use it in GraphOfAFractionPieDiagram
+    # I do not know why __div__ does not work. I use it in FractionPieDiagramGraph
     def __floordiv__(self,coef):
         return AngleMeasure(value_radian=self.radian/coef)
     def __rmul__(self,coef):

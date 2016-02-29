@@ -24,7 +24,7 @@ from phystricks.ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
 
-class GraphOfAphyFunction(ObjectGraph):
+class phyFunctionGraph(ObjectGraph):
     """
     INPUT:
 
@@ -49,7 +49,7 @@ class GraphOfAphyFunction(ObjectGraph):
             # Happens when the derivative of the function is not implemented in Sage
             # Also happens when there is a free variable,
             # as an example
-            # F=GraphOfAVectorField(x,y)
+            # F=VectorFieldGraph(x,y)
             # Also when something non analytic is given like a distribution.
             self.sageFast = self.sage
         self.string = repr(self.sage)
@@ -135,7 +135,7 @@ class GraphOfAphyFunction(ObjectGraph):
         if n==0 :
             try :
                 return self.f
-            except AttributeError :     # Happens when self is a phyFunction instead of GraphOfAphyFunction
+            except AttributeError :     # Happens when self is a phyFunction instead of phyFunctionGraph
                 return self
         if n==1:
             if self._derivative == None :
@@ -311,7 +311,7 @@ class GraphOfAphyFunction(ObjectGraph):
     def ymin(self,deb,fin):
         return self.get_minmax_data(deb,fin)['ymin']
     def graph(self,mx,Mx):
-        gr = GraphOfAphyFunction(self.sage,mx,Mx)
+        gr = phyFunctionGraph(self.sage,mx,Mx)
         gr.parameters=self.parameters.copy()
         return gr
     def fit_inside(self,xmin,xmax,ymin,ymax):
@@ -323,7 +323,7 @@ class GraphOfAphyFunction(ObjectGraph):
         Return the graph of a surface under the function.
 
         If mx and Mx are not given, try to use self.mx and self.Mx, assuming that the method is used on
-        an instance of GraphOfAphyFunction that inherits from here.
+        an instance of phyFunctionGraph that inherits from here.
         """
         if not mx :
             mx=self.mx

@@ -28,7 +28,7 @@ import sys
 import BasicGeometricObjects
 import SmallComputations as SmallComputations
 
-from GraphOfAPoint import PointsNameList
+from PointGraph import PointsNameList
 
 from phystricks import WrapperStr
 var=WrapperStr(var)
@@ -830,7 +830,7 @@ class pspicture(object):
 
     The name of the pspict is used to produce intermediate filesnames, and other names.
     """
-    NomPointLibre = GraphOfAPoint.PointsNameList()
+    NomPointLibre = PointGraph.PointsNameList()
 
     def __init__(self,name="CAN_BE_A_PROBLEM_IF_TRY_TO_PRODUCE_EPS_OR_PDF"):
         r"""
@@ -859,7 +859,7 @@ class pspicture(object):
 
         # self.interWriteFile is redefined in MultiplePictures
 
-        self.NomPointLibre = GraphOfAPoint.PointsNameList()
+        self.NomPointLibre = PointGraph.PointsNameList()
         self.record_marks=[]
         self.record_bounding_box=[]
         self.record_draw_graph=[]
@@ -1308,7 +1308,7 @@ class pspicture(object):
                 self.DrawGraph(gr,separator_name=separator_name)
     def DrawGraph(self,graph,separator_name=None):
         """
-        Draw an object of type `GraphOfASomething`.
+        Draw an object of type `<Something>Graph`.
 
         More generally, it can draw anything that has the methods
 
@@ -1321,8 +1321,8 @@ class pspicture(object):
 
         More precisely, it does not draw the object now, but it add it (and its mark if applicable) to ``self.record_draw_graph`` which is the list of objects to be drawn. Thus it is still possible to modify the object later (even if discouraged).
         """
-        from GraphOfAphyFunction import GraphOfAphyFunction
-        if isinstance(graph,GraphOfAphyFunction):
+        from phyFunctionGraph import phyFunctionGraph
+        if isinstance(graph,phyFunctionGraph):
             if graph.mx==None or graph.Mx==None:
                 raise TypeError,"You cannot draw phyFunction but only graph."
         if separator_name==None:
@@ -1404,7 +1404,7 @@ class pspicture(object):
             bb.add_object(self.axes.single_axeX,pspict=self)
             bb.add_object(self.axes.single_axeY,pspict=self)
         except ValueError,msg:
-            if u"is not yet defined" not in msg.__unicode__():  # position 27319 see BasicGeometricObjects.GraphOfASingleAxe.segment
+            if u"is not yet defined" not in msg.__unicode__():  # position 27319 see BasicGeometricObjects.SingleAxeGraph.segment
                 raise
         return bb
     def test_if_test_file_is_present(self):

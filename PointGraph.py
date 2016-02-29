@@ -304,7 +304,7 @@ class PointGraph(ObjectGraph):
         """Return the class which is the Graph associated type"""
         return PointGraph   
     def create_PSpoint(self):
-        """Return the code of creating a pstgeonode. The argument is a Point of GraphOfAPoint"""
+        """Return the code of creating a pstgeonode. The argument is a Point of PointGraph"""
         raise DeprecationWarning       # pstricks_code should no more be used anywhere
         P = Point(self.x,self.y)
         P.psName = self.psName

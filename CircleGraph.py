@@ -24,7 +24,7 @@ from phystricks.ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
 
-class GraphOfACircle(ObjectGraph):
+class CircleGraph(ObjectGraph):
     """
     This is a circle, or an arc of circle.
 
@@ -261,7 +261,7 @@ class GraphOfACircle(ObjectGraph):
         """
         Return a graph of the circle between the two angles given in degree
         """
-        C = GraphOfACircle(self.center,self.radius,angleI=angleI,angleF=angleF,visual=self.visual,pspict=self.pspict)
+        C = CircleGraph(self.center,self.radius,angleI=angleI,angleF=angleF,visual=self.visual,pspict=self.pspict)
         C.parameters=self.parameters.copy()
         return C
     def __str__(self):

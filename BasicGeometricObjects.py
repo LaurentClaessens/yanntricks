@@ -22,9 +22,6 @@
 
 """
 Each of them have the methods for basic geometric manipulations: rotations, dilatations, tangent vector, etc.
-
-The end-user should not use the functions whose name begin with ``GraphOf`` or ``Geometric``. 
-Rather he has to use the constructors like :func:`Point`, :func:`AffineVector` and so on.
 """
 
 from __future__ import division
@@ -201,7 +198,7 @@ def _vector_latex_code(segment,language=None,pspict=None):
 
 from phystricks.ObjectGraph import ObjectGraph
 
-class GraphOfASingleAxe(ObjectGraph):
+class SingleAxeGraph(ObjectGraph):
     def __init__(self,C,base,mx,Mx,pspict=None):
         ObjectGraph.__init__(self,self)
         self.C=C
@@ -351,7 +348,7 @@ class GraphOfASingleAxe(ObjectGraph):
         c.append(h.latex_code(language,pspict))
         return "\n".join(c)
     def __str__(self):
-        return "<GraphOfASingleAxe: C={0} base={1} mx={2} Mx={3}>".format(self.C,self.base,self.mx,self.Mx)
+        return "<SingleAxeGraph: C={0} base={1} mx={2} Mx={3}>".format(self.C,self.base,self.mx,self.Mx)
 
 # TODO : to fill portion of circle should be as easy as:
 #    CerB=Cer.graph(alpha,alpha+90)
@@ -364,7 +361,7 @@ def OptionsStyleLigne():
 
 class Waviness(object):
     """
-    This class contains the informations about the waviness of a curve. It takes as argument a GraphOfAphyFunction and the parameters dx, dy of the wave.
+    This class contains the informations about the waviness of a curve. It takes as argument a phyFunctionGraph and the parameters dx, dy of the wave.
     Waviness.get_wavy_points        returns a list of points which are disposed around the graph of the curve. These are the points to be linked
                        by a bezier or something in order to get the wavy graph of the function.
     """
@@ -437,7 +434,7 @@ def extract_interval_information(curve):
         return curve.angleI.radian,curve.angleF.radian
     return None,None
 
-from phystricks.GraphOfAPoint import GraphOfAPoint
+from phystricks.PointGraph import PointGraph
 
 class GeometricImplicitCurve(object):
     """
@@ -486,7 +483,7 @@ class GeometricImplicitCurve(object):
             <BoundingBox xmin=1.0,xmax=3.0; ymin=-2.0,ymax=0.0>
 
         """
-        gr = GraphOfAnImplicitCurve(self,xrange,yrange,plot_points)
+        gr = ImplicitCurveGraph(self,xrange,yrange,plot_points)
         gr.parameters=self.parameters.copy()
         return gr
     def __str__(self):
@@ -505,7 +502,7 @@ class GeometricImplicitCurve(object):
         """
         return "<Implicit curve of equation %s == 0>"%repr(self.f)
 
-class GraphOfAnImplicitCurve(ObjectGraph,GeometricImplicitCurve):
+class ImplicitCurveGraph(ObjectGraph,GeometricImplicitCurve):
     r"""
     Describe the graph of an implicit curve.
 
@@ -531,7 +528,7 @@ class GraphOfAnImplicitCurve(ObjectGraph,GeometricImplicitCurve):
             sage: from phystricks.BasicGeometricObjects import *
             sage: x,y=var('x,y')
             sage: implicit_curve=GeometricImplicitCurve(x**2+x==3)
-            sage: F=GraphOfAnImplicitCurve(implicit_curve,(x,-1,1),(y,-3,2))
+            sage: F=ImplicitCurveGraph(implicit_curve,(x,-1,1),(y,-3,2))
 
     NOTES:
 
@@ -626,7 +623,7 @@ class GraphOfAnImplicitCurve(ObjectGraph,GeometricImplicitCurve):
             code.append(curve.latex_code(language=language,pspict=pspict))
         return "\n".join(code)
 
-class GraphOfAText(ObjectGraph):
+class TextGraph(ObjectGraph):
     """
     You can customize the background via the object `self.rectangle`
     """
@@ -740,7 +737,7 @@ class GeometricVectorField(object):
 
         OUTPUT:
 
-        object GraphOfAVectorField.
+        object VectorFieldGraph.
         
         EXAMPLES::
 
@@ -767,7 +764,7 @@ class GeometricVectorField(object):
             for xx in pos_x:
                 for yy in pos_y:
                     draw_points.append(Point(xx,yy))
-        return GraphOfAVectorField(self,draw_points=draw_points)
+        return VectorFieldGraph(self,draw_points=draw_points)
     def __call__(self,a,b=None):
         """
         return the affine vector at point (a,b).
@@ -800,7 +797,7 @@ class GeometricVectorField(object):
         vy=self.fy(x=P.x,y=P.y)
         return AffineVector(P,Point(P.x+vx,P.y+vy))
 
-class GraphOfAVectorField(ObjectGraph,GeometricVectorField):
+class VectorFieldGraph(ObjectGraph,GeometricVectorField):
     """
     the graph object of a vector field
 
@@ -1101,7 +1098,7 @@ def get_paths_from_implicit_plot(p):
         sage: len(paths)
         4
         sage: type(paths[0][1])
-        <class 'phystricks.BasicGeometricObjects.GraphOfAPoint'>
+        <class 'phystricks.BasicGeometricObjects.PointGraph'>
         sage: print paths[1][3]
         <Point(4.87405534614323,-4.6644295302013425)>
     """
@@ -1180,10 +1177,10 @@ class SurfaceBetweenLines(ObjectGraph):
 # May, 1, 2011
 
 # For the same reason, all type of surfaces have to be functions instead of classes.
-# These functions return an object GraphOfASurfaceBetweenParametricCurves 
+# These functions return an object SurfaceBetweenParametricCurvesGraph 
 # with the right particularization.
 
-class GraphOfASurfaceBetweenParametricCurves(ObjectGraph):
+class SurfaceBetweenParametricCurvesGraph(ObjectGraph):
     def __init__(self,curve1,curve2,interval1=(None,None),interval2=(None,None),reverse1=False,reverse2=True):
         # TODO: I think that the parameters reverse1 and reverse2 are no more useful
         #   since I enforce the condition curve1 : left -> right by hand.
@@ -1297,7 +1294,7 @@ def draw_to_fill(text):
         answer=t3.replace("plot","plot "+bracket)
     return answer
 
-class GraphOfACustomSurface(ObjectGraph):
+class CustomSurfaceGraph(ObjectGraph):
     """
     INPUT:
 
@@ -1428,7 +1425,7 @@ class GraphOfACustomSurface(ObjectGraph):
                 a.append(obj.latex_code(language=language,pspict=pspict))
         return '\n'.join(a)
 
-class GraphOfAPolygon(ObjectGraph):
+class PolygonGraph(ObjectGraph):
     """
     INPUT:
 
@@ -1512,8 +1509,8 @@ class GraphOfAPolygon(ObjectGraph):
                         edge.parameters.color=self.parameters.color
                 pspict.DrawGraph(edge)
 
-# GraphOfARectangle once inherited from GeometricRectangle):   (June 26, 2014)
-class GraphOfARectangle(GraphOfAPolygon):
+# RectangleGraph once inherited from GeometricRectangle):   (June 26, 2014)
+class RectangleGraph(PolygonGraph):
     """
     The parameters of the four lines are by default the same, but they can be adapted separately.
 
@@ -1528,7 +1525,7 @@ class GraphOfARectangle(GraphOfAPolygon):
         self.SE = SE
         self.SW = Point(self.NW.x,self.SE.y)
         self.NE = Point(self.SE.x,self.NW.y)
-        GraphOfAPolygon.__init__(self,[self.SW,self.SE,self.NE,self.NW])
+        PolygonGraph.__init__(self,[self.SW,self.SE,self.NE,self.NW])
         self.mx=self.NW.x
         self.Mx=self.SE.x
         self.my=self.SE.y
@@ -1560,7 +1557,7 @@ class GraphOfARectangle(GraphOfAPolygon):
         return self.first_diagonal().center()
     def default_associated_graph_class(self):
         """Return the class which is the Graph associated type"""
-        return GraphOfARectangle
+        return RectangleGraph
 
     def _segment(self,side):
         bare_name = "graph_"+side
@@ -1574,7 +1571,7 @@ class GraphOfARectangle(GraphOfAPolygon):
             return self._segment(attrname[6])
         raise AttributeError
 
-    # Inherited from GraphOfAPolygon
+    # Inherited from PolygonGraph
 
     #def bounding_box(self,pspict=None):
     #    return BoundingBox(self.NW,self.SE)
@@ -1608,7 +1605,7 @@ class GraphOfARectangle(GraphOfAPolygon):
         #    a.append(s.latex_code(language=language,pspict=pspict))
         #return "\n".join(a)
 
-class GraphOfACircle3D(ObjectGraph):
+class Circle3DGraph(ObjectGraph):
     def __init__(self,op,O,A,B,angleI=0,angleF=0):
         """
         The circle passing trough A and B with center O.
@@ -1661,7 +1658,7 @@ class GraphOfACircle3D(ObjectGraph):
     def get_point2d(self,angle):
         return self.op.point(self.get_point(angle))
     def graph(self,angleI,angleF):
-        C = GraphOfACircle3D(self.op,self.O,self.A,self.B,angleI,angleF)
+        C = Circle3DGraph(self.op,self.O,self.A,self.B,angleI,angleF)
         C.parameters=self.parameters.copy()
         return C
     def bounding_box(self,pspict=None):
@@ -1710,7 +1707,7 @@ class HistogramBox(ObjectGraph):
         # The put_mark can only be done here (and not in self.rectangle()) because one needs the pspict.
         return self.rectangle.latex_code(language=language,pspict=pspict)
 
-class GraphOfAnHistogram(ObjectGraph):
+class HistographGraph(ObjectGraph):
     """
     An histogram is given by a list of tuple '(a,b,n)' where 'a' and 'b' are the extremal values of the box and 'n' is the number of elements in the box.
     """
@@ -1798,7 +1795,7 @@ class GraphOfAnHistogram(ObjectGraph):
         a.extend([x.latex_code(language=language,pspict=pspict) for x in self.box_list])
         return "\n".join(a)
 
-class GraphOfAMoustache(ObjectGraph):
+class MoustacheGraph(ObjectGraph):
     def __init__(self,minimum,Q1,M,Q3,maximum,h,delta_y=0):
         ObjectGraph.__init__(self,self)
         self.Q1=Q1
@@ -1833,7 +1830,7 @@ class GraphOfAMoustache(ObjectGraph):
     def latex_code(self,language=None,pspict=None):
         return ""
 
-class GraphOfABoxDiagram(ObjectGraph):
+class BoxDiagramGraph(ObjectGraph):
     def __init__(self,values,h,delta_y=0):
         ObjectGraph.__init__(self,self)
 
@@ -1879,7 +1876,7 @@ class GraphOfABoxDiagram(ObjectGraph):
     def latex_code(self,language=None,pspict=None):
         return ""
 
-class GraphOfABarDiagram(object):
+class BarDiagramGraph(object):
     def __init__(self,X,Y):
         self.X=X
         self.Y=Y
@@ -1925,7 +1922,7 @@ class GraphOfABarDiagram(object):
     def latex_code(self,language=None,pspict=None):
         return ""
 
-class GraphOfARightAngle(ObjectGraph):
+class RightAngleGraph(ObjectGraph):
     def __init__(self,d1,d2,r,n1,n2):
         """
         two lines and a distance.
@@ -2053,7 +2050,7 @@ def sudoku_substitution(tableau,symbol_list=[  str(k) for k in range(-4,5) ]):
     n_tableau="\n".join(nn_lines)
     return n_tableau
 
-class GraphOfASudokuGrid(object):
+class SudokuGridGraph(object):
     def __init__(self,question,length=1):
         self.question=sudoku_substitution(question)
         self.length=length       # length of a cell
@@ -2106,7 +2103,7 @@ class GraphOfASudokuGrid(object):
     def latex_code(self,language=None,pspict=None):
         return ""
 
-class GraphOfAFractionPieDiagram(ObjectGraph):
+class FractionPieDiagramGraph(ObjectGraph):
     def __init__(self,center,radius,a,b):
         """
         The pie diagram for the fraction 'a/b' inside the circle of given center and radius.

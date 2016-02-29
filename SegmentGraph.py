@@ -26,7 +26,7 @@ from ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
 
-class GraphOfASegment(ObjectGraph):
+class SegmentGraph(ObjectGraph):
     def __init__(self,A,B,arrow_type="segment"):
         self.I = A
         self.F = B
@@ -831,14 +831,14 @@ class GraphOfASegment(ObjectGraph):
         return self.return_deformations(v)
     def graph(self,mx=None,Mx=None):
         if not mx:
-            C = GraphOfASegment(self.I,self.F)
+            C = SegmentGraph(self.I,self.F)
         else :
-            C = GraphOfASegment(self.get_point(mx),self.get_point(Mx))
+            C = SegmentGraph(self.get_point(mx),self.get_point(Mx))
         C.parameters=self.parameters.copy()
         return C
     def default_associated_graph_class(self):
         """Return the class which is the Graph associated type"""
-        return GraphOfASegment
+        return SegmentGraph
     def __mul__(self,coef):
         """
         multiply the segment by a coefficient.
@@ -900,7 +900,7 @@ class GraphOfASegment(ObjectGraph):
             sage: print a+b
             <segment I=<Point(-1,3)> F=<Point(1,6)>>
         """
-        if isinstance(other,GraphOfASegment):
+        if isinstance(other,SegmentGraph):
             if self.arrow_type=="segment" and other.arrow_type=="vector":
                 return Segment(   self.I+other,self.F+other  )
             if self.I != other.I:
@@ -985,7 +985,7 @@ class GraphOfASegment(ObjectGraph):
     def tikz_code(self,pspict=None):
         return self.latex_code(language="tikz",pspict=pspict)
 
-class GraphOfAMeasureLength(GraphOfASegment):
+class MeasureLengthGraph(SegmentGraph):
     def __init__(self,seg,dist=0.1):
         try :
             self.segment=seg.segment
@@ -994,7 +994,7 @@ class GraphOfAMeasureLength(GraphOfASegment):
         self.dist=dist
         self.delta=seg.rotation(-90).fix_size(self.dist)
         self.mseg=seg.translate(self.delta)
-        GraphOfASegment.__init__(self,self.mseg.I,self.mseg.F)
+        SegmentGraph.__init__(self,self.mseg.I,self.mseg.F)
         self.mI=self.mseg.I
         self.mF=self.mseg.F
     def advised_mark_angle(self,pspict=None):

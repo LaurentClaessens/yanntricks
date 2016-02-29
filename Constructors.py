@@ -48,8 +48,8 @@ def Point(a,b):
     Notice that the coordinates of the point have to be numerical in order to be passed to tikz (and then LaTeX) at the end::
 
     """
-    import GraphOfAPoint
-    return GraphOfAPoint.GraphOfAPoint(a,b)
+    import PointGraph
+    return PointGraph.PointGraph(a,b)
 
 def PolarPoint(r,theta):
     """
@@ -99,15 +99,15 @@ def Segment(A,B=None,vector=None):
     """
     if vector:
         B=A+vector
-    import GraphOfASegment
-    return GraphOfASegment.GraphOfASegment(A,B)
+    import SegmentGraph
+    return SegmentGraph.SegmentGraph(A,B)
 
 def PolarSegment(P,r,theta):
     """
     returns a segment on the base point P (class Point) of length r angle theta (degree)
     """
     alpha = radian(theta)
-    import GraphOfASegment
+    import SegmentGraph
     return Segment(P, Point(P.x+r*cos(alpha),P.y+r*sin(alpha)) )
 
 def AffineVector(A=None,B=None):
@@ -206,8 +206,8 @@ def Circle(center,radius,angleI=0,angleF=360,visual=False,pspict=None):
     if visual and not pspict :
         print("You cannot try to use 'visual' not giving a pspicture")
         raise ValueError
-    import GraphOfACircle
-    return GraphOfACircle.GraphOfACircle(center,radius,angleI=angleI,angleF=angleF,visual=visual,pspict=pspict)
+    import CircleGraph
+    return CircleGraph.CircleGraph(center,radius,angleI=angleI,angleF=angleF,visual=visual,pspict=pspict)
 
 def CircleOA(O,A):
     """
@@ -233,7 +233,7 @@ def CircularSector(center,radius,a,b):
     return CustomSurface(l1,l2,l3)
 
 def FractionPieDiagram(center,radius,a,b):
-    return BasicGeometricObjects.GraphOfAFractionPieDiagram(center,radius,a,b)
+    return BasicGeometricObjects.FractionPieDiagramGraph(center,radius,a,b)
 
 class BoundingBox(object):
     r"""
@@ -442,8 +442,8 @@ def Mark(graph,dist,angle,text,mark_point=None,automatic_place=False):
 
          What is done is that the closest corner of the bounding box is at position (dist;angle) from the point.
     """
-    import GraphOfAMark
-    return GraphOfAMark.GraphOfAMark(graph,dist,angle,text,mark_point=None,automatic_place=False)
+    import MarkGraph
+    return MarkGraph.MarkGraph(graph,dist,angle,text,mark_point=None,automatic_place=False)
 
 def AngleAOB(A,O,B,r=None):
     """
@@ -460,7 +460,7 @@ def AngleAOB(A,O,B,r=None):
 
     OUTPUT:
 
-    An object ready to be drawn of type :class:`GraphOfAnAngle`.
+    An object ready to be drawn of type :class:`AngleGraph`.
 
     If `r` is not given, a default value of 0.2 times the length OA is taken.
 
@@ -482,8 +482,8 @@ def AngleAOB(A,O,B,r=None):
     .. image:: Picture_FIGLabelFigTriangleRectanglePICTTriangleRectangle-for_eps.png
 
     """
-    from GraphOfAnAngle import GraphOfAnAngle
-    return GraphOfAnAngle(A,O,B,r)
+    from AngleGraph import AngleGraph
+    return AngleGraph(A,O,B,r)
 
 def Angle(A,O,B,r=None):
     print("Warning : You should use 'AngleAOB' instead of 'Angle'")
@@ -536,13 +536,13 @@ def phyFunction(fun,mx=None,Mx=None):
     try:
         sy=symbolic_expression(fun)
     except TypeError:       # This deals with probability distributions for example.
-        return BasicGeometricObjects.GraphOfAphyFunction(fun,mx,Mx)
+        return BasicGeometricObjects.phyFunctionGraph(fun,mx,Mx)
 
         # I'm trying not to use NonAnalytic anymore, July 1, 2014
         #return BasicGeometricObjects.NonAnalyticFunction(fun,mx,Mx)
     x=var('x')
-    import GraphOfAphyFunction
-    return GraphOfAphyFunction.GraphOfAphyFunction(sy.function(x),mx,Mx)
+    import phyFunctionGraph
+    return phyFunctionGraph.phyFunctionGraph(sy.function(x),mx,Mx)
 
 def ParametricCurve(f1,f2,interval=(None,None)):
     """
@@ -584,8 +584,8 @@ def ParametricCurve(f1,f2,interval=(None,None)):
     f2=EnsurephyFunction(f2)
     if isinstance(llamI,AngleMeasure):
         raise
-    import GraphOfAParametricCurve
-    return GraphOfAParametricCurve.GraphOfAParametricCurve(f1,f2,llamI,llamF)
+    import ParametricCurveGraph
+    return ParametricCurveGraph.ParametricCurveGraph(f1,f2,llamI,llamF)
 
 def InterpolationCurve(points_list,context_object=None,mode=None):
     """

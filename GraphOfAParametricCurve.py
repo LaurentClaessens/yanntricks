@@ -25,7 +25,7 @@ from Constructors import *
 from Utilities import *
 from SmallComputations import MyMinMax as MyMinMax
 
-class GraphOfAParametricCurve(ObjectGraph):
+class ParametricCurveGraph(ObjectGraph):
     def __init__(self,f1,f2,llamI,llamF):
         """
         Use the constructor :func:`ParametricCurve`.
@@ -44,7 +44,7 @@ class GraphOfAParametricCurve(ObjectGraph):
                             such a function have too fast oscillations.
 
         """
-        if isinstance(f1,GraphOfAParametricCurve):
+        if isinstance(f1,ParametricCurveGraph):
             print("You cannot creare a parametric curve by giving a parametric curve")
             raise TypeError
         ObjectGraph.__init__(self,self)
@@ -130,7 +130,7 @@ class GraphOfAParametricCurve(ObjectGraph):
         return self._derivative_dict[n]
     def put_arrow(self,*args):
         # TODO : one should be able to give the size as optional argument, as done with
-        #       put_arrow on GraphOfASegment. 
+        #       put_arrow on SegmentGraph. 
         """
         Add a small arrow at the given positions.
 

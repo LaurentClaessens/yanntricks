@@ -86,7 +86,7 @@ class Options(object):
         return self.DicoOptions[opt]
 
 class ObjectGraph(object):
-    """ This class is supposed to be used to create other "GraphOfA..." by inheritance. It is a superclass. """
+    """ This class is supposed to be used to create other "<Foo>Graph" by inheritance. It is a superclass. """
     # self.record_add_to_bb is a list of points to be added to the bounding box.
     # Typically, when a point has a mark, one can only know the size of the box at the end of the picture 
     #(because of xunit, yunit that change when using dilatation)
@@ -122,7 +122,7 @@ class ObjectGraph(object):
 
         If you give no position (i.e. no "S","N", etc.) the position will be automatic regarding the angle.
         """
-        from GraphOfAnAngle import GraphOfAnAngle
+        from AngleGraph import AngleGraph
         from Constructors import Mark
         from MathStructures import AngleMeasure
         if automatic_place==False:
@@ -155,7 +155,7 @@ class ObjectGraph(object):
             angle=angle+added_angle
         if position=="" :
             position="corner"
-            if isinstance(self,GraphOfAnAngle):
+            if isinstance(self,AngleGraph):
                 position="center"
             alpha=AngleMeasure(value_degree=angle).positive()
             deg=alpha.degree
@@ -190,7 +190,7 @@ class ObjectGraph(object):
         self.options.remove_option(opt)
     def merge_options(self,graph):
         """
-        takes an other object GraphOfA... and merges the options as explained in the documentation
+        takes an other object <Foo>Graph and merges the options as explained in the documentation
         of the class Options. That merge takes into account the attributes "color", "style", wavy
         """
         self.parameters = graph.parameters
