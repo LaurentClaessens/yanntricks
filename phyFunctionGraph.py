@@ -23,6 +23,7 @@
 from phystricks.ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
+from Exceptions import ShouldNotHappenException
 
 class phyFunctionGraph(ObjectGraph):
     """
@@ -285,9 +286,7 @@ class phyFunctionGraph(ObjectGraph):
         minmax['xmax']=Mx
         ymin=1000
         ymax=-1000
-        print("phyFunctionGraph::get_minmax_date -- plotpoints_list : ")
-        print(self.plotpoints_list(self.parameters.plotpoints,mx,Mx))
-        for x in self.plotpoints_list(self.parameters.plotpoints,mx,Mx):
+        for x in self.plotpoints_list(xmin=mx,xmax=Mx,plotpoints=self.parameters.plotpoints):
             valid=True
             try :
                 y=self(x)
@@ -299,8 +298,6 @@ class phyFunctionGraph(ObjectGraph):
             except AttributeError :
                 pass            # When drawing non-analytic function, y is numpy.float64
             if valid :
-                print("phyFunctionGraph::get_minmax_data x ",x)
-                print("phyFunctionGraph::get_minmax_data y ",y)
                 ymax=max(ymax,y)
                 ymin=min(ymin,y)
         minmax['ymax']=ymax
@@ -311,7 +308,6 @@ class phyFunctionGraph(ObjectGraph):
     def xmin(self,deb,fin):
         return self.get_minmax_data(deb,fin)['xmin']
     def ymax(self,deb,fin):
-        print("ooFKUPooUqNLHU  phyFunctionGraph::ymax  ",self.get_minmax_data(deb,fin)['ymax'])
         return self.get_minmax_data(deb,fin)['ymax']
     def ymin(self,deb,fin):
         return self.get_minmax_data(deb,fin)['ymin']
@@ -348,6 +344,10 @@ class phyFunctionGraph(ObjectGraph):
             xmin=self.mx
         if xmax==None:
             xmax=self.Mx
+        # Sometimes, xmin and xmax have some Sage's types that numpy does not
+        # understand
+        xmin=numerical_approx(xmin)
+        xmax=numerical_approx(xmax)
         X=list(numpy.linspace(xmin,xmax,plotpoints))
         X.extend(self.added_plotpoints)
         X.sort()

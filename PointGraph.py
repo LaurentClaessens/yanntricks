@@ -126,7 +126,12 @@ class PointGraph(ObjectGraph):
             pass
 
         if direction is None:
-            direction=Segment(  self, self+(  1,-1/seg.slope    )  )
+            if seg.vertical :
+                direction=Segment(  self, self+( 1,0  )  )
+            elif seg.horizontal :
+                direction=Segment(self,self+(0,1))
+            else :
+                direction=Segment(  self, self+(  1,-1/seg.slope    )  )
 
         P=Intersection(seg,direction)[0]
         if advised :

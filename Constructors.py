@@ -286,16 +286,6 @@ class BoundingBox(object):
                 bb.check_too_large(pspict)
             self.AddBB(bb)
     def add_math_object(self,obj,pspict=None,check_too_large=True):
-
-        # This block is all to be removed
-        print("ooKITJooRJwpfN",obj)
-        from phyFunctionGraph import phyFunctionGraph
-        if isinstance(obj,phyFunctionGraph):
-            print(obj.sage)
-            print(obj.mx)
-            print(obj.Mx)
-
-
         try :
             self.add_object(obj,pspict=pspict,fun="math_bounding_box",check_too_large=check_too_large)
         except TypeError :

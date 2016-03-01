@@ -515,10 +515,6 @@ def check_too_large(obj,pspict=None):
         Mx=bb.xmax
         My=bb.ymax
 
-        print("ooXVPGooUEHVur Utilities::check_too_large ")
-        print("mx",mx)
-        print("My",My)
-
     except AttributeError:
         print "Object {0} has no method bounding_box.".format(obj)
         mx=obj.mx
