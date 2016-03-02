@@ -221,8 +221,6 @@ class ImplicitCurveGraph(ObjectGraph,GeometricImplicitCurve):
     NOTES:
 
     The get_minmax_data is contributed by the Sage's community here :
-    http://ask.sagemath.org/question/359/get_minmax_data-on-implicit_plot
-    (thanks to DSM)
     """
     def __init__(self,implicit_curve,xrange,yrange,plot_points=300):
         ObjectGraph.__init__(self,implicit_curve)
@@ -760,13 +758,13 @@ def get_paths_from_implicit_plot(p):
         4
         sage: type(paths[0][1])
         <class 'phystricks.BasicGeometricObjects.PointGraph'>
+        sage: print paths[0][3]
+        <Point(4.87405534614323,-4.6644295302013425)>
         sage: print paths[1][3]
         <Point(4.87405534614323,-4.6644295302013425)>
         sage: print paths[2][3]
         <Point(4.87405534614323,-4.6644295302013425)>
         sage: print paths[3][3]
-        <Point(4.87405534614323,-4.6644295302013425)>
-        sage: print paths[4][3]
         <Point(4.87405534614323,-4.6644295302013425)>
     """
     l=[]
