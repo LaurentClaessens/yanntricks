@@ -108,7 +108,6 @@ class AxesGraph(object):
             print "pgPIYd"
             raise TypeError,"No pspict given"
         BB=BoundingBox()
-        print("BasicGeometricObjects::bounding_box",self.single_axeX.mx,self.single_axeX.Mx)
         BB.append(self.single_axeX.bounding_box(pspict),pspict)
         BB.append(self.single_axeY.bounding_box(pspict),pspict)
 
@@ -286,3 +285,6 @@ class SingleAxeGraph(ObjectGraph):
         return "\n".join(c)
     def __str__(self):
         return "<SingleAxeGraph: C={0} base={1} mx={2} Mx={3}>".format(self.C,self.base,self.mx,self.Mx)
+
+
+

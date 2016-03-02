@@ -194,6 +194,7 @@ def PointToPolaire(P=None,x=None,y=None,origin=None):
         sage: print PointToPolaire(x=1,y=1)
         PolarCoordinates, r=sqrt(2),degree=45,radian=1/4*pi
     """
+    from SmallComputations import numerical_is_negative
     if origin:
         Ox=origin.x
         Oy=origin.y
@@ -222,7 +223,7 @@ def PointToPolaire(P=None,x=None,y=None,origin=None):
         if Qy<=0:
             radian=pi+radian
     # Only positive values (February 11, 2015)
-    if radian < 0 :
+    if numerical_is_negative(radian):
         radian=radian+2*pi
     return PolarCoordinates(r,value_radian=radian)
 

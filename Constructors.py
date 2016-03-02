@@ -214,7 +214,7 @@ def CircleOA(O,A):
     """
     return a circle with center 'O' and passing through the point 'A'
     """
-    radius=distance(O,A)
+    radius=Distance(O,A)
     return Circle(O,radius)
 
 def CircleAB(A,B):
@@ -234,7 +234,8 @@ def CircularSector(center,radius,a,b):
     return CustomSurface(l1,l2,l3)
 
 def FractionPieDiagram(center,radius,a,b):
-    return BasicGeometricObjects.FractionPieDiagramGraph(center,radius,a,b)
+    from MiscGraph import FractionPieDiagramGraph
+    return FractionPieDiagramGraph(center,radius,a,b)
 
 class BoundingBox(object):
     r"""
@@ -727,7 +728,8 @@ def RightAngle(d1,d2,n1=0,n2=1,r=0.3):
     'r' is the size of the "edge"
     'n1' and 'n2' are 0 ot 1 and are determining which of the 4 angles has to be marked (two lines -> 4 angles)
     """
-    return BasicGeometricObjects.RightAngleGraph(d1,d2,r,n1,n2)
+    from AngleGraph import RightAngleGraph
+    return RightAngleGraph(d1,d2,r,n1,n2)
 
 def RightAngleAOB(A,O,B,n1=0,n2=1,r=0.3):
     """
@@ -898,6 +900,37 @@ def Axes(C,bb,pspict=None):
     return AxesGraph(C,bb,pspict)
 
 def SingleAxe(C,base,mx,Mx,pspict=None):
+    """
+    Return an axe.
+    
+    INPUT:
+
+    - ``C`` - the center of the axe. This is the point corresponding to the "zero" coordinate
+    - ``base`` - the unit of the axe. This indicates
+
+                1. the direction
+                2. the size of "1"
+
+                A mark will be added at each integer multiple of that vector (but zero) including negative.
+    - ``mx`` - the multiple of ``base`` at which the axe begins. This is typically negative
+    - ``Mx`` -  the multiple of ``base`` at which the axe ends. This is typically positive
+                    The axe goes from ``C+mx*base`` to ``C-Mx*base``. 
+
+    OTHER CONTROLS :
+
+    The default behaviour can be modified by the following attributes.
+
+    - ``self.Dx`` - (default=1) A mark is written each multiple of ``self.Dx*base``.
+    - ``self.mark_angle`` - the angle in degree under which the mark are written. By default this is orthogonal
+                        to the direction given by ``self.base``.
+
+    If an user-defined axes_unit is given, the length of ``base`` is "forgotten"
+
+    EXAMPLES::
+    
+        sage: from phystricks import *
+        sage: axe = SingleAxe(Point(1,1),Vector(0,1),-2,2)
+        """
     from AxesGraph import SingleAxeGraph
     return SingleAxeGraph(C,base,mx,Mx,pspict)
 

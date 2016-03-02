@@ -134,8 +134,6 @@ class MarkGraph(object):
             print "Try to pass a pspicture when computing the bounding box of",type(self)
         pt1=Point(central_point.x-dimx/2,central_point.y-dimy/2) 
         pt2=Point(central_point.x+dimx/2,central_point.y+dimy/2)
-        print("MarkGraph::bounding_box::",pt1,pt1.x,pt1.y)
-        print("Central point : ",central_point.x,central_point.y)
         bb.add_object(pt1,pspict)
         bb.add_object(pt2,pspict)
         bb.parent=self

@@ -150,6 +150,8 @@ class AngleMeasure(object):
         if self.degree < 0 :
             return AngleMeasure(value_degree=360+self.degree)
     def __mul__(self,coef):
+        from Utilities import degreeUnit
+        from Utilities import radianUnit
         if isinstance(coef,degreeUnit) or isinstance(coef,radianUnit):
             return self
         return AngleMeasure(value_radian=coef*self.radian)
@@ -250,4 +252,3 @@ class AxesUnit(object):
                 text="$"+latex(pos).replace("TheTag",self.latex_symbol)+"$"  # This risks to be Sage-version dependent.
                 l.append((x,text))
         return l
-

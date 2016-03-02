@@ -534,16 +534,6 @@ class ParametricCurveGraph(ObjectGraph):
         a.append("between {} and {}>".format(self.mx,self.Mx))
         return "\n".join(a)
 
-    # Use the generic method 'params' from 'ObjectGraph'.  June 27, 2014
-    #def params(self,language=None):
-    #    self.conclude_params()
-    #    if language=="pstricks":
-    #        self.add_option("plotpoints=%s"%str(self.parameters.plotpoints))
-    #        self.add_option("plotstyle=%s"%str(self.plotstyle))
-    #    if language=="tikz":
-    #        self.add_option("sample="+str(self.parameters.plotpoints))
-    #        self.add_option("plotstyle=%s"%str(self.plotstyle))
-    #    return self.options.code(language=language)
     def reverse(self):
         """
         return the curve in the inverse sense but on the same interval

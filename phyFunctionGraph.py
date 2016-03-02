@@ -363,17 +363,18 @@ class phyFunctionGraph(ObjectGraph):
 
         If an other cut_y is already imposed, the most restrictive is used.
         """
+        from SmallComputations import split_list
         if self.do_cut_y:
             self.pieces=[]
             ymin=max(ymin,self.cut_ymin)
             ymax=min(ymax,self.cut_ymax)
         if not plotpoints:
-            plotpoints=2.347*self.parameters.plotpoints
+            plotpoints=2.347*self.parameters.plotpoints             # Avoid being a multiple of Mx-mx, while being more or less twice the old plotpoints
         self.do_cut_y=True
         self.cut_ymin=ymin
         self.cut_ymax=ymax
         X=self.plotpoints_list(plotpoints=plotpoints)
-        s=SmallComputations.split_list(X,self.sage,self.cut_ymin,self.cut_ymax)
+        s=split_list(X,self.sage,self.cut_ymin,self.cut_ymax)
         for k in s:
             mx=k[0]
             Mx=k[1]

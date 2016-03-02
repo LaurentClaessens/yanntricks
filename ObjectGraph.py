@@ -24,7 +24,7 @@ from Parameters import Parameters
 
 class Options(object):
     """
-    Describe the drawing options of pstricks objects.
+    Describe the drawing options of an objects.
 
     ATTRIBUTES :
         self.DicoOptions : dictionnary which contains the options
@@ -36,9 +36,9 @@ class Options(object):
     """
     def __init__(self):
         self.DicoOptions = {}
-    # On ajoute une des options en donnant genre
+    # One adds an option using for example
     # LineColor=blue,LineStyle=dashed
-    # Ou alors en donnant un dictionnaire genre
+    # or via a dictionary :
     # {"Dx":1,"Dy":3}
     def add_option(self,opt):
         if opt :            # If the argument is empty.

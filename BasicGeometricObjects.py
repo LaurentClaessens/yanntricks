@@ -739,8 +739,7 @@ def get_paths_from_implicit_plot(p):
 
     OUTPUT:
 
-    A list of lists of points. Each list corresponds to a path (see matplotlib), but the components
-    are converted into points in the sens of phystricks (instead of matplotlib's vertices).
+    A list of lists of points. Each list corresponds to a path (see matplotlib), but the components are converted into points in the sens of phystricks (instead of matplotlib's vertices).
 
     EXAMPLES:
 
@@ -762,6 +761,12 @@ def get_paths_from_implicit_plot(p):
         sage: type(paths[0][1])
         <class 'phystricks.BasicGeometricObjects.PointGraph'>
         sage: print paths[1][3]
+        <Point(4.87405534614323,-4.6644295302013425)>
+        sage: print paths[2][3]
+        <Point(4.87405534614323,-4.6644295302013425)>
+        sage: print paths[3][3]
+        <Point(4.87405534614323,-4.6644295302013425)>
+        sage: print paths[4][3]
         <Point(4.87405534614323,-4.6644295302013425)>
     """
     l=[]
@@ -1203,77 +1208,6 @@ class BarDiagramGraph(object):
     def latex_code(self,language=None,pspict=None):
         return ""
 
-class RightAngleGraph(ObjectGraph):
-    def __init__(self,d1,d2,r,n1,n2):
-        """
-        two lines and a distance.
-
-        n1 and n2 are 0 or 1 and indicating which sector has to be marked.
-        'n1' if for the intersection with d1. If 'n1=0' then we choose the intersection nearest to d1.I
-        Similarly for n2
-        """
-        ObjectGraph.__init__(self,self)
-        self.d1=d1
-        self.d2=d2
-
-        # If the intersection point is one of the initial or final point of d1 or d2, then the sorting
-        # in 'specific_action_on_pspict' does not work.
-        # This happens in RightAngle(  Segment(D,E),Segment(D,F),l=0.2, n1=1,n2=1 ) because the same point 'D' is given
-        # for both d1 and d2.
-        # We need d1.I, d1.F, d2.I and d2.F to be four distinct points.
-        if self.d1.I==self.d2.I or self.d1.I==self.d2.F or self.d1.F==self.d2.I or self.d1.F==self.d2.F:
-            self.d1=d1.dilatation(1.5)
-            self.d2=d2.dilatation(1.5)
-
-        self.r=r
-        self.n1=n1
-        self.n2=n2
-        self.intersection=Intersection(d1,d2)[0]
-    def inter_point(self,I,F,n,pspict):
-        v1=AffineVector(I,F)
-        v=visual_length(v1,l=1,pspict=pspict)
-        if n==0:
-            P1=I - self.r*v
-        if n==1:
-            P1=I + self.r*v
-        
-        rv=self.r*v
-        return P1
-
-    def specific_action_on_pspict(self,pspict):
-    
-        if False :          # No more used (April 23, 2015)
-            circle=Circle(self.intersection,self.r)
-            K=Intersection(circle,self.d1)
-            K.sort(key=lambda P:Distance_sq(P,self.d1.I))
-            L=Intersection(circle,self.d2)
-            L.sort(key=lambda P:Distance_sq(P,self.d2.I))
-            if self.n1==0:
-                P1=K[0]
-            if self.n1==1:
-                P1=K[1]
-            if self.n2==0:
-                P2=L[0]
-            if self.n2==1:
-                P2=L[1]
-
-        P1=self.inter_point(self.intersection,self.d1.F,self.n1,pspict)
-        P2=self.inter_point(self.intersection,self.d2.F,self.n2,pspict)
-
-        Q=P1+P2-self.intersection
-        l1=Segment(Q,P1)
-        l2=Segment(Q,P2)
-        
-        l1.parameters=self.parameters.copy()
-        l2.parameters=self.parameters.copy()
-        pspict.DrawGraphs(l1,l2)
-    def bounding_box(self,pspict):
-        return BoundingBox()
-    def math_bounding_box(self,pspict):
-        return BoundingBox()
-    def latex_code(self,language=None,pspict=None):
-        return ""
-
 def sudoku_substitution(tableau,symbol_list=[  str(k) for k in range(-4,5) ]):
     """
     From a string representing a sudoku grid,
@@ -1340,58 +1274,13 @@ class SudokuGridGraph(object):
         pspict.DrawGraphs(vlines,hlines,content,numbering)
     def action_on_pspict(self,pspict):
         pass
-    # No need to give a precise bounding box. Since the elements will be inserted with pspict.DrawGraph,
-    # their BB will be counted in the global BB.
+    # No need to give a precise bounding box. Since the elements will be inserted with pspict.DrawGraph, their BB will be counted in the global BB.
     def math_bounding_box(self,pspict):
         return BoundingBox()
     def bounding_box(self,pspict):
         return BoundingBox()
     def latex_code(self,language=None,pspict=None):
         return ""
-
-class FractionPieDiagramGraph(ObjectGraph):
-    def __init__(self,center,radius,a,b):
-        """
-        The pie diagram for the fraction 'a/b' inside the circle of given center and radius.
-
-        2/4 and 1/2 are not treated in the same way because 2/4 divides the pie into 4 parts (and fills 2) while 1/2 divides into 2 parts.
-        """
-        ObjectGraph.__init__(self,self)
-        self.center=center
-        self.radius=radius
-        self.numerator=a
-        self.denominator=b
-        if a>b:
-            raise ValueError,"Numerator is larger than denominator"
-        self.circle=Circle(self.center,self.radius)
-        self._circular_sector=None
-    def circular_sector(self):
-        if not self._circular_sector :
-            FullAngle=AngleMeasure(value_degree=360)
-            cs=CircularSector(self.center,self.radius,0,self.numerator*FullAngle//self.denominator)
-            cs.parameters.filled()
-            cs.parameters.fill.color="lightgray"
-            self._circular_sector=cs
-        return self._circular_sector
-    def bounding_box(self,pspict):
-        return self.circle.bounding_box(pspict)
-    def latex_code(self,language=None,pspict=None):
-        return ""
-    def specific_action_on_pspict(self,pspict):
-        if self.denominator==self.numerator:
-            cs=Circle(self.center,self.radius)
-            cs.parameters.filled()
-            cs.parameters.fill.color="lightgray"
-            l=[cs]
-        else :
-            import numpy
-            l=[self.circular_sector()]
-            for k in numpy.linspace(0,360,self.denominator,endpoint=False):
-                s=Segment(  self.circle.get_point(k),self.center  )
-                s.parameters.style="dashed"
-                l.append(s)
-            l.append(self.circle)
-        pspict.DrawGraphs(l)
 
 import phystricks.main as main
 import phystricks.SmallComputations as SmallComputations

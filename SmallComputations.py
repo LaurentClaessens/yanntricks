@@ -488,6 +488,26 @@ def numerical_isZero(x,epsilon=0.0001):
     except:
         raise
 
+def numerical_is_negative(x):
+    """
+    try to say if `x` is numerically negative.
+
+    I got difficulties on the following :
+    sage:radian =arctan(1/sin(1.2000000000000002*pi))
+    sage: if radian< 0:
+        print("ok")
+        ....:   
+    results in an OverflowError: Python int too large to convert to C long.
+    """
+    try :
+        return x.is_negative()
+    except AttributeError:
+        pass
+    if numerical_approx(x)<0:
+        return True
+    else :
+        return False
+
 def MyMinMax(dico_sage,decimals=3):
     """
     return the dictionary with numbers cut to `decimals` digits.

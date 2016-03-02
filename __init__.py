@@ -31,7 +31,8 @@ from Constructors import Point
 from Constructors import Segment
 from Utilities import radian
 from Utilities import degree
-
+from MathStructures import AxesUnit
+from Utilities import Intersection
 
 """
 A collection of tools for building LaTeX-pstricks figures with python.
@@ -362,9 +363,9 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval1=(None,None),interval2
     .. image:: Picture_FIGLabelFigBetweenParametricPICTBetweenParametric-for_eps.png
 
     """
-    
     from CircleGraph import CircleGraph
     from SegmentGraph import SegmentGraph
+    from Utilities import EnsureParametricCurve
     exceptions = [CircleGraph,SegmentGraph]
     on=True
     for ex in exceptions :
@@ -386,10 +387,6 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval1=(None,None),interval2
     mx=[None,None]
     Mx=[None,None]
     for i in [0,1]:
-        #if isinstance(curve[i],tuple) :
-        #    mx[i]=curve[i][1]
-        #    Mx[i]=curve[i][2]
-        #    curve[i]=EnsureParametricCurve(curve[i][0]).graph(mx[i],Mx[i])
         mx[i],Mx[i]=BasicGeometricObjects.extract_interval_information(curve[i])
         if interval1 != (None,None):
             mx[0]=interval1[0]
@@ -666,40 +663,6 @@ def CircleOA(O,A):
     radius=sqrt( (O.x-A.x)**2+(O.y-A.y)**2 )
     return Circle(O,radius)
 
-def SingleAxe(C,base,mx,Mx,pspict=None):
-    """
-    Return an axe.
-    
-    INPUT:
-
-    - ``C`` - the center of the axe. This is the point corresponding to the "zero" coordinate
-    - ``base`` - the unit of the axe. This indicates
-
-                1. the direction
-                2. the size of "1"
-
-                A mark will be added at each integer multiple of that vector (but zero) including negative.
-    - ``mx`` - the multiple of ``base`` at which the axe begins. This is typically negative
-    - ``Mx`` -  the multiple of ``base`` at which the axe ends. This is typically positive
-                    The axe goes from ``C+mx*base`` to ``C-Mx*base``. 
-
-    OTHER CONTROLS :
-
-    The default behaviour can be modified by the following attributes.
-
-    - ``self.Dx`` - (default=1) A mark is written each multiple of ``self.Dx*base``.
-    - ``self.mark_angle`` - the angle in degree under which the mark are written. By default this is orthogonal
-                        to the direction given by ``self.base``.
-
-    If an user-defined axes_unit is given, the length of ``base`` is "forgotten"
-
-    EXAMPLES::
-    
-        sage: from phystricks import *
-        sage: axe = SingleAxe(Point(1,1),Vector(0,1),-2,2)
-    """
-    return BasicGeometricObjects.SingleAxeGraph(C,base,mx,Mx,pspict)
-
 class ObliqueProjection(object):
     def __init__(self,alpha,k):
         """
@@ -707,11 +670,12 @@ class ObliqueProjection(object):
 
         `alpha` is given in degree. It is immediately converted in order to have positive number. If you give -45, it will be converted to 315
         """
+        from MathStructures import AngleMeasure
         self.k=k
         if self.k>=1 :
             print "Are you sure that you want such a scale factor : ",float(self.k)
         self.alpha=alpha
-        a=SmallComputations.AngleMeasure(value_degree=self.alpha).positive()
+        a=AngleMeasure(value_degree=self.alpha).positive()
         self.alpha=a.degree
         self.theta=radian(self.alpha)
         self.kc=self.k*cos(self.theta)
