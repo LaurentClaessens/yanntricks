@@ -175,6 +175,12 @@ class PointGraph(ObjectGraph):
             yP=r*sin(alpha)/B
             return self.translate(Vector(xP,yP))
         return Point(self.x+r*cos(alpha),self.y+r*sin(alpha))
+    def getPolarPoint(self,r,theta,pspict=None)
+        return self.get_polar_point(r,theta,pspict)
+    def getVisualPolarPoint(self,r,theta,pspict=None):
+        from SmallComputations import visualPolarCoordinates
+        rp,alpha=visualPolarCoordinates(r,theta)
+        return getPolarPoint(rp,alpha)
     def rotation(self,alpha):
         pc=self.polar_coordinates()
         return PolarPoint(pc.r,pc.degree+alpha)

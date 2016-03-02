@@ -60,8 +60,7 @@ class MarkGraph(object):
             except TypeError :          # Happens when mark_point is redefined as a 'lambda' function
                 graph_mark_point=self.graph.mark_point()
    
-        default=graph_mark_point.get_polar_point(self.dist,self.angle,pspict)
-
+        default=graph_mark_point.getVisualPolarPoint(self.dist,self.angle,pspict)
         if self.automatic_place :
             pspict=self.automatic_place[0]
             position=self.automatic_place[1]
@@ -81,9 +80,8 @@ class MarkGraph(object):
                 seg=self.automatic_place[2]
                 alpha=seg.angle().radian
                 d=self.dist+0.5*max(dimx*sin(alpha),dimy*cos(alpha))
-                beta=degree(-pi/2+alpha)
                 beta=self.angle
-                return graph_mark_point.get_polar_point(d,beta)
+                return graph_mark_point.getVisualPolarPoint(d,beta)
 
             if position=="center":
                 return default

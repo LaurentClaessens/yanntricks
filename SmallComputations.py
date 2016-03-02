@@ -572,6 +572,9 @@ def enlarge_a_little_low(x,m,epsilon):
         return MultipleLower(x,m)-epsilon
 
 def polar_with_dilatation(r,theta,xunit=1,yunit=1):
+    raise DeprecationWarning,"Use 'visualPolarCoordinates' instead"
+
+def visualPolarCoordinates(r,theta,xunit=1,yunit=1)
     """
     return the polar coordinated that you have to give
     in such a way the it *visually* appears `(r,theta)`

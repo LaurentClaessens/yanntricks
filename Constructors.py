@@ -420,7 +420,11 @@ class BoundingBox(object):
 
 def Mark(graph,dist,angle,text,mark_point=None,automatic_place=False):
     """
-    Describe a mark (essentially a P on a point for example) angle is given in degree or AngleMeasure
+    Describe a mark on a point.
+
+    The provided distance and angle are visual. That is
+    P.put_mark(0.3,45, ... )
+    will place a mark at distance 0.3 and angle 45 from the point P *on the pictire*. This is why a pspicture is needed.
 
     INPUT:
 
@@ -431,7 +435,6 @@ def Mark(graph,dist,angle,text,mark_point=None,automatic_place=False):
     - ``automatic_place`` - this is a tuple (pspict,anchor) where pspict is the pspicture in which we are working and ̣`anchor` is one of "corner","N","S","W","E" or special cases (see below).
 
             - "corner" will put the mark at the distance such that the corner of the bounding box is at the (relative) position (dist;angle) instead of the center of the mark.
-
             - "N" will put the mark in such a way that the center of the north side of the bounding box is at the position (dist;angle).
 
             - "for axes". In this case we expect to have a 3-tuple `(pspict,"for axes",segment)` where `segment` is a segment (typically the segment of an axe).  In this case, we suppose `self.angle` to be orthogonal to the segment.  The mark will be put sufficiently far for the bounding box not to cross the segment.
