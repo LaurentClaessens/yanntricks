@@ -29,6 +29,8 @@ from sage.all import *
 
 from Constructors import Point
 from Constructors import Segment
+from Utilities import radian
+from Utilities import degree
 
 
 """
