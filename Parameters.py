@@ -20,8 +20,6 @@
 # copyright (c) Laurent Claessens, 2010-2016
 # email: moky.math@gmai.com
 
-
-
 class FillParameters(object):
     """
     Represent the parameters of filling a surface.
@@ -175,3 +173,26 @@ class Parameters(object):
                 parameters.__dict__[attr]=candidate
         parameters.fill=self.fill
         parameters.hatch=self.hatch
+
+class Waviness(object):
+    """
+    This class contains the informations about the waviness of a curve. It takes as argument a phyFunctionGraph and the parameters dx, dy of the wave.
+    
+    - Waviness.get_wavy_points      
+            returns a list of points which are disposed around the graph of the curve. These are the points to be joined by a bezier or something in order to get the wavy graph of the function.
+    """
+    def __init__(self,graph,dx,dy):
+        self.graph = graph
+        self.dx = dx
+        self.dy = dy
+        self.obj = self.graph.obj
+        try:
+            self.Mx = self.graph.Mx
+            self.mx = self.graph.mx
+        except AttributeError :
+            pass
+    def get_wavy_points(self):
+        if type(self.obj) == phyFunction :
+            return self.obj.get_wavy_points(self.mx,self.Mx,self.dx,self.dy)
+        if type(self.obj) == Segment :
+            return self.obj.get_wavy_points(self.dx,self.dy)

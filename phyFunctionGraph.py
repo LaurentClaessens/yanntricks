@@ -106,6 +106,7 @@ class phyFunctionGraph(ObjectGraph):
         listeInverse = []
         x=var('x')
         eq = self.sage(x) == y
+        from SmallComputations import CalculSage
         return CalculSage().solve_one_var([eq],x)
     def PointsNiveau(self,y):
         return [ Point(x,y) for x in self.inverse(y) ]
@@ -145,7 +146,7 @@ class phyFunctionGraph(ObjectGraph):
         else:
             return self.derivative(n-1).derivative()
     def get_point(self,x,advised=True):        
-        return general_funtion_get_point(self,x,advised)
+        return general_function_get_point(self,x,advised)
     def get_normal_vector(self,xx):
         """ 
         return a normalized normal vector to the graph of the function at xx

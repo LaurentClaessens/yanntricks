@@ -32,9 +32,10 @@ from sage.all import *
 import codecs
 
 from Utilities import *
-from phystricks import WrapperStr
 
-var=WrapperStr(var)
+# It seem to me that we don't use that here (March, 03 2016)
+#from phystricks import WrapperStr
+#var=WrapperStr(var)
 
 def MultipleBetween(Dx,mx,Mx,mark_origin=True):
     """
@@ -74,7 +75,6 @@ def MainGridArray(mx,Mx,Dx):
         If mx=-1.5 and Dx=0.5, the first element of the list will be -1.5
         If mx=0 and Dx=1, the first element of the list will be 0.
         """
-        #for y in range(MultipleBigger(self.BB.my,self.Dy),MultipleLower(self.BB.My,self.Dy)+1,self.Dy):
         m=mx/Dx
         if not m.is_integer():
             m = floor(mx/Dx - 1)
@@ -95,7 +95,7 @@ class CalculSage(object):
     # I cannot merge the function for solving with respect to one or more variables because Sage returns like that:
     # If 1 and 2 are the solutions for one variable : [x == 1,x==2]
     # If (1,2) and (3,4) are solutions of a two variable equation : [ [x==1,y==2],[x==3,y==4] ]
-    # The list nesting structure is really different. Do I have to read the doc ?
+    # The list nesting structure is different. Do I have to read the doc ?
     def solve_one_var(self,eqs,var):
         """
         Solve the equations with respect to the given variable
@@ -111,7 +111,7 @@ class CalculSage(object):
         """
         Solve the equations with respect to the given variables
 
-        Returns a list like [  [1,2],[3,4] ] if the solutions are (1,2) and (3n4)
+        Returns a list like [  [1,2],[3,4] ] if the solutions are (1,2) and (3,4)
         """
         liste = solve(eqs,vars,explicit_solutions=True)
         a = []
@@ -149,7 +149,7 @@ class Fichier(object):
 
 def RemoveLastZeros(x,n):
     """
-    Cut the number x to n decimals and then remove the last zeros.
+    Cut the number `x` to n decimals and then remove the last zeros.
 
     If there remain no decimals, also remove the dot.
     We only cut a given number of decimals; if the integer part has more digits, we keep them.
@@ -447,6 +447,46 @@ def around(x,decimals):
     from numpy import around as numpy_around
     a=[x]
     return numpy_around(a,decimals=decimals)[0]
+
+def numerical_min(x,y):
+    """
+    return the min of x and y after having computed a numerical approximation.
+
+    The reason is that Sage cannot always determine the min or the max of
+    expressions like
+        1000, <type 'int'>
+        cos(0.0823552493237255*pi), <type 'sage.symbolic.expression.Expression'>
+    """
+    nx=numerical_approx(x)
+    ny=numerical_approx(y)
+    return min(nx,ny)
+
+def numerical_max(x,y):
+    """
+    return the max of x and y after having computed a numerical approximation.
+
+    For the rationale, see `numerical_min`
+    """
+    nx=numerical_approx(x)
+    ny=numerical_approx(y)
+    return max(nx,ny)
+
+def numerical_isZero(x,epsilon=0.0001):
+    """
+    Try to say if Abs(x)<epsilon.
+
+    It is not always possible because
+    - x could be an expression on which Sage cannot compute abs
+    - the precision on x could be lower than epsilon, so that Sage will complain. In this case we check is x is the smaller possible in its precision and `epsilon` is not used.
+
+        sage: from phystricks.SmallComputations import numerical_isZero
+        sage: numerical_isZero(-pi)
+        False
+    """
+    try :
+        return abs(x) < epsilon
+    except:
+        raise
 
 def MyMinMax(dico_sage,decimals=3):
     """

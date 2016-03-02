@@ -109,7 +109,8 @@ class ObjectGraph(object):
         self.added_objects=[]
     def draw_edges(self):
         self._draw_edges=True
-    def wave(self,dx,dy):                   # dx is the wave length and dy is the amplitude
+    def wave(self,dx,dy):     # dx is the wave length and dy is the amplitude
+        from Parameters import Waviness
         self.wavy = True
         self.waviness = Waviness(self,dx,dy)
     def get_mark(self,dist,angle,text,mark_point=None,automatic_place=False,added_angle=None,pspict=None):
@@ -169,7 +170,7 @@ class ObjectGraph(object):
                 position="N"
         mark=Mark(self,dist,angle,text,automatic_place=(pspict,position,third),mark_point=mark_point)
 
-        # We need to immediately add the LaTeX lines about box sizes, no waiting fig.conclude. This is to allow several pictures  to use the same points and marks.  
+        # We need to immediately add the LaTeX lines about box sizes, no waiting fig.conclude. This is to allow several pictures to use the same points and marks.  
         # By the way, one cannot compute the self.mark.central_point() here because the axes are not yet computed.
 
         if not isinstance(pspict,list):
@@ -190,8 +191,7 @@ class ObjectGraph(object):
         self.options.remove_option(opt)
     def merge_options(self,graph):
         """
-        takes an other object <Foo>Graph and merges the options as explained in the documentation
-        of the class Options. That merge takes into account the attributes "color", "style", wavy
+        Take an other object <Foo>Graph and merges the options as explained in the documentation of the class Options. That merge takes into account the attributes "color", "style", wavy
         """
         self.parameters = graph.parameters
         self.options.merge_options(graph.options)

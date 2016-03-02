@@ -17,10 +17,11 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010,2011,2013-2015
+# copyright (c) Laurent Claessens, 2010,2011,2013-2016
 # email: moky.math@gmai.com
 
 from Utilities import *
+from SmallComputations import MultipleBetween
 
 class PolarCoordinates(object):
     def __init__(self,r,value_degree=None,value_radian=None):
@@ -38,7 +39,7 @@ def RadianAngleMeasure(x):
 
 class AngleMeasure(object):
     """
-    describe an angle.
+    Describe an angle.
 
     This class is an attempt to abstract the degree/radian problem.
 
@@ -212,4 +213,41 @@ class AngleMeasure(object):
         return "AngleMeasure, degree=%s,radian=%s"%(str(numerical_approx(self.degree)),str(self.radian))
     def __repr__(self):
         return self.__str__()
+
+class AxesUnit(object):
+    def __init__(self,numerical_value,latex_symbol=""):
+        try :
+            numerical_value=sage.rings.rational.Rational(numerical_value)
+        except TypeError :
+            pass
+        self.numerical_value=numerical_value
+        self.latex_symbol=latex_symbol
+    def symbol(self,x):
+        return latex(x)+self.latex_symbol
+    def place_list(self,mx,Mx,frac=1,mark_origin=True):
+        """
+        return a tuple of 
+        1. values that are all the integer multiple of 
+                <frac>*self.numerical_value 
+            between mx and Mx
+        2. the multiple of the basis unit.
+
+        Give <frac> as literal real. Recall that python evaluates 1/2 to 0. If you pass 0.5, it will be converted back to 1/2 for a nice display.
+        """
+        try :
+            frac=sage.rings.rational.Rational(frac)     # If the user enters "0.5", it is converted to 1/2
+        except TypeError :
+            pass
+        if frac==0:
+            raise ValueError,"frac is zero in AxesUnit.place_list(). Maybe you ignore that python evaluates 1/2 to 0 ? (writes literal 0.5 instead) \n Or are you trying to push me in an infinite loop ?"
+        l=[]
+        k=var("TheTag")
+        for x in MultipleBetween(frac*self.numerical_value,mx,Mx,mark_origin):
+            if self.latex_symbol == "":
+                l.append((x,"$"+latex(x)+"$"))
+            else :
+                pos=(x/self.numerical_value)*k
+                text="$"+latex(pos).replace("TheTag",self.latex_symbol)+"$"  # This risks to be Sage-version dependent.
+                l.append((x,text))
+        return l
 

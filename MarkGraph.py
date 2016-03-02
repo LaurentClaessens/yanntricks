@@ -42,9 +42,10 @@ class MarkGraph(object):
         else :
             self.x=self.dist*cos(alpha)
             self.y=self.dist*sin(alpha)
+
     def central_point(self,pspict=None):
         """
-        return the central point of the mark, that is the point where the mark arrives.
+        Return the central point of the mark, that is the point where the mark arrives.
 
         The central point of the mark is computed from self.graph.mark_point()
         Thus an object that wants to accept a mark needs a method mark_point that returns the point on which the mark will be put.
@@ -57,7 +58,6 @@ class MarkGraph(object):
             try :
                 graph_mark_point=self.graph.mark_point(pspict=pspict)
             except TypeError :          # Happens when mark_point is redefined as a 'lambda' function
-                                        #  or when an other TypeError is raised ...
                 graph_mark_point=self.graph.mark_point()
    
         default=graph_mark_point.get_polar_point(self.dist,self.angle,pspict)
@@ -76,6 +76,7 @@ class MarkGraph(object):
                 dimx=float(dimx)/psp.xunit
                 dimy=float(dimy)/psp.yunit
 
+            # See some explanations at 104835555
             if position=="for axes":
                 seg=self.automatic_place[2]
                 alpha=seg.angle().radian
@@ -122,7 +123,7 @@ class MarkGraph(object):
     def bounding_box(self,pspict=None):
         central_point=self.central_point(pspict)
         if not central_point:
-            print(self.parent)
+            print("No central point. Parent =",self.parent)
             raise
         bb=BoundingBox(central_point,central_point)
         dimx,dimy=pspict.get_box_size(self.text)
@@ -133,6 +134,8 @@ class MarkGraph(object):
             print "Try to pass a pspicture when computing the bounding box of",type(self)
         pt1=Point(central_point.x-dimx/2,central_point.y-dimy/2) 
         pt2=Point(central_point.x+dimx/2,central_point.y+dimy/2)
+        print("MarkGraph::bounding_box::",pt1,pt1.x,pt1.y)
+        print("Central point : ",central_point.x,central_point.y)
         bb.add_object(pt1,pspict)
         bb.add_object(pt2,pspict)
         bb.parent=self

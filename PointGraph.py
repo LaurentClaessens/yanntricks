@@ -362,6 +362,7 @@ class PointGraph(ObjectGraph):
 
         If a pspicture is given, we divide by xunit and yunit to normalize.
         """
+        from SmallComputations import numerical_isZero
         x=self.x
         y=self.y
         if pspict :
@@ -382,12 +383,9 @@ class PointGraph(ObjectGraph):
 
             y=numerical_approx(y,digits=digits)
         # Avoid something like "0.125547e-6" (LaTeX will not accept).
-        #    We use the numerical approximation because :
-        #       sage: abs(-pi)
-        #       -pi        
-        if abs( numerical_approx(x,digits=3) ) < 0.001 :
+        if numerical_isZero(x,0.001):
             x=0
-        if abs( numerical_approx(y,digits=3) ) < 0.001 :
+        if numerical_isZero(y,0.001):
             y=0
         return str("("+str(x)+","+str(y)+")")
     def coordinatesBr(self):

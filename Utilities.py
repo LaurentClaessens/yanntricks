@@ -542,4 +542,35 @@ def check_too_large(obj,pspict=None):
                 print "The mother of {0} is {1}".format(obj,obj.mother)
             except AttributeError :
                 pass
+            print("""The easiest way to debug this is to make the picture compile adding something like 
+                        pspict.Mx_acceptable_BB=1000
+                        pspict.mx_acceptable_BB=-1000
+                        pspict.My_acceptable_BB=1000
+                        pspict.my_acceptable_BB=-1000
+        and then see de visu what is the faulty object.
+                    """)
             raise ValueError
+
+def general_function_get_point(fun,x,advised=True):
+        """
+        Return a point on the graph of the function with the given x, i.e. it return the point (x,f(x)).
+
+        Also set an attribute advised_mark_angle to the point. This angle is the normal exterior to the graph; visually this is usually the best place to put a mark. Typically you use this as
+        P=f.get_point(3)
+        P.mark(radius,P.advised_mark_angle,"$P$")
+
+        NOTE:
+        If you don't plan to put a mark on the point, you are invited to use advised=False in order to speed up the computations.
+        """
+        P = Point(float(x),fun(x))
+        if advised :
+            try :
+                ca = fun.derivative()(x) 
+            except TypeError:    # Sage cannot derivate the function
+                print "I'm not able to compute derivative of {0}. You should pass advised=False".format(fun)
+            else :
+                angle_n=degree(atan(ca)+pi/2)
+                if fun.derivative(2)(x) > 0:
+                    angle_n=angle_n+180
+                P._advised_mark_angle=angle_n
+        return P

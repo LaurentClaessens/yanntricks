@@ -20,6 +20,7 @@
 # copyright(c) Laurent Claessens, 2010-2016
 # email: moky.math@gmai.com
 
+from sage.all import *
 
 def Point(a,b):
     """
@@ -337,22 +338,16 @@ class BoundingBox(object):
     def addX(self,x):
         self.xmin=min(self.xmin,x)
         self.xmax=max(self.xmax,x)
-    def AddX(self,x):
-        raise DeprecationWarning   # Use addX instead. Augustus, 24, 2014
-        self.xmin=min(self.xmin,x)
-        self.xmax=max(self.xmax,x)
     def addY(self,y):
         self.ymin=min(self.ymin,y)
         self.ymax=max(self.ymax,y)
-    def AddY(self,y):
-        raise DeprecationWarning   # Use addY instead. Augustus, 24, 2014
-        self.ymin=min(self.ymin,y)
-        self.ymax=max(self.ymax,y)
     def AddBB(self,bb):
-        self.xmin = min(self.xmin,bb.xmin)
-        self.ymin = min(self.ymin,bb.ymin)
-        self.xmax = max(self.xmax,bb.xmax)
-        self.ymax = max(self.ymax,bb.ymax)
+        from SmallComputations import numerical_min
+        from SmallComputations import numerical_max
+        self.xmin = numerical_min(self.xmin,bb.xmin)
+        self.ymin = numerical_min(self.ymin,bb.ymin)
+        self.xmax = numerical_max(self.xmax,bb.xmax)
+        self.ymax = numerical_max(self.ymax,bb.ymax)
     def append(self,graph,pspict=None):
         if isinstance(graph,list):
             raise KeyError,"%s is a list"%graph
@@ -370,9 +365,7 @@ class BoundingBox(object):
             except (ValueError,AttributeError),msg :
                 print "Something got wrong with %s"%str(graph)
                 print msg
-                print "If you want to debug me, you should add a raise here."
-                print("HURVooBiLyiI",graph,type(graph))
-                print("MRLWooXAmSHT",self.math,on)
+                print("The graph : ",graph,type(graph))
                 raise
         self.AddBB(bb)
     def add_math_graph(self,graphe,pspict=None):
@@ -528,6 +521,7 @@ def phyFunction(fun,mx=None,Mx=None):
     .. image:: Picture_FIGLabelFigNonAnalyticOnePICTNonAnalyticOne-for_eps.png
 
     """
+    from phyFunctionGraph import phyFunctionGraph
     # The first try is that the given expression is already a phyFunction.
     try:
         return fun.graph(mx,Mx)     
@@ -537,14 +531,11 @@ def phyFunction(fun,mx=None,Mx=None):
     # The second try is that `fun` is something that Sage knows.
     try:
         sy=symbolic_expression(fun)
-    except TypeError:       # This deals with probability distributions for example.
-        return BasicGeometricObjects.phyFunctionGraph(fun,mx,Mx)
+    except TypeError:   # Happens with probability distributions.
+        return phyFunctionGraph(fun,mx,Mx)
 
-        # I'm trying not to use NonAnalytic anymore, July 1, 2014
-        #return BasicGeometricObjects.NonAnalyticFunction(fun,mx,Mx)
     x=var('x')
-    import phyFunctionGraph
-    return phyFunctionGraph.phyFunctionGraph(sy.function(x),mx,Mx)
+    return phyFunctionGraph(sy.function(x),mx,Mx)
 
 def ParametricCurve(f1,f2,interval=(None,None)):
     """
@@ -599,10 +590,7 @@ def InterpolationCurve(points_list,context_object=None,mode=None):
     OPTIONAL INPUT:
 
     - ``context_object`` -  the object that is going to use the InterpolationCurve's latex code.
-                            ImplicitCurve and wavy curves are using InterpolationCurve as "backend"
-                            for the latex code.
-                            Here we use the context_object in order to take this one into account
-                            when determining the parameters (color, ...).
+                            ImplicitCurve and wavy curves are using InterpolationCurve as "backend" for the latex code.  Here we use the context_object in order to take this one into account when determining the parameters (color, ...).
 
     EXAMPLES:
 
@@ -702,5 +690,215 @@ def MeasureLength(seg,dist=0.1):
     """
     from MeasureLengthGraph  import MeasureLengthGraph
     return MeasureLengthGraph(seg,dist)
+
+def CustomSurface(*args):
+    """
+    Represent the surface contained between some lines and (parametric) curves.
+
+    INPUT:
+    - ``*args`` - la tuple of lines like segments, functions, parametric curves.
+
+    EXAMPLE:
+  
+    The following describes the surface between the circle of radius 1 and 
+    the square of length 1::
+    
+        sage: from phystricks import *
+        sage: C=Circle(Point(0,0),1)
+        sage: arc=C.parametric_curve(0,pi/2)
+        sage: h=Segment(Point(0,1),Point(1,1))
+        sage: v=Segment(Point(1,1),Point(1,0))
+        sage: surf=CustomSurface(arc,h,v)
+
+    The border is not drawn.
+
+    This is somewhat the more general use of the pstricks's macro \pscustom
+    """
+    if len(args)==1:        # This is in the case in which we give a tuple or a list directly
+        a=args[0]
+    else :
+        a=args
+    from CustomSurfaceGraph import CustomSurfaceGraph
+    return CustomSurfaceGraph(list(a))
+
+def RightAngle(d1,d2,n1=0,n2=1,r=0.3):
+    """
+    'd1' and 'd2' are the two lines.
+    'r' is the size of the "edge"
+    'n1' and 'n2' are 0 ot 1 and are determining which of the 4 angles has to be marked (two lines -> 4 angles)
+    """
+    return BasicGeometricObjects.RightAngleGraph(d1,d2,r,n1,n2)
+
+def RightAngleAOB(A,O,B,n1=0,n2=1,r=0.3):
+    """
+    return the right angle between Segment(A,O) and Segment(O,B)
+    """
+    return RightAngle( Segment(A,O),Segment(O,B),n1,n2,r  ) 
+
+def PolarCurve(fr,ftheta=None):
+    """
+    return the parametric curve (:class:`ParametricCurve`) corresponding to the 
+    curve of equation r=f(theta) in polar coordinates.
+
+    If ftheta is not given, return the curve
+    x(t)=fr(t)cos(t)
+    y(t)=fr(t)sin(t)
+
+    If ftheta is given, return the curve
+    x(t)=fr(t)cos( ftheta(t) )
+    y(t)=fr(t)sin( ftheta(t) )
+
+    EXAMPLES::
+    
+    .. literalinclude:: phystricksCardioid.py
+    .. image:: Picture_FIGLabelFigCardioidPICTCardioid-for_eps.png
+
+    """
+    x=var('x')
+    if ftheta==None :
+        f1=fr*cos(x)
+        f2=fr*sin(x)
+    else:
+        f1=fr(x=x)*cos(ftheta(x=x))
+        f2=fr(x=x)*sin(ftheta(x=x))
+    return ParametricCurve(f1,f2)
+
+def LagrangePolynomial(*args):
+    """
+    return as `phyFunction` the Lagrange polynomial passing trough the given points
+
+    You can either provide a list of points or some points.
+    """
+    #http://ask.sagemath.org/question/1815/polynomialring-and-from-__future__-import
+    points_list=[]
+    for arg in args :
+        try:
+            for P in arg :
+                points_list.append(P)
+        except TypeError :
+            points_list.append(arg)
+    R = PolynomialRing(QQ,str('x'))
+    f = R.lagrange_polynomial([   (float(P.x),float(P.y)) for P in points_list  ])
+    return phyFunction(f)
+
+def HermiteInterpolation(points_list):
+    """
+    return a polynomial that pass trough the given points with the given derivatives.
+
+    Each element of points_list is a triple
+    (x,y,d)
+    and the given polynomial satisfies P(x)=y and P'(x)=d
+
+    EXAMPLES :
+
+    sage : P=HermiteInterpolation( [  (1,14,7),(3,64,51),(-2,-16,31)    ] )
+    sage: P.simplify_full()
+    2*x^3 - x^2 + 3*x + 10
+
+    """
+    x=var('x')
+    n=len(points_list)
+    xx={ i:points_list[i][0] for i in range(0,n) }
+    y={ i:points_list[i][1] for i in range(0,n) }
+    d={ i:points_list[i][2] for i in range(0,n) }
+
+    b={ i:(x-xx[i])**2 for i in range(0,n) }
+
+    Q={}
+    for j in range(0,n):
+        Q[j]=prod(    [  b[i] for i in range(0,n) if i <> j  ]   )
+    P={}
+    for j in range(0,n):
+        parenthese=1-(x-xx[j])*Q[j].diff(x)(xx[j])/Q[j](xx[j])
+        P[j]=(Q[j](x)/Q[j](xx[j]))*(    parenthese*y[j]+(x-xx[j])*d[j]      )
+    f=sum(P.values())
+    return phyFunction(f.expand())
+
+def Polygon(*args):
+    """
+    represent a polygon.
+
+    You can give either a list of point or a list containing the points :
+
+    .. literalinclude:: phystricksExPolygone.py
+    .. image:: Picture_FIGLabelFigExPolygonePICTExPolygone-for_eps.png
+    """
+    from PolygonGraph import PolygonGraph
+    if len(args)==1:     # In this case, we suppose that this is a list
+        # args is a tupe containing the arguments. If you call
+        # Polygon([P,Q]) then args[0] is [P,Q]
+        return PolygonGraph(args[0])
+    return PolygonGraph(list(args))
+
+def Rectangle(*args,**arg):
+    """
+    INPUT:
+
+    - ``NW,SE`` - the North-West corner and South-East corner
+
+    Alternatively, you can pass a bounding box as unique argument.
+
+    Still alternatively, you can pass xmin,ymin,xmax,ymax
+    """
+    if len(args)==2:
+        NW=args[0]
+        SE=args[1]
+    if len(args)==1:
+        NW=args[0].NW()
+        SE=args[0].SE()
+    if "xmin" in arg.keys() :
+        bb=BoundingBox(xmin=arg["xmin"],ymin=arg["ymin"],xmax=arg["xmax"],ymax=arg["ymax"])
+        # TODO : I should be able to pass directly the dictionary to BoundingBox
+        NW=bb.NW()
+        SE=bb.SE()
+    if "mx" in arg.keys() :
+        bb=BoundingBox(xmin=arg["mx"],ymin=arg["my"],xmax=arg["Mx"],ymax=arg["My"])
+        # TODO : I should be able to pass directly the dictionary to BoundingBox
+        NW=bb.NW()
+        SE=bb.SE()
+    from PolygonGraph import RectangleGraph
+    return RectangleGraph(NW,SE)
+
+def Circle3D(op,O,A,B,angleI=0,angleF=2*pi):
+    from PerspectiveGraphs import Circle3DGraph
+    return Circle3DGraph(op,O,A,B,angleI,angleF)
+
+def Vector3D(x,y,z):
+    from PerspectiveGraphs import Vector3DGraph
+    return Vector3DGraph(x,y,z)
+
+def Cuboid(op,P,a,b,c):
+    """
+    - `op` -- the projection method.
+    - `P` -- tuple (x,y) giving the lower left point
+    - `a,b,c` -- lengths of the edges.
+
+          +--------------------------+
+        0/ |                       1/|
+        /  |         0             / |
+        0-------------------------1  |
+        |  |                      |  |
+        |  |                     1|  | 
+       3|  |______________________|__|
+        |3/                       |2/
+        |/           2            |/
+        3-------------------------2
+
+    """
+    from PerspectiveGraphs import CuboidGraph
+    return CuboidGraph(op,P,a,b,c)
+
+def Axes(C,bb,pspict=None):
+    """
+    Describe a system of axes (two axes).
+
+    By default they are orthogonal.
+    """
+    from AxesGraph import AxesGraph
+    return AxesGraph(C,bb,pspict)
+
+def SingleAxe(C,base,mx,Mx,pspict=None):
+    from AxesGraph import SingleAxeGraph
+    return SingleAxeGraph(C,base,mx,Mx,pspict)
 
 from Utilities import *
