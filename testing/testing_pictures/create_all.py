@@ -75,16 +75,16 @@ import_string=""
 function_append_string=""
 latex=""
 
-for d in document_directories :
+for d in configuration.document_directories :
     imp,fun,lat=getFromDirectory(d)
     import_string+=imp
     function_append_string+=fun
     latex+=lat
 
 
-skel=open("figures_skel.py",'r').read()
+skel=open("figures_testing_skel.py",'r').read()
 code_all=skel.replace("IMPORT_LIST",import_string).replace("APPEND_LIST",function_append_string)
-file_all=open("figures_all.py",'w')
+file_all=open("figures_testing.py",'w')
 file_all.write(code_all)
 file_all.close()
 
