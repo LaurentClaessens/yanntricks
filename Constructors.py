@@ -393,11 +393,11 @@ class BoundingBox(object):
         self.AddPoint( axes.BB.SW() )
         self.AddPoint( axes.BB.NE() )
     def latex_code(self,language=None,pspict=None):
+        return ""
+    def action_on_pspict(self,pspict=None):
         rect=Rectangle(self.SW(),self.NE())
         rect.parameters.color="cyan"
-        return rect.latex_code(language=language,pspict=pspict)
-    def action_on_pspict(self,pspict=None):
-        pass
+        pspict.DrawGraph(rect)
     def bounding_box(self,pspict=None):
         return self
     def math_bounding_box(self,pspict=None):
