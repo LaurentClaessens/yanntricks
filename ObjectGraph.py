@@ -180,6 +180,10 @@ class ObjectGraph(object):
                 dimx,dimy = psp.get_box_size(text)
         return mark
     def put_mark(self,dist,angle,text,mark_point=None,automatic_place=False,added_angle=None,pspict=None):
+
+        """
+        - ``angle`` is given in degree.
+        """
         mark=self.get_mark(dist,angle,text,mark_point=None,automatic_place=automatic_place,added_angle=added_angle,pspict=pspict)
         self.added_objects.append(mark)
         self.mark=mark

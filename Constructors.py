@@ -412,7 +412,9 @@ class BoundingBox(object):
 
         Allow to write
         if P in bb :
-        http://www.rafekettler.com/magicmethods.html
+            do_something 
+
+        from http://www.rafekettler.com/magicmethods.html
         """
         if P.x <= self.xmax and P.x>=self.xmin and P.y<=self.ymax and P.y>=self.ymin:
             return True
@@ -424,7 +426,7 @@ def Mark(graph,dist,angle,text,mark_point=None,automatic_place=False):
 
     The provided distance and angle are visual. That is
     P.put_mark(0.3,45, ... )
-    will place a mark at distance 0.3 and angle 45 from the point P *on the pictire*. This is why a pspicture is needed.
+    will place a mark at distance 0.3 and angle 45 from the point P *on the picture*. This is why a pspicture is needed.
 
     INPUT:
 
@@ -442,7 +444,7 @@ def Mark(graph,dist,angle,text,mark_point=None,automatic_place=False):
          What is done is that the closest corner of the bounding box is at position (dist;angle) from the point.
     """
     import MarkGraph
-    return MarkGraph.MarkGraph(graph,dist,angle,text,mark_point=None,automatic_place=False)
+    return MarkGraph.MarkGraph(graph,dist,angle,text,mark_point=mark_point,automatic_place=automatic_place)
 
 def AngleAOB(A,O,B,r=None):
     """

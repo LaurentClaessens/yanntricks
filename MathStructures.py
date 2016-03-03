@@ -117,7 +117,7 @@ class AngleMeasure(object):
                     print("This is strange ...")
                     value_degree=value_degree-360
 
-        # From here 'value_degree' and 'value_radian' are fixed and we make some check.
+        # From here 'value_degree' and 'value_radian' are fixed and we make some checks.
         s=numerical_approx(value_degree)
         k=abs(s).frac()
         if k<0.00000001 :
@@ -126,7 +126,7 @@ class AngleMeasure(object):
         self.degree=value_degree
         self.radian=value_radian
         if self.degree>359 and self.radian < 0.1:
-            print "DBwRgm",self.degree,self.radian
+            print "Problem with an angle : ",self.degree,self.radian
             print "dep degree",dep_value_degree,numerical_approx(dep_value_degree)
             print "dep_radian",dep_value_radian,numerical_approx(dep_value_radian)
             print "final degree",numerical_approx(value_degree)

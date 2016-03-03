@@ -143,7 +143,7 @@ class PointGraph(ObjectGraph):
         """
         v=Q-self
         return Q+v
-    def get_polar_point(self,r,theta,pspict=None):
+    def getPolarPoint(self,r,theta,pspict=None):
         """
         Return the point located at distance r and angle theta from point self.
 
@@ -167,7 +167,13 @@ class PointGraph(ObjectGraph):
         """
         if isinstance(r,AngleMeasure):
             raise ShouldNotHappenException("You are passing AngleMeasure instead of a number (the radius).")
-        alpha=radian(theta,number=True)
+        if isinstance(theta,AngleMeasure):
+            alpha=theta.radian
+        else :
+            if theta<6 :
+                print("'PointGraph.getPolarPoint' expect angle given in degree. Did you did it ?")
+                raise
+            alpha=radian(theta,number=True)
         if pspict:
             A=pspict.xunit
             B=pspict.yunit
@@ -175,12 +181,12 @@ class PointGraph(ObjectGraph):
             yP=r*sin(alpha)/B
             return self.translate(Vector(xP,yP))
         return Point(self.x+r*cos(alpha),self.y+r*sin(alpha))
-    def getPolarPoint(self,r,theta,pspict=None)
-        return self.get_polar_point(r,theta,pspict)
+    def get_polar_point(self,r,theta,pspict=None):
+        return self.getPolarPoint(r,theta,pspict)
     def getVisualPolarPoint(self,r,theta,pspict=None):
         from SmallComputations import visualPolarCoordinates
         rp,alpha=visualPolarCoordinates(r,theta)
-        return getPolarPoint(rp,alpha)
+        return self.getPolarPoint(rp,alpha)
     def rotation(self,alpha):
         pc=self.polar_coordinates()
         return PolarPoint(pc.r,pc.degree+alpha)
@@ -349,8 +355,10 @@ class PointGraph(ObjectGraph):
     def angle(self,origin=None):
         """
         Return the angle of the segment from (0,0) and self.
+
+        Return type : MathStructure.AngleMeasure
         """
-        return self.polar_coordinates(origin=origin)            # No more degree. February 11, 2015
+        return self.polar_coordinates(origin=origin).measure            # No more degree. February 11, 2015
     def coordinates(self,numerical=False,digits=None,pspict=None):
         """
         Return the coordinates of the point as a string.

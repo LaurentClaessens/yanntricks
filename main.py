@@ -1296,7 +1296,7 @@ class pspicture(object):
                 x=DrawElement(graph.mark,separator_name)
                 self.record_draw_graph.append(x)
         except AttributeError,msg :
-            pass            # This happens when the graph has no mark; that is most of the time.
+            pass   # Happens when the graph has no mark (most of time)
         self.math_BB.append(graph,self)
         graph.action_on_pspict(self)
     def DrawDefaultAxes(self):

@@ -26,14 +26,20 @@ from Utilities import *
 
 class MarkGraph(object):
     def __init__(self,graph,dist,angle,text,mark_point=None,automatic_place=False):
+        """
+        Internally, the angle is recorded as 'AngleMeasure'.
+        """
         self._central_point=None
         self.mark_point=mark_point
         self.graph = graph
         self.parent = graph
+    
         self.angle = angle
+        if not isinstance(angle,AngleMeasure):
+            self.angle=AngleMeasure(value_degree=angle)
+
         self.dist = dist
         self.text = text
-        self.angle = angle
         self.automatic_place=automatic_place
         alpha=radian(angle)
         if isinstance(alpha,AngleMeasure):
@@ -59,14 +65,13 @@ class MarkGraph(object):
                 graph_mark_point=self.graph.mark_point(pspict=pspict)
             except TypeError :          # Happens when mark_point is redefined as a 'lambda' function
                 graph_mark_point=self.graph.mark_point()
-   
         default=graph_mark_point.getVisualPolarPoint(self.dist,self.angle,pspict)
+
         if self.automatic_place :
             pspict=self.automatic_place[0]
             position=self.automatic_place[1]
 
-            # The idea here is to allow to use the same point in several pictures and to ask
-            # each figure to remember the box size.
+            # The idea here is to allow to use the same point in several pictures and to ask each figure to remember the box size.
             if not isinstance(pspict,list):
                 pspict=[pspict]
 
@@ -113,12 +118,13 @@ class MarkGraph(object):
         Return the mathematics bounding box of its base object.
 
         A mark has non own math_bounding_box because we do not want the axes to fit the marks.
-        This is the deep difference between math_bounding_box and bounding_box. We want the
-        marks to be fit in the bounding_box since if not the mark risks to be cut
-        in the pdf/png version.
+        - we want the global bounding box to enclose the marks; if not the mark risks to be bu in the pdf/png version and/or the
+            figure can be badly centred.
+        - we don't want the math_boundig_box to enclose the marks because the axes don't have to enclose them.
         """
         return self.graph.math_bounding_box(pspict)
     def bounding_box(self,pspict=None):
+
         central_point=self.central_point(pspict)
         if not central_point:
             print("No central point. Parent =",self.parent)

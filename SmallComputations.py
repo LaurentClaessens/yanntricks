@@ -574,7 +574,7 @@ def enlarge_a_little_low(x,m,epsilon):
 def polar_with_dilatation(r,theta,xunit=1,yunit=1):
     raise DeprecationWarning,"Use 'visualPolarCoordinates' instead"
 
-def visualPolarCoordinates(r,theta,xunit=1,yunit=1)
+def visualPolarCoordinates(r,theta,xunit=1,yunit=1):
     """
     return the polar coordinated that you have to give
     in such a way the it *visually* appears `(r,theta)`
@@ -586,7 +586,9 @@ def visualPolarCoordinates(r,theta,xunit=1,yunit=1)
 
     - ``r`` - the distance you want to see.
 
-    - ``theta`` - the angle you want to see (radian).
+    - ``theta`` - the angle you want to see (radian or AngleMeasure).
+                    If the angle is passed as 'AngleMeasure', the answer
+                    will also be AngleMeasure
 
     - ``xunit`` - the dilatation factor in the `x` direction.
 
@@ -614,6 +616,11 @@ def visualPolarCoordinates(r,theta,xunit=1,yunit=1)
         sage: polar_with_dilatation(1,pi/2,2,0.5)
         (2.00000000000000, 1/2*pi)
     """
+    from MathStructures import AngleMeasure
+    arg_is_angle_measure=False
+    if isinstance(theta,AngleMeasure):
+        theta=theta.radian()
+        arg_is_angle_measure=True
     if cos(theta)==0:
         return (r/yunit,theta)
     alpha=atan( (xunit/yunit)*tan(theta) )
@@ -622,6 +629,8 @@ def visualPolarCoordinates(r,theta,xunit=1,yunit=1)
     if rp < 0:
         rp=-rp
         alpha=alpha+pi
+    if arg_is_angle_measure :
+        alpha=AngleMeasure(value_radian=alpha)
     return (rp,alpha)
 
 def split_list(starting_list,fun,cut_ymin,cut_ymax):
