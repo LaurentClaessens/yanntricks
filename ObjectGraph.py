@@ -184,7 +184,7 @@ class ObjectGraph(object):
         """
         - ``angle`` is given in degree.
         """
-        mark=self.get_mark(dist,angle,text,mark_point=None,automatic_place=automatic_place,added_angle=added_angle,pspict=pspict)
+        mark=self.get_mark(dist,angle,text,mark_point=mark_point,automatic_place=automatic_place,added_angle=added_angle,pspict=pspict)
         self.added_objects.append(mark)
         self.mark=mark
     def add_option(self,opt):
