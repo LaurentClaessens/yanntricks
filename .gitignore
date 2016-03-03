@@ -22,5 +22,11 @@ testing/testing_pictures/plugins_agreg.py
 testing/testing_pictures/pack.tex
 testing/testing_pictures/pictures.pdf
 testing/testing_pictures/pytextools.xml
-
-
+testing/testing_pictures/demonstration/0-*
+testing/testing_pictures/demonstration/Inter_*
+testing/testing_pictures/demonstration/*.aux
+testing/testing_pictures/demonstration/*.auxlock
+testing/testing_pictures/demonstration/Fig_*
+testing/testing_pictures/demonstration/pytextools.xml
+testing/testing_pictures/demonstration/*.md5
+testing/testing_pictures/demonstration/*.pdf
