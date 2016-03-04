@@ -216,14 +216,7 @@ class SingleAxeGraph(ObjectGraph):
 
         This function also enlarges the axe by half a *visual* centimeter.
         """
-        
         # bars_list contains in the same time marks (for the numbering) and segments (for the bars itself)
-
-        # It seems that this 'imposed_graduation' does not work because
-        # the so-created points do not appear in the auxiliary file.
-        if self.imposed_graduation :
-            raise DeprecationWarning  # June 24 2014
-            return self.imposed_graduation
         if not self.graduation:
             return []
         bars_list=[]
@@ -234,16 +227,12 @@ class SingleAxeGraph(ObjectGraph):
             if self.numbering :
                 # The 0.2 here is hard coded in Histogram, see 71011299
 
-                # When one compute the central point of the label on an axe, 
-                # we already take into account the 'x/yunit'. Thus one does not have to make "visual" computations here. See 10483555
-                #   This is why we do not use "polar_with_dilatation" here 
-                #  (March 3, 2016)
-
-                #r,theta=polar_with_dilatation(0.2,radian(self.mark_angle),pspict.xunit,pspict.yunit)
-                #P.put_mark(r,theta,symbol,automatic_place=(pspict,"for axes",self.segment()))
-                #theta=degree(theta)
-
-                P.put_mark(0.2,self.mark_angle,symbol,automatic_place=(pspict,"for axes",self.segment()))
+                if self.segment().horizontal :
+                    position="N"
+                if self.segment().vertical :
+                    position="E"
+                P.put_mark(0.2,self.mark_angle,symbol,automatic_place=(pspict,position))
+                #P.put_mark(0.2,self.mark_angle,symbol,automatic_place=(pspict,"for axes",self.segment()))
                 bars_list.append(P.mark)
 
             a=visual_polar(P,0.1,bar_angle,pspict)

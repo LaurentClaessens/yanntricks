@@ -82,13 +82,12 @@ class MarkGraph(object):
                 dimx=float(dimx)/psp.xunit
                 dimy=float(dimy)/psp.yunit
 
-            # See some explanations at 104835555
             if position=="for axes":
                 seg=self.automatic_place[2]
                 alpha=seg.angle().radian
                 d=self.dist+0.5*max(dimx*sin(alpha),dimy*cos(alpha))
                 beta=self.angle
-                return graph_mark_point.getVisualPolarPoint(d,beta)
+                return graph_mark_point.getVisualPolarPoint(d,beta,pspict=pspict[0])
 
             if position=="center":
                 return default

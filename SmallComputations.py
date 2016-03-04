@@ -625,6 +625,10 @@ def visualPolarCoordinates(r,theta,xunit=1,yunit=1):
         arg_is_angle_measure=True
     if cos(theta)==0:
         return (r/yunit,orig_theta)
+    if cos(theta)==1:
+        return (r/xunit,orig_theta)
+    if cos(theta)==-1:
+        return (r/xunit,orig_theta)
 
     # For Sage, atan : R -> [-pi/2,pi/2]
     # thus one has to check the angle after having done atan( ... tan(...)  )

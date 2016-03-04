@@ -11,6 +11,7 @@ from phystricks import *
 from phystricksTRJEooPRoLnEiG import TRJEooPRoLnEiG
 from phystricksQRXCooUmnlhkvh import QRXCooUmnlhkvh
 from phystricksUREIooqNGBXtHg import UREIooqNGBXtHg
+from phystricksQIXEooejrojKjo import QIXEooejrojKjo
 
 figures_list=[]
 

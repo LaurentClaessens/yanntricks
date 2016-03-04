@@ -59,7 +59,7 @@ def getFromDirectory(_dirname):
     function_append_list=[]
     latex_code_list=[]
     for f in os.listdir(dirname):
-        if f.startswith("phystricksB") and f.endswith(".py"):
+        if f.startswith("phystricks") and f.endswith(".py"):
             pict=OnePicture(f,_dirname)
             if pict.isToDo():
 
