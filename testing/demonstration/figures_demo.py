@@ -10,11 +10,13 @@ from phystricks import *
 
 from phystricksTRJEooPRoLnEiG import TRJEooPRoLnEiG
 from phystricksQRXCooUmnlhkvh import QRXCooUmnlhkvh
+from phystricksUREIooqNGBXtHg import UREIooqNGBXtHg
 
 figures_list=[]
 
 figures_list.append(TRJEooPRoLnEiG)
 figures_list.append(QRXCooUmnlhkvh)
+figures_list.append(UREIooqNGBXtHg)
 
 def AllFigures():
     tests=main.FigureGenerationSuite(figures_list,first=0,title=u"demonstration pictures")

@@ -116,16 +116,15 @@ class ObjectGraph(object):
     def get_mark(self,dist,angle,text,mark_point=None,automatic_place=False,added_angle=None,pspict=None):
 
         """
-        If you want to put a mark on an object
-        P.put_mark(0.1,-90,"text",automatic_place=(pspict,"N"))
-
-        mark_point is a function which returns the position of the mark point.
-
-        If you give no position (i.e. no "S","N", etc.) the position will be automatic regarding the angle.
+        - `angle` is degree or AngleMeasure
+        
+        In the internal representation of the mark, the angle type will be `AngleMeasure`
         """
+
         from AngleGraph import AngleGraph
         from Constructors import Mark
         from MathStructures import AngleMeasure
+
         if automatic_place==False:
             if pspict:
                 automatic_place=(pspict,"")
@@ -150,10 +149,16 @@ class ObjectGraph(object):
             try :
                 angle=self.advised_mark_angle(pspict=pspict)
             except AttributeError :
+                print("this object has no 'advised_mark_angle' : ",self)
+                a=self.angle()
+                print("his angle is ",a,type(a))
                 angle=self.angle().degree+90
 
-        if added_angle:
-            angle=angle+added_angle
+        # At this point, 'angle' has to be degree,
+        # - for the possibility of "added_angle"
+        # - the constructor of 'mark' expect degree or AngleMeasure
+
+        if added_angle: angle=angle+added_angle
         if position=="" :
             position="corner"
             if isinstance(self,AngleGraph):
@@ -180,8 +185,15 @@ class ObjectGraph(object):
                 dimx,dimy = psp.get_box_size(text)
         return mark
     def put_mark(self,dist,angle,text,mark_point=None,automatic_place=False,added_angle=None,pspict=None):
-
         """
+
+        If you want to put a mark on an object
+        P.put_mark(0.1,-90,"text",automatic_place=(pspict,"N"))
+
+        mark_point is a function which returns the position of the mark point.
+
+        If you give no position (i.e. no "S","N", etc.) the position will be automatic regarding the angle.
+
         - ``angle`` is given in degree.
         """
         mark=self.get_mark(dist,angle,text,mark_point=mark_point,automatic_place=automatic_place,added_angle=added_angle,pspict=pspict)

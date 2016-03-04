@@ -76,11 +76,9 @@ class PointGraph(ObjectGraph):
         if ay<0.00001 and ay>0 :
             self.y=0
     def advised_mark_angle(self,pspict):
-        if self._advised_mark_angle:
-            return self._advised_mark_angle
-        else :
-            print("No advised mark angle for this point")
-            raise AttributeError
+        if self._advised_mark_angle is None :
+            self._advised_mark_angle=self.angle()
+        return self._advised_mark_angle
     def numerical_approx(self):
         return Point(numerical_approx(self.x),numerical_approx(self.y))
     def projection(self,seg,direction=None,advised=False):
@@ -170,9 +168,6 @@ class PointGraph(ObjectGraph):
         if isinstance(theta,AngleMeasure):
             alpha=theta.radian
         else :
-            if theta<6 :
-                print("'PointGraph.getPolarPoint' expect angle given in degree. Did you did it ?")
-                raise
             alpha=radian(theta,number=True)
         if pspict:
             A=pspict.xunit
@@ -186,6 +181,7 @@ class PointGraph(ObjectGraph):
     def getVisualPolarPoint(self,r,theta,pspict=None):
         from SmallComputations import visualPolarCoordinates
         rp,alpha=visualPolarCoordinates(r,theta)
+
         return self.getPolarPoint(rp,alpha)
     def rotation(self,alpha):
         pc=self.polar_coordinates()

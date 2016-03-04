@@ -34,8 +34,9 @@ class MarkGraph(object):
         self.graph = graph
         self.parent = graph
     
-        self.angle = angle
-        if not isinstance(angle,AngleMeasure):
+        if isinstance(angle,AngleMeasure):
+            self.angle = angle
+        else :
             self.angle=AngleMeasure(value_degree=angle)
 
         self.dist = dist
