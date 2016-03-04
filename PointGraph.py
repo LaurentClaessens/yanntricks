@@ -185,15 +185,9 @@ class PointGraph(ObjectGraph):
         if pspict:
             xunit=pspict.xunit
             yunit=pspict.yunit
-        print("ooZNFBooThhvbj  xyunit ",xunit,yunit)
-        print("ooZNFBooThhvbj  theta ",theta,type(theta))
-        print("ooZNFBooThhvbj  r ",r,type(r))
         rp,alpha=visualPolarCoordinates(r,theta,xunit=xunit,yunit=yunit)
-        print("ooZNFBooThhvbj  alpha ",alpha,type(alpha))
-        print("ooZNFBooThhvbj  rp ",rp,type(rp))
         rp,alpha=visualPolarCoordinates(r,theta,xunit=xunit,yunit=yunit)
         P = self.getPolarPoint(rp,alpha)
-        print("ooYBURooMBWJnn -- le point retourné : ",P.x,P.y)
         return self.getPolarPoint(rp,alpha)
     def rotation(self,alpha):
         pc=self.polar_coordinates()

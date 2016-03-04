@@ -25,6 +25,7 @@ testing/testing_pictures/plugins_agreg.py
 testing/testing_pictures/pack.tex
 testing/testing_pictures/pictures.pdf
 testing/testing_pictures/pytextools.xml
+testing/testing_pictures/figures_testing.py
 testing/testing_pictures/phystricks*.py
 testing/testing_pictures/Inter_*
 testing/demonstration/0-*
@@ -36,3 +37,4 @@ testing/demonstration/pytextools.xml
 testing/demonstration/*.md5
 testing/demonstration/*.pdf
 testing/demonstration/tikzFIG*
+testing/demonstration/*.swo

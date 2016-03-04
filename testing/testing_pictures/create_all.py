@@ -10,7 +10,7 @@ import configuration
 
 class OnePicture(object):
     latex_skel="""
-    \lstinputlisting{CODE_FILENAME}
+    %\lstinputlisting{CODE_FILENAME}
 
     \\newcommand{\CaptionFigNAME}{<+Type your caption here+>}
     \\begin{center}
@@ -51,23 +51,30 @@ def getFromDirectory(_dirname):
     """
     Argument : 
         - the directory name of a document that uses 'phystricks' with a right naming convention.
+    """
+
+    dirname=os.path.expanduser(_dirname)
+    selected=[]
+    for f in os.listdir(dirname):
+        if f.startswith("phystricks") and f.endswith(".py"):
+            selected.append( OnePicture(f,_dirname)  )
+    return selected
+
+def analyseSelected(selected):
+    """
     Return
         - a tuple of string (import,function_append)
     """
-    dirname=os.path.expanduser(_dirname)
     import_list=[]
     function_append_list=[]
     latex_code_list=[]
-    for f in os.listdir(dirname):
-        if f.startswith("phystricks") and f.endswith(".py"):
-            pict=OnePicture(f,_dirname)
-            if pict.isToDo():
+    for pict in selected:
+        if pict.isToDo():
+            import_list.append(pict.importLine())
+            function_append_list.append(pict.functionAppendLine())
+            latex_code_list.append(pict.latex())
 
-                import_list.append(pict.importLine())
-                function_append_list.append(pict.functionAppendLine())
-                latex_code_list.append(pict.latex())
-
-                shutil.copyfile(pict.real_origin_path,pict.real_here_path)
+            shutil.copyfile(pict.real_origin_path,pict.real_here_path)
 
     return ("\n".join(import_list)+"\n","\n".join(function_append_list)+"\n","\n".join(latex_code_list))
 
@@ -75,11 +82,12 @@ import_string=""
 function_append_string=""
 latex=""
 
+selected=[]
 for d in configuration.document_directories :
-    imp,fun,lat=getFromDirectory(d)
-    import_string+=imp
-    function_append_string+=fun
-    latex+=lat
+    selected.extend(getFromDirectory(d))
+
+selected=selected[5:20]
+import_string,function_append_string,latex=analyseSelected(selected)
 
 
 skel=open("figures_testing_skel.py",'r').read()
