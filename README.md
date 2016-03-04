@@ -11,3 +11,5 @@ The purpose of this module is to produce pictures to be inserted in your LaTeX d
 ### Create your own picture
 
 In order to be tested, the naming scheme is quite rigid. Do whatever you want, but the script `new_picture.py` will pick a random name and create all the skeleton files you need.
+
+![Alt text](pictures/example1.png)
