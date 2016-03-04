@@ -180,8 +180,12 @@ class PointGraph(ObjectGraph):
         return self.getPolarPoint(r,theta,pspict)
     def getVisualPolarPoint(self,r,theta,pspict=None):
         from SmallComputations import visualPolarCoordinates
-        rp,alpha=visualPolarCoordinates(r,theta)
 
+        if pspict==None :
+            print("If you are not passing a pspict, you should use 'getPolarPoint' instead")
+            print("I'll probably raise an exception here in a next future")
+        
+        rp,alpha=visualPolarCoordinates(r,theta,xunit=pspict.xunit,yunit=pspict.yunit)
         return self.getPolarPoint(rp,alpha)
     def rotation(self,alpha):
         pc=self.polar_coordinates()

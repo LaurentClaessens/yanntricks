@@ -617,13 +617,25 @@ def visualPolarCoordinates(r,theta,xunit=1,yunit=1):
         (2.00000000000000, 1/2*pi)
     """
     from MathStructures import AngleMeasure
+
     arg_is_angle_measure=False
+    orig_theta=theta
     if isinstance(theta,AngleMeasure):
         theta=theta.radian()
         arg_is_angle_measure=True
     if cos(theta)==0:
-        return (r/yunit,theta)
-    alpha=atan( (xunit/yunit)*tan(theta) )
+        return (r/yunit,orig_theta)
+
+    # For Sage, atan : R -> [-pi/2,pi/2]
+    # thus one has to check the angle after having done atan( ... tan(...)  )
+    # Here we assume that the deformed angle is next to the original one
+    if xunit==yunit:
+        alpha=theta
+    else :
+        alpha=atan( (xunit/yunit)*tan(theta) )
+        if theta>pi/2 and theta<3*pi/2 :
+            alpha=alpha+pi
+            
     rp=(r/xunit)*(cos(theta)/cos(alpha))
 
     if rp < 0:

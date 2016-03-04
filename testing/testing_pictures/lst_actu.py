@@ -14,7 +14,7 @@ myRequest.add_plugin(plugins_agreg.set_isAgreg,"before_pytex")
 myRequest.original_filename="pictures.tex"
 
 myRequest.ok_filenames_list=["e_pictures"]
-myRequest.ok_filenames_list.extend(["<++>"])
+myRequest.ok_filenames_list.extend(["pack"])
 myRequest.ok_filenames_list.extend(["<++>"])
 
 

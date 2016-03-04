@@ -66,6 +66,7 @@ class MarkGraph(object):
                 graph_mark_point=self.graph.mark_point(pspict=pspict)
             except TypeError :          # Happens when mark_point is redefined as a 'lambda' function
                 graph_mark_point=self.graph.mark_point()
+
         default=graph_mark_point.getVisualPolarPoint(self.dist,self.angle,pspict)
 
         if self.automatic_place :

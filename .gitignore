@@ -12,6 +12,8 @@ vieux/*
 instance.vim
 testing/phystricks*.py
 testing/testing_pictures/*.aux
+testing/testing_pictures/*.pstricks
+testing/testing_pictures/*.comment
 testing/testing_pictures/*.auxlock
 testing/testing_pictures/tikz*.log
 testing/testing_pictures/configuration.py
@@ -24,6 +26,7 @@ testing/testing_pictures/pack.tex
 testing/testing_pictures/pictures.pdf
 testing/testing_pictures/pytextools.xml
 testing/testing_pictures/phystricks*.py
+testing/testing_pictures/Inter_*
 testing/demonstration/0-*
 testing/demonstration/Inter_*
 testing/demonstration/*.aux
@@ -32,3 +35,4 @@ testing/demonstration/Fig_*
 testing/demonstration/pytextools.xml
 testing/demonstration/*.md5
 testing/demonstration/*.pdf
+testing/demonstration/tikzFIG*
