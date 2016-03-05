@@ -602,15 +602,9 @@ class ParametricCurveGraph(ObjectGraph):
             curve.parameters=self.parameters.copy()
             curve.mode="trivial"
             pspict.DrawGraph(curve)
-
-                #Everything is InterpolationCurve. June 27, 2014
-                #params=params+",smooth,domain={0}:{1}".format(str(initial),str(final))
-                #x=var('x')
-                #a.append("\draw[{0}] plot ({{{1}}},{{{2}}});".format(params,self.f1.tikz,self.f2.tikz))
-                    #if language=="pstricks":
-                    #    a.append("\parametricplot[%s]{%s}{%s}{%s}" %(self.params(),str(initial),str(final),self.curve.pstricks()))
         for v in self.record_arrows:
             pspict.DrawGraph(v)
     def latex_code(self,language=None,pspict=None):
         return ""
+
 

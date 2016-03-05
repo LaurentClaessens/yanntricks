@@ -450,7 +450,8 @@ class PointGraph(ObjectGraph):
     def tikz_code(self,pspict=None):
         symbol_dict={}
         symbol_dict[None]="$\\bullet$"
-        symbol_dict[None]="$\\times$"       # This change of default is from November 24, 2014
+        #symbol_dict[None]="$\\times$"       # This change of default is from November 24, 2014
+                                             # Back to the "bullet" default March 5, 2016
         symbol_dict["*"]="$\\bullet$"
         symbol_dict["|"]="$|$"
         symbol_dict["x"]="$\\times$"

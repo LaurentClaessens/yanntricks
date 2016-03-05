@@ -12,12 +12,14 @@ from phystricksTRJEooPRoLnEiG import TRJEooPRoLnEiG
 from phystricksQRXCooUmnlhkvh import QRXCooUmnlhkvh
 from phystricksUREIooqNGBXtHg import UREIooqNGBXtHg
 from phystricksQIXEooejrojKjo import QIXEooejrojKjo
+from phystricksDEIToomZFknFmn import DEIToomZFknFmn
 
 figures_list=[]
 
 figures_list.append(TRJEooPRoLnEiG)
 figures_list.append(QRXCooUmnlhkvh)
 figures_list.append(UREIooqNGBXtHg)
+figures_list.append(DEIToomZFknFmn)
 
 def AllFigures():
     tests=main.FigureGenerationSuite(figures_list,first=0,title=u"demonstration pictures")

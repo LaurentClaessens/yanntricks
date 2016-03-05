@@ -28,6 +28,7 @@ from sage.all import *
 from phystricks import *
 from phystricks.Constructors import *
 
+from phystricks.ObjectGraph import ObjectGraph
 
 var=WrapperStr(var)
 
@@ -57,8 +58,6 @@ def SubstitutionMathPsTricks(fx):
         a = a.replace(s[0],s[1])
     return a
 
-from phystricks.ObjectGraph import Options
-from phystricks.ObjectGraph import ObjectGraph
 
 # TODO : to fill portion of circle should be as easy as:
 #    CerB=Cer.graph(alpha,alpha+90)
@@ -70,58 +69,6 @@ def OptionsStyleLigne():
     return ["linecolor","linestyle"]
 
 from phystricks.Parameters import Parameters
-
-def extract_interval_information(curve):
-    """
-    return the interval of the curve.
-
-    That is the initial and final value of the parameter
-    of `curve` if that is a :class:`ParametricCurve` and
-    the initial and final values of `x` if this the graph of a function.
-
-    INPUT:
-
-    - ``curve`` - graph of a function or a parametric curve
-
-    OUTPUT:
-
-    a tuple of numbers. If nothing is found, return (None,None).
-
-    EXAMPLES::
-
-        sage: from phystricks import *
-        sage: from phystricks.BasicGeometricObjects import *
-        sage: f=phyFunction(x**2).graph(1,pi)
-        sage: extract_interval_information(f)
-        (1, pi)
-         
-        sage: from phystricks.BasicGeometricObjects import *
-        sage: a=var('a')
-        sage: curve=ParametricCurve(x,sin(x)).graph(sqrt(2),a)
-        sage: extract_interval_information(curve)
-        (sqrt(2), a)
-
-        sage: f=phyFunction(x**3)
-        sage: extract_interval_information(f)
-        (None, None)
-
-    """
-    # For parametric curves
-    if "llamI" in dir(curve):
-        return curve.llamI,curve.llamF
-    # for functions
-    if "mx" in dir(curve):
-        return curve.mx,curve.Mx
-    # for segments
-    if "I" in dir(curve) and "F" in dir(curve):
-        return 0,curve.length()
-    # for circles
-    if "angleI" in dir(curve):
-        # We know that circles are AngleI and AngleF that are of type 'AngleMeasure'
-        # we are thus returning 'curve.angleI.radian' instead of 'curve.angleI'
-        return curve.angleI.radian,curve.angleF.radian
-    return None,None
-
 from phystricks.PointGraph import PointGraph
 
 class GeometricImplicitCurve(object):
@@ -774,155 +721,6 @@ def get_paths_from_implicit_plot(p):
             pp.append(Point(vertice[0],vertice[1]))
         l.append(pp)
     return l
-
-class SurfaceBetweenLines(ObjectGraph):
-    def __init__(self,curve1,curve2):
-        """
-        Give the graph of the surface between the two lines.
-
-        The lines are needed to have a starting and ending point
-        that will be joined by straight lines.
-        """
-        # By convention, the first line goes from left to right and the second one to right to left.
-
-        ObjectGraph.__init__(self,self)
-
-        if curve1.I.x > curve1.F.x:
-            curve1=curve1.reverse()
-        if curve2.I.x > curve2.F.x:
-            curve2=curve2.reverse()
-
-        self.curve1=curve1
-        self.curve2=curve2
-
-        self.I1=curve1.I
-        self.I2=curve2.I
-
-        self.F1=curve1.F
-        self.F2=curve2.F
-
-        self.Isegment=Segment(self.I1,self.I2)
-        self.Fsegment=Segment(self.F1,self.F2)
-    def bounding_box(self,pspict=None):
-        bb=BoundingBox()
-        bb.append(self.curve1,pspict)
-        bb.append(self.curve2,pspict)
-        return bb
-    def math_bounding_box(self,pspict):
-        return self.bounding_box(pspict)
-    def latex_code(self,language=None,pspict=None):
-        a=[]
-       
-        c1=self.curve1
-        c2=self.curve2.reverse()
-
-        custom=CustomSurface(c1,self.Fsegment,c2,self.Isegment)
-        self.parameters.add_to(custom.parameters)     # This curve is essentially dedicated to the colors
-        custom.options=self.options
-        
-        a.append("%--- begin of Surface between lines ---")
-        a.append("% Custom surface")
-        a.append(custom.latex_code(language=language,pspict=pspict))
-
-        a.append("% Curve 1")
-        a.append(self.curve1.latex_code(language=language,pspict=pspict))
-        a.append("% Curve 2")
-        a.append(self.curve2.latex_code(language=language,pspict=pspict))
-        a.append("% Isegment")
-        a.append(self.Isegment.latex_code(language=language,pspict=pspict))
-        a.append("% Fsegment")
-        a.append(self.Fsegment.latex_code(language=language,pspict=pspict))
-        a.append("%--- end of Surface between lines ---")
-        return "\n".join(a)
-
-# Since all type of surfaces have to be specializations of SurfaceBetweenParametricCurves,
-# we have to unify the names of the segments.
-# x.Isegment is the segment joining the first point of the first curve
-# c.Fsegment is the other one.
-# May, 1, 2011
-
-# For the same reason, all type of surfaces have to be functions instead of classes.
-# These functions return an object SurfaceBetweenParametricCurvesGraph 
-# with the right particularization.
-
-class SurfaceBetweenParametricCurvesGraph(ObjectGraph):
-    def __init__(self,curve1,curve2,interval1=(None,None),interval2=(None,None),reverse1=False,reverse2=True):
-        # TODO: I think that the parameters reverse1 and reverse2 are no more useful
-        #   since I enforce the condition curve1 : left -> right by hand.
-        ObjectGraph.__init__(self,self)
-
-        self.curve1=curve1
-        self.curve2=curve2
-
-        #self.f1=self.curve1       # TODO: Soon or later, one will have to fusion these two
-        #self.f2=self.curve2        
-
-        self.mx1=interval1[0]
-        self.mx2=interval1[1]
-        self.Mx1=interval2[0]
-        self.Mx2=interval2[1]
-        for attr in [self.mx1,self.mx2,self.Mx1,self.Mx2]:
-            if attr == None:
-                raise TypeError,"At this point, initial and final values have to be already chosen"
-        self.curve1.llamI=self.mx1
-        self.curve1.llamF=self.Mx1
-        self.curve2.llamI=self.mx2
-        self.curve2.llamF=self.Mx2
-
-        self.draw_Isegment=True
-        self.draw_Fsegment=True
-        self.Isegment=Segment(self.curve2.get_point(self.mx2,advised=False),self.curve1.get_point(self.mx1,advised=False))
-        self.Fsegment=Segment(self.curve1.get_point(self.Mx1,advised=False),self.curve2.get_point(self.Mx2,advised=False))
-
-        self.add_option("fillstyle=vlines") 
-        self.parameters.color=None       
-
-    def bounding_box(self,pspict=None):
-        if pspict==None:
-            raise ValueError, "You have to provide a pspict"
-        bb=BoundingBox()
-        bb.append(self.curve1,pspict)
-        bb.append(self.curve2,pspict)
-        return bb
-    def math_bounding_box(self,pspict=None):
-        return self.bounding_box(pspict)
-    def latex_code(self,language=None,pspict=None):
-        a=[]
-       
-        c1=self.curve1.graph(self.mx1,self.Mx1)
-        c2=self.curve2.graph(self.mx2,self.Mx2)
-
-        # By convention, the first line goes from left to right and the second one to right to left.
-        # The same is followed in SurfaceBetweenLines
-
-        if c1.I.x > c1.F.x:
-            c1=c1.reverse()
-        if c2.I.x < c2.F.x:
-            c2=c2.reverse()
-
-        reIsegment=Segment(c2.F,c1.I)
-        reFsegment=Segment(c1.F,c2.I)
-        reIsegment.parameters=self.Isegment.parameters
-        reFsegment.parameters=self.Fsegment.parameters
-
-        if self.parameters._filled or self.parameters._hatched :
-            custom=CustomSurface(c1,reFsegment,c2,reIsegment)
-            custom.parameters=self.parameters.copy()
-            a.append(custom.latex_code(language=language,pspict=pspict))
-
-        if self.parameters.color!=None :
-            self.Isegment.parameters.color=self.parameters.color
-            self.Fsegment.parameters.color=self.parameters.color
-            self.curve1.parameters.color=self.parameters.color
-            self.curve2.parameters.color=self.parameters.color
-    
-        a.append(self.curve1.latex_code(language=language,pspict=pspict))
-        a.append(self.curve2.latex_code(language=language,pspict=pspict))
-        if self.draw_Isegment :
-            a.append(reIsegment.latex_code(language=language,pspict=pspict))
-        if self.draw_Fsegment :
-            a.append(reFsegment.latex_code(language=language,pspict=pspict))
-        return "\n".join(a)
 
 def first_bracket(text):
     """

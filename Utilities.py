@@ -575,3 +575,4 @@ def general_function_get_point(fun,x,advised=True):
                     angle_n=angle_n+180
                 P._advised_mark_angle=angle_n
         return P
+

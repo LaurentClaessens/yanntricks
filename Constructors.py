@@ -20,6 +20,7 @@
 # copyright(c) Laurent Claessens, 2010-2016
 # email: moky.math@gmai.com
 
+
 from sage.all import *
 
 def Point(a,b):
@@ -170,7 +171,6 @@ def Vector(*args):
     except IndexError :
         x=args[0].x
         y=args[0].y
-    from Constructors import AffineVector
     return AffineVector(Point(0,0),Point(x,y))
 
 def Circle(center,radius,angleI=0,angleF=360,visual=False,pspict=None):
@@ -938,5 +938,285 @@ def SingleAxe(C,base,mx,Mx,pspict=None):
         """
     from AxesGraph import SingleAxeGraph
     return SingleAxeGraph(C,base,mx,Mx,pspict)
+
+def SurfaceBetweenParametricCurves(curve1,curve2,interval1=(None,None),interval2=(None,None),reverse1=False,reverse2=True):
+    """
+    Represents a surface between two parametric curves.
+
+    'curve1' and 'curve2' are parametric curves or objects that have a method 'parametric_curve'
+
+    'interval1' and 'interval2' are tuples. If 'interval2' is not given, it is fixed to be the same as interval2
+
+    OPTIONAL ARGUMENTS :
+    - ``(mx1,Mx1)`` - a tuple. Initial and final values of the parameter for the first curve.
+
+    - ``reverse1`` - (default=False) if True, reverse the sense of curve1.
+
+    - ``reverse2`` - (default=True) if True, reverse the sense of curve1.
+
+    Let us suppose that curve1 goes from A1 to B1 and curve2 from A2 to B2
+    If we do not reverse the sense of anything, the result will be
+    the surface delimited by
+
+    curve1:        A1 -> B1
+    Fsegment:    B1 -> B2
+    curve2:        A2 -> B2
+    Isegment:   A2 -> A1
+        
+    This is wrong since the last point of each line is not the first
+    point of the next line.
+
+    For that reason, the second curve is, by default, reversed in order to get
+    curve1:             A1 -> B1
+    Fsegment:         B1 -> B2
+    curve2 (reversed):  B2 -> A2
+    Isegment:        A2 -> A1
+
+    OUTPUT:
+    An object ready to be drawn.
+
+    EXAMPLES::
+
+        sage: from phystricks import *
+        sage: curve1=ParametricCurve(x,x**2).graph(2,3)
+        sage: curve2=ParametricCurve(x,x**3).graph(2,5)
+        sage: region=SurfaceBetweenParametricCurves(curve1,curve2)
+
+    The segment "closing" the domain are available by the attributes `Isegment and Fsegment`::
+
+        sage: print region.Isegment
+        <segment I=<Point(2,8)> F=<Point(2,4)>>
+        sage: print region.Fsegment
+        <segment I=<Point(3,9)> F=<Point(5,125)>>
+
+    The initial and final values of the parameters can be given in different ways.
+    The "normal" way is to provide the curves by triples `(curve,mx,Mx)`::
+
+        sage: f1=phyFunction(x**2)
+        sage: f2=phyFunction(x)
+        sage: curve=SurfaceBetweenParametricCurves((f1,1,2),(f2,3,4))
+        sage: print curve.mx1,curve.Mx1,curve.mx2,curve.Mx2
+        1 2 3 4
+
+    If one of the curve is provided without interval, the latter will
+    be deduced::
+
+        sage: f1=phyFunction(x**2).graph(1,2)
+        sage: f2=phyFunction(x)
+        sage: curve=SurfaceBetweenParametricCurves(f1,(f2,3,4))
+        sage: print curve.mx1,curve.Mx1,curve.mx2,curve.Mx2
+        1 2 3 4
+
+    If the optional argument `interval` is provided, it erases the other intervals::
+
+        sage: f1=phyFunction(x**2).graph(1,2)
+        sage: f2=phyFunction(x)
+        sage: curve=SurfaceBetweenParametricCurves(f1,(f2,3,4),interval=(7,8))
+        sage: print curve.mx1,curve.Mx1,curve.mx2,curve.Mx2
+        7 8 7 8
+
+    NOTE:
+    If the two curves make intersections, the result could be messy.
+    
+    .. literalinclude:: phystricksBetweenParametric.py
+    .. image:: Picture_FIGLabelFigBetweenParametricPICTBetweenParametric-for_eps.png
+
+    """
+    from CircleGraph import CircleGraph
+    from SegmentGraph import SegmentGraph
+    from Utilities import EnsureParametricCurve
+    exceptions = [CircleGraph,SegmentGraph]
+    on=True
+    for ex in exceptions :
+        if isinstance(curve1,ex):
+            on=False
+    if on:
+        iz11=curve1.f1.nul_function
+        iz21=curve2.f1.nul_function
+
+    on=True
+    for ex in exceptions :
+        if isinstance(curve2,ex):
+            on=False
+    if on:
+        iz22=curve2.f2.nul_function
+        iz12=curve1.f2.nul_function
+
+    curve=[curve1,curve2]
+    mx=[None,None]
+    Mx=[None,None]
+    for i in [0,1]:
+        mx[i],Mx[i]=extract_interval_information(curve[i])
+        if interval1 != (None,None):
+            mx[0]=interval1[0]
+            Mx[0]=interval1[1]
+            mx[1]=interval2[0]
+            Mx[1]=interval2[1]
+        curve[i]=EnsureParametricCurve(curve[i]).graph(mx[i],Mx[i])
+
+    if mx[0] != None and mx[1] == None:
+        mx[1]=mx[0]
+        Mx[1]=Mx[0]
+
+    c1=curve[0]
+    c2=curve[1]
+    mx1=mx[0]
+    mx2=mx[1]
+    Mx1=Mx[0]
+    Mx2=Mx[1]
+
+    try :
+        c1.f1.nul_function=iz11
+        c1.f2.nul_function=iz12
+        c2.f1.nul_function=iz21
+        c2.f2.nul_function=iz22
+    except UnboundLocalError :
+        pass
+
+    from SurfacesGraph import SurfaceBetweenParametricCurvesGraph
+    surf = SurfaceBetweenParametricCurvesGraph(c1,c2,(mx1,mx2),(Mx1,Mx2),reverse1,reverse2)
+    surf.add_option("fillstyle=vlines,linestyle=none")  
+    return surf
+
+def SurfaceUnderFunction(f,mx,Mx):
+    """
+    Represent a surface under a function.
+
+    This is a particular case of SurfaceBetweenFunctions when the second function is the y=0 axis.
+
+    The function `f` becomes `self.f1` while self.f2 will be the function 0 (this is a consequence of inheritance).
+    The function f will also be recorded as self.f.
+
+    INPUT:
+
+    - ``f`` - a function
+    - ``mx,Mx`` - initial and final values 
+
+    EXAMPLES:
+
+    .. literalinclude:: phystricksSurfaceFunction.py
+    .. image:: Picture_FIGLabelFigSurfaceFunctionPICTSurfaceFunction-for_eps.png
+
+    
+    .. literalinclude:: phystricksChiSquaresQuantile.py
+    .. image:: Picture_FIGLabelFigChiSquaresQuantilePICTChiSquaresQuantile-for_eps.png
+
+    """
+    if isinstance(f,BasicGeometricObjects.NonAnalyticFunction):
+        print("FPNooDPSRPQ -- heu...")
+        line1=Segment(Point(mx,0),Point(Mx,0))
+        line2=f.parametric_curve(mx,Mx)
+        surf = SurfaceBetweenLines(line1,line2)
+        return surf
+    f2=phyFunction(0)
+    f2.nul_function=True     # Serves to compute the bounding box, see 2252914222
+    return SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
+
+def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
+    r"""
+    Represents a surface between two functions.
+
+    INPUT:
+
+    - ``f1,f2`` - functions (sage or phyFunction). ``f1`` is considered to be the upper function while ``f2`` is the lower function.
+
+    - ``mx,Mx`` - (optional) initial and end values of x. If these are not given, we suppose that `f1` and `f2` are graphs.
+        If `f1` is a graph while `mx` is given, the value of `f1.mx` is forgotten and the given `mx` is taken into account.
+
+    EXAMPLES:
+
+    If you want the surface to be blue ::
+
+        sage: from phystricks import *
+        sage: surf=SurfaceBetweenFunctions(sin(x)+3,cos(x),0,2*pi)
+        sage: surf.parameters.color="blue"
+
+    If you want the function ``f1`` to be red without changing the color of the surface, you have to change the color AND the style::
+
+        sage: surf.f1.parameters.color="red"
+
+    You can also try to control the option linestyle (use add_option).
+
+    .. literalinclude:: phystricksexSurfaceBetweenFunction.py
+
+    .. image:: Picture_FIGLabelFigexSurfaceBetweenFunctionPICTexSurfaceBetweenFunction-for_eps.png
+
+    """
+    mx1=mx
+    mx2=mx
+    Mx1=Mx
+    Mx2=Mx
+    if "mx" in dir(f1) and mx==None:
+        mx1=f1.mx
+        Mx1=f1.Mx
+    if "mx" in dir(f2) and mx==None:
+        mx2=f2.mx
+        Mx2=f2.Mx
+    # The following is a precaution because it can happen that
+    # f1 has a "mx" attribute which is set to None while
+    # a mx is given here.
+    if mx1 is None:
+        mx1=mx
+    if Mx1 is None:
+        Mx1=Mx
+    if mx2 is None:
+        mx2=mx
+    if Mx2 is None:
+        Mx2=Mx
+    x=var('x')
+    curve1=ParametricCurve(x,f1,(mx1,Mx1))
+    curve2=ParametricCurve(x,f2,(mx2,Mx2))
+    return SurfaceBetweenParametricCurves(curve1,curve2,(mx1,Mx1),(mx2,Mx2))
+
+def extract_interval_information(curve):
+    """
+    return the interval of the curve.
+
+    That is the initial and final value of the parameter
+    of `curve` if that is a :class:`ParametricCurve` and
+    the initial and final values of `x` if this the graph of a function.
+
+    INPUT:
+
+    - ``curve`` - graph of a function or a parametric curve
+
+    OUTPUT:
+
+    a tuple of numbers. If nothing is found, return (None,None).
+
+    EXAMPLES::
+
+        sage: from phystricks import *
+        sage: from phystricks.BasicGeometricObjects import *
+        sage: f=phyFunction(x**2).graph(1,pi)
+        sage: extract_interval_information(f)
+        (1, pi)
+         
+        sage: from phystricks.BasicGeometricObjects import *
+        sage: a=var('a')
+        sage: curve=ParametricCurve(x,sin(x)).graph(sqrt(2),a)
+        sage: extract_interval_information(curve)
+        (sqrt(2), a)
+
+        sage: f=phyFunction(x**3)
+        sage: extract_interval_information(f)
+        (None, None)
+
+    """
+    # For parametric curves
+    if "llamI" in dir(curve):
+        return curve.llamI,curve.llamF
+    # for functions
+    if "mx" in dir(curve):
+        return curve.mx,curve.Mx
+    # for segments
+    if "I" in dir(curve) and "F" in dir(curve):
+        return 0,curve.length()
+    # for circles
+    if "angleI" in dir(curve):
+        # We know that circles are AngleI and AngleF that are of type 'AngleMeasure'
+        # we are thus returning 'curve.angleI.radian' instead of 'curve.angleI'
+        return curve.angleI.radian,curve.angleF.radian
+    return None,None
 
 from Utilities import *
