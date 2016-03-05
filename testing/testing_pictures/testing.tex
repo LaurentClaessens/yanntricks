@@ -1,6 +1,6 @@
 \documentclass[a4paper]{book}
 
-\input{e_pictures}
+\input{e_testing}
 
 \newcounter{useexternal} \setcounter{useexternal}{1} 
 \ifthenelse{\value{useexternal}=1}{ \usetikzlibrary{external} \tikzexternalize }{ \newcommand{\tikzsetnextfilename}[1]{} } 
@@ -12,7 +12,7 @@
 \title{My big bunch of pictures}
 \maketitle
 
-\input{pack}
+\input{testing_body}
 
 
 \end{document}

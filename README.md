@@ -19,7 +19,7 @@ Including complex figures in LaTeX is always difficult because you
 
 *phystricks* is a python (Sage in fact) module defining classes like point, segment, parametric curve, ... and many geometric relations between them. You describe your picture using Python and *phystricks* creates the `tikz` code to be included in your LaTeX file.
 
-
+Here is the whole (no cheat) code you need for the following image :
 
 ```python
 # -*- coding: utf8 -*-
@@ -49,15 +49,18 @@ def TRJEooPRoLnEiG():
     fig.write_the_file()
 ```
 
-
-<img src="pictures/example1.png" alt="Drawing" style="width: 100px;"/>
-
 ![Alt text](pictures/example1.png)
 
-![Alt text](pictures/example1.png =250x)
+As you see, taking the tangent vector is a simple as calling the method `get_tangent_vector` with as argument the angle on the circle.
+
+Notice that :
+* The labels are well placed : they are in such a way that they will not intersect the circle.
+* At no point the Sage code speaks about the size of the box containing the labels.
+
+The trick is that *phystricks* does not only produces the `tikz` code for the picture, but also make LaTeX write the size of the box in an auxiliary file. Thus in a second pass of *phystricks*, the size of the box is known and the label can be correctly placed.
 
 
-
+The LaTeX code inserted in your picture is compiled by LaTeX in the same time as your document.
 
 
 

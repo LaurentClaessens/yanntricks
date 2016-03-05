@@ -12,10 +12,11 @@ class OnePicture(object):
     latex_skel="""
     %\lstinputlisting{CODE_FILENAME}
 
-    \\newcommand{\CaptionFigNAME}{<+Type your caption here+>}
+    \\newcommand{\CaptionFigPICTURE_NAME}{<+Type your caption here+>}
     \\begin{center}
-        \input{Fig_NAME.pstricks}
+        \input{Fig_PICTURE_NAME.pstricks}
     \end{center}
+    FILE_NAME
 
     COMMENT
 
@@ -42,7 +43,7 @@ class OnePicture(object):
             comment="Comment : "+open(self.comment_filename).read()
         except FileNotFoundError:
             print("Pas de commentaires pour "+self.comment_filename)
-        return self.latex_skel.replace("CODE_FILENAME",self.filename).replace("NAME",self.function_name).replace("COMMENT",comment)
+        return self.latex_skel.replace("CODE_FILENAME",self.filename).replace("PICTURE_NAME",self.function_name).replace("COMMENT",comment).replace("FILE_NAME",self.filename)
     def isToDo(self):
         return (self.function_name not in self.not_to_be_done)
 
@@ -96,8 +97,8 @@ file_all=open("figures_testing.py",'w')
 file_all.write(code_all)
 file_all.close()
 
-skel=open("skel_pack.tex").read()
+skel=open("testing_body-skel.tex").read()
 code_latex=skel.replace("LATEX_CODE",latex)
-file_all=open("pack.tex",'w')
+file_all=open("testing_body.tex",'w')
 file_all.write(code_latex)
 file_all.close()

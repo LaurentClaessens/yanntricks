@@ -5,6 +5,7 @@ all-*
 tests/*
 *~
 .viminfo
+core
 .kk.log
 .directory
 documentation/*
@@ -16,6 +17,9 @@ testing/testing_pictures/*.pstricks
 testing/testing_pictures/*.comment
 testing/testing_pictures/*.auxlock
 testing/testing_pictures/tikz*.log
+testing/testing_pictures/tikzFIGLabel*.dpth
+testing/testing_pictures/tikzFIGLabel*.md5
+testing/testing_pictures/tikzFIGLabel*.pdf
 testing/testing_pictures/configuration.py
 testing/testing_pictures/0-*
 testing/testing_pictures/*.log

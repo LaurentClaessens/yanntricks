@@ -20,7 +20,6 @@ def TRJEooPRoLnEiG():
 
     pspict.comment="A circle with a point and a mark : "+textA+" and on other point with the mark "+textB
 
-    #pspict.DrawDefaultAxes()
     fig.no_figure()
     fig.conclude()
     fig.write_the_file()
