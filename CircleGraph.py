@@ -338,8 +338,8 @@ class CircleGraph(ObjectGraph):
         ss= self.get_regular_points(mx=degree(self.angleI),Mx=degree(self.angleF),n=pp,advised=False)
         return self.get_regular_points(mx=degree(self.angleI),Mx=degree(self.angleF),n=pp,advised=False)
     def action_on_pspict(self,pspict):
-        alphaI = radian(self.angleI,number=True,keep_max=True)
-        alphaF = radian(self.angleF,number=True,keep_max=True)
+        alphaI = radian(self.angleI,number=True,keep_max=True,keep_large=True)
+        alphaF = radian(self.angleF,number=True,keep_max=True,keep_large=True)
 
         # self.angleI and self.angleF should be AngleMeasure, but sometimes the user
         #    writes something like 

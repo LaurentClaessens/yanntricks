@@ -87,7 +87,7 @@ selected=[]
 for d in configuration.document_directories :
     selected.extend(getFromDirectory(d))
 
-selected=selected[5:20]
+selected=selected[:]
 import_string,function_append_string,latex=analyseSelected(selected)
 
 

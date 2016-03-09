@@ -1102,8 +1102,8 @@ def SurfaceUnderFunction(f,mx,Mx):
     .. image:: Picture_FIGLabelFigChiSquaresQuantilePICTChiSquaresQuantile-for_eps.png
 
     """
-    if isinstance(f,BasicGeometricObjects.NonAnalyticFunction):
-        print("FPNooDPSRPQ -- heu...")
+    from NonAnalytic import NonAnalyticFunctionGraph
+    if isinstance(f,NonAnalyticFunctionGraph):
         line1=Segment(Point(mx,0),Point(Mx,0))
         line2=f.parametric_curve(mx,Mx)
         surf = SurfaceBetweenLines(line1,line2)
@@ -1218,5 +1218,18 @@ def extract_interval_information(curve):
         # we are thus returning 'curve.angleI.radian' instead of 'curve.angleI'
         return curve.angleI.radian,curve.angleF.radian
     return None,None
+
+
+def NonAnalyticFunction(fun,mx=None,Mx=None):
+    """
+    Describe a function for which we don't know an analytic form.
+
+    - `fun`  is an object with a 'call' method. That is something for which fun(x) can be computed.
+
+    By default, 100 points are computed. You can change that with
+    f.parameters.plotpoints=<as you wish>
+    """
+    from NonAnalytic import NonAnalyticFunctionGraph
+    return NonAnalyticFunctionGraph(fun,mx,Mx)
 
 from Utilities import *

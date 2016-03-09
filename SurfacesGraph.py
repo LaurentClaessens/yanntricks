@@ -164,6 +164,7 @@ class SurfaceBetweenParametricCurvesGraph(ObjectGraph):
             custom.parameters=self.parameters.copy()
             pspict.DrawGraph(custom)
         else :
+            from Exceptions import ShouldNotHappenException
             raise ShouldNotHappenException("You are speaking of a surface but you don't want neither to fill it neither to hatch it ?")
 
         if self.parameters.color!=None :

@@ -241,9 +241,9 @@ class ConversionAngles(object):
         self.max_value=max_value
         self.exit_attribute=exit_attribute
         self.create_function=create_function
-    def simplify(self,angle,keep_max=False,number=False,numerical=False):
+    def simplify(self,angle,keep_max=False,keep_large=False,number=False,numerical=False):
         """
-        Simplify the angles modulo the maximum. 
+        Simplify the angles modulo the maximum (if 'keep_large'=False, which is default). 
 
         If what is given is a number, return a number. If what is given is a AngleMeasure, return a new AngleMeasure.
 
@@ -253,15 +253,10 @@ class ConversionAngles(object):
     
         INPUT:
 
-        - ``angle`` - an angle that can be an instance of AngleMeasure or a number.
-                        if it is a number, the simplify modulo self.max_value
-                        if it is a AngleMeasure, then first extract the value of the angle
-                            using self.exit_attribute .
+        - ``angle`` - an angle that can be an instance of AngleMeasure or a number.  if it is a number, the simplify modulo self.max_value if it is a AngleMeasure, then first extract the value of the angle using self.exit_attribute .
 
-        - ``keep_max`` - (defautl=False) If True, does not simplify the angle with max value.
-                                            Typically, keeps 2*pi as 2*pi. 
-                                            This is used in order to keep track of the difference
-                                            between 0 and 2*pi in the context of drawing an full circle.
+        - ``keep_max`` - (default=False) If True, does not simplify the angle with max value.  Typically, keeps 2*pi as 2*pi.  This is used in order to keep track of the difference between 0 and 2*pi in the context of drawing an full circle.
+        - ``keep_large`` - (default=False)  If True, an angle larger than 2pi remains large than 2pi.
 
         - ``number`` - (default=False) If True, return a number even is a AngleMeasure is given.
 
@@ -314,10 +309,11 @@ class ConversionAngles(object):
                 else:
                     return x
 
-        while x >= self.max_value :
-            x=x-self.max_value
-        while x <= -self.max_value :
-            x=x+self.max_value
+        if not keep_large:
+            while x >= self.max_value :
+                x=x-self.max_value
+            while x <= -self.max_value :
+                x=x+self.max_value
 
         if gotMeasure and number==False :
             return self.create_function(x)
@@ -327,7 +323,7 @@ class ConversionAngles(object):
             else:
                 return x
 
-    def conversion(self,theta,number=False,keep_max=False,converting=True,numerical=False):
+    def conversion(self,theta,number=False,keep_max=False,keep_large=False,converting=True,numerical=False):
         """
         Makes the conversion and simplify.
 
@@ -335,12 +331,10 @@ class ConversionAngles(object):
 
         - ``theta`` - the angle to be converted.
         - ``number`` - (default =False) If true, return a number. Not to be confused with <numerical>.
-        - ``keep_max`` - (defaut False) If true, does not convert the max value into the minimal value. 
-                                        Typically, leaves 2*pi as 2*pi instead of returning 0.
+        - ``keep_max`` - (default False) If true, does not convert the max value into the minimal value.  Typically, leaves 2*pi as 2*pi instead of returning 0.
+        - ``keep_large`` - (default False) if an angle larger that 2pi is given, return an angle larger than 2pi.
         - ``converting`` - (defaut = True) If False, make no conversion.
-        - ``numerical`` - (default = False) boolean. If True, return a numerical approximation. 
-                                            If <numerical>=True, then <number> is automatically
-                                            switched to True.
+        - ``numerical`` - (default = False) boolean. If True, return a numerical approximation.  If <numerical>=True, then <number> is automatically switched to True.
 
         EXAMPLES:
 
@@ -377,7 +371,7 @@ class ConversionAngles(object):
         if numerical:
             number=True
         if isinstance(theta,AngleMeasure):
-            angle = self.simplify(theta,keep_max=keep_max)
+            angle = self.simplify(theta,keep_max=keep_max,keep_large=keep_large)
             if number:
                  x = angle.__getattribute__(self.exit_attribute)
                  if numerical:
@@ -388,26 +382,34 @@ class ConversionAngles(object):
                 return angle
         else :
             if converting :
-                return self.simplify(self.conversion_factor*theta,keep_max=keep_max,numerical=numerical)
+                return self.simplify(self.conversion_factor*theta,keep_max=keep_max,keep_large=keep_large,numerical=numerical)
             else :
-                return self.simplify(theta,keep_max=keep_max,numerical=numerical)
+                raise ShouldNotHappenException("You are in a converting function with argument converting=false. WTF ? Sincerely, I'm trying to figure out what I had in mind when I wrote this case.")
+                return self.simplify(theta,keep_max=keep_max,keep_large=keep_large,numerical=numerical)
 
 DegreeConversions=ConversionAngles(SR(180)/pi,360,exit_attribute="degree",create_function=DegreeAngleMeasure)
 RadianConversions=ConversionAngles(pi/180,2*pi,exit_attribute="radian",create_function=RadianAngleMeasure)
 
+"""
+For degreeUnit and radianUnit
+
+- `keep_large` (boolean, default=False). When False, an angle larger than 2pi (360 degree) is automatically converted into an angle between 0 and 2pi. When true, keep angle larger than 2pi. 
+"""
+
+
 class degreeUnit(object):
-    def __call__(self,x,number=False,keep_max=None,converting=True,numerical=False):
+    def __call__(self,x,number=False,keep_max=None,keep_large=False,converting=True,numerical=False):
         if isinstance(x,PolarCoordinates) or isinstance(x,AngleMeasure):
             return x.degree
-        return DegreeConversions.conversion(x,number=number,keep_max=keep_max,converting=converting,numerical=numerical)
+        return DegreeConversions.conversion(x,number=number,keep_max=keep_max,keep_large=keep_large,converting=converting,numerical=numerical)
     def __rmul__(self,x):
         return AngleMeasure(value_degree=x)
 
 class radianUnit(object):
-    def __call__(self,x,number=False,keep_max=None,converting=True,numerical=False):
+    def __call__(self,x,number=False,keep_max=None,keep_large=False,converting=True,numerical=False):
         if isinstance(x,PolarCoordinates) or isinstance(x,AngleMeasure):
             return x.radian
-        return RadianConversions.conversion(x,number=number,keep_max=keep_max,converting=converting,numerical=numerical)
+        return RadianConversions.conversion(x,number=number,keep_max=keep_max,keep_large=keep_large,converting=converting,numerical=numerical)
     def __rmul__(self,x):
         return AngleMeasure(value_radian=x)
 
@@ -421,7 +423,7 @@ def visual_length(v,l,xunit=None,yunit=None,pspict=None):
     """
     Return a vector in the direction of v that has *visual* length l taking xunit and yunit into account.
 
-    In the following example, the cyan vectors are deformed the the X-dilatation while the
+    In the following example, the cyan vectors are deformed the X-dilatation while the
     brown vectors are of length 2.
 
     .. literalinclude:: phystrickstestVisualLength.py

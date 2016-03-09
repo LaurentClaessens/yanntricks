@@ -156,7 +156,7 @@ class ObjectGraph(object):
 
         # At this point, 'angle' has to be degree,
         # - for the possibility of "added_angle"
-        # - the constructor of 'mark' expect degree or AngleMeasure
+        # - the constructor of 'mark' expects degree or AngleMeasure
 
         if added_angle: angle=angle+added_angle
         if position=="" :
