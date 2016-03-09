@@ -164,6 +164,8 @@ def Vector(*args):
     From the coordinates x,y, return the corresponding vector, i.e. the affine vector from (0,0) to (x,y).
 
     You can also only give a Point
+
+    Note : it is a good practice to use `AffineVector` instead because it is more explicit.
     """
     try :
         x=args[0]
