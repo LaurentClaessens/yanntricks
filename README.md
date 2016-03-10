@@ -37,17 +37,36 @@ def TRJEooPRoLnEiG():
 
     textA="$ \lim_{s} (F\circ\gamma')  $"
     textB="$ K $"
-    A.put_mark(dist=0.3,angle=None,text=textA,automatic_place=(pspict,""))
-    B.put_mark(dist=0.3,angle=None,text=textB,automatic_place=(pspict,""))
+    A.put_mark(dist=0.3,angle=None,text="$ \lim_{s} (F\circ\gamma')  $",automatic_place=(pspict,""))
+    B.put_mark(dist=0.3,angle=None,text="$ K $",automatic_place=(pspict,""))
 
     pspict.DrawGraphs(circle,A,tg,B)
-
-    pspict.comment="A circle with a point and a mark : "+textA+" and on other point with the mark "+textB
 
     fig.no_figure()
     fig.conclude()
     fig.write_the_file()
 ```
+
+The you compile the picture with Sage :
+
+```
+┌────────────────────────────────────────────────────────────────────┐
+│ SageMath Version 7.0, Release Date: 2016-01-19                     │
+│ Type "notebook()" for the browser-based notebook interface.        │
+│ Type "help()" for help.                                            │
+└────────────────────────────────────────────────────────────────────┘
+sage: attach("<filename>.py");TRJEooPRoLnEiG()
+
+```
+
+Now the file `Fig_TRJEooPRoLnEiG.pstricks` is created and you just have to add the following lines in you LaTeX document :
+
+```latex
+\begin{center}
+   \input{Fig_VMNerGf.pstricks}
+\end{center}
+```
+What you get is :
 
 ![Alt text](pictures/example1.png)
 
@@ -62,9 +81,11 @@ The trick is that *phystricks* does not only produces the `tikz` code for the pi
 
 The LaTeX code inserted in your picture is compiled by LaTeX in the same time as your document.
 
+### More informations
 
 
-### Create your own picture
-
-In order to be tested, the naming scheme is quite rigid. Do whatever you want, but the script `new_picture.py` will pick a random name and create all the skeleton files you need.
+For more informations you can read the documentation. An look at the real live examples :
+* the pictures in [mazhe](http://student.ulb.ac.be/%7Elclaesse/mazhe.pdf), télécharger les sources sur [github](https://github.com/LaurentClaessens/mazhe)
+* the pictures in [smath](http://student.ulb.ac.be/%7Elclaesse/smath.pdf), télécharger les sources sur [github](https://github.com/LaurentClaessens/smath)
+*
 
