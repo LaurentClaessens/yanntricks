@@ -341,7 +341,7 @@ class figure(object):
         for pspict in self.child_pspictures:
             comment=pspict.comment.decode('utf8')
             if comment != "":
-                a.append("Note : "+comment)
+                a.append("Comment : "+comment)
         return "\n".join(a)
     def LaTeX_lines(self):
         """

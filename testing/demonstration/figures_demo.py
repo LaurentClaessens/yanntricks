@@ -38,6 +38,7 @@ from phystricksUARHooLMWqvyaI import UARHooLMWqvyaI
 from phystricksHELQooLGapRQrr import HELQooLGapRQrr
 from phystricksYJEDoojDtSeKHQ import YJEDoojDtSeKHQ
 from phystricksQRJOooKZPUoLlF import QRJOooKZPUoLlF
+from phystricksRVKFooDxrqYXAX import RVKFooDxrqYXAX
 
 figures_list=[]
 
@@ -72,6 +73,7 @@ figures_list.append(UARHooLMWqvyaI)
 figures_list.append(HELQooLGapRQrr)
 figures_list.append(YJEDoojDtSeKHQ)
 figures_list.append(QRJOooKZPUoLlF)
+figures_list.append(RVKFooDxrqYXAX)
 
 def AllFigures():
     tests=main.FigureGenerationSuite(figures_list,first=0,title=u"demonstration pictures")

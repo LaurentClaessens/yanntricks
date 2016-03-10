@@ -87,5 +87,4 @@ The LaTeX code inserted in your picture is compiled by LaTeX in the same time as
 For more informations you can read the documentation. An look at the real live examples :
 * the pictures in [mazhe](http://student.ulb.ac.be/%7Elclaesse/mazhe.pdf), télécharger les sources sur [github](https://github.com/LaurentClaessens/mazhe)
 * the pictures in [smath](http://student.ulb.ac.be/%7Elclaesse/smath.pdf), télécharger les sources sur [github](https://github.com/LaurentClaessens/smath)
-*
 

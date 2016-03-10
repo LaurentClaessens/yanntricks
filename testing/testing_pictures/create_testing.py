@@ -40,7 +40,7 @@ class OnePicture(object):
     def latex(self):
         comment=""
         try:
-            comment="Comment : "+open(self.comment_filename).read()
+            comment=open(self.comment_filename).read()
         except FileNotFoundError:
             print("Pas de commentaires pour "+self.comment_filename)
         return self.latex_skel.replace("CODE_FILENAME",self.filename).replace("PICTURE_NAME",self.function_name).replace("COMMENT",comment).replace("FILE_NAME",self.filename)

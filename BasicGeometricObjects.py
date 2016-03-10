@@ -931,23 +931,26 @@ class SudokuGridGraph(object):
         self.question=sudoku_substitution(question)
         self.length=length       # length of a cell
 
-    def specific_action_on_pspict(self,pspict):
+    def action_on_pspict(self,pspict):
         import string
 
         vlines=[]
         hlines=[]
         content=[]
         numbering=[]
+
+        # Numbering (1,2,3, ... and A,B,C ...)
         for i in range(0,9):
             A=Point(  (i+1)*self.length-self.length/2,self.length/2  )
             A.parameters.symbol=""
-            A.put_mark(0,0,string.uppercase[i])
+            A.put_mark(0,0,string.uppercase[i],automatic_place=(pspict,""))
             B=Point(-self.length/2,-i*self.length-self.length/2)
             B.parameters.symbol=""
-            B.put_mark(0,0,string.digits[i+1])
+            B.put_mark(0,0,string.digits[i+1],automatic_place=(pspict,""))
             numbering.append(A)
             numbering.append(B)
 
+        # Grid
         for i in range(0,10):
             v=Segment(Point(i*self.length,0),Point(i*self.length,-9*self.length))
             h=Segment(Point(0,-i*self.length),Point(9*self.length,-i*self.length))
@@ -957,6 +960,7 @@ class SudokuGridGraph(object):
             vlines.append(v)
             hlines.append(h)
     
+        # Content of the cells
         lines = self.question.split("\n")
         for i,li in enumerate(lines):
             for j,c in enumerate(li.split(",")):
@@ -965,12 +969,9 @@ class SudokuGridGraph(object):
                 if c=="i":
                     A.put_mark(3*self.length/9,-90,"\ldots",automatic_place=(pspict,"N"))
                 if c in [  str(k) for k in range(-9,10)  ] :
-                    A.put_mark(0,0,c)
+                    A.put_mark(0,0,c,automatic_place=(pspict,""))
                 content.append(A)
         pspict.DrawGraphs(vlines,hlines,content,numbering)
-    def action_on_pspict(self,pspict):
-        pass
-    # No need to give a precise bounding box. Since the elements will be inserted with pspict.DrawGraph, their BB will be counted in the global BB.
     def math_bounding_box(self,pspict):
         return BoundingBox()
     def bounding_box(self,pspict):
