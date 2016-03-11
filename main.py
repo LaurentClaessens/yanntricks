@@ -1096,14 +1096,15 @@ class pspicture(object):
             code =r"""\makeatletter\@ifundefined{{{}}}{{\newlength{{\{}}}}}{{}}\makeatother%""".format(newlengthName(),newlengthName())
             self.add_latex_line(code,"OPEN_WRITE_AND_LABEL")
             self.newlengthDone = True
-    def add_write_line(self,Id,value):
-        r"""Writes in the standard auxiliary file \newwrite an identifier and a value separated by a «:»"""
+    def makeWriteValue(self,Id,value):
+        r"""Ask LaTeX to write the result of `value` into the standard auxiliary file with identifier `Id`
 
-        # The initialisation if newwrite is automatically done by the figure. (Augustus, 28, 2014)
-        #self.initialize_newwrite()
+            - `Id` some string that identifies what we will write (for reading the file later). Preferably ASCII string.
 
-        #self.figure_mother.add_latex_line(r"\immediate\write\{}{{{}:{}-}}".format(self.figure_mother.newwriteName,Id,value),"WRITE_AND_LABEL")
-        #self.add_latex_line(r"\phystricksAppendToFile{%s:%s-}"%(Id,value),"WRITE_AND_LABEL")
+            - `value` a LaTeX code that returns something; that something will be written. Typically this is a string like 
+                    \arabic{\thesection}
+        """
+        self.figure_mother.add_latex_line(r"\immediate\write\{}{{{}:{}-}}".format(self.figure_mother.newwriteName,Id,value),"WRITE_AND_LABEL")
 
     @lazy_attribute
     def id_values_dict(self):
@@ -1136,7 +1137,6 @@ class pspicture(object):
             f.write("%s:%s-\n"%(k,d[k]))
         f.close()
         return d
-    #def get_Id_value(self,Id,counter_name="NO NAME ?",default_value=0):
     def get_Id_value(self,Id,default_value=0):
         if Id not in self.id_values_dict.keys():
             if not global_vars.silent:
@@ -1154,21 +1154,26 @@ class pspicture(object):
         """
         return the value of the (LaTeX) counter <name> at this point of the LaTeX file
 
-        Makes LaTeX write the value of the counter in an auxiliary file, then reads the value in that file.
-        (needs several compilations to work)
+        Makes LaTeX write the value of the counter in an auxiliary file, then reads the value in that file.  (needs several compilations to work)
+
+        RETURN : float
 
         NOTE :
 
-        If you ask for the page with for example  `page = pspict.get_counter_value("page")` the given page
-        will be the one at which LaTeX thinks the figure is. I recall that a figure is a floating object;
-        if you have 10 of them in a row, the page number could be incorrect.
+        If you ask for the page with for example  `page = pspict.get_counter_value("page")` the given page will be the one at which LaTeX thinks the figure is. I recall that a figure is a floating object; if you have 10 of them in a row, the page number could be incorrect.
         """
+
         # Make LaTeX write the value of the counter in a specific file
         interCounterId = "counter"+self.name+self.NomPointLibre.next()
         self.initialize_counter()
-        self.add_write_line(interCounterId,r"\arabic{%s}"%counter_name)
+        s=r"\arabic{%s}"%counter_name
+        self.makeWriteValue(interCounterId,s)
+
+
         # Read the file and return the value
-        return self.get_Id_value(interCounterId,"counter «%s»"%counter_name,default_value)
+        s = self.get_Id_value(interCounterId,default_value)
+        return float(s)
+
     def get_box_dimension(self,tex_expression,dimension_name):
         """
         Return the dimension of the LaTeX box corresponding to the LaTeX expression tex_expression.
@@ -1183,7 +1188,9 @@ class pspicture(object):
         if interId not in self.figure_mother.already_used_interId :
             self.figure_mother.add_latex_line(r"\setlength{{\{}}}{{\{}{{{}}}}}%".format(newlengthName(),dimension_name,tex_expression),"WRITE_AND_LABEL")
             value=r"\the\%s"%newlengthName()
+
             self.figure_mother.add_latex_line(r"\immediate\write\{}{{{}:{}-}}".format(self.figure_mother.newwriteName,interId,value),"WRITE_AND_LABEL")
+
             self.figure_mother.already_used_interId.append(interId)
         #read_value=self.get_Id_value(interId,"dimension %s"%dimension_name,default_value="0pt")
         read_value=self.get_Id_value(interId,default_value="0pt")
