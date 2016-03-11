@@ -165,24 +165,29 @@ class ObjectGraph(object):
             self.add_option(opt+"="+oo[opt])
         self.parameters.add_to_options(self.options)
     def params(self,language,refute=[]):
+        return self.bracketAttributesText(language=language,refute=refute)
+    def bracketAttributesText(self,language,refute=[]):
+        from BasicGeometricObjects import genericBracketAttributeToLanguage
         self.conclude_params()
+
+        # Create the text  a1=va,a2=v2, etc.
+        # 1935811332
         l=[]
-        for attr in [x for x in self.parameters.interesting_attributes if x not in refute]:
-            value=self.parameters.__getattribute__(attr)
+        bracket_attributes=self.parameters.bracketAttributesDictionary()
+        for attr in [x for x in bracket_attributes.keys() if x not in refute]:
+            value=bracket_attributes[attr]
+            l_attr=genericBracketAttributeToLanguage(attr,language)
             if value != None:
                 if attr=="linewidth":
-                    l.append("linewidth="+str(value)+"pt")
+                    l.append(l_attr+"="+str(value)+"pt")
                 else:
-                    l.append(attr+"="+str(value))
+                    l.append(l_attr+"="+str(value))
 
-        for opt in self.options.DicoOptions.keys():
-            l.append(  opt+"="+str(self.options.DicoOptions[opt])  )
-
+        #for opt in self.options.DicoOptions.keys():
+        #    l.append( opt+"="+str(self.options.DicoOptions[opt]) )
 
         code=",".join(l)
-        if language=="tikz":
-            code=code.replace("plotpoints","samples")
-            code=code.replace("linewidth","line width")
+
         return code
     def action_on_pspict(self,pspict):
         for obj in self.added_objects :

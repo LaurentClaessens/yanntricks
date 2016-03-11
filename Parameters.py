@@ -127,21 +127,36 @@ class HatchParameters(object):
 
 class Parameters(object):
     def __init__(self):
-        self.color = None           # I take into account in SurfaceBetweenParametricCurves that the default values are None
+        # These are the "bracket" attributes, that is the ones that are
+        # subject to be put there :  \draw [  *here*  ]  (...)
+        # See the code position 1935811332
+        self.color = None   
         self.symbol = None
         self.style = None
         self.plotpoints=None
         self.dotangle=None
+        self.linewidth=None
+        self.bracket_attributes=["color","symbol","style","plotpoints","dotangle","linewidth"]
+
+        # Other attributes :
         self.fill=FillParameters()
         self.hatch=HatchParameters()
         self.other_options={}
         self._filled=False
         self._hatched=False
         self.visual=None        # If True, it means that one wants the object to be non deformed by xunit,yunit
-        self.interesting_attributes=["color","symbol","style","plotpoints","dotangle","linewidth"]
         self.force_smoothing=None
         self.trivial=False   # For Interpolation curve, only draw a piecewise affine approximation.
-        self.linewidth=None
+    def bracketAttributesDictionary(self):
+        """
+        Return a dictionary for the bracket attributes and their values.
+        See also the position 1935811332
+        """
+        d={}
+        for attr in self.bracket_attributes:
+            value=self.__getattribute__(attr)
+            d[attr]=value
+        return d
     def copy(self):
         cop=Parameters()
         cop.visual=self.visual

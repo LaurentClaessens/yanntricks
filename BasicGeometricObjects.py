@@ -58,6 +58,13 @@ def SubstitutionMathPsTricks(fx):
         a = a.replace(s[0],s[1])
     return a
 
+def genericBracketAttributeToLanguage(attr,language):
+    if language=="tikz":
+        if attr=="plotpoints":
+            return "samples"
+        if attr=="linewidth":
+            return "line width"
+    return attr
 
 # TODO : to fill portion of circle should be as easy as:
 #    CerB=Cer.graph(alpha,alpha+90)
@@ -956,8 +963,8 @@ class SudokuGridGraph(object):
             h=Segment(Point(0,-i*self.length),Point(9*self.length,-i*self.length))
             # for the subgrid
             if i%3==0 :
-                v.add_option("linewidth=0.07cm")
-                h.add_option("linewidth=0.07cm")
+                v.parameters.linewidth=2
+                h.parameters.linewidth=2
             vlines.append(v)
             hlines.append(h)
         # Content of the cells
