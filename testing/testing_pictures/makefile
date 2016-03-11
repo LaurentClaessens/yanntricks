@@ -1,17 +1,24 @@
+
+DEL_FILE      = rm -f
+
 clean:
-	rm *.md5
-	rm *.pstricks
-	rm *.comment
-	rm *.pyc
-	rm phystricks*.py
-	rm *.dpth
-	rm *.aux
+	-$(DEL_FILE) *.md5
+	-$(DEL_FILE) *.pstricks
+	-$(DEL_FILE) *.comment
+	-$(DEL_FILE) *.pyc
+	-$(DEL_FILE) phystricks*.py
+	-$(DEL_FILE) *.dpth
+	-$(DEL_FILE) *.aux
+	-$(DEL_FILE) *.out
+	-$(DEL_FILE) tikzFIGLabelFig*
+	videlatex.sh
+
 pdflatex:
 	pytex lst_actu.py --all --no-external
 create:
-	./create_all.py
+	./create_testing.py
 figures:
-	./figures_all.py --all
+	./figures_testing.py --all
 all:
 	make create
 	make figures
