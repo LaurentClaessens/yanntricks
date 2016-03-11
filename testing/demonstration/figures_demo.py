@@ -39,10 +39,12 @@ from phystricksHELQooLGapRQrr import HELQooLGapRQrr
 from phystricksYJEDoojDtSeKHQ import YJEDoojDtSeKHQ
 from phystricksQRJOooKZPUoLlF import QRJOooKZPUoLlF
 from phystricksRVKFooDxrqYXAX import RVKFooDxrqYXAX
+from phystricksPFCUoorQhitKoJ import PFCUoorQhitKoJ
 
 figures_list=[]
 
 
+figures_list.append(PFCUoorQhitKoJ)
 figures_list.append(AxesSecond)
 figures_list.append(exCircle)
 figures_list.append(exCircleThree)
