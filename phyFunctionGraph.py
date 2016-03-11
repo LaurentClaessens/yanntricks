@@ -76,7 +76,7 @@ class phyFunctionGraph(ObjectGraph):
         self.pieces=[]      
         self.parameters.color = "blue"              # Modification with respect to the attribute in ObjectGraph
         self.nul_function=None
-
+            
     @lazy_attribute
     def I(self):
         if not self.do_cut_y:
@@ -397,6 +397,9 @@ class phyFunctionGraph(ObjectGraph):
         if not self.pieces:
             return self.get_point(self.Mx)
         return self.pieces[-1].mark_point()
+    def angle(self):
+        """ For put_mark.  """
+        return AngleMeasure(value_degree=0)
     def representative_graph_object(self):
         """
         Return is the object that will be drawn. It serves to control the chain function --> parametric_curve --> interpolation curve

@@ -149,9 +149,7 @@ class ObjectGraph(object):
             try :
                 angle=self.advised_mark_angle(pspict=pspict)
             except AttributeError :
-                print("this object has no 'advised_mark_angle' : ",self)
                 a=self.angle()
-                print("his angle is ",a,type(a))
                 angle=self.angle().degree+90
 
         # At this point, 'angle' has to be degree,
