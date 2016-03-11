@@ -1,0 +1,61 @@
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+\section{Preparation}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+%--------------------------------------------------------------------------------------------------------------------------- 
+\subsection{Dependencies and installation}
+%---------------------------------------------------------------------------------------------------------------------------
+
+\begin{enumerate}
+    \item
+        You need a working \href{ http://sagemath.org }{ sage } installation.
+    \item
+        Download \phystricks from \href{ https://github.com/LaurentClaessens/phystricks }{ github } and make it available from Sage (\info{from phystricks import *} has to work).
+    \item
+        I don't even speak about having a working \LaTeX\ installation with Tikz installed.
+\end{enumerate}
+
+%--------------------------------------------------------------------------------------------------------------------------- 
+\subsection{In your \LaTeX\ file}
+%---------------------------------------------------------------------------------------------------------------------------
+
+The preamble of your \LaTeX\ file has to contain
+
+\begin{verbatim}
+    \usepackage{calc}   
+    \usepackage{tikz}
+    \usetikzlibrary{patterns}
+    \usetikzlibrary{calc}
+    \newcounter{defHatch}
+    \newcounter{defPattern}
+    \setcounter{defHatch}{0}
+    \setcounter{defPattern}{0}
+\end{verbatim}
+
+and you (don't really) have to compile with \info{pdflatex -shell-escape}.
+
+%--------------------------------------------------------------------------------------------------------------------------- 
+\subsection{Structure of your \phystricks\ file}
+%---------------------------------------------------------------------------------------------------------------------------
+
+Most of your \phystricks files will have the following structure :
+
+\lstinputlisting{phystricksQLXFooBDalHMaT.py}
+
+We will see later the significance of these lines.
+
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+\section{Draw points}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Here is the code :
+
+\lstinputlisting{phystricksOnePoint.py}
+
+
+\begin{center}
+   \input{Fig_OnePoint.pstricks}
+\end{center}
+
+
+

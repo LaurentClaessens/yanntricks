@@ -8,8 +8,8 @@ tests/*
 core
 .kk.log
 .directory
-documentation/*
 vieux/*
+documentation/sphynx/*
 instance.vim
 testing/phystricks*.py
 testing/testing_pictures/*.aux
@@ -42,3 +42,14 @@ testing/demonstration/*.md5
 testing/demonstration/*.pdf
 testing/demonstration/tikzFIG*
 testing/demonstration/*.swo
+testing/testing_pictures/fp081206-28.pdf
+
+*.comment
+*.pstricks
+documentation/latex/Essais-for_eps.tex
+Inter_*
+documentation/latex/ecm.tex
+documentation/latex/ecm2.tex
+documentation/latex/lines.tex
+documentation/latex/points.tex
+documentation/latex/pytextools.xml
