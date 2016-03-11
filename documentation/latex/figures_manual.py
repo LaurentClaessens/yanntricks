@@ -9,9 +9,11 @@ import sys
 from phystricks import *
 
 from phystricksOnePoint import OnePoint
+from phystricksRJDEoobOibtkfv import RJDEoobOibtkfv
 
 figures_list=[]
 figures_list.append(OnePoint)
+figures_list.append(RJDEoobOibtkfv)
 
 def AllFigures():
     tests=main.FigureGenerationSuite(figures_list,first=0,title=u"phystricks's manual")

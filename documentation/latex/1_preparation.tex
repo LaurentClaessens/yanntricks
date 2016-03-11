@@ -48,14 +48,87 @@ We will see later the significance of these lines.
 \section{Draw points}
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-Here is the code :
+Here is the code corresponding to one red point with two marks.
 
 \lstinputlisting{phystricksOnePoint.py}
 
+\begin{enumerate}
+    \item
+        
+Compile it once in the Sage terminal :
+
+\lstinputlisting{sageSnip_1.py}
+
+\item
+
+
+\end{enumerate}
+<++>
+
+
+If you want to know why, this is related to the mechanism of catching the \LaTeX's internal counters(here the size of the box) by \phystricks, see section \ref{SECooKVXMooMKJAXV}.
+
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+\section{How to get the LaTeX counters ?}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+\label{SECooKVXMooMKJAXV}
+
+We are going to explain one important mechanism in \phystricks\ about its interaction with \LaTeX. For we consider the code
+
+\lstinputlisting{phystricksOnePoint.py}
+
+We compile it in a Sage terminal :
+
+\lstinputlisting{sageSnip_1.py}
+
+If you input now the file \info{Fig\_OnePoint.pstricks} in your \LaTeX\ document, you'll see a beautiful red point with two marks, a \( P\) and a \( Q\).  
 
 \begin{center}
    \input{Fig_OnePoint.pstricks}
 \end{center}
 
+However, the marks are badly placed, this is the sense of the warning about the existence of the file \info{LabelFigOnePoint.phystricks.aux}. In fact the file \info{Fig\_OnePoint.pstricks} does not only contains the tikz code for the picture, but also a pure \LaTeX\ code asking latex to write the dimensions of the boxes \( P\) and \( Q\) in an auxiliary file.
 
+Just in order to make is cryptic, these are lines like :
+\begin{verbatim}
 
+\makeatletter\@ifundefined{writeOfphystricks}{\newwrite{\writeOfphystricks}}{}\makeatother%
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{\(P\)}}%
+\immediate\write\writeOfphystricks{totalheightof1903839d9021e180dd790c4cc63081c63b2fe6f1:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\end{verbatim}
+
+Now you can reenter Sage and recompile the picture :
+
+\lstinputlisting{sageSnip_2.py}
+
+The warning disappeared and now \phystricks\ has read the auxiliary file containing the dimensions of the boxes. The \( P\) and \( Q\) are then now placed taking their \emph{real} dimension into account.
+
+The auxiliary file contains the lines
+\begin{verbatim}
+totalheightof1903839d9021e180dd790c4cc63081c63b2fe6f1:6.83331pt-
+widthof1903839d9021e180dd790c4cc63081c63b2fe6f1:7.80904pt-
+totalheightof15a6448f2b408bb6a0dabb437cc671b7beb909fc:8.77776pt-
+widthof15a6448f2b408bb6a0dabb437cc671b7beb909fc:7.90555pt-
+\end{verbatim}
+
+The box is identified by a hash of its \LaTeX\ code. The reason is that almost(?) any string can be valid \LaTeX\ code\footnote{Thanks to the \info{catcode} mechanism, it seems to me that latex is the most introspective programming language ever.}, so the parsing of this auxiliary file is more or less impossible if the actual \LaTeX\ code is included.
+
+Relaunch \pdfLaTeX\ and you'll see the points correctly placed.
+
+Conclusion : when you add some \LaTeX\ code in your picture, you need one more pass of \pdfLaTeX and \phystricks\ in order to get the marks right.
+
+This mechanism of making \LaTeX\ write values in an auxiliary file is general and any latex internal counters can be accessed in your python code (as Python's \info{float}).
+
+You don't believe ? Here is a line whose slope is the number of the section (here we have \info{\\thesection}=\thesection), drawn from \( x=0\) to \( x=x_{max}\) computed in such a way that \( y_{max}=5\). A dilatation is computed in such a way that the picture has \SI{10}{\centi\meter} length.
+
+The page number is also written. 
+
+\begin{center}
+   \input{Fig_RJDEoobOibtkfv.pstricks}
+\end{center}
+
+Obviously this kind of picture has to be recompiled each time we change the containing document.
+
+Here is the code :
+
+\lstinputlisting{phystricksRJDEoobOibtkfv.py}
