@@ -954,12 +954,12 @@ class SudokuGridGraph(object):
         for i in range(0,10):
             v=Segment(Point(i*self.length,0),Point(i*self.length,-9*self.length))
             h=Segment(Point(0,-i*self.length),Point(9*self.length,-i*self.length))
+            # for the subgrid
             if i%3==0 :
-                v.parameters.add_option("linewidth","0.07cm")
-                h.parameters.add_option("linewidth","0.07cm")
+                v.add_option("linewidth=0.07cm")
+                h.add_option("linewidth=0.07cm")
             vlines.append(v)
             hlines.append(h)
-    
         # Content of the cells
         lines = self.question.split("\n")
         for i,li in enumerate(lines):

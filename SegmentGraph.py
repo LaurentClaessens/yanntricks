@@ -968,6 +968,7 @@ class SegmentGraph(ObjectGraph):
                 return curve.latex_code(language=language,pspict=pspict)
             else:
                 if language=="pstricks":
+                    raise DeprecationWarning
                     a =[self.I.create_PSpoint() + self.F.create_PSpoint()]
                     a.append("\pstLineAB[%s]{%s}{%s}"%(self.params(language="pstricks"),self.I.psName,self.F.psName))
                 if language=="tikz":
