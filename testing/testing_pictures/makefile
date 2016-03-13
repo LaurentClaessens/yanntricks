@@ -13,14 +13,15 @@ clean:
 	-$(DEL_FILE) tikzFIGLabelFig*
 	videlatex.sh
 
-pdflatex:
-	pytex lst_actu.py --all --no-external
+external:
+	pytex lst_actu.py --all  --lotex
+no-external:
+	pytex lst_actu.py --all --lotex  --no-external
 create:
 	./create_testing.py
-figures:
+pictures:
 	./figures_testing.py --all
-all:
-	make create
-	make figures
-	make create
-	make pdflatex
+all:create
+	make pictures no-external
+	make pictures no-external
+rebuild:clean all

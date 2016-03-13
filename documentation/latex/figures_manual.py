@@ -10,10 +10,14 @@ from phystricks import *
 
 from phystricksOnePoint import OnePoint
 from phystricksRJDEoobOibtkfv import RJDEoobOibtkfv
+from phystricksLARGooSLxQTdPC import LARGooSLxQTdPC
+from phystricksPBFCooVlPiRBpt import PBFCooVlPiRBpt
 
 figures_list=[]
 figures_list.append(OnePoint)
 figures_list.append(RJDEoobOibtkfv)
+figures_list.append(LARGooSLxQTdPC)
+figures_list.append(PBFCooVlPiRBpt)
 
 def AllFigures():
     tests=main.FigureGenerationSuite(figures_list,first=0,title=u"phystricks's manual")

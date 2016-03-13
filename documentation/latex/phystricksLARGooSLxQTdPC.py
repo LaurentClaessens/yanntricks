@@ -2,7 +2,7 @@
 from phystricks import *
 def LARGooSLxQTdPC():
     pspict,fig = SinglePicture("LARGooSLxQTdPC")
-    pspict.dilatation(1)
+    pspict.dilatation(3)
 
     x=var('x')
     f1=phyFunction( sin(2*x)  )
@@ -11,6 +11,7 @@ def LARGooSLxQTdPC():
 
     pspict.DrawGraphs(curve)
     pspict.DrawDefaultAxes()
+    pspict.comment="There is a lack of plotpoints, and this is normal because this picture comes from the documentation."
 
     fig.conclude()
     fig.write_the_file()

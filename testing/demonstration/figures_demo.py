@@ -45,6 +45,7 @@ figures_list=[]
 
 
 figures_list.append(PFCUoorQhitKoJ)
+figures_list.append(QIXEooejrojKjo)
 figures_list.append(AxesSecond)
 figures_list.append(exCircle)
 figures_list.append(exCircleThree)
@@ -65,7 +66,6 @@ figures_list.append(ParametricOne)
 figures_list.append(ParametricTwo)
 figures_list.append(Sequence)
 figures_list.append(VectorOne)
-
 figures_list.append(TRJEooPRoLnEiG)
 figures_list.append(QRXCooUmnlhkvh)
 figures_list.append(UREIooqNGBXtHg)

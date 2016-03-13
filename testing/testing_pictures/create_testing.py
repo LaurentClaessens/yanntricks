@@ -12,7 +12,7 @@ class OnePicture(object):
     latex_skel="""
     %\lstinputlisting{CODE_FILENAME}
 
-    \\newcommand{\CaptionFigPICTURE_NAME}{<+Type your caption here+>}
+    \\newcommand{\CaptionFigPICTURE_NAME}{This is a default caption, automatically generated; do not change.}
     \\begin{center}
         \input{Fig_PICTURE_NAME.pstricks}
     \end{center}
@@ -24,7 +24,6 @@ class OnePicture(object):
     """
     # The following files have some particularities (like having two different functions inside) and will not
     # be included in the 'all' document.
-    not_to_be_done=configuration.not_to_be_done
 
     def __init__(self,f,dirname):
         self.filename=f
@@ -45,7 +44,7 @@ class OnePicture(object):
             print("Pas de commentaires pour "+self.comment_filename)
         return self.latex_skel.replace("CODE_FILENAME",self.filename).replace("PICTURE_NAME",self.function_name).replace("COMMENT",comment).replace("FILE_NAME",self.filename)
     def isToDo(self):
-        return (self.function_name not in self.not_to_be_done)
+        return (self.function_name not in configuration.not_to_be_done)
 
 
 def getFromDirectory(_dirname):
@@ -76,6 +75,7 @@ def analyseSelected(selected):
             latex_code_list.append(pict.latex())
 
             shutil.copyfile(pict.real_origin_path,pict.real_here_path)
+            configuration.not_to_be_done.append(pict.function_name)             # avoid doublon.
 
     return ("\n".join(import_list)+"\n","\n".join(function_append_list)+"\n","\n".join(latex_code_list))
 

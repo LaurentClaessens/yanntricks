@@ -11,8 +11,7 @@ def HELQooLGapRQrr():
     pspict,fig = SinglePicture("HELQooLGapRQrr")
     pspict.dilatation(1)
 
-    x=var('x')
-    f=NonAnalyticFunction(fun,0,10)
+    f=phyFunction(fun).graph(0,10)
     f.parameters.plotpoints=300
 
     pspict.DrawGraphs(f)

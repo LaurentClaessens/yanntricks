@@ -19,6 +19,6 @@ no-external:
 pictures:
 	./figures_demo.py --all
 all:
-	make figures
-	make create
-	make pdflatex
+	make pictures no-external
+	make pictures no-external
+rebuild:clean all

@@ -35,6 +35,25 @@ The preamble of your \LaTeX\ file has to contain
 and you (don't really) have to compile with \info{pdflatex -shell-escape}.
 
 %--------------------------------------------------------------------------------------------------------------------------- 
+\subsection{Where do I find examples ?}
+%---------------------------------------------------------------------------------------------------------------------------
+
+You will found (figuratively) tons of examples in the following documents :
+\begin{enumerate}
+    \item
+        In the demo document. The sources are included in the \phystricks's repository; in the subdirectory \info{phystricks/testing/demonstration}. Browse the pdf at \url{http://student.ulb.ac.be/%7Elclaesse/phystricks-demo.pdf}.
+    \item
+        In mazhe. Download the source at \url{ https://github.com/LaurentClaessens/mazhe/ } and browse the pdf at \url{http://student.ulb.ac.be/%7Elclaesse/mazhe.pdf}.
+    \item
+        In smath.Download the source at \url{ https://github.com/LaurentClaessens/smath/ } and browse the pdf at \url{http://student.ulb.ac.be/%7Elclaesse/smath.pdf}.
+\end{enumerate}
+Since every single functionality of \phystricks\ is used in at least one picture of \info{mazhe} or \info{smath}, we are not going to give so much examples in this document.
+
+You are also invited to read the file \info{Constructors.py}; the docstring are explaining the creation of most of the graph types.
+
+If you need something special or if you encounter any difficulty, send me an email.
+
+%--------------------------------------------------------------------------------------------------------------------------- 
 \subsection{Structure of your \phystricks\ file}
 %---------------------------------------------------------------------------------------------------------------------------
 
@@ -61,12 +80,142 @@ Compile it once in the Sage terminal :
 
 \item
 
+    As suggested by the Sage's output input the file \info{Fig\_OnePoint.pstricks} in your \LaTeX\ document.
 
+\item
+
+    Compile your document with \info{pdflatex <mydocument> -shell-escape}
+
+\item
+    Re-do the compilation in Sage
+\item
+    Re-do the \LaTeX\ compilation.
 \end{enumerate}
-<++>
-
+If you don't compile twice, some elements can be badly placed, especially the marks that you put on points like the \( P\) and \( Q\) in this example.
 
 If you want to know why, this is related to the mechanism of catching the \LaTeX's internal counters(here the size of the box) by \phystricks, see section \ref{SECooKVXMooMKJAXV}.
+
+The result should be
+
+\begin{center}
+   \input{Fig_OnePoint.pstricks}
+\end{center}
+
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+\section{Drawing curves}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+All the curves are internally converted into parametric curve and then transformed into a large number of small segments. Tikz will only see these segments. For that reason, we are able to draw virtually anything that Sage con compute : we are not bound by Tikz's internals, and even less by \LaTeX's \sout{legacy}\sout{embarrassing}\sout{made me crazy} limitations.
+
+%--------------------------------------------------------------------------------------------------------------------------- 
+\subsection{Drawing functions}
+%---------------------------------------------------------------------------------------------------------------------------
+
+For drawing the function \( x\mapsto x^2\) on \( \mathopen[ mx , Mx \mathclose]\) the syntax is :
+
+\lstinputlisting{sageSnip_3.py}
+
+The function itself (what is inside the \info{phyFunction} argument) is a Sage expression, so respecting the Sage syntax and using any function that Sage know.
+
+In fact you can put inside \info{phyFunction} (I guess) anything that has a \info{\_\_call\_\_} method, as long as it returns real numbers.
+
+The following is legal:
+\lstinputlisting{sageSnip_4.py}
+and draws the graph of
+\begin{equation}
+    x\mapsto \int_{0.1}^x\frac{ \sin(t) }{ t }dt.
+\end{equation}
+
+%--------------------------------------------------------------------------------------------------------------------------- 
+\subsection{Parametric curve}
+%---------------------------------------------------------------------------------------------------------------------------
+
+For the curve
+\begin{equation}
+    \begin{aligned}
+        \gamma\colon \mathopen[ a , b \mathclose]&\to \eR^2 \\
+        t&\mapsto (  f_1(t),f_2(t)  ) 
+    \end{aligned}
+\end{equation}
+the syntax is :
+\lstinputlisting{sageSnip_5.py}
+
+You can omit the \info{interval} argument; in this case the interval of \info{f1} will be used, but such implicit transfer of property is a bad practice\footnote{\phystricks\ contains lots of such ``if an argument is missing I will search it somewhere'' mechanisms.}.
+
+Here is an example code :
+\lstinputlisting{phystricksLARGooSLxQTdPC.py}
+
+The result is on figure \ref{LabelFigLARGooSLxQTdPC}. You see that too few points are plotted, so that the picture is not quite well curved. This problem can be fixed using the \info{plotpoints} attribute of the curve; we will see that later.
+
+\newcommand{\CaptionFigLARGooSLxQTdPC}{This is a parametric curve, a Lyssajou.}
+\input{Fig_LARGooSLxQTdPC.pstricks}
+
+%--------------------------------------------------------------------------------------------------------------------------- 
+\subsection{Interpolation curve}
+%---------------------------------------------------------------------------------------------------------------------------
+
+<++>
+
+%--------------------------------------------------------------------------------------------------------------------------- 
+\subsection{Lagrange polynomial, Hermite interpolation}
+%---------------------------------------------------------------------------------------------------------------------------
+
+<++>
+
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+\section{Compute more plotpoints (sample)}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+As seen on figure \ref{LabelFigLARGooSLxQTdPC}, the default setting does not compute enough «intermediate» points to produce a visually correct result on some curves.
+
+The easiest way to make the curve more smooth is to increase the \info{plotpoints} attribute; as an example :
+
+\lstinputlisting{sageSnip_6.py}
+
+For fixing the ideas, let's say \info{plotpoints=100}. Then the default behaviour is to consider \( 100\) values \emph{of the parameters} that regularly spaced between its minimum and its maximum. The drawn curve is then the interpolation curve of the corresponding points.
+
+This is not always adapted, and we have two ways to adapt this mechanism to particular cases.
+\begin{description}
+    \item[Add selected plot points] We can make compute some more points by adding parameters values to the list \info{added\_plotpoints} :
+        \lstinputlisting{sageSnip_7.py}
+        In this case we will compute \( 102\) points : the usual \( 100\) plus the ones corresponding to the values \( 0.001 \) and \( \pi/5\) of the parameters.
+
+    \item[Force smoothing]
+            We can do
+        \lstinputlisting{sageSnip_8.py}
+        In this case, the \( 100\) interpolation points will be taken regularly spaced with respect to the \emph{arc length}. This is more precise, but this functionality make a quite intensive\footnote{And not optimised at all} use of numerical integrals in order to find the interpolation points.
+
+        Notice that the result is not always better.
+\end{description}
+
+An example :
+
+\lstinputlisting{phystricksPBFCooVlPiRBpt.py}.
+
+Let us see the results that we compare with figure \ref{LabelFigLARGooSLxQTdPC}. 
+
+\begin{center}
+   \input{Fig_PBFCooVlPiRBpt.pstricks}
+\end{center}
+The result is far from being better because in the angles, both the sine and the cosine are at their maximum and have then a small derivative. Thus the curve is slow at these places and an linearly spaces \emph{parameter} computation creates more points there.
+
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+\section{Figure, subfigure}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+\begin{enumerate}
+    \item
+        The caption of the figure is not given in the \phystricks\ code, but has to be inserted in the LaTeX document.
+    \item 
+        On the contrary, the subfigures caption are from the \phystricks\ code
+\end{enumerate}
+You should use the utility \info{new\_picture.py} to generate the skeleton of your figure.
+
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+\section{Put marks on the objects}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+<++>
 
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 \section{How to get the LaTeX counters ?}
@@ -119,9 +268,17 @@ Conclusion : when you add some \LaTeX\ code in your picture, you need one more p
 
 This mechanism of making \LaTeX\ write values in an auxiliary file is general and any latex internal counters can be accessed in your python code (as Python's \info{float}).
 
-You don't believe ? Here is a line whose slope is the number of the section (here we have \info{\\thesection}=\thesection), drawn from \( x=0\) to \( x=x_{max}\) computed in such a way that \( y_{max}=5\). A dilatation is computed in such a way that the picture has \SI{10}{\centi\meter} length.
-
-The page number is also written. 
+You don't believe ? Here is a picture with the following specifications :
+\begin{enumerate}
+    \item
+        The line slope is the number of the section (here we have \info{\thesection}=\thesection).
+\item
+The line is drawn from \( x=0\) to \( x=x_{max}\) computed in such a way that \( y_{max}=5\). 
+\item
+A dilatation in the \( x\)-direction is computed in such a way that the picture has \SI{10}{\centi\meter} length.
+\item
+    The page number is written just on the top of coordinates \( (x_{max},y_{max})\).
+\end{enumerate}
 
 \begin{center}
    \input{Fig_RJDEoobOibtkfv.pstricks}
@@ -132,3 +289,5 @@ Obviously this kind of picture has to be recompiled each time we change the cont
 Here is the code :
 
 \lstinputlisting{phystricksRJDEoobOibtkfv.py}
+
+The default value for the \info{section} counter is given to avoid division by zero, because zero is the default-default value : the one which is returned at first compilation. when the auxiliary file does not yet contain the value of the counter (there is a bootstrap here).

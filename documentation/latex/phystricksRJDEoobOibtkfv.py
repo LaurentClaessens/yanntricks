@@ -6,13 +6,15 @@ from phystricks import *
 def RJDEoobOibtkfv():
     pspict,fig = SinglePicture("RJDEoobOibtkfv")
 
-    # default value to avoid division by zero
+    # Taking the value of the LaTeX's counters "section" and "page"
     section=pspict.get_counter_value("section",default_value=1)
     page=pspict.get_counter_value("page")
+
+    # You compute with is as normal Python float
     xmax=5/section
     pspict.dilatation_X(10/xmax)
 
-    
+    # Create the picture itself using the computed numbers :
     x=var('x')
     f=phyFunction(section*x).graph(0,xmax)
     f.put_mark(0.2,angle=None,added_angle=0,text="\( {} \)".format(page),automatic_place=(pspict,""))
