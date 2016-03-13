@@ -162,9 +162,9 @@ The result is on figure \ref{LabelFigLARGooSLxQTdPC}. You see that too few point
 
 <++>
 
-%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
-\section{Compute more plotpoints (sample)}
-%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+%--------------------------------------------------------------------------------------------------------------------------- 
+\subsection{Compute more plotpoints (sample)}
+%---------------------------------------------------------------------------------------------------------------------------
 
 As seen on figure \ref{LabelFigLARGooSLxQTdPC}, the default setting does not compute enough «intermediate» points to produce a visually correct result on some curves.
 
@@ -183,21 +183,22 @@ This is not always adapted, and we have two ways to adapt this mechanism to part
     \item[Force smoothing]
             We can do
         \lstinputlisting{sageSnip_8.py}
-        In this case, the \( 100\) interpolation points will be taken regularly spaced with respect to the \emph{arc length}. This is more precise, but this functionality make a quite intensive\footnote{And not optimised at all} use of numerical integrals in order to find the interpolation points.
+        In this case, the \( 100\) interpolation points will be taken regularly spaced with respect to the integral of the curvature. In other words \( \{ x_i \}_{i=1,\ldots, 50}\) are chosen in such a way that
+        \begin{equation}
+            \int_{x_i}^{x_{i+1}}c(t)dt
+        \end{equation}
+        is constant with respect to to \( i\).
 
-        Notice that the result is not always better.
 \end{description}
 
 An example :
 
 \lstinputlisting{phystricksPBFCooVlPiRBpt.py}.
 
-Let us see the results that we compare with figure \ref{LabelFigLARGooSLxQTdPC}. 
-
 \begin{center}
    \input{Fig_PBFCooVlPiRBpt.pstricks}
 \end{center}
-The result is far from being better because in the angles, both the sine and the cosine are at their maximum and have then a small derivative. Thus the curve is slow at these places and an linearly spaces \emph{parameter} computation creates more points there.
+Is it better that figure \ref{LabelFigLARGooSLxQTdPC} ? The four angles are for sure smoother. However, the computation of these points at ``regular curvature'' interval can take forever and it is often much faster to simply add thousands of plotpoints.
 
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 \section{Figure, subfigure}
@@ -215,7 +216,11 @@ You should use the utility \info{new\_picture.py} to generate the skeleton of yo
 \section{Put marks on the objects}
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-<++>
+One can always put a mark on an object; the position is in part automatically determined. The general statement is :
+
+\lstinputlisting{sageSnip_9.py}
+
+klm
 
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 \section{How to get the LaTeX counters ?}

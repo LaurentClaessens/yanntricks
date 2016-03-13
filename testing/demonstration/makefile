@@ -13,9 +13,9 @@ clean:
 	videlatex.sh
 
 external:
-	pytex lst_actu.py --all 
+	pytex lst_actu.py --all  --lotex
 no-external:
-	pytex lst_actu.py --all --no-external
+	pytex lst_actu.py --all --no-external --lotex
 pictures:
 	./figures_demo.py --all
 all:

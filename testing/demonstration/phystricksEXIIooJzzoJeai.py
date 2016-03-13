@@ -1,53 +1,34 @@
 # -*- coding: utf8 -*-
 from phystricks import *
 def EXIIooJzzoJeai():
-    pspict,fig = SinglePicture("EXIIooJzzoJeai")
-    #pspict.dilatation_X(1)
-    #pspict.dilatation_Y(1)
-    pspict.dilatation(1)
+    pspicts,fig = MultiplePictures("EXIIooJzzoJeai",4)
+    pspicts[0].mother.caption="Normal (50 points)"
+    pspicts[1].mother.caption="with force smoothing"
+    pspicts[2].mother.caption="adding smart plotpoints"
+    pspicts[3].mother.caption="more points (1000)"
 
+    xmin=0.05
     x=var('x')
-    P=Point(0,0)
-
-    pspict.DrawGraphs(P)
-    pspict.DrawDefaultAxes()
-    fig.no_figure()
-    fig.conclude()
-    fig.write_the_file()
-
-----------------
-    pspicts,fig = MultiplePictures("EXIIooJzzoJeai",3)
-    pspicts[0].mother.caption="<+caption1+>"
-    pspicts[1].mother.caption="<+caption2+>"
-    pspicts[2].mother.caption="<+caption3+>"
+    f1=phyFunction( sin(1/x)  ).graph(xmin,6)
+    f2=phyFunction( sin(1/x)  ).graph(xmin,6)
+    f3=phyFunction( sin(1/x)  ).graph(xmin,6)
+    f4=phyFunction( sin(1/x)  ).graph(xmin,6)
 
     for psp in pspicts:
         psp.dilatation_X(1)
         psp.dilatation_Y(1)
 
-    <+Définition des objets+>
+    f2.parameters.force_smoothing=True
+    f3.parameters.added_plotpoints=  [2/(k*pi) for k in range(1,13)]  
+    f4.parameters.plotpoints=1000
+
+    pspicts[0].DrawGraphs(f1)
+    pspicts[1].DrawGraphs(f2)
+    pspicts[2].DrawGraphs(f3)
+    pspicts[3].DrawGraphs(f4)
 
     for psp in pspicts:
         psp.DrawDefaultAxes()
 
-    fig.no_figure()
     fig.conclude()
     fig.write_the_file()
-
-------------------------------
-
-    pspicts,figs = IndependentPictures("EXIIooJzzoJeai",3)
-
-    for psp in pspicts:
-        psp.dilatation(1)
-
-    <+Définition des objets+>
-
-    for psp in pspicts:
-        psp.DrawDefaultAxes()
-
-    for fig in figs:
-        fig.no_figure()
-        fig.conclude()
-        fig.write_the_file()
-

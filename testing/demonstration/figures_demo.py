@@ -40,10 +40,12 @@ from phystricksYJEDoojDtSeKHQ import YJEDoojDtSeKHQ
 from phystricksQRJOooKZPUoLlF import QRJOooKZPUoLlF
 from phystricksRVKFooDxrqYXAX import RVKFooDxrqYXAX
 from phystricksPFCUoorQhitKoJ import PFCUoorQhitKoJ
+from phystricksEXIIooJzzoJeai import EXIIooJzzoJeai
 
 figures_list=[]
 
 
+figures_list.append(EXIIooJzzoJeai)
 figures_list.append(PFCUoorQhitKoJ)
 figures_list.append(QIXEooejrojKjo)
 figures_list.append(AxesSecond)

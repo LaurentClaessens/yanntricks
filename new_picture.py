@@ -59,7 +59,6 @@ def XXXX():
     for psp in pspicts:
         psp.DrawDefaultAxes()
 
-    fig.no_figure()
     fig.conclude()
     fig.write_the_file()
 
