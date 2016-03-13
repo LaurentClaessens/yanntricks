@@ -167,6 +167,8 @@ class Parameters(object):
         cop.hatch=self.hatch
         cop.fill=self.fill
         cop.plotpoints=self.plotpoints
+        cop.added_plotpoints=self.added_plotpoints
+        cop.force_smoothing=self.force_smoothing
         cop.style=self.style
         cop.symbol=self.symbol
         cop.color=self.color

@@ -74,7 +74,7 @@ class phyFunctionGraph(ObjectGraph):
         self.do_cut_y=False
         self.cut_ymin=None
         self.cut_ymax=None
-        self.parameters.plotpoints = 100                   # We draw 100 points as default.
+        self.parameters.plotpoints = 50                   # We draw 100 points as default.
         self.pieces=[]      
         self.parameters.color = "blue"              # Modification with respect to the attribute in ObjectGraph
         self.nul_function=None
@@ -571,6 +571,36 @@ class ParametricCurveGraph(ObjectGraph):
             x |--> sqrt(4*cos(2*x)^2 + sin(x)^2)
         """
         return sqrt( self.f1.derivative().sage**2+self.f2.derivative().sage**2 )
+    @lazy_attribute
+    def curvature(self):
+        """
+        return the curvature function.
+        """
+        gp=self.derivative()
+        gpp=self.derivative(n=2)
+
+        fp1=gp.f1.sage
+        fp2=gp.f2.sage
+
+        fpp1=gpp.f1.sage
+        fpp2=gpp.f2.sage
+
+        mixed=fpp1*fp1+fpp2*fp2
+        mixed=mixed.simplify_full()
+
+        num1=fpp1*self.speed-2*fp1*mixed
+        num2=fpp2*self.speed-2*fp2*mixed
+        num1=num1.simplify_full()
+        num2=num2.simplify_full()
+
+        tau1=num1/(self.speed**2)
+        tau2=num2/(self.speed**2)
+        tau1=tau1.simplify_full()
+        tau2=tau2.simplify_full()
+
+        c = sqrt(  tau1**2+tau2**2  )
+        return c.full_simplify()
+
     def tangent_angle(self,llam):
         """"Return the angle of the tangent (radian)"""
         dx=self.f1.derivative()(llam)
@@ -913,6 +943,8 @@ class ParametricCurveGraph(ObjectGraph):
         if lmax==None:
             lmax=self.llamF
         return numerical_integral(fun,lmin,lmax)[0]
+    def total_curvature(self):
+        return self.getFunctionIntegral(self.curvature)
     def getNextRegularFunctionParameters( self, lmin,lmax,fun,df,xunit=1,yunit=1 ):
         """
         Return a value 'nl' of the parameter such that the integral of 'fun' from 'lmin' to 'nl' is 'df'.
@@ -978,9 +1010,9 @@ class ParametricCurveGraph(ObjectGraph):
 
         PIs = []            # The list of selected values of the parameter
         if initial_point:
-            PIs.append(mll)
+            PIs.append(lmin)
         if final_point:
-            PIs.append(Mll)
+            PIs.append(lmax)
         ll=lmin
         while ll is not None :
             ll=Vcurve.getNextRegularFunctionParameters(ll,lmax,fun,df,xunit=1,yunit=1)
@@ -1006,7 +1038,11 @@ class ParametricCurveGraph(ObjectGraph):
 
         """
         return self.getRegularFunctionParameters(mll,Mll,self.speed,dl,initial_point=initial_point,final_point=final_point,xunit=xunit,yunit=yunit)
-
+    def getRegularCurvatureParameter(self,mll,Mll,dl,initial_point=False,final_point=False,xunit=1,yunit=1):
+        """ 
+        Same thing as `getRegularLengthParameter`, but with the curvature instead of the arc length.
+        """
+        return self.getRegularFunctionParameters(mll,Mll,self.curvature,dl,initial_point=initial_point,final_point=final_point,xunit=xunit,yunit=yunit)
     def get_regular_points(self,mll,Mll,dl):
         """
         Return a list of points regularly spaced (with respect to the arc length) by dl. 
@@ -1086,6 +1122,7 @@ class ParametricCurveGraph(ObjectGraph):
         return bb
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
+
     def representative_points(self):
         initial = numerical_approx(self.llamI)      # Avoid the string "pi" in the latex code.
         final = numerical_approx(self.llamF)
@@ -1093,7 +1130,9 @@ class ParametricCurveGraph(ObjectGraph):
         if plotpoints==None :
             plotpoints=50
         if self.parameters.force_smoothing :
-            Llam=self.getRegularLengthParameter(initial,final,self.length()/plotpoints,initial_point=True,final_point=False)
+            print("force smoothing ...")
+            Llam=self.getRegularCurvatureParameter(initial,final,self.total_curvature()/plotpoints,initial_point=True,final_point=False)
+            print("force smoothing ... done")
         else :
             import numpy
             # If not RR, the elements of Llam are type numpy.float64. In this case, computing the sqrt of negative return NaN instead of complex.
@@ -1107,8 +1146,8 @@ class ParametricCurveGraph(ObjectGraph):
             if not isreal:
                 print("There is a not so small imaginary part ... prepare to crash or something")
             pl.append(Q)
+        print("Number of representative points : ",len(pl))
         return pl
-
     def action_on_pspict(self,pspict):
         if self.wavy :
             waviness = self.waviness
