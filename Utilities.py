@@ -23,6 +23,7 @@
 from sage.all import *
 from Constructors import *
 from phystricks.MathStructures import *
+from Exceptions import ShouldNotHappenException
 
 def is_real(z):
     if type(z) in [int,sage.rings.real_mpfr.RealNumber]:

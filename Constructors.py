@@ -529,7 +529,7 @@ def phyFunction(fun,mx=None,Mx=None):
     .. image:: Picture_FIGLabelFigNonAnalyticOnePICTNonAnalyticOne-for_eps.png
 
     """
-    from phyFunctionGraph import phyFunctionGraph
+    from CurvesGraph import phyFunctionGraph
     # The first try is that the given expression is already a phyFunction.
     try:
         return fun.graph(mx,Mx)     
@@ -547,7 +547,7 @@ def phyFunction(fun,mx=None,Mx=None):
 
 def ParametricCurve(f1,f2,interval=(None,None)):
     """
-    This class describes a parametric curve.
+    Construct a parametric curve from its two Cartesian coordinates functions.
 
     INPUT:
 
@@ -585,8 +585,8 @@ def ParametricCurve(f1,f2,interval=(None,None)):
     f2=EnsurephyFunction(f2)
     if isinstance(llamI,AngleMeasure):
         raise
-    import ParametricCurveGraph
-    return ParametricCurveGraph.ParametricCurveGraph(f1,f2,llamI,llamF)
+    import CurvesGraph
+    return CurvesGraph.ParametricCurveGraph(f1,f2,llamI,llamF)
 
 def InterpolationCurve(points_list,context_object=None,mode=None):
     """
@@ -1231,6 +1231,7 @@ def NonAnalyticFunction(fun,mx=None,Mx=None):
     By default, 100 points are computed. You can change that with
     f.parameters.plotpoints=<as you wish>
     """
+    raise DeprecationWarning
     from NonAnalytic import NonAnalyticFunctionGraph
     return NonAnalyticFunctionGraph(fun,mx,Mx)
 

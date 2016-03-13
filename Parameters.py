@@ -136,7 +136,7 @@ class Parameters(object):
         self.plotpoints=None
         self.dotangle=None
         self.linewidth=None
-        self.bracket_attributes=["color","symbol","style","plotpoints","dotangle","linewidth"]
+        self.bracket_attributes=["color","symbol","style","dotangle","linewidth"]
 
         # Other attributes :
         self.fill=FillParameters()
@@ -146,6 +146,8 @@ class Parameters(object):
         self._hatched=False
         self.visual=None        # If True, it means that one wants the object to be non deformed by xunit,yunit
         self.force_smoothing=None
+        self.added_plotpoints=[]
+        self.plotpoints=None
         self.trivial=False   # For Interpolation curve, only draw a piecewise affine approximation.
     def bracketAttributesDictionary(self):
         """
