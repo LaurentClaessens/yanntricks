@@ -950,7 +950,7 @@ class SegmentGraph(ObjectGraph):
             return self.bounding_box(pspict)
         else :
             return BoundingBox()
-    def representative_points(self):
+    def representativePoints(self):
         return [self.I,self.F]
     def latex_code(self,language=None,pspict=None):
         """

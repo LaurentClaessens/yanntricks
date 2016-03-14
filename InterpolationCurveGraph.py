@@ -37,7 +37,7 @@ class InterpolationCurveGraph(ObjectGraph):
         if self.context_object is None:
             self.contex_object=self
         self.mode=mode
-    def representative_points(self):
+    def representativePoints(self):
         return self.points_list
     def get_minmax_data(self):
         """

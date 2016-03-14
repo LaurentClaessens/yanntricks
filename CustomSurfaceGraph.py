@@ -99,7 +99,7 @@ class CustomSurfaceGraph(ObjectGraph):
             l=[]
             for obj in self.graphList :
                 try:
-                    l.extend( [p.coordinates(numerical=True,digits=3,pspict=pspict) for p in obj.representative_points()] )
+                    l.extend( [p.coordinates(numerical=True,digits=3,pspict=pspict) for p in obj.representativePoints()] )
                 except AttributeError :
                     print(obj)
                     raise

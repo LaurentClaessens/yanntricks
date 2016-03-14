@@ -31,7 +31,7 @@ class ObjectGraph(object):
     # Thus if one wants to draw the bounding box, it has to be done at the end.
     def __init__(self,obj):
         self.obj = obj
-        self.parameters = Parameters()
+        self.parameters = Parameters(self.obj)
         self.wavy = False
         self.waviness = None
         self.options = Options()

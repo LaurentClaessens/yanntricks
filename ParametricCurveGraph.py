@@ -27,8 +27,9 @@ from Constructors import *
 from Utilities import *
 from SmallComputations import MyMinMax as MyMinMax
 from Exceptions import ShouldNotHappenException
+from GenericCurve import GenericCurve
 
-class ParametricCurveGraph(ObjectGraph):
+class ParametricCurveGraph(GenericCurve,ObjectGraph):
     def __init__(self,f1,f2,llamI,llamF):
         """
         Use the constructor :func:`ParametricCurve`.
@@ -51,6 +52,7 @@ class ParametricCurveGraph(ObjectGraph):
             print("You cannot creare a parametric curve by giving a parametric curve")
             raise TypeError
         ObjectGraph.__init__(self,self)
+        GenericCurve.__init__(self,llamI,llamF)
         self._derivative_dict={0:self}
         self.f1=f1
         self.f2=f2
@@ -61,9 +63,7 @@ class ParametricCurveGraph(ObjectGraph):
         self.Mx = llamF
         self.parameters.color = "blue"
         self.plotstyle = "curve"
-        self.parameters.plotpoints = None
         self.record_arrows=[]
-        self.parameters.force_smoothing=False       # plot with regularly spaced points. In this case self.parameters.plotpoints will not be exact.
         #TODO: if I remove the protection "if self.llamI", sometimes it 
         # tries to make self.get_point(self.llamI) with self.llamI==None
         # In that case the crash is interesting since it is a segfault instead of an exception.
@@ -650,7 +650,7 @@ class ParametricCurveGraph(ObjectGraph):
 
             pspict.DrawGraph(curve)
         else:
-            points_list=self.representative_points()
+            points_list=self.representativePoints()
             curve=InterpolationCurve(points_list)
             curve.parameters=self.parameters.copy()
             curve.mode="trivial"

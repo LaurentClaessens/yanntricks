@@ -27,6 +27,7 @@ from Constructors import *
 from Utilities import *
 from SmallComputations import MyMinMax as MyMinMax
 from Exceptions import ShouldNotHappenException
+from GenericCurve import GenericCurve
 
 class phyFunctionGraph(GenericCurve,ObjectGraph):
     """
@@ -291,7 +292,7 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
         minmax['xmax']=Mx
         ymin=1000
         ymax=-1000
-        for x in self.representativePoints():
+        for x in self.representativeParameters():
             valid=True
             try :
                 y=self(x)
@@ -449,7 +450,13 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
             try :
                 return self.sage(x=xe)
             except TypeError:       # Happens when one has a distribution function
-                return self.sage(xe)
+                try:
+                    return self.sage(xe)
+                except TypeError:
+                    print("ooMHAQooMbDokI")
+                    print(self,type(self))
+                    print(xe,type(xe))
+                    raise
     def __pow__(self,n):
         return phyFunction(self.sage**n)
     def __mul__(self,other):

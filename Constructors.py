@@ -529,7 +529,7 @@ def phyFunction(fun,mx=None,Mx=None):
     .. image:: Picture_FIGLabelFigNonAnalyticOnePICTNonAnalyticOne-for_eps.png
 
     """
-    from CurvesGraph import phyFunctionGraph
+    from phystricks.phyFunctionGraph import phyFunctionGraph
     # The first try is that the given expression is already a phyFunction.
     try:
         return fun.graph(mx,Mx)     
@@ -585,8 +585,8 @@ def ParametricCurve(f1,f2,interval=(None,None)):
     f2=EnsurephyFunction(f2)
     if isinstance(llamI,AngleMeasure):
         raise
-    import CurvesGraph
-    return CurvesGraph.ParametricCurveGraph(f1,f2,llamI,llamF)
+    from ParametricCurveGraph import ParametricCurveGraph
+    return ParametricCurveGraph(f1,f2,llamI,llamF)
 
 def InterpolationCurve(points_list,context_object=None,mode=None):
     """

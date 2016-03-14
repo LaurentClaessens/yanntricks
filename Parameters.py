@@ -126,14 +126,13 @@ class HatchParameters(object):
             opt.add_option("hatchcolor=%s"%str(self.color))
 
 class Parameters(object):
-    def __init__(self):
+    def __init__(self,graph=None):
         # These are the "bracket" attributes, that is the ones that are
         # subject to be put there :  \draw [  *here*  ]  (...)
         # See the code position 1935811332
         self.color = None   
         self.symbol = None
         self.style = None
-        self.plotpoints=None
         self.dotangle=None
         self.linewidth=None
         self.bracket_attributes=["color","symbol","style","dotangle","linewidth"]
@@ -146,9 +145,8 @@ class Parameters(object):
         self._hatched=False
         self.visual=None        # If True, it means that one wants the object to be non deformed by xunit,yunit
         self.force_smoothing=None
-        self.added_plotpoints=[]
-        self.plotpoints=None
         self.trivial=False   # For Interpolation curve, only draw a piecewise affine approximation.
+        self.graph=graph
     def bracketAttributesDictionary(self):
         """
         Return a dictionary for the bracket attributes and their values.
@@ -166,8 +164,6 @@ class Parameters(object):
         cop._filled=self._filled
         cop.hatch=self.hatch
         cop.fill=self.fill
-        cop.plotpoints=self.plotpoints
-        cop.added_plotpoints=self.added_plotpoints
         cop.force_smoothing=self.force_smoothing
         cop.style=self.style
         cop.symbol=self.symbol

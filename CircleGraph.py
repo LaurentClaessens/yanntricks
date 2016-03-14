@@ -330,7 +330,7 @@ class CircleGraph(ObjectGraph):
         if angleI<270 and angleF>270 :
             bb.addY(self.center.y-self.radius)
         return bb
-    def representative_points(self):
+    def representativePoints(self):
         if self.parameters.plotpoints:
             pp=self.parameters.plotpoints
         else :
