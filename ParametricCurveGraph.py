@@ -634,6 +634,9 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
         f2=self.f2.sage(x=b-(x-a))
         return ParametricCurve(f1,f2).graph(a,b)
     def bounding_box(self,pspict=None):
+        if self.llamI==self.llamF:
+            print("ooQKUJooJIZpsO -- Something wrong")
+            raise
         xmin=self.xmin(self.llamI,self.llamF)
         xmax=self.xmax(self.llamI,self.llamF)
         ymin=self.ymin(self.llamI,self.llamF)

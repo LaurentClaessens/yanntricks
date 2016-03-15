@@ -941,16 +941,44 @@ def SingleAxe(C,base,mx,Mx,pspict=None):
     from AxesGraph import SingleAxeGraph
     return SingleAxeGraph(C,base,mx,Mx,pspict)
 
-def SurfaceBetweenParametricCurves(curve1,curve2,interval1=(None,None),interval2=(None,None),reverse1=False,reverse2=True):
+def intervals(curve1,curve2,interval,interval1,interval2):
+    if interval:
+        mx1=interval[0]
+        Mx1=interval[1]
+        mx2=interval[0]
+        Mx2=interval[1]
+        return mx1,Mx1,mx2,Mx2
+    if interval1:
+        mx1=interval1[0]
+        Mx1=interval1[1]
+    else: 
+        mx1,Mx1=extract_interval_information(curve1)
+    if interval2:
+        mx2=interval2[0]
+        Mx2=interval2[1]
+    else: 
+        mx2,Mx2=extract_interval_information(curve2)
+    return mx1,Mx1,mx2,Mx2
+
+def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,interval1=None,interval2=None,reverse1=False,reverse2=True):
     """
     Represents a surface between two parametric curves.
 
     'curve1' and 'curve2' are parametric curves or objects that have a method 'parametric_curve'
 
-    'interval1' and 'interval2' are tuples. If 'interval2' is not given, it is fixed to be the same as interval2
+        FOR THE INTERVALS :
+
+        - interval=(pI,PF)    where pI and pF are the initial and final value of this parameter
+
+        If you want to choose these parameters separately, use
+        - interval1=(pI1,pF1),interval2=(pI2,pF2)
+
+        You have to give either 'interval' or both 'interval1' and 'interval2'
+
+        - If "interval" is given, it erases all other choices.
+        - If neither 'interval' and 'interval1' are given, search in 'curve1' if there is something to eat.
 
     OPTIONAL ARGUMENTS :
-    - ``(mx1,Mx1)`` - a tuple. Initial and final values of the parameter for the first curve.
 
     - ``reverse1`` - (default=False) if True, reverse the sense of curve1.
 
@@ -1044,21 +1072,14 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval1=(None,None),interval2
         iz22=curve2.f2.nul_function
         iz12=curve1.f2.nul_function
 
-    curve=[curve1,curve2]
     mx=[None,None]
     Mx=[None,None]
-    for i in [0,1]:
-        mx[i],Mx[i]=extract_interval_information(curve[i])
-        if interval1 != (None,None):
-            mx[0]=interval1[0]
-            Mx[0]=interval1[1]
-            mx[1]=interval2[0]
-            Mx[1]=interval2[1]
-        curve[i]=EnsureParametricCurve(curve[i]).graph(mx[i],Mx[i])
+    mx[0],Mx[0],mx[1],Mx[1]=intervals(curve1,curve2,interval,interval1,interval2)
 
-    if mx[0] != None and mx[1] == None:
-        mx[1]=mx[0]
-        Mx[1]=Mx[0]
+    curve=[curve1,curve2]
+
+    for i in [0,1]:
+        curve[i]=EnsureParametricCurve(curve[i]).graph(mx[i],Mx[i])
 
     c1=curve[0]
     c2=curve[1]

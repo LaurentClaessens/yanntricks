@@ -42,14 +42,25 @@ class GenericCurve(object):
         initial = numerical_approx(self.pI) 
         final = numerical_approx(self.pF)
         if self.curvature_plotpoints :
-            print("force smoothing ...")
+            print("Taking curvature points (can take a long time) ...")
             Llam=self.getRegularCurvatureParameter(initial,final,self.total_curvature()/self.curvature_plotpoints,initial_point=True,final_point=True)
-            print("force smoothing ... done")
+            print("... done")
         if self.linear_plotpoints:
             import numpy
-            # If not RR, the elements of Llam are type numpy.float64. In this case, computing the sqrt of negative return NaN instead of complex.
-            # Then we cannot remove the probably fake imaginary part. It happens for the function sqrt(cos(x)) with x=3*pi/2. 
-            Llam=[ RR(s) for s in  numpy.linspace(initial,final,self.linear_plotpoints)]
+            # If not RR, the elements of Llam are type numpy.float64. In this case, computing the sqrt of negative return NaN instead of complex. Then we cannot remove the probably fake imaginary part. It happens for the function sqrt(cos(x)) with x=3*pi/2. 
+            # We can remove this try-except (but not the line in the try).
+            # March 15, 2016
+            try :
+                Llam=[ RR(s) for s in  numpy.linspace(initial,final,self.linear_plotpoints)]
+            except TypeError:
+                print("ooNZKKooUpyYBn -- woops")
+                print("initial : ",initial)
+                print("finale : ",final)
+                print("linear_plotpoints : ",self.linear_plotpoints)
+                print("self : ",str(self),type(self))
+                for s in numpy.linspace(initial,final,self.linear_plotpoints):
+                    print(s,type(s))
+                    print(RR(s))
             Llam.sort()
             return Llam
     def representativePoints(self):

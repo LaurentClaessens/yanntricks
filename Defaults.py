@@ -20,6 +20,7 @@
 # copyright (c) Laurent Claessens, 2016
 # email: moky.math@gmai.com
 
-LINEAR_PLOTPOINTS=50
+LINEAR_PLOTPOINTS=100
 CURVATURE_PLOTPOINTS=0
 
+CIRCLE_LINEAR_PLOTPOINTS=50

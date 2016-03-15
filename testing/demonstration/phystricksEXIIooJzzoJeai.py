@@ -18,9 +18,9 @@ def EXIIooJzzoJeai():
         psp.dilatation_X(1)
         psp.dilatation_Y(1)
 
-    f2.parameters.force_smoothing=True
-    f3.parameters.added_plotpoints=  [2/(k*pi) for k in range(1,13)]  
-    f4.parameters.plotpoints=1000
+    f2.curvature_plotpoints=50
+    f3.added_plotpoints=[2/(k*pi) for k in range(1,13)]  
+    f4.plotpoints=1000
 
     pspicts[0].DrawGraphs(f1)
     pspicts[1].DrawGraphs(f2)

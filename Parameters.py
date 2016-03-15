@@ -144,7 +144,6 @@ class Parameters(object):
         self._filled=False
         self._hatched=False
         self.visual=None        # If True, it means that one wants the object to be non deformed by xunit,yunit
-        self.force_smoothing=None
         self.trivial=False   # For Interpolation curve, only draw a piecewise affine approximation.
         self.graph=graph
     def bracketAttributesDictionary(self):
@@ -164,7 +163,6 @@ class Parameters(object):
         cop._filled=self._filled
         cop.hatch=self.hatch
         cop.fill=self.fill
-        cop.force_smoothing=self.force_smoothing
         cop.style=self.style
         cop.symbol=self.symbol
         cop.color=self.color

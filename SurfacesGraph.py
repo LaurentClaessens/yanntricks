@@ -94,14 +94,9 @@ class SurfaceBetweenLines(ObjectGraph):
 # we have to unify the names of the segments.
 # x.Isegment is the segment joining the first point of the first curve
 # c.Fsegment is the other one.
-# May, 1, 2011
-
-# For the same reason, all type of surfaces have to be functions instead of classes.
-# These functions return an object SurfaceBetweenParametricCurvesGraph 
-# with the right particularization.
 
 class SurfaceBetweenParametricCurvesGraph(ObjectGraph):
-    def __init__(self,curve1,curve2,interval1=(None,None),interval2=(None,None),reverse1=False,reverse2=True):
+    def __init__(self,curve1,curve2,interval1=None,interval2=None,reverse1=False,reverse2=True):
         # TODO: I think that the parameters reverse1 and reverse2 are no more useful
         #   since I enforce the condition curve1 : left -> right by hand.
         ObjectGraph.__init__(self,self)
@@ -116,6 +111,7 @@ class SurfaceBetweenParametricCurvesGraph(ObjectGraph):
         self.mx2=interval1[1]
         self.Mx1=interval2[0]
         self.Mx2=interval2[1]
+
         for attr in [self.mx1,self.mx2,self.Mx1,self.Mx2]:
             if attr == None:
                 raise TypeError,"At this point, initial and final values have to be already chosen"

@@ -23,8 +23,10 @@
 from phystricks.ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
+from GenericCurve import GenericCurve
+import Defaults
 
-class CircleGraph(ObjectGraph):
+class CircleGraph(GenericCurve,ObjectGraph):
     """
     This is a circle, or an arc of circle.
 
@@ -54,6 +56,8 @@ class CircleGraph(ObjectGraph):
         sage: other_circle=circle.graph(45,78)
     """
     def __init__(self,center,radius,angleI=0,angleF=360,visual=False,pspict=None):
+        GenericCurve.__init__(self,pI=angleI,pF=angleF)
+        self.linear_plotpoints=Defaults.CIRCLE_LINEAR_PLOTPOINTS
         self.center = center
         self.radius = radius
         ObjectGraph.__init__(self,self)
@@ -331,11 +335,7 @@ class CircleGraph(ObjectGraph):
             bb.addY(self.center.y-self.radius)
         return bb
     def representativePoints(self):
-        if self.parameters.plotpoints:
-            pp=self.parameters.plotpoints
-        else :
-            pp=50
-        ss= self.get_regular_points(mx=degree(self.angleI),Mx=degree(self.angleF),n=pp,advised=False)
+        pp=self.linear_plotpoints
         return self.get_regular_points(mx=degree(self.angleI),Mx=degree(self.angleF),n=pp,advised=False)
     def action_on_pspict(self,pspict):
         alphaI = radian(self.angleI,number=True,keep_max=True,keep_large=True)
@@ -353,7 +353,6 @@ class CircleGraph(ObjectGraph):
             alphaF=2*pi
         G = self.parametric_curve(alphaI,alphaF)
         G.parameters=self.parameters.copy()
-        G.parameters.plotpoints=100
         if self.parameters._filled or self.parameters._hatched:
             custom=CustomSurface( [self.parametric_curve(alphaI,alphaF)] )
             custom.parameters=self.parameters.copy()
