@@ -126,8 +126,7 @@ class InterpolationCurveGraph(ObjectGraph):
         """
 
         # Explanation of 295815047.
-        # It seems to me that very large lines like the ones describing a curve cause 
-        #  ! TeX capacity exceeded, sorry [pool size=6179214].
+        # It seems to me that very large lines like the ones describing a curve cause   ! TeX capacity exceeded, sorry [pool size=6179214].
 
         l = []
         try:

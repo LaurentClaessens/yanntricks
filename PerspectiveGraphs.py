@@ -25,6 +25,7 @@ from sage.all import *
 from ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
+import Defaults
 
 class Circle3DGraph(ObjectGraph):
     def __init__(self,op,O,A,B,angleI=0,angleF=0):
@@ -47,13 +48,14 @@ class Circle3DGraph(ObjectGraph):
         self.angleI=angleI
         self.angleF=angleF
         self.divide=False
+        self.linear_plotpoints=Defaults.CIRCLE3D_LINEAR_PLOTPOINTS
     @lazy_attribute
     def points_list(self):
         l=[]
         import numpy
         ai=numerical_approx(self.angleI)
         af=numerical_approx(self.angleF)
-        angles=numpy.linspace(ai,af,self.parameters.plotpoints)
+        angles=numpy.linspace(ai,af,self.linear_plotpoints)
         for a in angles:
             l.append( self.get_point(a) )
         return l

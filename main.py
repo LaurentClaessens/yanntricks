@@ -1304,7 +1304,11 @@ class pspicture(object):
                 self.record_draw_graph.append(x)
         except AttributeError,msg :
             pass   # Happens when the graph has no mark (most of time)
+
+        print("ooPHQSooDZXdUC -- Dans DrawGraph. Va faire math_BB")
+
         self.math_BB.append(graph,self)
+        print("ooPHQSooDZXdUC -- Dans DrawGraph. math_BB finie")
         graph.action_on_pspict(self)
     def DrawDefaultAxes(self):
         """

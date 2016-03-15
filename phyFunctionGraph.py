@@ -106,7 +106,9 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
         x=var('x')
         curve = ParametricCurve(phyFunction(x),self,(self.mx,self.Mx))
         curve.parameters=self.parameters.copy()
-
+        curve.linear_plotpoints=self.linear_plotpoints
+        curve.curvature_plotpoints=self.curvature_plotpoints
+        curve._representativeParameters=self._representativeParameters
         self._parametric_curve = curve
         return curve
     def visualParametricCurve(self,xunit,yunit):
@@ -377,7 +379,7 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
         self.do_cut_y=True
         self.cut_ymin=ymin
         self.cut_ymax=ymax
-        X=self.representativePoints()
+        X=self.representativeParameters()
         s=split_list(X,self.sage,self.cut_ymin,self.cut_ymax)
         for k in s:
             mx=k[0]
@@ -385,16 +387,21 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
             f=self.graph(mx,Mx)
             self.pieces.append(f)
     def bounding_box(self,pspict=None):
-        bb = BoundingBox()
         if self.do_cut_y and len(self.pieces)>0:
             # In this case, we will in any case look for the bounding boxes of the pieces.
             # Notice that it can happen that self.do_cut_y=True but that only one piece is found.
-            return bb
-        bb.addY(self.ymin(self.mx,self.Mx))
-        bb.addY(self.ymax(self.mx,self.Mx))
-        bb.addX(self.mx)
-        bb.addX(self.Mx)
-        return bb
+            return BoundingBox()
+        return self.parametric_curve().bounding_box()
+
+        # Don't use anymore
+        # March 15, 2016
+        #bb = BoundingBox()
+        #bb.addY(self.ymin(self.mx,self.Mx))
+        #bb.addY(self.ymax(self.mx,self.Mx))
+        #bb.addX(self.mx)
+        #bb.addX(self.Mx)
+        #return bb
+
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def mark_point(self,pspict=None):
@@ -408,11 +415,7 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
         """
         Return is the object that will be drawn. It serves to control the chain function --> parametric_curve --> interpolation curve
         """
-        deb = numerical_approx(self.mx) 
-        fin = numerical_approx(self.Mx)
-        curve=self.parametric_curve().graph(deb,fin)
-        curve.parameters=self.parameters.copy()
-        return curve
+        return self.parametric_curve()
     def action_on_pspict(self,pspict):
         still_have_to_draw=True
         if self.marque :
@@ -429,6 +432,7 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
             pspict.DrawGraph(curve)
             still_have_to_draw=False
         if self.cut_ymin:
+            raise
             pspict.DrawGraphs( self.pieces  )
             still_have_to_draw=False
         if still_have_to_draw :

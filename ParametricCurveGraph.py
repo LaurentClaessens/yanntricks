@@ -548,7 +548,11 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
 
             pspict.DrawGraph(curve)
         else:
+            print("ooTFCRooVNCbma -- dans action_on_pspict; Je vais recalculer les representativePoints")
+            print("linear : ",self.linear_plotpoints)
+            print("curvature : ",self.curvature_plotpoints)
             points_list=self.representativePoints()
+            print("ooTFCRooVNCbma -- dans action_on_pspict; nombre de points :  ",len(points_list))
             curve=InterpolationCurve(points_list)
             curve.parameters=self.parameters.copy()
             curve.mode="trivial"
