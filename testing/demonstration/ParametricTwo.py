@@ -19,7 +19,7 @@ def ParametricTwo():
     G1.parameters.color = "magenta"
     G1.wave(wl,amplitude)
 
-    for ll in F2.getRegularLengthParameter(llI,llF,2):
+    for ll in F2.getRegularLengthParameters(llI,llF,2):
         v1 = F2.get_tangent_vector(ll)
         v2 = F2.get_normal_vector(ll)
         pspict.DrawGraphs(v1,v2)

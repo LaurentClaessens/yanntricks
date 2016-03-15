@@ -7,7 +7,7 @@ def FunctionFive():
     Mx = 5
     f = phyFunction( x*sin(x) ).graph(mx,Mx)
 
-    points = f.get_regular_points(mx,Mx,1.5)
+    points = f.getRegularLengthPoints(mx,Mx,1.5)
 
     pspict.DrawGraph(f)
     for i in range(0,len(points)):

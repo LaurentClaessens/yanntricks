@@ -120,6 +120,10 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
 
         c = sqrt(  tau1**2+tau2**2  )
         return c.full_simplify()
+    def visualParametricCurve(self,xunit,yunit):
+        Vf1=phyFunction(self.f1(xunit*x))
+        Vf2=phyFunction(self.f2(yunit*x))
+        return ParametricCurve(Vf1,Vf2)
 
     def tangent_angle(self,llam):
         """"Return the angle of the tangent (radian)"""
@@ -452,117 +456,8 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
         """
         return the value of the parameter corresponding to the given arc length.
         """
-        # TODO : create this function
-        pass 
-    def getFunctionIntegral( self,fun,  lmin=None,lmax=None ):
-        """
-        Return the integral of 'fun' from 'lmin' to 'lmax'.
-        """
-        if lmin==None:
-            lmin=self.llamI
-        if lmax==None:
-            lmax=self.llamF
-        return numerical_integral(fun,lmin,lmax)[0]
-    def total_curvature(self):
-        return self.getFunctionIntegral(self.curvature)
-    def getNextRegularFunctionParameters( self, lmin,lmax,fun,df,xunit=1,yunit=1 ):
-        """
-        Return a value 'nl' of the parameter such that the integral of 'fun' from 'lmin' to 'nl' is 'df'.
+        raise DeprecationWarning    # March 15, 2016
 
-        `lmax` - is the maximal value of the parameter. If the interval [lmin,lmax]  reveals to be too small, return 'None'
-
-        """
-        # Vcurve is the curve as visually seen taking the dilatation into account.
-        Vf1=phyFunction(self.f1(xunit*x))
-        Vf2=phyFunction(self.f2(yunit*x))
-        Vcurve=ParametricCurve(Vf1,Vf2)
-
-        prop_precision = float(df)/100      # precision of the interval
-        if prop_precision == 0:
-            raise ValueError,"prop_precision is zero. Something sucks. You probably want to launch me in an infinite loop. dl=%s"%str(dl)
-
-        # We'll perform a dichotomy method.
-        # 'too_large' is a value of the parameter we know to be too large
-        # 'too_small' is a value of the parameter we know to be too small
-        # 'ell' is the median value on which the condition is tested. 
-        # The dichotomy method consist to make 'too_large' or 'too_small' become 'ell' and to recalculate a new 'ell'
-
-        too_small=lmin
-        too_large=lmax
-        if Vcurve.getFunctionIntegral(fun,too_small,too_large) < df:
-            return None
-
-        max_iter=100
-        done_iter=0
-        while done_iter<max_iter :
-            ell=(too_large+too_small)/2
-            done_iter+=1
-            integral=Vcurve.getFunctionIntegral(fun,lmin,ell)
-            if abs(integral-df)<prop_precision :
-                return ell
-            if integral>df:
-                too_large=ell
-            if integral<df:
-                too_small=ell
-        raise ShouldNotHappenException("I give up with this dichotomy")
-
-    def getRegularFunctionParameters( self, lmin,lmax,fun,df,initial_point=False,final_point=False,xunit=1,yunit=1 ):
-        """
-        `fun` - is a function on the curve, expressed by the parameter.
-
-        We return a list of points  x_i on the curve such that the integral of 'fun' from x_i to x_{i+1} is df.
-
-        This is a visual function in the sense that the curve is first transformed in order to take the dilatation into account.
-
-        EXAMPLE :
-
-        Taking as 'fun' the norm of the tangent vector, one consider the arc length
-        """
-        prop_precision = float(df)/100      # precision of the interval
-        if prop_precision == 0:
-            raise ValueError,"prop_precision is zero. Something sucks. You probably want to launch me in an infinite loop. dl=%s"%str(dl)
-
-        x=var('x')
-        # Vcurve is the curve as visually seen taking the dilatation into account.
-        Vf1=phyFunction(self.f1(xunit*x))
-        Vf2=phyFunction(self.f2(yunit*x))
-        Vcurve=ParametricCurve(Vf1,Vf2)
-
-        PIs = []            # The list of selected values of the parameter
-        if initial_point:
-            PIs.append(lmin)
-        if final_point:
-            PIs.append(lmax)
-        ll=lmin
-        while ll is not None :
-            ll=Vcurve.getNextRegularFunctionParameters(ll,lmax,fun,df,xunit=1,yunit=1)
-            if ll is not None:
-                PIs.append(ll)
-        return PIs
-
-    def getRegularLengthParameter(self,mll,Mll,dl,initial_point=False,final_point=False,xunit=1,yunit=1):
-        """ 
-        return a list of values of the parameter such that the corresponding points are equally spaced by dl.
-        Here, we compute the distance using the method arc_length.
-
-        INPUT:
-
-        - ``mll,Mll`` - the initial and final values of the parameters.
-
-        - ``dl`` - the arc length distance between the points corresponding
-                    to the returned values.
-
-        - ``initial_point`` - (default=False) it True, return also the initial parameters (i.e. mll).
-
-        - ``final_point`` - (default=False) it True, return also the final parameter (i.e. Mll)
-
-        """
-        return self.getRegularFunctionParameters(mll,Mll,self.speed,dl,initial_point=initial_point,final_point=final_point,xunit=xunit,yunit=yunit)
-    def getRegularCurvatureParameter(self,mll,Mll,dl,initial_point=False,final_point=False,xunit=1,yunit=1):
-        """ 
-        Same thing as `getRegularLengthParameter`, but with the curvature instead of the arc length.
-        """
-        return self.getRegularFunctionParameters(mll,Mll,self.curvature,dl,initial_point=initial_point,final_point=final_point,xunit=xunit,yunit=yunit)
     def get_regular_points(self,mll,Mll,dl):
         """
         Return a list of points regularly spaced (with respect to the arc length) by dl. 
@@ -572,12 +467,12 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
         In some applications, you prefer to use ParametricCurve.getRegularLengthParameter. The latter method returns the list of
         values of the parameter instead of the list of points. This is what you need if you want to draw tangent vectors for example.
         """
-        return [self.get_point(ll) for ll in self.getRegularLengthParameter(mll,Mll,dl)]
+        return [self.get_point(ll) for ll in self.getRegularLengthParameters(mll,Mll,dl)]
     def get_wavy_points(self,mll,Mll,dl,dy,xunit=1,yunit=1):
         """
         Return a list of points which do a wave around the parametric curve.
         """
-        PAs = self.getRegularLengthParameter(mll,Mll,dl,xunit=xunit,yunit=yunit)
+        PAs = self.getRegularLengthParameters(mll,Mll,dl,xunit=xunit,yunit=yunit)
         PTs = [self.get_point(mll)]
         for i in range(0,len(PAs)) :
             llam = float(PAs[i])

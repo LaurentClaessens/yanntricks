@@ -67,7 +67,6 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
         self.TesteDX = 0
         self.listeExtrema = []
         self.listeExtrema_analytique = []
-        self._derivative = None
         self.equation=y==self.sage
 
         self.f = self.obj
@@ -79,6 +78,9 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
         self.pieces=[]      
         self.parameters.color = "blue"              # Modification with respect to the attribute in ObjectGraph
         self.nul_function=None
+
+        self._derivative = None
+        self._parametric_curve=None
     @lazy_attribute
     def I(self):
         if not self.do_cut_y:
@@ -99,10 +101,16 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
         """
         return a parametric curve with the same graph as `self`.
         """
+        if self._parametric_curve :
+            return self._parametric_curve
         x=var('x')
         curve = ParametricCurve(phyFunction(x),self,(self.mx,self.Mx))
         curve.parameters=self.parameters.copy()
+
+        self._parametric_curve = curve
         return curve
+    def visualParametricCurve(self,xunit,yunit):
+        return self.parametric_curve().visualParametricCurve(xunit,yunit)
     def inverse(self,y):
         """ returns a list of values x such that f(x)=y """
         listeInverse = []
@@ -219,6 +227,9 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
         vecteurNormal =  self.get_normal_vector(x)
         return self.get_point(x).translate(vecteurNormal.fix_size(dy))
     def get_regular_points(self,mx,Mx,dx):
+        print("Use 'getRegularLengthPoints' instead")
+        return self.getRegularLengthPoints(mx,Mx,dx)
+    def getRegularLengthPoints(self,mx,Mx,dx):
         """
         return a list of points regularly spaced (with respect to the arc length) on the graph of `self`.
 
@@ -237,14 +248,18 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
             sage: print [P.coordinates() for P in f.get_regular_points(-2,2,sqrt(2))]  # random
 
         These are almost the points (-1,0),(0,1), and (1,2).
-
         """
-        curve = self.parametric_curve()
-        return curve.get_regular_points(mx,Mx,dx)
+        Llams = self.getRegularLengthParameters(mx,Mx,dx)
+        return [ self.get_point(x) for x in Llams  ]
+    @lazy_attribute
+    def speed(self):
+        return sqrt( 1+self.derivative().sage**2 )
     def length(self):
         curve = self.parametric_curve()
         return curve.length()
-
+    @lazy_attribute
+    def curvature(self):
+        return self.parametric_curve().curvature()
     # The function 'representative_points' is now inherited from 'GenericCurve'
     # March 14, 2016
     #def representative_points(self):
@@ -283,10 +298,16 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
 
         NOTE:
 
-        This function is victim of the `Trac 10246 <http://trac.sagemath.org/sage_trac/ticket/10246>` The try/except
-        block is a workaround.
+        This function is victim of the `Trac 10246 <http://trac.sagemath.org/sage_trac/ticket/10246>` The try/except block is a workaround.
 
         """
+
+        # If this test never crashes, we could memoize a lot.
+        if mx!=self.mx or Mx!=self.Mx:
+            from Exceptions import ShouldNotHappenException
+            raise ShouldNotHappenException("I really need to know the minmax on that interval ?")
+
+
         minmax={}
         minmax['xmin']=mx
         minmax['xmax']=Mx
@@ -302,7 +323,7 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
                 if y.is_infinity():
                     valid=False
             except AttributeError :
-                pass            # When drawing non-analytic function, y is numpy.float64
+                pass     # When drawing non-analytic function, y is numpy.float64
             if valid :
                 ymax=max(ymax,y)
                 ymin=min(ymin,y)

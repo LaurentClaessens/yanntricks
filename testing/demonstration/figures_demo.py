@@ -43,8 +43,6 @@ from phystricksPFCUoorQhitKoJ import PFCUoorQhitKoJ
 from phystricksEXIIooJzzoJeai import EXIIooJzzoJeai
 
 figures_list=[]
-
-
 figures_list.append(EXIIooJzzoJeai)
 figures_list.append(PFCUoorQhitKoJ)
 figures_list.append(QIXEooejrojKjo)
