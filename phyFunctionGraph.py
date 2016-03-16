@@ -106,8 +106,11 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
         x=var('x')
         curve = ParametricCurve(phyFunction(x),self,(self.mx,self.Mx))
         curve.parameters=self.parameters.copy()
+
         curve.linear_plotpoints=self.linear_plotpoints
         curve.curvature_plotpoints=self.curvature_plotpoints
+        curve.added_plotpoints=self.added_plotpoints
+
         curve._representativeParameters=self._representativeParameters
         self._parametric_curve = curve
         return curve

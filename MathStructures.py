@@ -250,5 +250,9 @@ class AxesUnit(object):
             else :
                 pos=(x/self.numerical_value)*k
                 text="$"+latex(pos).replace("TheTag",self.latex_symbol)+"$"  # This risks to be Sage-version dependent.
+                if "mathit" in text:
+                    print("ooPCTPooVMczXp",text)
+                    print(pos)
+                    print(latex(pos))
                 l.append((x,text))
         return l

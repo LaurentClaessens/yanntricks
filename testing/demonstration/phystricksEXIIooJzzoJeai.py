@@ -5,10 +5,10 @@ from __future__ import division
 from phystricks import *
 def EXIIooJzzoJeai():
     pspicts,fig = MultiplePictures("EXIIooJzzoJeai",4)
+    pspicts[1].mother.caption="adding smart plotpoints"
     pspicts[0].mother.caption="Normal (50 points)"
-    pspicts[1].mother.caption="with force smoothing"
-    pspicts[2].mother.caption="adding smart plotpoints"
-    pspicts[3].mother.caption="more points (1000)"
+    pspicts[3].mother.caption="with curvature plotpoints = 50"
+    pspicts[2].mother.caption="more points (5000)"
 
     xmin=0.05
     x=var('x')
@@ -22,7 +22,7 @@ def EXIIooJzzoJeai():
         psp.dilatation_Y(1)
 
     f2.added_plotpoints=[2/(k*pi) for k in range(1,13)]  
-    f3.linear_plotpoints=1000
+    f3.linear_plotpoints=5000
     f4.curvature_plotpoints=50
 
     pspicts[0].DrawGraphs(f1)

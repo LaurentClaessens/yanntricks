@@ -9,6 +9,7 @@ import sys
 from phystricks import *
 
 from AxesSecond import AxesSecond
+from phystricksYOWDooyeyOJyml import YOWDooyeyOJyml
 from exCircle import exCircle
 from exCircleThree import exCircleThree
 from exCircleTwo import exCircleTwo
@@ -43,7 +44,7 @@ from phystricksPFCUoorQhitKoJ import PFCUoorQhitKoJ
 from phystricksEXIIooJzzoJeai import EXIIooJzzoJeai
 
 figures_list=[]
-figures_list.append(EXIIooJzzoJeai)
+figures_list.append(YOWDooyeyOJyml)
 figures_list.append(PFCUoorQhitKoJ)
 figures_list.append(QIXEooejrojKjo)
 figures_list.append(AxesSecond)
@@ -76,6 +77,7 @@ figures_list.append(HELQooLGapRQrr)
 figures_list.append(YJEDoojDtSeKHQ)
 figures_list.append(QRJOooKZPUoLlF)
 figures_list.append(RVKFooDxrqYXAX)
+figures_list.append(EXIIooJzzoJeai)
 
 def AllFigures():
     tests=main.FigureGenerationSuite(figures_list,first=0,title=u"demonstration pictures")

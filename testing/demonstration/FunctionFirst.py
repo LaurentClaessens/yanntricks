@@ -7,10 +7,10 @@ def FunctionFirst():
     mx = -2*pi
     Mx = 2*pi
     F = f.graph(mx,Mx)
-    F.linear_plotpoints=234
+    #F.linear_plotpoints=234
     pspict.DrawGraph(F)
 
-    #pspict.DrawDefaultAxes()
+    pspict.DrawDefaultAxes()
 
     fig.no_figure()
     fig.conclude()
