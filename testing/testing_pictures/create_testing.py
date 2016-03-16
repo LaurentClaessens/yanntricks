@@ -37,15 +37,10 @@ class OnePicture(object):
     def functionAppendLine(self):
         return "figures_list.append("+self.function_name+")"
     def latex(self):
-        comment=""
-        try:
-            comment=open(self.comment_filename).read()
-        except FileNotFoundError:
-            print("Pas de commentaires pour "+self.comment_filename)
-        return self.latex_skel.replace("CODE_FILENAME",self.filename).replace("PICTURE_NAME",self.function_name).replace("COMMENT",comment).replace("FILE_NAME",self.filename)
+        comment_input=r"""\input{FN}""".replace("FN",comment_filename)
+        return self.latex_skel.replace("CODE_FILENAME",self.filename).replace("PICTURE_NAME",self.function_name).replace("COMMENT",comment_input).replace("FILE_NAME",self.filename)
     def isToDo(self):
         return (self.function_name not in configuration.not_to_be_done)
-
 
 def getFromDirectory(_dirname):
     """

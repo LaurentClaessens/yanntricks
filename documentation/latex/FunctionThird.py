@@ -1,6 +1,7 @@
 from phystricks import *
 def FunctionThird():
     pspict,fig = SinglePicture("FunctionThird")
+    pspict.dilatation(0.7)
 
     var('x')
     f = phyFunction( x*cos(x) )

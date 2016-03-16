@@ -200,6 +200,34 @@ An example :
 \end{center}
 Is it better that figure \ref{LabelFigLARGooSLxQTdPC} ? The four angles are for sure smoother. However, the computation of these points at ``regular curvature'' interval can take forever and it is often much faster to simply add thousands of plotpoints.
 
+%--------------------------------------------------------------------------------------------------------------------------- 
+\subsection{Derivative, tangent, and other differential geometry}
+%---------------------------------------------------------------------------------------------------------------------------
+
+A \info{phyFunctionGraph} object has a method \info{derivative} that returns a \info{phyFunction} of the derivative.
+
+Here is an example code :
+
+\lstinputlisting{FunctionThird.py}
+
+\begin{center}
+   \input{Fig_FunctionThird.pstricks}
+\end{center}
+
+You also have methods to get the tangent and normal vector. Here is an example of taking some tangent and normal vectors :
+
+\lstinputlisting{phystricksGKMEooBcNxcWBt.py}
+
+\begin{center}
+   \input{Fig_GKMEooBcNxcWBt.pstricks}
+\end{center}
+
+By the way you should note the method \info{getRegularLengthParameters} that return a list of parameters value such that the corresponding points are regularly spaced on the curve (with respect to the arc length). Namely
+
+\lstinputlisting{sageSnip_10.py}
+
+returns a list of parameters such that the arc length between two points is \( 2\).
+
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 \section{Figure, subfigure}
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -219,7 +247,6 @@ You should use the utility \info{new\_picture.py} to generate the skeleton of yo
 One can always put a mark on an object; the position is in part automatically determined. The general statement is :
 
 \lstinputlisting{sageSnip_9.py}
-
 
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 \section{How to get the LaTeX counters ?}

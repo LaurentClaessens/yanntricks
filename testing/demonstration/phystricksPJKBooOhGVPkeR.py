@@ -2,51 +2,15 @@
 from phystricks import *
 def PJKBooOhGVPkeR():
     pspict,fig = SinglePicture("PJKBooOhGVPkeR")
-    #pspict.dilatation_X(1)
-    #pspict.dilatation_Y(1)
-    pspict.dilatation(1)
 
     x=var('x')
-    P=Point(0,0)
+    s=phyFunction(x**2-1).fit_inside(xmin=-2,xmax=2,ymin=-0.5,ymax=3)
 
-    pspict.DrawGraphs(P)
+    pspict.DrawGraphs(s)
     pspict.DrawDefaultAxes()
+    pspict.DrawDefaultGrid()
+    pspict.comment="Le graphe de \( x^2-1\) dans la boite  xmin=-2,xmax=2,ymin=-0.5,ymax=3"
+
     fig.no_figure()
     fig.conclude()
     fig.write_the_file()
-
-----------------
-    pspicts,fig = MultiplePictures("PJKBooOhGVPkeR",3)
-    pspicts[0].mother.caption="<+caption1+>"
-    pspicts[1].mother.caption="<+caption2+>"
-    pspicts[2].mother.caption="<+caption3+>"
-
-    for psp in pspicts:
-        psp.dilatation_X(1)
-        psp.dilatation_Y(1)
-
-    <+Définition des objets+>
-
-    for psp in pspicts:
-        psp.DrawDefaultAxes()
-
-    fig.conclude()
-    fig.write_the_file()
-
-------------------------------
-
-    pspicts,figs = IndependentPictures("PJKBooOhGVPkeR",3)
-
-    for psp in pspicts:
-        psp.dilatation(1)
-
-    <+Définition des objets+>
-
-    for psp in pspicts:
-        psp.DrawDefaultAxes()
-
-    for fig in figs:
-        fig.no_figure()
-        fig.conclude()
-        fig.write_the_file()
-

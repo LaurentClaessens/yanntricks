@@ -2,51 +2,23 @@
 from phystricks import *
 def GKMEooBcNxcWBt():
     pspict,fig = SinglePicture("GKMEooBcNxcWBt")
-    #pspict.dilatation_X(1)
-    #pspict.dilatation_Y(1)
-    pspict.dilatation(1)
+    var('x')
+    f1 = phyFunction( x*sin(x) )
+    f3 = phyFunction( x*cos(x) )
 
-    x=var('x')
-    P=Point(0,0)
+    llI = 0
+    llF = 5
+    F2 = ParametricCurve(f1,f3,interval=(llI,llF))
 
-    pspict.DrawGraphs(P)
+    for ll in F2.getRegularLengthParameters(llI,llF,2):
+        v1 = F2.get_tangent_vector(ll)
+        v2 = F2.get_normal_vector(ll)
+        pspict.DrawGraphs(v1,v2)
+
+    pspict.DrawGraphs(F2)
     pspict.DrawDefaultAxes()
+
     fig.no_figure()
     fig.conclude()
     fig.write_the_file()
-
-----------------
-    pspicts,fig = MultiplePictures("GKMEooBcNxcWBt",3)
-    pspicts[0].mother.caption="<+caption1+>"
-    pspicts[1].mother.caption="<+caption2+>"
-    pspicts[2].mother.caption="<+caption3+>"
-
-    for psp in pspicts:
-        psp.dilatation_X(1)
-        psp.dilatation_Y(1)
-
-    <+Définition des objets+>
-
-    for psp in pspicts:
-        psp.DrawDefaultAxes()
-
-    fig.conclude()
-    fig.write_the_file()
-
-------------------------------
-
-    pspicts,figs = IndependentPictures("GKMEooBcNxcWBt",3)
-
-    for psp in pspicts:
-        psp.dilatation(1)
-
-    <+Définition des objets+>
-
-    for psp in pspicts:
-        psp.DrawDefaultAxes()
-
-    for fig in figs:
-        fig.no_figure()
-        fig.conclude()
-        fig.write_the_file()
 

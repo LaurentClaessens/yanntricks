@@ -2,6 +2,5 @@
 3_
 4_
 
-sageSnip_10.py
 sageSnip_11.py
 sageSnip_12.py

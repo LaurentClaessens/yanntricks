@@ -435,7 +435,6 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
             pspict.DrawGraph(curve)
             still_have_to_draw=False
         if self.cut_ymin:
-            raise
             pspict.DrawGraphs( self.pieces  )
             still_have_to_draw=False
         if still_have_to_draw :

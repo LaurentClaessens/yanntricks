@@ -12,9 +12,13 @@ from phystricksOnePoint import OnePoint
 from phystricksRJDEoobOibtkfv import RJDEoobOibtkfv
 from phystricksLARGooSLxQTdPC import LARGooSLxQTdPC
 from phystricksPBFCooVlPiRBpt import PBFCooVlPiRBpt
+from phystricksGKMEooBcNxcWBt import GKMEooBcNxcWBt
+from FunctionThird import FunctionThird
 
 figures_list=[]
 figures_list.append(OnePoint)
+figures_list.append(FunctionThird)
+figures_list.append(GKMEooBcNxcWBt)
 figures_list.append(RJDEoobOibtkfv)
 figures_list.append(LARGooSLxQTdPC)
 figures_list.append(PBFCooVlPiRBpt)
