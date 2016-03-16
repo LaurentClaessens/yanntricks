@@ -162,26 +162,7 @@ class GenericCurve(object):
         if self.linear_plotpoints:
             import numpy
             # If not RR, the elements of Llam are type numpy.float64. In this case, computing the sqrt of negative return NaN instead of complex. Then we cannot remove the probably fake imaginary part. It happens for the function sqrt(cos(x)) with x=3*pi/2. 
-
-
-
-            # We can remove this try-except (but not the line in the try).
-            # March 15, 2016
-            try :
-                linear_Llam=[ RR(s) for s in  numpy.linspace(initial,final,self.linear_plotpoints)]
-            except TypeError:
-                print("ooNZKKooUpyYBn -- woops")
-                print("initial : ",initial)
-                print("finale : ",final)
-                print("linear_plotpoints : ",self.linear_plotpoints)
-                print("self : ",str(self),type(self))
-                for s in numpy.linspace(initial,final,self.linear_plotpoints):
-                    print(s,type(s))
-                    print(RR(s))
-                raise
-
-
-
+            linear_Llam=[ RR(s) for s in  numpy.linspace(initial,final,self.linear_plotpoints)]
             Llam=[]
             Llam.extend(self.added_plotpoints)
             Llam.extend(linear_Llam)

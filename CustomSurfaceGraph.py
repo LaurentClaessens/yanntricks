@@ -101,7 +101,7 @@ class CustomSurfaceGraph(ObjectGraph):
                 try:
                     l.extend( [p.coordinates(numerical=True,digits=3,pspict=pspict) for p in obj.representativePoints()] )
                 except AttributeError :
-                    print(obj)
+                    print("The object "+obj+" seems to have no 'representativePoints' method")
                     raise
                     obj_code=obj.latex_code(language="tikz",pspict=pspict)
                     l.append( draw_to_fill(obj_code) )

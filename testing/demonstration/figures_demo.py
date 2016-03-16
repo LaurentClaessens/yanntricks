@@ -10,6 +10,7 @@ from phystricks import *
 
 
 from phystricksPJKBooOhGVPkeR import PJKBooOhGVPkeR
+from phystricksLVPSoozFTyaeCG import LVPSoozFTyaeCG
 from AxesSecond import AxesSecond
 from phystricksYOWDooyeyOJyml import YOWDooyeyOJyml
 from exCircle import exCircle
@@ -77,8 +78,8 @@ figures_list.append(QRJOooKZPUoLlF)
 figures_list.append(RVKFooDxrqYXAX)
 figures_list.append(EXIIooJzzoJeai)
 figures_list.append(PJKBooOhGVPkeR)
+figures_list.append(LVPSoozFTyaeCG)
 """
-figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)

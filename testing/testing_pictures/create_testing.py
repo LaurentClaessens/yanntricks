@@ -37,7 +37,7 @@ class OnePicture(object):
     def functionAppendLine(self):
         return "figures_list.append("+self.function_name+")"
     def latex(self):
-        comment_input=r"""\input{FN}""".replace("FN",comment_filename)
+        comment_input=r"""\input{FN}""".replace("FN",self.comment_filename)
         return self.latex_skel.replace("CODE_FILENAME",self.filename).replace("PICTURE_NAME",self.function_name).replace("COMMENT",comment_input).replace("FILE_NAME",self.filename)
     def isToDo(self):
         return (self.function_name not in configuration.not_to_be_done)
