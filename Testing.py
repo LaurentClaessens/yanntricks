@@ -16,7 +16,7 @@
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2016
-# email: moky.math@gmail.com
+# email: laurent@claessens-donadello.eu
 
 # This file contains some functions used for testing purpose.
 

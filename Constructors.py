@@ -284,6 +284,7 @@ class BoundingBox(object):
                 print "The attribute {1} of the object {0} seems to have problems".format(obj,fun)
                 print "The message was :"
                 print message
+                import main
                 raise main.NoMathBoundingBox(obj,fun)
         else :
             if check_too_large :
