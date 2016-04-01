@@ -16,7 +16,7 @@
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2009-2016
-# email: moky.math@gmail.com
+# email: laurent@claessens-donadello.eu
 
 
 from __future__ import division
