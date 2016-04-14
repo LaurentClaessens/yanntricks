@@ -142,6 +142,7 @@ def Intersection(f,g,a=None,b=None,numerical=False,only_real=True):
     """
 
     if numerical and "sage" in dir(f) :
+        import SmallComputations
         k=f-g
         xx=SmallComputations.find_roots_recursive(k.sage,a,b)
         pts=[  Point(x,f(x)) for x in xx ]
