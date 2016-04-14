@@ -40,6 +40,9 @@ class GenericCurve(object):
         self.pF=pF
         self._representativeParameters=None
     def addPoint(self,x):
+        raise DeprecationWarning
+        self.addPoint(x)
+    def addPlotPoint(self,x):
         self.added_plotpoints.append(x)
     def getFunctionIntegral( self,fun,  lmin=None,lmax=None ):
         """
