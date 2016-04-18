@@ -13,7 +13,7 @@ def QRXCooUmnlhkvh():
     bb=P.mark.bounding_box(pspict)
     pspict.DrawGraphs(P,bb)
 
-    pspict.comment="The bounding box of the text is drawn and its corner almost touch the point"
+    pspict.comment="The bounding box of the text is drawn and its corner almost touches the point"
     fig.no_figure()
     fig.conclude()
     fig.write_the_file()
