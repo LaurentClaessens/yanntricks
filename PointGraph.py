@@ -18,7 +18,7 @@
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2016
-# email: moky.math@gmai.com
+# email: laurent@claessens-donadello.eu
 
 from __future__ import division
 from __future__ import unicode_literals
@@ -190,6 +190,11 @@ class PointGraph(ObjectGraph):
         P = self.getPolarPoint(rp,alpha)
         return self.getPolarPoint(rp,alpha)
     def rotation(self,alpha):
+        """
+        return a point that is the rotation of 'self' by the angle 'alpha'
+
+        - alpha : the rotation angle (degree)
+        """
         pc=self.polar_coordinates()
         return PolarPoint(pc.r,pc.degree+alpha)
     def value_on_line(self,line):
