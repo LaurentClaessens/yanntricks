@@ -18,7 +18,7 @@
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2016
-# email: moky.math@gmai.com
+# email: laurent@claessens-donadello.eu
 
 from phystricks.ObjectGraph import ObjectGraph
 from Constructors import *
@@ -165,7 +165,7 @@ class CircleGraph(GenericCurve,ObjectGraph):
             return curve
         else :
             return curve.graph(a,b)
-    def get_point(self,theta,advised=True,numerical=False):
+    def getPoint(self,theta,advised=True,numerical=False):
         """
         Return a point at angle <theta> (degree) on the circle. 
         
@@ -173,6 +173,8 @@ class CircleGraph(GenericCurve,ObjectGraph):
         - ``theta`` - the angle given in degree.
         """
         return self.parametric_curve().get_point(radian(theta,numerical=numerical),advised=advised)
+    def get_point(self,theta,advised=True,numerical=False):
+        return self.getPoint(theta,advised,numerical)
     def get_regular_points(self,mx,Mx,l=None,n=None,advised=True):
         """
         return regularly spaced points on the circle

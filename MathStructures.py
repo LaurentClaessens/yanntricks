@@ -18,7 +18,7 @@
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010,2011,2013-2016
-# email: moky.math@gmai.com
+# email: laurent@claessens-donadello.eu
 
 from Utilities import *
 from SmallComputations import MultipleBetween

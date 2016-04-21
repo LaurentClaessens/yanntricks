@@ -18,7 +18,7 @@
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2016
-# email: moky.math@gmai.com
+# email: laurent@claessens-donadello.eu
 
 class ShouldNotHappenException(Exception):
     """

@@ -18,7 +18,7 @@
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2016
-# email: moky.math@gmai.com
+# email: laurent@claessens-donadello.eu
 
 LINEAR_PLOTPOINTS=100
 CURVATURE_PLOTPOINTS=0

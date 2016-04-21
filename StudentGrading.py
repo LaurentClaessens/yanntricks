@@ -18,7 +18,7 @@
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2012
-# email: moky.math@gmai.com
+# email: laurent@claessens-donadello.eu
 
 """
 This module uses phystricks in order to produces graphics of the grading. 

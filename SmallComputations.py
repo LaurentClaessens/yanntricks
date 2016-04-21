@@ -18,7 +18,7 @@
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010,2011,2013-2015
-# email: moky.math@gmai.com
+# email: laurent@claessens-donadello.eu
 
 """
 This submodule contains some auxiliary computations that have to be performed 
