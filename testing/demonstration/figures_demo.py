@@ -9,6 +9,7 @@ import sys
 from phystricks import *
 
 
+from phystricksCUZFooGqZLaAEp import CUZFooGqZLaAEp
 from phystricksPJKBooOhGVPkeR import PJKBooOhGVPkeR
 from phystricksLVPSoozFTyaeCG import LVPSoozFTyaeCG
 from AxesSecond import AxesSecond
@@ -79,8 +80,8 @@ figures_list.append(RVKFooDxrqYXAX)
 figures_list.append(EXIIooJzzoJeai)
 figures_list.append(PJKBooOhGVPkeR)
 figures_list.append(LVPSoozFTyaeCG)
+figures_list.append(CUZFooGqZLaAEp)
 """
-figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)
