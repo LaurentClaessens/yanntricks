@@ -589,6 +589,17 @@ def ParametricCurve(f1,f2,interval=(None,None)):
     from ParametricCurveGraph import ParametricCurveGraph
     return ParametricCurveGraph(f1,f2,llamI,llamF)
 
+def NonAnalyticPointParametricCurve(f,mx,Mx):
+    """
+    Describe a parametric curve when we have a function 'f' that associates a Point from a value of the parameter.
+
+    - f : a function (in the Python sense) that takes a number as argument and which returns a PointGraph.
+    - mx,Mx  : the minimal and maximal values of the parameters.
+    """
+    from NonAnalytic import NonAnalyticPointParametricCurveGraph
+    return NonAnalyticPointParametricCurveGraph(f,mx,Mx)
+
+
 def InterpolationCurve(points_list,context_object=None,mode=None):
     """
     determine an interpolation curve from a list of points.

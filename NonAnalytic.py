@@ -20,6 +20,13 @@
 # copyright (c) Laurent Claessens, 2010-2016
 # email: laurent@claessens-donadello.eu
 
+
+"""
+NonAnalyticParametricCurveGraph  describe a parametric curve for which we don't know an analytic form of the components. The given components functions 'f1' and 'f2' are functions in the Python sense.
+
+NonAnalyticPointParametricCurveGraph describe a parametric curve for which we don't know an analytic form of the components. The given function 'f' is a function in the Python sense that return a Point.
+"""
+
 from sage.all import *
 from ObjectGraph import ObjectGraph
 from Constructors import *
@@ -53,6 +60,45 @@ class NonAnalyticParametricCurveGraph(ObjectGraph):
         f1=lambda x:self.f1(self.mx+self.Mx-x)
         f2=lambda x:self.f2(self.mx+self.Mx-x)
         return NonAnalyticParametricCurve(f1,f2,self.mx,self.Mx)
+    def math_bounding_box(self,pspict=None):
+        return self.curve().math_bounding_box(pspict)
+    def bounding_box(self,pspict=None):
+        return self.curve().bounding_box(pspict)
+    def latex_code(self,language=None,pspict=None):
+        return self.curve().latex_code(language=language,pspict=pspict)
+    def __call__(self,x):
+        return self.get_point(x)
+
+class NonAnalyticPointParametricCurveGraph(ObjectGraph):
+    def __init__(self,f,mx,Mx):
+        ObjectGraph.__init__(self,self)
+        self.f=f
+        self.mx=mx
+        self.Mx=Mx
+        self.I=self.get_point(mx)
+        self.F=self.get_point(Mx)
+
+        self.parameters.plotpoints=100
+
+        from numpy import linspace
+        if self.mx is not None and self.Mx is not None:
+            self.drawpoints=linspace(numerical_approx(self.mx),numerical_approx(self.Mx),self.parameters.plotpoints,endpoint=True)
+        self._curve=None
+    def curve(self):
+        if not self._curve :
+            interpolation = InterpolationCurve([self.get_point(x) for x in self.drawpoints])
+            interpolation.parameters=self.parameters.copy()
+            self._curve=interpolation
+        return self._curve
+    def get_point(self,x,advised=False):
+        return self.f(x)
+    def reverse(self):
+        """
+        Return the curve [mx,Mx] -> R^2 that makes
+        the inverse path.
+        """
+        f1=lambda x:self.f(self.mx+self.Mx-x)
+        return NonAnalyticPointParametricCurve(f1,self.mx,self.Mx)
     def math_bounding_box(self,pspict=None):
         return self.curve().math_bounding_box(pspict)
     def bounding_box(self,pspict=None):

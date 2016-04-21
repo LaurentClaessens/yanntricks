@@ -20,6 +20,11 @@
 # copyright (c) Laurent Claessens, 2010-2016
 # email: laurent@claessens-donadello.eu
 
+"""
+    ParametricCurveGraph describe a parametric curve of which we know an analytic expression of the components.
+"""
+
+
 from __future__ import division
 
 from ObjectGraph import ObjectGraph
@@ -543,10 +548,10 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
     def action_on_pspict(self,pspict):
         if self.wavy :
             waviness = self.waviness
-            curve=InterpolationCurve(self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy,xunit=pspict.xunit,yunit=pspict.yunit),context_object=self)
-            curve.parameters=self.parameters.copy()
+            interpolation=InterpolationCurve(self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy,xunit=pspict.xunit,yunit=pspict.yunit),context_object=self)
+            interpolation.parameters=self.parameters.copy()
 
-            pspict.DrawGraph(curve)
+            pspict.DrawGraph(interpolation)
         else:
             points_list=self.representativePoints()
             curve=InterpolationCurve(points_list)

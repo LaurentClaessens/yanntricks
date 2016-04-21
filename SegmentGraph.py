@@ -398,9 +398,11 @@ class SegmentGraph(ObjectGraph):
         return P
     def AffineVector(self):
         return AffineVector(self.I,self.F)
-    def get_normal_vector(self):
+    def get_normal_vector(self,P=None):
         """
         returns a normalized normal vector at the center of the segment
+
+        - P (optional). If given, the vector will be attached to P.
 
         OUTPUT:
         A vector
@@ -415,10 +417,13 @@ class SegmentGraph(ObjectGraph):
             1
         """
         if self.vertical :
-            return Point(-1,0).Vector().origin(self.center())
+            v = Point(-1,0).Vector().origin(self.center())
         else :
             P = Point(self.slope,-1)
-            return P.Vector().normalize().origin(self.center())
+            v = P.Vector().normalize().origin(self.center())
+        if P:
+            v=AffineVector(P,v+P)
+        return v
     def get_tangent_vector(self):
         """
         return a tangent vector at center of the segment
