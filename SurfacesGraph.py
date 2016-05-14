@@ -158,7 +158,7 @@ class SurfaceBetweenParametricCurvesGraph(ObjectGraph):
         if self.parameters._filled or self.parameters._hatched :
             custom=CustomSurface(c1,reFsegment,c2,reIsegment)
             custom.parameters=self.parameters.copy()
-            pspict.DrawGraph(custom)
+            pspict.DrawGraphs(custom)
         else :
             from Exceptions import ShouldNotHappenException
             raise ShouldNotHappenException("You are speaking of a surface but you don't want neither to fill it neither to hatch it ?")
@@ -172,8 +172,8 @@ class SurfaceBetweenParametricCurvesGraph(ObjectGraph):
         pspict.DrawGraphs(self.curve1,self.curve2)
 
         if self.draw_Isegment :
-            pspict.DrawGraph(reIsegment)
+            pspict.DrawGraphs(reIsegment)
         if self.draw_Fsegment :
-            pspict.DrawGraph(reFsegment)
+            pspict.DrawGraphs(reFsegment)
     def latex_code(self,language=None,pspict=None):
         return ""

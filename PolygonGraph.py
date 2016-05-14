@@ -97,7 +97,7 @@ class PolygonGraph(ObjectGraph):
         if self.parameters._hatched or self.parameters._filled :
             custom=CustomSurface(self.edges)
             custom.parameters=self.parameters.copy()
-            pspict.DrawGraph(custom)
+            pspict.DrawGraphs(custom)
         if self.parameters.color!=None:
             self.draw_edges=True
             for edge in self.edges:
@@ -108,7 +108,7 @@ class PolygonGraph(ObjectGraph):
                     edge.parameters=self.edge.parameters
                     if self.parameters.color!=None:
                         edge.parameters.color=self.parameters.color
-                pspict.DrawGraph(edge)
+                pspict.DrawGraphs(edge)
 
 class RectangleGraph(PolygonGraph):
     """

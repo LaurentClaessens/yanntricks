@@ -551,15 +551,15 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
             interpolation=InterpolationCurve(self.curve.get_wavy_points(self.llamI,self.llamF,waviness.dx,waviness.dy,xunit=pspict.xunit,yunit=pspict.yunit),context_object=self)
             interpolation.parameters=self.parameters.copy()
 
-            pspict.DrawGraph(interpolation)
+            pspict.DrawGraphs(interpolation)
         else:
             points_list=self.representativePoints()
             curve=InterpolationCurve(points_list)
             curve.parameters=self.parameters.copy()
             curve.mode="trivial"
-            pspict.DrawGraph(curve)
+            pspict.DrawGraphs(curve)
         for v in self.record_arrows:
-            pspict.DrawGraph(v)
+            pspict.DrawGraphs(v)
     def latex_code(self,language=None,pspict=None):
         return ""
 

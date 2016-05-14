@@ -426,20 +426,20 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
             P.parameters.symbol=""
             P.marque = True
             P.mark = self.mark
-            pspict.DrawGraph(P)
+            pspict.DrawGraphs(P)
         if self.wavy :          
             waviness = self.waviness
             curve=self.parametric_curve()
             curve.parameters=self.parameters.copy()
             curve.wave(self.waviness.dx,self.waviness.dy)
-            pspict.DrawGraph(curve)
+            pspict.DrawGraphs(curve)
             still_have_to_draw=False
         if self.cut_ymin:
             pspict.DrawGraphs( self.pieces  )
             still_have_to_draw=False
         if still_have_to_draw :
             gr=self.representative_graph_object()
-            pspict.DrawGraph(gr)
+            pspict.DrawGraphs(gr)
             #TODO : we have to implement y_cut to InterpolationCurve
     def pstricks_code(self,pspict=None):
         raise DeprecationWarning   # June 24 2014

@@ -400,7 +400,7 @@ class BoundingBox(object):
     def action_on_pspict(self,pspict=None):
         rect=Rectangle(self.SW(),self.NE())
         rect.parameters.color="cyan"
-        pspict.DrawGraph(rect)
+        pspict.DrawGraphs(rect)
     def bounding_box(self,pspict=None):
         return self
     def math_bounding_box(self,pspict=None):

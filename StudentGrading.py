@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2012
+# copyright (c) Laurent Claessens, 2010-2012,2016
 # email: laurent@claessens-donadello.eu
 
 """
@@ -120,11 +120,11 @@ class Grades(object):
                 y = ProportionHaveMore(grades_list,x)
                 P = Point( x, y )
                 P.parameters.color = color
-                pspict.DrawGraph(P)
+                pspict.DrawGraphs(P)
 
         S = Segment( Point(self.media,0),Point(self.media,1) )
         S.parameters.color = "red"
-        pspict.DrawGraph(S)
+        pspict.DrawGraphs(S)
 
         pspict.grid.Dy = 0.1
         pspict.grid.num_subX = 0
@@ -153,7 +153,7 @@ class Grades(object):
                 y = AverageBigger(grades_list,x)
                 P = Point( x, y )
                 P.parameters.color = color
-                pspict.DrawGraph(P)
+                pspict.DrawGraphs(P)
 
         segmentH = Segment( Point(0,self.media),Point(self.full_grade,self.media) )
         segmentH.parameters.color = "red"
@@ -190,7 +190,7 @@ class Grades(object):
                 y = ProportionBetween(grades_list,x,delta)
                 P = Point( x, y )
                 P.parameters.color = color
-                pspict.DrawGraph(P)
+                pspict.DrawGraphs(P)
 
         #pspict.math_BB.AddPoint(Point(0,0))
 

@@ -766,12 +766,12 @@ class HistographGraph(ObjectGraph):
             P=Point(xx*self.xscale,0)
             P.parameters.symbol="|"
             P.put_mark(0.2,-90,str(xx),automatic_place=(pspict,"N"))    # see 71011299 before to change this 0.2
-            pspict.DrawGraph(P)
+            pspict.DrawGraphs(P)
         for box in self.box_list :
             P=box.rectangle.segment_N.mark_point()
             P.put_mark(0.2,90,"$"+str(box.n)+"$",automatic_place=(pspict,"S"))
             P.parameters.symbol=""
-            pspict.DrawGraph(P)
+            pspict.DrawGraphs(P)
     def bounding_box(self,pspict):
         bb=BoundingBox()
         for b in self.box_list:
@@ -892,12 +892,12 @@ class BarDiagramGraph(object):
         return nb
     def action_on_pspict(self,pspict):
         for P in self.numbering_marks(pspict):
-            pspict.DrawGraph(P)
+            pspict.DrawGraphs(P)
         for l in self.lines_list:
             l.parameters.other_options["linewidth"]="{}cm".format(self.linewidth)
-            pspict.DrawGraph(l)
+            pspict.DrawGraphs(l)
         for P in self.numbering_marks(pspict):
-            pspict.DrawGraph(P)
+            pspict.DrawGraphs(P)
     def math_bounding_box(self,pspict):
         bb=BoundingBox()
         for l in self.lines_list:

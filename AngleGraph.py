@@ -96,7 +96,7 @@ class AngleGraph(ObjectGraph):
     def action_on_pspict(self,pspict):
         circle=self.circle(visual=True,pspict=pspict)
         circle.parameters=self.parameters.copy()
-        pspict.DrawGraph(circle)
+        pspict.DrawGraphs(circle)
     def latex_code(self,language=None,pspict=None):
         return ""
 

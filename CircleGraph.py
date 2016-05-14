@@ -358,14 +358,14 @@ class CircleGraph(GenericCurve,ObjectGraph):
         if self.parameters._filled or self.parameters._hatched:
             custom=CustomSurface( [self.parametric_curve(alphaI,alphaF)] )
             custom.parameters=self.parameters.copy()
-            pspict.DrawGraph(custom)
+            pspict.DrawGraphs(custom)
 
         if self.wavy:
             waviness = self.waviness
             G.wave(waviness.dx,waviness.dy)
-            pspict.DrawGraph(G)
+            pspict.DrawGraphs(G)
         else :
-            pspict.DrawGraph(G)
+            pspict.DrawGraphs(G)
     # No need of that empty latex_code since it is now default in ObjectGraph (May 14, 2016)
     #def latex_code(self,language=None,pspict=None):
     #    return ""

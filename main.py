@@ -1336,7 +1336,7 @@ class pspicture(object):
         self.grid.BB.xmax=SmallComputations.MultipleBigger(self.grid.BB.xmax,Dx)
         self.grid.BB.ymin=SmallComputations.MultipleLower(self.grid.BB.ymin,Dy)
         self.grid.BB.ymax=SmallComputations.MultipleBigger(self.grid.BB.ymax,Dy)
-        self.DrawGraph(self.grid)
+        self.DrawGraphs(self.grid)
     def add_latex_line(self,ligne,separator_name="DEFAULT",add_line_jump=True):
         """
         Add a line in the pstricks code. The optional argument <position> is the name of a marker like %GRID, %AXES, ...
