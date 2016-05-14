@@ -1268,4 +1268,8 @@ def NonAnalyticFunction(fun,mx=None,Mx=None):
     from NonAnalytic import NonAnalyticFunctionGraph
     return NonAnalyticFunctionGraph(fun,mx,Mx)
 
+def LeftMatrixBrace(P,Q,r=0.3):
+    from BraceGraph import LeftMatrixBraceGraph
+    return LeftMatrixBraceGraph(P,Q,r)
+
 from Utilities import *
