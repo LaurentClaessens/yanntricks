@@ -8,7 +8,7 @@ def ParametricOne():
     G = ParametricCurve(f1,f2,interval=(0,5))
     G.parameters.style = "dashed"
 
-    pspict.DrawGraph(G)
+    pspict.DrawGraphs(G)
     pspict.DrawDefaultAxes()
 
     fig.no_figure()

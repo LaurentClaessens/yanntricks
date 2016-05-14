@@ -10,9 +10,9 @@ def exCircleTwo():
     for angle in [10,20,50,130,300,350] :
         P = circle.get_point(angle)
         P.put_mark(0.2,angle=None,text="$P_{%s}$"%str(angle),automatic_place=(pspict,""))
-        pspict.DrawGraph(P)
+        pspict.DrawGraphs(P)
 
-    pspict.DrawGraph(circle)
+    pspict.DrawGraphs(circle)
     pspict.DrawDefaultAxes()
 
     fig.no_figure()

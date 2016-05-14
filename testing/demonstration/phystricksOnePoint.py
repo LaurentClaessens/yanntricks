@@ -6,7 +6,7 @@ def OnePoint():
     ##################### The main lines are here
     P = Point(1,1)
     P.parameters.color = "red"
-    pspict.DrawGraph(P)
+    pspict.DrawGraphs(P)
     ########################
 
     fig.no_figure()

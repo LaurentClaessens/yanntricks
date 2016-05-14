@@ -9,11 +9,11 @@ def FunctionFive():
 
     points = f.getRegularLengthPoints(mx,Mx,1.5)
 
-    pspict.DrawGraph(f)
+    pspict.DrawGraphs(f)
     for i in range(0,len(points)):
         P = points[i]
         P.put_mark(0.2,None,"$P_{%s}$"%str(i),automatic_place=(pspict,""))
-        pspict.DrawGraph(P)
+        pspict.DrawGraphs(P)
 
     pspict.DrawDefaultAxes()
     pspict.comment=r"""

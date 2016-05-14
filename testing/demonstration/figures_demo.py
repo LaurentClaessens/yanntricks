@@ -46,6 +46,7 @@ from phystricksPFCUoorQhitKoJ import PFCUoorQhitKoJ
 from phystricksEXIIooJzzoJeai import EXIIooJzzoJeai
 
 figures_list=[]
+from phystricksJSYWooQYduLVLS import JSYWooQYduLVLS
 figures_list.append(YOWDooyeyOJyml)
 figures_list.append(PFCUoorQhitKoJ)
 figures_list.append(QIXEooejrojKjo)
@@ -81,8 +82,8 @@ figures_list.append(EXIIooJzzoJeai)
 figures_list.append(PJKBooOhGVPkeR)
 figures_list.append(LVPSoozFTyaeCG)
 figures_list.append(CUZFooGqZLaAEp)
+figures_list.append(JSYWooQYduLVLS)
 """
-figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)

@@ -5,7 +5,7 @@ def GridOne():
     var('x')
     F = phyFunction( x**2-x-1 ).graph(-1.5,1.7)
 
-    pspict.DrawGraph(F)
+    pspict.DrawGraphs(F)
 
     pspict.DrawDefaultAxes()
     pspict.DrawDefaultGrid()

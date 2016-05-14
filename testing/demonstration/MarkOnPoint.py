@@ -10,8 +10,8 @@ def MarkOnPoint():
     Q.put_mark(0.3,180,"$q$",automatic_place=(pspict,""))
     Q.parameters.symbol = "diamond"
 
-    pspict.DrawGraph(P)
-    pspict.DrawGraph(Q)
+    pspict.DrawGraphs(P)
+    pspict.DrawGraphs(Q)
 
     fig.no_figure()
     fig.conclude()

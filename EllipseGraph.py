@@ -25,23 +25,24 @@ from sage.all import *
 from ObjectGraph import ObjectGraph
 from Constructors import *
 
-class LeftMatrixBraceGraph(ObjectGraph):
-    def __init__(self,P,Q,r1,r2):
+class EllipseGraph(ObjectGraph):
+    def __init__(self,O,A,B):
         ObjectGraph.__init__(self,self)
-        self.P=P
-        self.Q=Q
-        self.r1=r1
-        self.r2=r2
+        self.O=O
+        self.A=A
+        self.B=B
+        self.angleI=0
+        self.angleF=2*pi
+    def graph(self,a,b):
+        curve = EllipseOAB(self.O,self.A,self.B)
+        curve.angleI=a
+        curve.angleF=b
+        return curve
     def action_on_pspict(self,pspict):
-        s=Segment(self.P,self.Q)
-        C1=s.get_point_length(self.r2)
-        circle1=Circle(C1,self.r).graph(s.angle()+180,s.angle()+180+90)
+        f1=self.A-self.O
+        f2=self.B-self.O
 
-        C2=s.get_point_length( s.length()-self.r )
-        circle2=Circle(C2,self.r).graph(s.angle(),s.angle()-90)
+        curve=NonAnalyticPointParametricCurve( lambda x:self.O+cos(x)*f1+sin(x)*f2,self.angleI,self.angleF  )
+        curve.mode="trivial"
 
-        I=circle1.getPoint(circle1.angleF)
-        F=circle2.getPoint(circle2.angleF)
-        border=Segment(I,F)
-
-        pspict.DrawGraphs(circle1,circle2,border)
+        pspict.DrawGraphs(curve)

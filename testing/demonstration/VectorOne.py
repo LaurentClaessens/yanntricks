@@ -25,7 +25,7 @@ def VectorOne():
     v[5].parameters.color=v[1].parameters.color
 
     for vect in v:
-        pspict.DrawGraph(vect)
+        pspict.DrawGraphs(vect)
 
     pspict.DrawDefaultAxes()
 

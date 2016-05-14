@@ -306,7 +306,7 @@ class SegmentGraph(ObjectGraph):
         """
         Return a point on the segment at distance 'd' from the initial point (in the direction of the final point)
         """
-        return self.get_point_proportion(self.length()/d,advised=advised)
+        return self.get_point_proportion(d/self.length(),advised=advised)
     def get_point_proportion(self,p,advised=True):
         """
         Return a point on the segment which is at the position

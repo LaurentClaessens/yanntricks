@@ -11,8 +11,8 @@ def FunctionSecond():
     F.parameters.color = "red"
     F.wave(0.3,0.1)
     F.parameters.style = "dashed"
-    pspict.DrawGraph(F)
-    pspict.DrawGraph(G)
+    pspict.DrawGraphs(F)
+    pspict.DrawGraphs(G)
 
     pspict.DrawDefaultAxes()
 

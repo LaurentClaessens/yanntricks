@@ -4,7 +4,7 @@ def GridThree():
 
     var('x')
     F = phyFunction(2*x*sin(x)).graph(-pi-0.5,pi+0.5)
-    pspict.DrawGraph(F)
+    pspict.DrawGraphs(F)
 
     pspict.grid.num_subX = 2
     pspict.grid.num_subY = 3

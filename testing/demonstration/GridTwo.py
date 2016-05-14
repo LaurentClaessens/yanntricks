@@ -7,7 +7,7 @@ def GridTwo():
     var('x')
     F = phyFunction( x**2-x-1 ).graph(-3,3)
 
-    pspict.DrawGraph(F)
+    pspict.DrawGraphs(F)
 
     pspict.grid.Dx = 2
     pspict.grid.Dy = 3

@@ -1268,8 +1268,16 @@ def NonAnalyticFunction(fun,mx=None,Mx=None):
     from NonAnalytic import NonAnalyticFunctionGraph
     return NonAnalyticFunctionGraph(fun,mx,Mx)
 
-def LeftMatrixBrace(P,Q,r=0.3):
+def LeftMatrixBrace(P,Q,r1=0.2,r2=0.5):
     from BraceGraph import LeftMatrixBraceGraph
-    return LeftMatrixBraceGraph(P,Q,r)
+    return LeftMatrixBraceGraph(P,Q,r1,r2)
+
+def EllipseOAB(O,A,B):
+    """
+    An ellipse of center O and such that OA and OB are the axis 
+    (OA and OB are supposed to be orthogonal)
+    """
+    from EllipseGraph import EllipseGraph
+    return EllipseGraph(O,A,B)
 
 from Utilities import *

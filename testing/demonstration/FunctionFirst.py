@@ -8,7 +8,7 @@ def FunctionFirst():
     Mx = 2*pi
     F = f.graph(mx,Mx)
     #F.linear_plotpoints=234
-    pspict.DrawGraph(F)
+    pspict.DrawGraphs(F)
 
     pspict.DrawDefaultAxes()
 
