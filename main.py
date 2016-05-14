@@ -1271,8 +1271,8 @@ class pspicture(object):
                 for h in gr:
                     self.DrawGraphs(h,separator_name=separator_name)
             except TypeError:
-                self.DrawGraph(gr,separator_name=separator_name)
-    def DrawGraph(self,graph,separator_name=None):
+                self._DrawGraph(gr,separator_name=separator_name)
+    def _DrawGraph(self,graph,separator_name=None):
         """
         Draw an object of type `<Something>Graph`.
 
