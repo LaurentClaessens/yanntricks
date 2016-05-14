@@ -84,10 +84,12 @@ class NonAnalyticPointParametricCurveGraph(ObjectGraph):
         if self.mx is not None and self.Mx is not None:
             self.drawpoints=linspace(numerical_approx(self.mx),numerical_approx(self.Mx),self.parameters.plotpoints,endpoint=True)
         self._curve=None
+        self.mode=None
     def curve(self):
         if not self._curve :
             interpolation = InterpolationCurve([self.get_point(x) for x in self.drawpoints])
             interpolation.parameters=self.parameters.copy()
+            interpolation.mode=self.mode
             self._curve=interpolation
         return self._curve
     def get_point(self,x,advised=False):

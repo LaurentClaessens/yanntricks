@@ -190,6 +190,8 @@ class InterpolationCurveGraph(ObjectGraph):
                 a.append(  K.latex_code(language="tikz",pspict=pspict)  )
             return "\n".join(a)
         else :
+            print("Really, there is no mode here ?")
+            raise DeprecationWarning
             l = []
             params=self.params(language="tikz")
             l.append("\draw [{0}] plot [smooth,tension=1] coordinates {{".format(params))
