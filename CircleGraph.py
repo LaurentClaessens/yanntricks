@@ -366,5 +366,6 @@ class CircleGraph(GenericCurve,ObjectGraph):
             pspict.DrawGraph(G)
         else :
             pspict.DrawGraph(G)
-    def latex_code(self,language=None,pspict=None):
-        return ""
+    # No need of that empty latex_code since it is now default in ObjectGraph (May 14, 2016)
+    #def latex_code(self,language=None,pspict=None):
+    #    return ""

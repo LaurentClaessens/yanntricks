@@ -195,6 +195,14 @@ class ObjectGraph(object):
         # One cannot make try ... except AttributeError since it should silently pass a real AttributeError in the implementation if specific_action_on_pspict
         if "specific_action_on_pspict" in dir(self):
             self.specific_action_on_pspict(pspict)
+    def bounding_box(self,pspict):
+        # The purpose of having a default bounding box is that some objects are uniquely build from 'action_on_pspict', so that the bounding box is not important to know
+        # since the building block have theirs.
+        from Constructors import BoundingBox
+        return BoundingBox()
+    def latex_code(self,language=None,pspict=None):
+        # default for the same reason than for the bounding box.
+        return ""
     def math_bounding_box(self,pspict):
         return self.bounding_box(pspict)
     def latex_code(self,pspict,language=None):
