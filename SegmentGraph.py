@@ -427,7 +427,7 @@ class SegmentGraph(ObjectGraph):
             P = Point(self.slope,-1)
             v = P.Vector().normalize().origin(self.center())
         if P:
-            v=AffineVector(P,v+P)
+            v=AffineVector(P,P+v)
         return v
     def get_tangent_vector(self):
         """

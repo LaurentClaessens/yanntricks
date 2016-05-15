@@ -1268,9 +1268,9 @@ def NonAnalyticFunction(fun,mx=None,Mx=None):
     from NonAnalytic import NonAnalyticFunctionGraph
     return NonAnalyticFunctionGraph(fun,mx,Mx)
 
-def LeftMatrixBrace(P,Q,r1=0.2,r2=0.5):
-    from BraceGraph import LeftMatrixBraceGraph
-    return LeftMatrixBraceGraph(P,Q,r1,r2)
+def phyMatrix(nlines,ncolumns):
+    from MatrixGraph import MatrixGraph
+    return MatrixGraph(nlines,ncolumns)
 
 def EllipseOAB(O,A,B):
     """
