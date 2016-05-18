@@ -15,7 +15,12 @@ def LWVXooPyIlOKNd():
     matrix.elements[3,2].text="$\Delta_k(A_m)$"
     matrix.elements[3,3].text="$\\vdots$"
 
-    pspict.DrawGraphs(matrix)
+    sqare=matrix.square(   (1,1) , (2,2) )
+    pspict.DrawGraphs(matrix,square)
+    
+    for el in matrix.getElements() :
+        pspict.DrawGraphs(el.getFirstBox(pspict))
+
     pspict.comment=r"""La matrice\\
 \begin{equation}
     \begin{pmatrix}
@@ -24,6 +29,7 @@ def LWVXooPyIlOKNd():
         (3,1)    &   \Delta_k(A_m)    &   \vdots
     \end{pmatrix}
 \end{equation}
+with a box around each element.
 """
 
     fig.no_figure()

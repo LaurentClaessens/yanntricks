@@ -34,7 +34,7 @@ class MatrixElement(object):
     - first box : slightly larger box than the text box. If you want to draw a square around a part of the matrix, you should use this one
     - second box : slightly larger that the first one. The limit of the second box of one element is the same as the limit of the second box of the next element.
     """
-    def __init__(self,text,line,column,matrix):
+    def __init__(self,text=None,line=None,column=None,matrix=None):
         self.text=text
         self.line=line
         self.column=column
@@ -58,6 +58,7 @@ class MatrixElement(object):
         ymax=self.central_point.y+text_height/2
         return BoundingBox(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax)
     def getFirstBox(self,pspict):
+        import Defaults
         text_box=self.getTextBox(pspict)
         xmin=text_box.xmin-Defaults.MATRIX_ELEMENT_FIRST_BOX_X_BORDER
         xmax=text_box.xmax+Defaults.MATRIX_ELEMENT_FIRST_BOX_X_BORDER
@@ -92,6 +93,12 @@ class MatrixLineColumn(object):
             h=max( [  el.getTextWidth(pspict) for el in self ])
             self._width=h+2*(Defaults.MATRIX_ELEMENT_FIRST_BOX_X_BORDER+Defaults.MATRIX_ELEMENT_SECOND_BOX_X_BORDER)
         return self._width
+    def getFirstBox(self,pspict):
+        xmin=min(  [el.getFirstBox(pspict).xmin for el in self]   )
+        ymin=min(  [el.getFirstBox(pspict).ymin for el in self]   )
+        xmax=min(  [el.getFirstBox(pspict).xmax for el in self]   )
+        ymax=min(  [el.getFirstBox(pspict).ymax for el in self]   )
+        return BoundingBox(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax)
     def __iter__(self):
         return self.elements.__iter__()
 
@@ -102,43 +109,45 @@ class MatrixGraph(ObjectGraph):
     def __init__(self,nlines,ncolumns):
         ObjectGraph.__init__(self,self)
         self.nlines=nlines
-        self.ncolumns=ncolumns
+        self._computed_central_points=False
         self.elements={}
-        self.lines={}
-        self.columns={}
-        for i in range(1,self.nlines+1):
-            for j in range (1,self.ncolumns+1):
-                self.elements[i,j]=MatrixElement("$({},{})$".format(i,j),line=i,column=j,matrix=self)
-        for i in range(1,self.nlines+1):
-            line=MatrixLineColumn(i,self)
-            line.elements=[  self.elements[i,j] for j in range(1,self.ncolumns+1)  ]
-            self.lines[i]=line
-        for j in range(1,self.ncolumns+1):
-            col=MatrixLineColumn(j,self)
-            col.elements=[  self.elements[i,j] for i in range(1,self.nlines+1)  ]
-            self.columns[j]=col
-    def getMidPoint(self,pspict):
-        bb=self.elements[1,1].getTextBox(pspict)
-        xmin=self.elements[1,1].getTextBox(pspict).xmin
-        xmax=self.elements[1,self.ncolumns].getTextBox(pspict).xmax
-        ymin=self.elements[1,1].getTextBox(pspict).ymin
-        ymax=self.elements[self.nlines,self.ncolumns].getTextBox(pspict).ymax
-        return Point((xmin+xmax)/2,(ymin+ymax)/2)
+        for i in range(1,nlines+1):
+            for j in range(1,ncolumns+1):
+                self.elements[i,j]=MatrixElement()
+    def getElement(self,i,j):
+        return self.elements[i,j]
+    def getElements(self):
+        return self.elements.values()
     def getLine(self,n):
         return self.lines[n]
     def getColumn(self,m):
         return self.columns[m]
+    def square(self,a,b,pspict):
+        """
+        'a' and 'b' are tuples (i,j) of integers.
+        """
+        self.computeCentralPoints(pspict)
+        min_line=min(  a[0],b[0]  )
+        min_col=min(  a[1],b[1]  )
+        max_line=max( a[0],b[0]  )
+        max_col=max( a[1],b[1]  )
+        xmin=self.getColumn(min_col).getFirstBox(pspict).xmin
+        ymin=self.getLine(max_line).getFirstBox(pspict).ymin
+        xmax=self.getColumn(max_col).getFirstBox(pspict).xmax
+        ymax=self.getLine(min_line).getFirstBox(pspict).ymax
+        return BoundingBox(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax)
     def computeCentralPoints(self,pspict):
-        y=0
-        for i in range(1,self.nlines+1):
-            y=y-self.getLine(i).getHeight(pspict)/2
-            x=0
-            for j in range (1,self.ncolumns+1):
-                x=x+self.getColumn(j).getWidth(pspict)/2
-                self.elements[i,j].central_point=Point(x,y)
-                x=x+self.getColumn(j).getWidth(pspict)/2
-            y=y-self.getLine(i).getHeight(pspict)/2
-
+        if not self_computed_central_points :
+            y=0
+            for i in range(1,self.nlines+1):
+                y=y-self.getLine(i).getHeight(pspict)/2
+                x=0
+                for j in range (1,self.ncolumns+1):
+                    x=x+self.getColumn(j).getWidth(pspict)/2
+                    self.elements[i,j].central_point=Point(x,y)
+                    x=x+self.getColumn(j).getWidth(pspict)/2
+                y=y-self.getLine(i).getHeight(pspict)/2
+        self._computed_central_points=True
 
     def action_on_pspict(self,pspict):
         self.computeCentralPoints(pspict)
