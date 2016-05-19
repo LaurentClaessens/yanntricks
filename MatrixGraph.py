@@ -151,6 +151,13 @@ class MatrixGraph(ObjectGraph):
         ymax=self.getLine(1).getSecondBox(pspict).ymax
         ymin=self.getLine(self.nlines).getSecondBox(pspict).ymin
         return Point(  (xmin+xmax)/2,(ymin+ymax)/2  )
+    def getSecondBox(self,pspict):
+        bb=BoundingBox()
+        bb.append(   self.getLine(1).getSecondBox(pspict),pspict=pspict   )
+        bb.append(   self.getLine(self.nlines).getSecondBox(pspict) ,pspict=pspict  )
+        bb.append(   self.getColumn(1).getSecondBox(pspict) ,pspict=pspict  )
+        bb.append(   self.getColumn(self.ncolumns).getSecondBox(pspict)   ,pspict=pspict)
+        return bb
     def square(self,a,b,pspict):
         """
         'a' and 'b' are tuples (i,j) of integers.
@@ -188,18 +195,16 @@ class MatrixGraph(ObjectGraph):
 
     def action_on_pspict(self,pspict):
         self.computeCentralPoints(pspict)
-        for i in range(1,self.nlines+1):
-            for j in range (1,self.ncolumns+1):
-                P=self.elements[i,j].central_point
-                P.put_mark(0,angle=0,text=self.elements[i,j].text,automatic_place=(pspict,"center"))
-                P.parameters.symbol=""
-                pspict.DrawGraphs(P)
 
-        l=[]
-        for i in range(1,self.nlines+1):
-            l.append("&".join( [  "\\text{"+el.text+"}" for el in self.getLine(i)  ]  ))
-        matrix_code="\\\\".join(l)
+        # The parenthesis of the matrix will be adapted to the second box. 
+        # Thus we create them as a pmatrix (in the LaTeX sense) that contains a rule of the computed dimensions.
+        second_box=self.getSecondBox(pspict)
+        Vx=second_box.xmax-second_box.xmin
+        Vy=second_box.ymax-second_box.ymin
+        matrix_code=r"""\rule{{ {}  }}{{{}}}""".format(str(Vx)+"cm",str(Vy)+"cm")
+
         P=self.getMidPoint(pspict)
+        P.parameters.symbol=""
         fake_matrix=r"""$
         \begin{pmatrix}
         \phantom{
@@ -211,3 +216,12 @@ class MatrixGraph(ObjectGraph):
         """.replace("MATRIX_CODE",matrix_code)
         P.put_mark(0,angle=0,text=fake_matrix,automatic_place=(pspict,"center"))
         pspict.DrawGraphs(P)
+
+        for i in range(1,self.nlines+1):
+            for j in range (1,self.ncolumns+1):
+                P=self.elements[i,j].central_point
+                P.put_mark(0,angle=0,text=self.elements[i,j].text,automatic_place=(pspict,"center"))
+                P.parameters.symbol=""
+                pspict.DrawGraphs(P)
+
+
