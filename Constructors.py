@@ -303,28 +303,58 @@ class BoundingBox(object):
         """
         from Utilities import check_too_large
         check_too_large(self,pspict=pspict)
+
+    def getEdge(self,pos):
+        if pos=="NORTH":
+            return Segment(self.getVertex("NW"),self.getVertex("NE"))
+        if pos=="SOUTH":
+            return Segment(self.getVertex("SW"),self.getVertex("SE"))
+        if pos=="EAST":
+            return Segment( self.getVertex("NE"),self.getVertex("SE") )
+        if pos=="WEST":
+            return Segment( self.getVertex("NW"),self.getVertex("SW") )
+    def getVertex(self,pos):
+        if pos=="NE":
+            return Point(self.xmax,self.ymax)
+        if pos=="NW":
+            return Point(self.xmin,self.ymax)
+        if pos=="SE":
+            return Point(self.xmax,self.ymin)
+        if pos=="SW":
+            return Point(self.xmin,self.ymin)
     def N(self):
+        raise DeprecationWarning
         return Segment(self.NW(),self.NE()).center()
     def S(self):
+        raise DeprecationWarning
         return Segment(self.SW(),self.SE()).center()
     def NE(self):
+        raise DeprecationWarning
         return Point(self.xmax,self.ymax)
     def NW(self):
+        raise DeprecationWarning
         return Point(self.xmin,self.ymax)
     def SE(self):
+        raise DeprecationWarning
         return Point(self.xmax,self.ymin)
     def SW(self):
+        raise DeprecationWarning
         return Point(self.xmin,self.ymin)
     def north_segment(self):
+        raise DeprecationWarning
         return Segment( self.NW(),self.NE() )
     def south_segment(self):
+        raise DeprecationWarning
         return Segment( self.SW(),self.SE() )
     def east_segment(self):
+        raise DeprecationWarning
         return Segment( self.NE(),self.SE() )
     def west_segment(self):
+        raise DeprecationWarning
         return Segment( self.NW(),self.SW() )
+
     def coordinates(self,pspict=None):
-        return self.SW().coordinates(pspict=pspict)+self.NE().coordinates(pspict=pspict)
+        return self.getVertex("SW").coordinates(pspict=pspict)+self.getVertex("NE").coordinates(pspict=pspict)
     def xsize(self):
         return self.xmax-self.xmin
     def ysize(self):
@@ -393,12 +423,12 @@ class BoundingBox(object):
         self.AddPoint( Point( Cer.center.x-Cer.radius/xunit,Cer.center.y-Cer.radius/yunit ) )
         self.AddPoint( Point( Cer.center.x+Cer.radius/xunit,Cer.center.y+Cer.radius/yunit ) )
     def AddAxes(self,axes):
-        self.AddPoint( axes.BB.SW() )
-        self.AddPoint( axes.BB.NE() )
+        self.AddPoint( axes.BB.getVertex("SW") )
+        self.AddPoint( axes.getVertex("NE") )
     def latex_code(self,language=None,pspict=None):
         return ""
     def action_on_pspict(self,pspict=None):
-        rect=Rectangle(self.SW(),self.NE())
+        rect=Rectangle(self.getVertex("SW"),self.getVertex("NE"))
         rect.parameters.color="cyan"
         pspict.DrawGraphs(rect)
     def bounding_box(self,pspict=None):
