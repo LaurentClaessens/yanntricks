@@ -182,6 +182,10 @@ class MatrixGraph(ObjectGraph):
                 y=y-self.getLine(i).getHeight(pspict)/2
         self._computed_central_points=True
 
+    # Objects that are intended to be drawn cannot be iterable.  See Position 30282-11562
+    #def __iter__(self):
+    #    return self.elements.values().__iter__()
+
     def action_on_pspict(self,pspict):
         self.computeCentralPoints(pspict)
         for i in range(1,self.nlines+1):

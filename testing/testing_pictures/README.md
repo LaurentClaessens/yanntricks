@@ -15,6 +15,18 @@ The script `create_all.py` relies on some naming conventions :
 
 In fact, I always create my pictures using an automatic script that choose the function name as a random sequence of ten ASCII letters.
 
+### Testing
+
+rm *.pyc
+rm phystricks*.py
+rm *.pstricks
+rm *.comment
+rm LabelFig*.aux
+
+./create_testing.py
+./figures_testing.py --all
+
+
 ### Make your big document
 
 Create your `documentation.py` module defining the following lists :

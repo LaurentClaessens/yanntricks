@@ -1266,7 +1266,7 @@ class pspicture(object):
             separator_name="DEFAULT"
         else:
             separator_name=arg["separator_name"]
-        for gr in args:
+        for gr in args:         # Here is why elements intened to be drawn cannot be iterable. Position 30282-11562
             try :
                 for h in gr:
                     self.DrawGraphs(h,separator_name=separator_name)
@@ -1285,7 +1285,7 @@ class pspicture(object):
 
         NOTE:
 
-        More precisely, it does not draw the object now, but it add it (and its mark if applicable) to ``self.record_draw_graph`` which is the list of objects to be drawn. Thus it is still possible to modify the object later (even if discouraged).
+        More precisely, it does not draw the object now, but it add it (and its mark if applicable) to ``self.record_draw_graph`` which is the list of objects to be drawn. Thus it is still possible to modify the object later (even if extremely discouraged).
         """
         from phyFunctionGraph import phyFunctionGraph
         if isinstance(graph,phyFunctionGraph):

@@ -323,11 +323,9 @@ class BoundingBox(object):
         if pos=="SW":
             return Point(self.xmin,self.ymin)
     def N(self):
-        raise DeprecationWarning
-        return Segment(self.NW(),self.NE()).center()
+        return Segment(self.getVertex("NW"),self.getVertex("NE")).center()
     def S(self):
-        raise DeprecationWarning
-        return Segment(self.SW(),self.SE()).center()
+        return Segment(self.getVertex("SW"),self.getVertex("SE")).center()
     def NE(self):
         raise DeprecationWarning
         return Point(self.xmax,self.ymax)
