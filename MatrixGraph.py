@@ -34,8 +34,10 @@ class MatrixElement(object):
     - first box : slightly larger box than the text box. If you want to draw a square around a part of the matrix, you should use this one
     - second box : slightly larger that the first one. The limit of the second box of one element is the same as the limit of the second box of the next element.
     """
-    def __init__(self,text=None,line=None,column=None,matrix=None):
+    def __init__(self,text="",line=None,column=None,matrix=None):
         self.text=text
+        if self.text=="":
+            self.text="$({},{})$".format(line,column)
         self.line=line
         self.column=column
         self.matrix=matrix
@@ -68,10 +70,10 @@ class MatrixElement(object):
     def getSecondBox(self,pspict):
         import Defaults
         first_box=self.getFirstBox(pspict)
-        xmin=text_box.xmin-Defaults.MATRIX_ELEMENT_FIRST_BOX_X_BORDER
-        xmax=text_box.xmax+Defaults.MATRIX_ELEMENT_FIRST_BOX_X_BORDER
-        ymin=text_box.ymin-Defaults.MATRIX_ELEMENT_FIRST_BOX_Y_BORDER
-        ymax=text_box.ymax+Defaults.MATRIX_ELEMENT_FIRST_BOX_Y_BORDER
+        xmin=first_box.xmin-Defaults.MATRIX_ELEMENT_SECOND_BOX_X_BORDER
+        xmax=first_box.xmax+Defaults.MATRIX_ELEMENT_SECOND_BOX_X_BORDER
+        ymin=first_box.ymin-Defaults.MATRIX_ELEMENT_SECOND_BOX_Y_BORDER
+        ymax=first_box.ymax+Defaults.MATRIX_ELEMENT_SECOND_BOX_Y_BORDER
         return BoundingBox(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax)
 
 class MatrixLineColumn(object):
@@ -80,7 +82,7 @@ class MatrixLineColumn(object):
         self.matrix=matrix
         self._height=None
         self._width=None
-        self.elements=None
+        self.elements={}
     def getHeight(self,pspict):
         import Defaults
         if self._height==None:
@@ -96,11 +98,17 @@ class MatrixLineColumn(object):
     def getFirstBox(self,pspict):
         xmin=min(  [el.getFirstBox(pspict).xmin for el in self]   )
         ymin=min(  [el.getFirstBox(pspict).ymin for el in self]   )
-        xmax=min(  [el.getFirstBox(pspict).xmax for el in self]   )
-        ymax=min(  [el.getFirstBox(pspict).ymax for el in self]   )
+        xmax=max(  [el.getFirstBox(pspict).xmax for el in self]   )
+        ymax=max(  [el.getFirstBox(pspict).ymax for el in self]   )
+        return BoundingBox(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax)
+    def getSecondBox(self,pspict):
+        xmin=min(  [el.getSecondBox(pspict).xmin for el in self]   )
+        ymin=min(  [el.getSecondBox(pspict).ymin for el in self]   )
+        xmax=max(  [el.getSecondBox(pspict).xmax for el in self]   )
+        ymax=max(  [el.getSecondBox(pspict).ymax for el in self]   )
         return BoundingBox(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax)
     def __iter__(self):
-        return self.elements.__iter__()
+        return self.elements.values().__iter__()
 
 class MatrixGraph(ObjectGraph):
     """
@@ -109,19 +117,40 @@ class MatrixGraph(ObjectGraph):
     def __init__(self,nlines,ncolumns):
         ObjectGraph.__init__(self,self)
         self.nlines=nlines
+        self.ncolumns=ncolumns
         self._computed_central_points=False
         self.elements={}
+        self._lines={}
+        self._columns={}
         for i in range(1,nlines+1):
             for j in range(1,ncolumns+1):
-                self.elements[i,j]=MatrixElement()
+                self.elements[i,j]=MatrixElement(line=i,column=j)
+
+        # Line constructions
+        for i in range(1,nlines+1):
+            self._lines[i]=MatrixLineColumn(i,self)
+            for j in range(1,ncolumns+1):
+                self.getLine(i).elements[j]=self.getElement(i,j)
+        # Column constructions
+        for j in range(1,ncolumns+1):
+            self._columns[j]=MatrixLineColumn(j,self)
+            for i in range(1,nlines+1):
+                self.getColumn(j).elements[i]=self.getElement(i,j)
+
     def getElement(self,i,j):
         return self.elements[i,j]
     def getElements(self):
         return self.elements.values()
     def getLine(self,n):
-        return self.lines[n]
+        return self._lines[n]
     def getColumn(self,m):
-        return self.columns[m]
+        return self._columns[m]
+    def getMidPoint(self,pspict):
+        xmin=self.getColumn(1).getSecondBox(pspict).xmin
+        xmax=self.getColumn(self.ncolumns).getSecondBox(pspict).xmax
+        ymax=self.getLine(1).getSecondBox(pspict).ymax
+        ymin=self.getLine(self.nlines).getSecondBox(pspict).ymin
+        return Point(  (xmin+xmax)/2,(ymin+ymax)/2  )
     def square(self,a,b,pspict):
         """
         'a' and 'b' are tuples (i,j) of integers.
@@ -135,9 +164,13 @@ class MatrixGraph(ObjectGraph):
         ymin=self.getLine(max_line).getFirstBox(pspict).ymin
         xmax=self.getColumn(max_col).getFirstBox(pspict).xmax
         ymax=self.getLine(min_line).getFirstBox(pspict).ymax
-        return BoundingBox(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax)
+        A=Point(xmin,ymax)
+        B=Point(xmax,ymax)
+        C=Point(xmax,ymin)
+        D=Point(xmin,ymin)
+        return Polygon(A,B,C,D)
     def computeCentralPoints(self,pspict):
-        if not self_computed_central_points :
+        if not self._computed_central_points :
             y=0
             for i in range(1,self.nlines+1):
                 y=y-self.getLine(i).getHeight(pspict)/2
