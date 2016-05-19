@@ -10,8 +10,7 @@ def FunctionThird():
     F = f.graph(mx,Mx)
     G = f.derivative().graph(mx,Mx)
     G.parameters.color = "red"
-    pspict.DrawGraph(F)
-    pspict.DrawGraph(G)
+    pspict.DrawGraphs(F,G)
 
     pspict.DrawDefaultAxes()
     pspict.comment="The function \( x\cos(x)\) (blue) and its derivative (red)."
