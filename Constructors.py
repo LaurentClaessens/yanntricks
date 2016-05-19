@@ -898,13 +898,13 @@ def Rectangle(*args,**arg):
     if "xmin" in arg.keys() :
         bb=BoundingBox(xmin=arg["xmin"],ymin=arg["ymin"],xmax=arg["xmax"],ymax=arg["ymax"])
         # TODO : I should be able to pass directly the dictionary to BoundingBox
-        NW=bb.NW()
-        SE=bb.SE()
+        NW=bb.getVertex("NW")
+        SE=bb.getVertex("SE")
     if "mx" in arg.keys() :
         bb=BoundingBox(xmin=arg["mx"],ymin=arg["my"],xmax=arg["Mx"],ymax=arg["My"])
         # TODO : I should be able to pass directly the dictionary to BoundingBox
-        NW=bb.NW()
-        SE=bb.SE()
+        NW=bb.getVertex("NW")
+        SE=bb.getVertex("SE")
     from PolygonGraph import RectangleGraph
     return RectangleGraph(NW,SE)
 
