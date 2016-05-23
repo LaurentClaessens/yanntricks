@@ -20,6 +20,8 @@
 # copyright (c) Laurent Claessens, 2010-2016
 # email: laurent@claessens-donadello.eu
 
+from __future__ import division
+
 from phystricks.ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
@@ -86,10 +88,10 @@ class AngleGraph(ObjectGraph):
         bb=C.bounding_box(pspict)
         return self.circle(visual=True,pspict=pspict).bounding_box(pspict)
     def advised_mark_angle(self,pspict):
-        if self._mark_angle:
-            return self._mark_angle
-        visualI,visualF=self.visual_angleIF(pspict=pspict)
-        return (visualI.degree+visualF.degree)/2
+        if self._mark_angle == None :
+            visualI,visualF=self.visual_angleIF(pspict=pspict)
+            self._mark_angle = (visualI.degree+visualF.degree)/2
+        return self._mark_angle
     def mark_point(self,pspict=None):
         ama=self.advised_mark_angle(pspict)
         return self.circle(visual=True,pspict=pspict).get_point(ama)

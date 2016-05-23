@@ -20,6 +20,7 @@
 # copyright (c) Laurent Claessens, 2010-2016
 # email: laurent@claessens-donadello.eu
 
+from sage.all import numerical_approx
 from Parameters import Parameters
 from Parameters import Options
 

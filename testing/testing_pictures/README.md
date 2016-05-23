@@ -20,7 +20,7 @@ In fact, I always create my pictures using an automatic script that choose the f
 rm *.pyc && rm phystricks*.py && rm *.pstricks&& rm *.comment&& rm LabelFig*.aux
 
 ./create_testing.py
-./figures_testing.py --all
+time ./figures_testing.py --all
 
 
 ### Make your big document
