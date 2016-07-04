@@ -80,7 +80,6 @@ class AngleGraph(ObjectGraph):
         theta is degree or AngleMeasure
         """
         self._mark_angle=AngleMeasure(value_degree=theta)
-        #self._advised_mark_angle=degree(theta,number=True,converting=False)
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def bounding_box(self,pspict=None):
@@ -88,7 +87,7 @@ class AngleGraph(ObjectGraph):
         bb=C.bounding_box(pspict)
         return self.circle(visual=True,pspict=pspict).bounding_box(pspict)
     def advised_mark_angle(self,pspict):
-        if self._mark_angle == None :
+        if self._mark_angle is None :
             visualI,visualF=self.visual_angleIF(pspict=pspict)
             self._mark_angle = (visualI.degree+visualF.degree)/2
         return self._mark_angle
