@@ -298,10 +298,6 @@ class SegmentGraph(ObjectGraph):
         PIs.extend( [  PI[i]+normal*(-1)**i for i in range(1,len(PI))  ] )
         PIs.append(self.F)
         return PIs
-    def proportion(self,p,advised=True):
-        print("You should use 'get_point_proportion' instead")
-        raise DeprecationWarning
-        return self.get_point_proportion(p,advised)
     def get_point_length(self,d,advised=True):
         """
         Return a point on the segment at distance 'd' from the initial point (in the direction of the final point)
@@ -693,8 +689,6 @@ class SegmentGraph(ObjectGraph):
         if xunit==None or yunit==None:
             return self.fix_size(l)
         return visual_length(self,l,xunit,yunit,pspict)
-    def visual_length(self,l,xunit=None,yunit=None,pspict=None):
-        raise DeprecationWarning,"Use 'fix_visual_size' instead" #2014
     def add_size_extremity(self,l):
         """
         Add a length <l> at the extremity of the segment. Return a new object.
@@ -979,8 +973,6 @@ class SegmentGraph(ObjectGraph):
             else:
                 if language=="pstricks":
                     raise DeprecationWarning
-                    a =[self.I.create_PSpoint() + self.F.create_PSpoint()]
-                    a.append("\pstLineAB[%s]{%s}{%s}"%(self.params(language="pstricks"),self.I.psName,self.F.psName))
                 if language=="tikz":
                     a=[]
                     c1=self.I.coordinates(numerical=True,digits=3,pspict=pspict)
@@ -990,9 +982,6 @@ class SegmentGraph(ObjectGraph):
                         raise
                     a.append("\draw [{2}] {0} -- {1};".format(c1,c2,self.params(language="tikz")))
         return "\n".join(a)
-    def pstricks_code(self,pspict=None):
-        raise DeprecationWarning
-        return self.latex_code(language="pstricks",pspict=pspict)
     def tikz_code(self,pspict=None):
         return self.latex_code(language="tikz",pspict=pspict)
 
@@ -1003,8 +992,6 @@ def _vector_latex_code(segment,language=None,pspict=None):
     params=segment.params(language=language)
     if language=="pstricks":
         raise DeprecationWarning
-        a = segment.I.create_PSpoint() + segment.F.create_PSpoint()
-        a = a + "\\ncline["+params+"]{->}{"+segment.I.psName+"}{"+segment.F.psName+"}"
     if language=="tikz":
         params=params+",->,>=latex"
         a = "\draw [{0}] {1} -- {2};".format(params,segment.I.coordinates(numerical=True,pspict=pspict),segment.F.coordinates(numerical=True,pspict=pspict))

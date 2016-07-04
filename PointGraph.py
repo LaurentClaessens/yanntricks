@@ -328,13 +328,6 @@ class PointGraph(ObjectGraph):
     def default_associated_graph_class(self):
         """Return the class which is the Graph associated type"""
         return PointGraph   
-    def create_PSpoint(self):
-        """Return the code of creating a pstgeonode. The argument is a Point of PointGraph"""
-        raise DeprecationWarning       # pstricks_code should no more be used anywhere
-        P = Point(self.x,self.y)
-        P.psName = self.psName
-        P.parameters.symbol=""
-        return P.pstricks_code(None)+"\n"
     def polar_coordinates(self,origin=None):
         """
         Return the polar coordinates of the point as a tuple (r,angle) where angle is AngleMeasure
@@ -409,12 +402,6 @@ class PointGraph(ObjectGraph):
         if numerical_isZero(y,0.001):
             y=0
         return str("("+str(x)+","+str(y)+")")
-    def coordinatesBr(self):
-        raise DeprecationWarning  # June 23, 2014
-        return self.coordinates.replace("(","{").replace(")","}")
-    def Affiche(self):
-        raise DeprecationWarning  # June 24, 2014
-        return self.coordinates()
     def graph_object(self):
         return PointGraph(self)
     def copy(self):
@@ -449,9 +436,6 @@ class PointGraph(ObjectGraph):
         # it creates infinite loop.
         bb=BoundingBox(xmin=self.point.x,xmax=self.point.x,ymin=self.point.y,ymax=self.point.y)
         return bb
-    def pstricks_code(self,pspict=None,with_mark=False):
-        raise DeprecationWarning
-        return "\pstGeonode["+self.params(language="pstricks")+"]"+self.coordinates(numerical=True,pspict=pspict)+"{"+self.psName+"}"
     def tikz_code(self,pspict=None):
         symbol_dict={}
         symbol_dict[None]="$\\bullet$"
@@ -483,7 +467,6 @@ class PointGraph(ObjectGraph):
                 l.append(self.mark.latex_code(language=language,pspict=pspict))
         if language=="pstricks":
             raise DeprecationWarning
-            l.append(self.pstricks_code(pspict=pspict))
         if language=="tikz":
             l.append(self.tikz_code(pspict=pspict))
         return "\n".join(l)

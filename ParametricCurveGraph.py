@@ -75,12 +75,6 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
         if self.llamI != None:
             self.I=self.get_point(self.llamI,advised=False)   
             self.F=self.get_point(self.llamF,advised=False)
-    def pstricks(self,pspict=None):
-        # One difficult point with pstrics is that the syntax is "f1(t) | f2(t)" with the variable t.
-        #   In order to produce that, we use the Sage's function repr and the syntax f(x=t)
-        raise DeprecationWarning
-        t=var('t')
-        return "%s | %s "%(SubstitutionMathPsTricks(repr(self.f1.sage(x=t)).replace("pi","3.1415")),  SubstitutionMathPsTricks(repr(self.f2.sage(x=t)).replace("pi","3.1415")) )
     @lazy_attribute
     def speed(self):
         r"""
@@ -457,12 +451,6 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
     def arc_length(self,mll=None,Mll=None):
         print("You should use 'length' instead.")
         return self.length(mll=mll,Mll=Mll)
-    def get_parameter_at_length(self,l):
-        """
-        return the value of the parameter corresponding to the given arc length.
-        """
-        raise DeprecationWarning    # March 15, 2016
-
     def get_regular_points(self,mll,Mll,dl):
         """
         Return a list of points regularly spaced (with respect to the arc length) by dl. 

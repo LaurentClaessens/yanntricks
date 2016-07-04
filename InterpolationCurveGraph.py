@@ -108,35 +108,6 @@ class InterpolationCurveGraph(ObjectGraph):
         See InterpolationCurve.bounding_box()
         """
         return self.bounding_box(pspict)
-    def pstricks_code(self,pspict=None):
-        raise DeprecationWarning
-        """
-        return the pstricks code of the interpolation curve trough the given points
-
-        EXAMPLES::
-
-        sage: from phystricks import *
-        sage: C=Circle(Point(0,0),1)
-        sage: F=InterpolationCurve([Point(0,0),Point(1,1)])
-        sage: print F.pstricks_code()
-        \pscurve[linestyle=solid,linecolor=brown](0,0)(1.00000000000000,1.00000000000000)
-        sage: H=InterpolationCurve([Point(-1,1),Point(1,1),Point(1,-1),Point(-1,-1)])
-        sage: print H.pstricks_code()
-        \pscurve[linestyle=solid,linecolor=brown](-1.00000000000000,1.00000000000000)(1.00000000000000,1.00000000000000)(1.00000000000000,-1.00000000000000)(-1.00000000000000,-1.00000000000000)
-        """
-
-        # Explanation of 295815047.
-        # It seems to me that very large lines like the ones describing a curve cause   ! TeX capacity exceeded, sorry [pool size=6179214].
-
-        l = []
-        try:
-            params=self.context_object.params(language="pstricks")
-        except AttributeError :
-            params=self.params()
-        l.append("\pscurve["+params+"]")
-        for p in self.points_list:
-            l.append(p.coordinates(numerical=True,pspict=pspict))
-        return "".join(l)
     def tikz_code(self,pspict=None):
         pl=self.points_list
         if self.mode=="trivial":
@@ -201,7 +172,6 @@ class InterpolationCurveGraph(ObjectGraph):
     def latex_code(self,language,pspict=None):
         if language=="pstricks":
             raise DeprecationWarning
-            return self.pstricks_code(pspict)
         if language=="tikz":
             return self.tikz_code(pspict)
     def __str__(self):

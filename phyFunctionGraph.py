@@ -441,14 +441,6 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
             gr=self.representative_graph_object()
             pspict.DrawGraphs(gr)
             #TODO : we have to implement y_cut to InterpolationCurve
-    def pstricks_code(self,pspict=None):
-        raise DeprecationWarning   # June 24 2014
-        if not self.wavy and not self.do_cut_y:
-            # The use of numerical_approx is intended to avoid strings like "2*pi" in the final pstricks code.
-            deb = numerical_approx(self.mx) 
-            fin = numerical_approx(self.Mx)
-            return "\psplot["+self.params()+"]{"+str(deb)+"}{"+str(fin)+"}{"+self.pstricks+"}"
-        return ""
     def latex_code(self,language=None,pspict=None):
         if not self.wavy and not self.do_cut_y:
             return self.representative_graph_object().latex_code(language=language,pspict=pspict)

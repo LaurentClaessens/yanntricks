@@ -145,14 +145,6 @@ class MarkGraph(object):
         return bb
     def action_on_pspict(self,pspict=None):
         pass
-    def pstricks_code(self,pspict=None):
-        raise DeprecationWarning
-        l=[]
-        central_point=self.central_point(pspict)
-        #TODO : Use create_PSpoint instead of \pstGeonode.
-        l.append("\pstGeonode[]"+central_point.coordinates(numerical=True,pspict=pspict)+"{"+central_point.psName+"}")
-        l.append(r"\rput({0}){{\rput({1};{2}){{{3}}}}}".format(central_point.psName,"0",0,self.text))
-        return "\n".join(l)
     def tikz_code(self,pspict=None):
         central_point=self.central_point(pspict)
         code="\draw "+central_point.coordinates(numerical=True,pspict=pspict)+" node {"+self.text+"};"
@@ -160,6 +152,5 @@ class MarkGraph(object):
     def latex_code(self,language=None,pspict=None):
         if language=="pstricks":
             raise DeprecationWarning
-            return self.pstricks_code(pspict=pspict)
         if language=="tikz":
             return self.tikz_code(pspict=pspict)

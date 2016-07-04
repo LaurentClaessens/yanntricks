@@ -127,12 +127,6 @@ class CircleGraph(GenericCurve,ObjectGraph):
             cy=numerical_approximation(self.center.y)
             self._numerical_equation = (x-cx)**2/Rx**2+(y-cy)**2/Ry**2-1==0
             return self._numerical_equation
-    def phyFunction(self):
-        """
-        return the function corresponding to
-        the graph of the *upper* part of the circle
-        """
-        raise DeprecationWarning
     def parametric_curve(self,a=None,b=None):
         """
         Return the parametric curve associated to the circle.

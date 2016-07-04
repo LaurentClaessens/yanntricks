@@ -47,33 +47,6 @@ class CustomSurfaceGraph(ObjectGraph):
         for obj in self.graphList :
             bb.AddBB(obj.math_bounding_box(pspict))
         return bb
-    def pstricks_code(self,pspict=None):
-        raise DeprecationWarning
-        # I cannot add all the obj.pstricks_code() inside the \pscustom because we cannot have \pstGeonode inside \pscustom
-        # Thus I have to hack the code in order to bring all the \pstGeonode before the opening of \pscustom
-        a=[]
-        for obj in self.graphList :
-            a.append(obj.pstricks_code(pspict=pspict))
-        insideBefore="\n".join(a)
-        insideBeforeList=insideBefore.split("\n")
-        outsideList=[]
-        insideList=[]
-        for line in insideBeforeList:
-            if "pstGeonode" in line :
-                outsideList.append(line)
-            else:
-                insideList.append(line)
-        outside="\n".join(outsideList)
-        inside="\n".join(insideList)
-        # Now we create the pscustom
-        a=[]
-        if self.parameters.color :
-            self.add_option("fillcolor="+self.parameters.color+",linecolor="+self.parameters.color+",hatchcolor="+self.parameters.color)
-        a.append(outside)
-        a.append("\pscustom["+self.params(language="pstricks")+"]{")
-        a.append(inside)
-        a.append("}")
-        return "\n".join(a)
     def tikz_code(self,pspict=None):
         """
         If the CustomSurface has to be filled, we start by plotting the filling.
@@ -147,7 +120,6 @@ class CustomSurfaceGraph(ObjectGraph):
         a=[]
         if language=="pstricks":
             raise DeprecationWarning
-            a.append(self.pstricks_code(pspict))
         if language=="tikz":
             a.append(self.tikz_code(pspict))
         if self._draw_edges :
