@@ -390,7 +390,6 @@ class figure(object):
         # Now we check that the file phystricks.aux exists. If not, we create it.
         if not os.path.isfile(self.interWriteFile):
             f=open(self.interWriteFile,"w")
-            #f.write("a:b-")
             f.write("default:content-")
             f.close()
         
@@ -402,9 +401,6 @@ class figure(object):
             # What has to be written in the WRITE_AND_LABEL part of the picture is written now
             # This has to be done _after_ having called pspict.contenu().
             self.add_latex_line(pspict.write_and_label_separator_list["WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
-
-            # No more closing the write at each picture (Augustus 28, 2014)
-            #self.add_latex_line(pspict.write_and_label_separator_list["CLOSE_WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
 
             # For the following big stuff, see the position 170321508
             def_length_tex=r"""                 \makeatletter
@@ -437,7 +433,6 @@ class figure(object):
                 self.add_latex_line(def_length_tex,"HATCHING_COMMANDS")
                 self.add_latex_line(def_pattern_tex,"HATCHING_COMMANDS")
 
-
             if global_vars.perform_tests:
                 TestPspictLaTeXCode(pspict).test()
         self.add_latex_line(self.specific_needs,"SPECIFIC_NEEDS")
@@ -453,7 +448,6 @@ class figure(object):
 
             for pspict in f.record_pspicture:
                 self.add_latex_line(pspict.write_and_label_separator_list["WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
-                #self.add_latex_line(pspict.write_and_label_separator_list["CLOSE_WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
         after_all=r"""\caption{%s}\label{%s}
             \end{figure}
             """%(self.caption,self.name)
