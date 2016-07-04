@@ -375,10 +375,10 @@ class figure(object):
         return text
         
     def conclude(self):
-        code = r"""\makeatletter\@ifundefined{{{}}}{{\newwrite{{\{}}}}}{{}}\makeatother%""".format(self.newwriteName,self.newwriteName)
+        code = r"""\ifthenelse{\isundefined{\NWN}}{\newwrite{\NWN}}{}""".replace("NWN",self.newwriteName)
         self.add_latex_line(code,"OPEN_WRITE_AND_LABEL")
 
-        code =r"""\makeatletter\@ifundefined{{{}}}{{\newlength{{\{}}}}}{{}}\makeatother%""".format(newlengthName(),newlengthName())
+        code =r"""\ifthenelse{\isundefined{\NLN}}{\newlength{\NLN}}{}""".replace("NLN","newlengthName()")
         self.add_latex_line(code,"OPEN_WRITE_AND_LABEL")
 
         code="\immediate\openout\{}={}%".format(self.newwriteName,self.interWriteFile)
