@@ -326,31 +326,6 @@ class BoundingBox(object):
         return Segment(self.getVertex("NW"),self.getVertex("NE")).center()
     def S(self):
         return Segment(self.getVertex("SW"),self.getVertex("SE")).center()
-    def NE(self):
-        raise DeprecationWarning
-        return Point(self.xmax,self.ymax)
-    def NW(self):
-        raise DeprecationWarning
-        return Point(self.xmin,self.ymax)
-    def SE(self):
-        raise DeprecationWarning
-        return Point(self.xmax,self.ymin)
-    def SW(self):
-        raise DeprecationWarning
-        return Point(self.xmin,self.ymin)
-    def north_segment(self):
-        raise DeprecationWarning
-        return Segment( self.NW(),self.NE() )
-    def south_segment(self):
-        raise DeprecationWarning
-        return Segment( self.SW(),self.SE() )
-    def east_segment(self):
-        raise DeprecationWarning
-        return Segment( self.NE(),self.SE() )
-    def west_segment(self):
-        raise DeprecationWarning
-        return Segment( self.NW(),self.SW() )
-
     def coordinates(self,pspict=None):
         return self.getVertex("SW").coordinates(pspict=pspict)+self.getVertex("NE").coordinates(pspict=pspict)
     def xsize(self):
@@ -406,20 +381,6 @@ class BoundingBox(object):
         except NoMathBoundingBox,message :
             print message
             self.addBB(graphe.bounding_box(pspict))
-    def AddCircleBB(self,Cer,xunit,yunit):
-        """
-        Add a deformed circle to the bounding box.
-
-        INPUT:
-
-        - ``Cer`` - a circle. 
-        - ``xunit,yunit`` - the `x` and `y` deformation coefficients.
-
-        The given circle will be deformed by the coefficient xunit and yunid and the be added to `self`.
-        """
-        raise DeprecationWarning,"use 'append' instead"     # February 21, 2015
-        self.AddPoint( Point( Cer.center.x-Cer.radius/xunit,Cer.center.y-Cer.radius/yunit ) )
-        self.AddPoint( Point( Cer.center.x+Cer.radius/xunit,Cer.center.y+Cer.radius/yunit ) )
     def AddAxes(self,axes):
         self.AddPoint( axes.BB.getVertex("SW") )
         self.AddPoint( axes.getVertex("NE") )
@@ -1281,20 +1242,6 @@ def extract_interval_information(curve):
         # we are thus returning 'curve.angleI.radian' instead of 'curve.angleI'
         return curve.angleI.radian,curve.angleF.radian
     return None,None
-
-
-def NonAnalyticFunction(fun,mx=None,Mx=None):
-    """
-    Describe a function for which we don't know an analytic form.
-
-    - `fun`  is an object with a 'call' method. That is something for which fun(x) can be computed.
-
-    By default, 100 points are computed. You can change that with
-    f.parameters.plotpoints=<as you wish>
-    """
-    raise DeprecationWarning
-    from NonAnalytic import NonAnalyticFunctionGraph
-    return NonAnalyticFunctionGraph(fun,mx,Mx)
 
 def phyMatrix(nlines,ncolumns):
     from MatrixGraph import MatrixGraph

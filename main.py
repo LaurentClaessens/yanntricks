@@ -879,44 +879,6 @@ class pspicture(object):
         self.already_warned_CompileYourLaTeXFile=False
 
     @lazy_attribute
-    def contenu_pstricks(self):
-        r"""
-        The LaTeX of `self` including xunit,yunit and \begin{pspicture} ... \end{pspicture}
-
-        This is a `lazy_attribute` because it has to be used more than once while it adds non
-        trivial code to `self`.
-
-        It also creates the attributes `xsize` and `ysize` that
-        contain the size of the bounding box.
-
-        NOTE :
-
-        - You are not supposed to use `pspict.bounding_box().xsize()` in order to take
-          the size of the picture.
-
-        - One has to declare the xunit,yunit before to give the bounding box.
-        
-        - The value of LabelSep is the distance between an angle and the label of the angle. It is by default 1, but if there is a dilatation, the visual effect is bad.
-        """
-        raise DeprecationWarning
-        self.create_latex_code(self,language="pstricks")
-        if self.LabelSep == 1 :
-            self.LabelSep = 2/(self.xunit+self.yunit)
-        add_latex_line_entete(self)
-
-        self.add_latex_line("\psset{xunit=1,yunit=1,LabelSep="+str(self.LabelSep)+"}","BEFORE PSPICTURE")
-        self.add_latex_line("\psset{PointSymbol=none,PointName=none,algebraic=true}","BEFORE PSPICTURE")
-        self.add_latex_line("\\begin{pspicture}%s%s"%(self.bounding_box(self).SW().coordinates(numerical=True),self.bounding_box(self).NE().coordinates(numerical=True)),"BEGIN PSPICTURE")
-
-        self.add_latex_line("\end{pspicture}","END PSPICTURE")
-
-        # It seems to me that "OTHER STUFF" is never used, June 23 2014
-        #self.add_latex_line(self.pstricks_code_list,"OTHER STUFF")
-
-        self.xsize=self.bounding_box(self).xsize()
-        self.ysize=self.bounding_box(self).ysize()
-        return self.separator_list.code()
-    @lazy_attribute
     def contenu_tikz(self):
         """
         It also remove the tikz externalize file.
@@ -925,22 +887,10 @@ class pspicture(object):
         add_latex_line_entete(self)
         self.add_latex_line("\\tikzsetnextfilename{{{0}}}".format(self.tikzfilename),"BEGIN PSPICTURE")
         self.add_latex_line("\\begin{{tikzpicture}}[xscale={0},yscale={1},inner sep=2.25pt,outer sep=0pt]".format(1,1),"BEGIN PSPICTURE")
-        #self.add_latex_line("\pgfmathdeclarefunction{radsin}{1}{\pgfmathparse{sin(deg(#1))}}","BEFORE PSPICTURE")
-        #self.add_latex_line("\pgfmathdeclarefunction{radcos}{1}{\pgfmathparse{cos(deg(#1))}}","BEFORE PSPICTURE")
         self.add_latex_line("\\end{tikzpicture}","END PSPICTURE")
 
         self.xsize=self.bounding_box(self).xsize()
         self.ysize=self.bounding_box(self).ysize()
-    
-        # We do no more remove the pdf file because tikz has its md5 stuff that make the work. (December 6, 2014)
-        #import os
-        #print(self.tikzfilename)
-        #tikz_pdf_filename=self.tikzfilename+".pdf"
-        #if os.path.isfile(tikz_pdf_filename):
-        #    print("The tikz file {0} exists. I remove it.".format(tikz_pdf_filename))
-        #    import shutil
-        #    shutil.os.remove(tikz_pdf_filename)
-
         return self.separator_list.code()
 
     def visual_xsize(self):
@@ -1020,22 +970,6 @@ class pspicture(object):
                     print "phystricks error: object %s has no pstricks_code method"%(str(graph))
                 raise
         self.separator_list.fusion(list_used_separators,"PSTRICKS CODE")
-
-    @lazy_attribute
-    def pstricks_code(self):
-        r"""
-        Return the pstricks code that has to appears between \begin{pspicture} and \end{pspicture}.
-
-        This is a lazy_attribute and perform non trivial task changing the state
-        of many other attributes of `self`.
-        Among other it changes the bounding box.
-
-        This is called by :func:`contenu_pstricks`
-        """
-        raise DeprecationWarning
-        self.create_language_code
-        return self.separator_list["PSTRICKS CODE"].code()
-
     def default_figure(self,name=None):
         """
         Create and return a Figure object that contains self.
@@ -1063,39 +997,13 @@ class pspicture(object):
         fig=self.default_figure(name+self.name)
         fig.conclude()
         fig.write_the_file()
-    def initialize_newwrite(self):
-        raise DeprecationWarning    # Augustus, 28, 2014
-        if not self.newwritedone :
-            code = r"""\makeatletter\@ifundefined{{{}}}{{\newwrite{{\{}}}}}{{}}\makeatother%""".format(self.newwriteName,self.newwriteName)
-            self.add_latex_line(code,"WRITE_AND_LABEL")
-
-            code="\immediate\openout\{}={}%".format(self.newwriteName,self.interWriteFile)
-            self.add_latex_line(code,"OPEN_WRITE_AND_LABEL")
-
-            code=r"\immediate\closeout\{}%".format(self.newwriteName)+"\n"
-            self.add_latex_line(code,"CLOSE_WRITE_AND_LABEL",add_line_jump=False)
-            self.newwriteDone = True
-
-            # Now we check that the file phystricks.aux exists. If not, we create it.
-            exist_aux = os.path.isfile(self.interWriteFile)
-            if not exist_aux:
-                f=open(self.interWriteFile,"w")
-                #f.write("a:b-")
-                f.write("default:content-")
-                f.close()
-
     def initialize_counter(self):
         if not self.counterDone:
             # make LaTeX test if the counter exist before to create it. 
             code = r"""\makeatletter\@ifundefined{{c@{}}}{{\newcounter{{{}}}}}{{}}\makeatother%""".format(counterName(),counterName())       
             self.add_latex_line(code,"WRITE_AND_LABEL")
             self.counterDone = True
-    def initialize_newlength(self):
-        raise DeprecationWarning   # Augustus, 28, 2014
-        if not self.newlengthDone :
-            code =r"""\makeatletter\@ifundefined{{{}}}{{\newlength{{\{}}}}}{{}}\makeatother%""".format(newlengthName(),newlengthName())
-            self.add_latex_line(code,"OPEN_WRITE_AND_LABEL")
-            self.newlengthDone = True
+
     def makeWriteValue(self,Id,value):
         r"""Ask LaTeX to write the result of `value` into the standard auxiliary file with identifier `Id`
 

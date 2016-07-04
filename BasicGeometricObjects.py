@@ -32,32 +32,6 @@ from phystricks.ObjectGraph import ObjectGraph
 
 var=WrapperStr(var)
 
-def SubstitutionMathPsTricks(fx):
-    DeprecationWarning
-    listeSubst = []
-    listeSubst.append(["**","^"])
-    listeSubst.append(["math.exp","2.718281828459045^"])
-    listeSubst.append(["e^","2.718281828459045^"])
-    for i in range(1,10):   
-        listeSubst.append(["math.log"+str(i),str(0.43429448190325*math.log(i))+"*log"])
-    listeSubst.append(["math.log","2.302585092994046*log"])     # because \psplot[]{1}{5}{log(x)} draws the logarithm in basis 10.
-    listeSubst.append(["log","2.302585092994046*log"])  
-    # Pour rappel, la formule est log_b(x)=log_a(x)/log_a(b)
-    listeSubst.append(["math.pi","3.141592653589793"])
-    listeSubst.append(["pi","3.141516"])
-    listeSubst.append(["math.cosh","COSH"])
-    listeSubst.append(["math.tan","TAN"])
-    listeSubst.append(["math.sinh","SINH"])
-    listeSubst.append(["math.sinc","SINC"])
-    listeSubst.append(["arccos","acos"])        # See the documentation of pst-math package
-    listeSubst.append(["arcsin","asin"])
-    listeSubst.append(["arctan","atan"])
-    listeSubst.append(["math.",""])
-    a = fx
-    for s in listeSubst :
-        a = a.replace(s[0],s[1])
-    return a
-
 def genericBracketAttributeToLanguage(attr,language):
     if language=="tikz":
         if attr=="plotpoints":
