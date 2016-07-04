@@ -368,7 +368,7 @@ class figure(object):
             if len(self.record_pspicture)==1:
                 pspict=self.record_pspicture[0]
                 visual_xsize=pspict.visual_xsize()      # By the way, this is a reason why we cannot do this before to have
-                                                        # concluded the pictute.
+                                                        # concluded the picture.
                 text=text.replace("WIDTH",str(n(visual_xsize,3))+"cm")
             a.append(text)
         text = "\n".join(a)
