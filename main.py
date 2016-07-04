@@ -378,7 +378,7 @@ class figure(object):
         code = r"""\ifthenelse{\isundefined{\NWN}}{\newwrite{\NWN}}{}""".replace("NWN",self.newwriteName)
         self.add_latex_line(code,"OPEN_WRITE_AND_LABEL")
 
-        code =r"""\ifthenelse{\isundefined{\NLN}}{\newlength{\NLN}}{}""".replace("NLN","newlengthName()")
+        code =r"""\ifthenelse{\isundefined{\NLN}}{\newlength{\NLN}}{}""".replace("NLN",newlengthName())
         self.add_latex_line(code,"OPEN_WRITE_AND_LABEL")
 
         code="\immediate\openout\{}={}%".format(self.newwriteName,self.interWriteFile)
