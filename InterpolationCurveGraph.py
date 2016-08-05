@@ -37,8 +37,10 @@ class InterpolationCurveGraph(ObjectGraph):
         if self.context_object is None:
             self.contex_object=self
         self.mode=mode
+        self._minmax_data=None
     def representativePoints(self):
         return self.points_list
+    @lazy_attribute
     def get_minmax_data(self):
         """
         Return a dictionary whose keys give the xmin, xmax, ymin, and ymax
@@ -57,19 +59,17 @@ class InterpolationCurveGraph(ObjectGraph):
         xmax=max([P.x for P in self.points_list])
         ymin=min([P.y for P in self.points_list])
         ymax=max([P.y for P in self.points_list])
-        if dict:
-            from SmallComputations import MyMinMax
-            return MyMinMax({'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax})
-        else:
-            return xmin,xmax,ymin,ymax
+
+        from SmallComputations import MyMinMax
+        return MyMinMax({'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax})
     def xmin(self):
-        return self.get_minmax_data()['xmin']
+        return self.get_minmax_data['xmin']
     def xmax(self):
-        return self.get_minmax_data()['xmax']
+        return self.get_minmax_data['xmax']
     def ymin(self):
-        return self.get_minmax_data()['ymin']
+        return self.get_minmax_data['ymin']
     def ymax(self):
-        return self.get_minmax_data()['ymax']
+        return self.get_minmax_data['ymax']
     def mark_point(self,pspict=None):
         return self.points_list[-1]
     def bounding_box(self,pspict=None):
