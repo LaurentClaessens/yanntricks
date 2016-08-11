@@ -46,8 +46,10 @@ from phystricksRVKFooDxrqYXAX import RVKFooDxrqYXAX
 from phystricksPFCUoorQhitKoJ import PFCUoorQhitKoJ
 from phystricksEXIIooJzzoJeai import EXIIooJzzoJeai
 from phystricksJSYWooQYduLVLS import JSYWooQYduLVLS
+from phystricksQIPRoolQCEnZdx import QIPRoolQCEnZdx
 
 figures_list=[]
+figures_list.append(QIPRoolQCEnZdx)
 figures_list.append(YOWDooyeyOJyml)
 figures_list.append(PFCUoorQhitKoJ)
 figures_list.append(QIXEooejrojKjo)
@@ -70,7 +72,6 @@ figures_list.append(ParametricOne)
 figures_list.append(ParametricTwo)
 figures_list.append(VectorOne)
 figures_list.append(TRJEooPRoLnEiG)
-figures_list.append(QRXCooUmnlhkvh)
 figures_list.append(UREIooqNGBXtHg)
 figures_list.append(DEIToomZFknFmn)
 figures_list.append(QNHAooSYgkWVhJ)
@@ -85,6 +86,7 @@ figures_list.append(LVPSoozFTyaeCG)
 figures_list.append(CUZFooGqZLaAEp)
 figures_list.append(JSYWooQYduLVLS)
 figures_list.append(LWVXooPyIlOKNd)
+figures_list.append(QRXCooUmnlhkvh)
 """
 figures_list.append(<++>)
 figures_list.append(<++>)

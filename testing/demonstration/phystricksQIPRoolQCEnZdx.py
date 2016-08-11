@@ -2,51 +2,33 @@
 from phystricks import *
 def QIPRoolQCEnZdx():
     pspict,fig = SinglePicture("QIPRoolQCEnZdx")
-    #pspict.dilatation_X(1)
-    #pspict.dilatation_Y(1)
     pspict.dilatation(1)
 
-    x=var('x')
-    P=Point(0,0)
+    A=Point(0,0)
+    C=Point(3,0)
+    aC=40
+    aA=110
+    interm1=Circle(A,2).get_point(aA)
+    interm2=Circle(C,2).get_point(180-aC)
 
-    pspict.DrawGraphs(P)
-    pspict.DrawDefaultAxes()
+    B=Intersection( Segment(A,interm1), Segment(  C,interm2 ))[0]
+
+    trig=Polygon(A,B,C)
+    trig.put_mark(0.2,pspict=pspict)
+
+    for P in trig.vertices:
+        P.parameters.symbol=""
+
+    angA=Angle(C,A,B,r=0.3)
+    angB=Angle(A,B,C,r=0.3)
+    angC=Angle(B,C,A,r=0.3)
+
+    angA.put_mark(0.1,None,"\SI{"+str(aA)+"}{\degree}",automatic_place=(pspict,"center"))
+    #angB.put_mark(0.2,None,"\SI{120}{\degree}",automatic_place=(pspict,""))
+    angC.put_mark(0.2,None,"\SI{"+str(aC)+"}{\degree}",automatic_place=(pspict,""))
+
+    pspict.comment="Les 110 et 40 sur les angles sont à peu près bien placés. Sauf le 'degré' du 40 qui frôle un peu [BC]."
+    pspict.DrawGraphs(trig,angA,angB,angC)
     fig.no_figure()
     fig.conclude()
     fig.write_the_file()
-
-----------------
-    pspicts,fig = MultiplePictures("QIPRoolQCEnZdx",3)
-    pspicts[0].mother.caption="<+caption1+>"
-    pspicts[1].mother.caption="<+caption2+>"
-    pspicts[2].mother.caption="<+caption3+>"
-
-    for psp in pspicts:
-        psp.dilatation_X(1)
-        psp.dilatation_Y(1)
-
-    <+Définition des objets+>
-
-    for psp in pspicts:
-        psp.DrawDefaultAxes()
-
-    fig.conclude()
-    fig.write_the_file()
-
-------------------------------
-
-    pspicts,figs = IndependentPictures("QIPRoolQCEnZdx",3)
-
-    for psp in pspicts:
-        psp.dilatation(1)
-
-    <+Définition des objets+>
-
-    for psp in pspicts:
-        psp.DrawDefaultAxes()
-
-    for fig in figs:
-        fig.no_figure()
-        fig.conclude()
-        fig.write_the_file()
-

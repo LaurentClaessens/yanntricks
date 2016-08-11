@@ -2,8 +2,6 @@
 from phystricks import *
 def QRXCooUmnlhkvh():
     pspict,fig = SinglePicture("QRXCooUmnlhkvh")
-    #pspict.dilatation_X(1)
-    #pspict.dilatation_Y(1)
     pspict.dilatation(1)
 
     x=var('x')
@@ -17,3 +15,6 @@ def QRXCooUmnlhkvh():
     fig.no_figure()
     fig.conclude()
     fig.write_the_file()
+
+# TODO :
+# here we compute twice the bounding box of the mark. Memoizing could be difficult because in multi-picture functions, the same bounding box can be called with different pspict and then produce different results.

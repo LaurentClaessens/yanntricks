@@ -17,6 +17,6 @@ This document is only for testing and demonstration purpose.
 Launch twice the following commands.
 ```bash
 ./figures_demo.py --all
-pytex lst_actu.py --no-external
+pytex lst_actu.py --no-external --all
 ```
 The program `pytex` makes the patching for you.
