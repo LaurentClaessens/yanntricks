@@ -32,6 +32,7 @@ testing/testing_pictures/pytextools.xml
 testing/testing_pictures/figures_testing.py
 testing/testing_pictures/phystricks*.py
 testing/testing_pictures/Inter_*
+testing/testing_pictures/travail.txt
 testing/demonstration/0-*
 testing/demonstration/Inter_*
 testing/demonstration/*.aux
@@ -43,6 +44,7 @@ testing/demonstration/*.pdf
 testing/demonstration/tikzFIG*
 testing/demonstration/*.swo
 testing/testing_pictures/fp081206-28.pdf
+testing/demonstration/travail.txt
 Inter_*
 *.comment
 *.pstricks
