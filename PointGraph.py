@@ -428,6 +428,7 @@ class PointGraph(ObjectGraph):
         Yradius=0.1/yunit
         bb = BoundingBox(Point(self.x-Xradius,self.y-Yradius),Point(self.x+Xradius,self.y+Yradius))
         for P in self.record_add_to_bb:
+            print("ooZWUKooPNfsMa",P)
             bb.AddPoint(P)
         return bb
     def math_bounding_box(self,pspict=None):
@@ -439,8 +440,6 @@ class PointGraph(ObjectGraph):
     def tikz_code(self,pspict=None):
         symbol_dict={}
         symbol_dict[None]="$\\bullet$"
-        #symbol_dict[None]="$\\times$"       # This change of default is from November 24, 2014
-                                             # Back to the "bullet" default March 5, 2016
         symbol_dict["*"]="$\\bullet$"
         symbol_dict["|"]="$|$"
         symbol_dict["x"]="$\\times$"

@@ -53,7 +53,6 @@ class InterpolationCurveGraph(ObjectGraph):
         sage: n=400
         sage: InterpolationCurve([C.get_point(i*SR(360)/n,advised=False) for i in range(n)]).get_minmax_data()
         {'xmax': 1.0, 'xmin': -1.0, 'ymax': 1.0, 'ymin': -1.0}
-
         """
         xmin=min([P.x for P in self.points_list])
         xmax=max([P.x for P in self.points_list])

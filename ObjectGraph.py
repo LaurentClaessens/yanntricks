@@ -183,14 +183,10 @@ class ObjectGraph(object):
                     l.append(l_attr+"="+str(value)+"pt")
                 else:
                     l.append(l_attr+"="+str(value))
-
-        #for opt in self.options.DicoOptions.keys():
-        #    l.append( opt+"="+str(self.options.DicoOptions[opt]) )
-
         code=",".join(l)
-
         return code
     def action_on_pspict(self,pspict):
+        # position 3598-30738
         for obj in self.added_objects :
             pspict.DrawGraphs(obj)
         # One cannot make try ... except AttributeError since it should silently pass a real AttributeError in the implementation if specific_action_on_pspict

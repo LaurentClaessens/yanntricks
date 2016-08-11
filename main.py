@@ -918,9 +918,6 @@ class pspicture(object):
             # This allow to enlarge the BB by hand with something like
             #    pspict.math_BB.ymax+=1
             # placed after DrawGraph
-            #if not isinstance(x.graph,BasicGeometricObjects.Mark):
-            #    self.math_BB.append(x.graph,self)
-
 
         # STEP : add the axes
         if self.draw_default_axes:
@@ -1011,8 +1008,7 @@ class pspicture(object):
     @lazy_attribute
     def id_values_dict(self):
         """
-        Build the dictionary of stored values in the auxiliary file
-        and rewrite that file.
+        Build the dictionary of stored values in the auxiliary file and rewrite that file.
         """
         d={}
         try :
@@ -1200,12 +1196,18 @@ class pspicture(object):
                 separator_name="DEFAULT"
         x=DrawElement(graph,separator_name)
         self.record_draw_graph.append(x)
-        try :
-            if graph.marque:
-                x=DrawElement(graph.mark,separator_name)
-                self.record_draw_graph.append(x)
-        except AttributeError,msg :
-            pass   # Happens when the graph has no mark (most of time)
+
+        # If an object has a mark, it the latter is already in the 'added_objects' list and the mark is already passed to a DrawGraph.
+        # Adding here the mark to the "record_draw_graph" list make pass twice by the computation of its bounding box (and draw it twice)
+        # Augustus 8, 2016
+        # See position 3598-30738
+
+        #try :
+        #    if graph.marque:
+        #        x=DrawElement(graph.mark,separator_name)
+        #        self.record_draw_graph.append(x)
+        #except AttributeError,msg :
+        #    pass   # Happens when the graph has no mark (most of time)
 
         self.math_BB.append(graph,self)
         graph.action_on_pspict(self)

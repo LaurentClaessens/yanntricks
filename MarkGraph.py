@@ -49,7 +49,6 @@ class MarkGraph(object):
         else :
             self.x=self.dist*cos(alpha)
             self.y=self.dist*sin(alpha)
-
     def central_point(self,pspict=None):
         """
         Return the central point of the mark, that is the point where the mark arrives.
@@ -125,7 +124,6 @@ class MarkGraph(object):
         """
         return self.graph.math_bounding_box(pspict)
     def bounding_box(self,pspict=None):
-
         central_point=self.central_point(pspict)
         if not central_point:
             print("No central point. Parent =",self.parent)
