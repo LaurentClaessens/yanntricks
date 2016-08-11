@@ -45,18 +45,21 @@ class MeasureLengthGraph(SegmentGraph):
         return BoundingBox()
         # I return a "empty" bounding box because I don't want to
         # take the measures in consideration when creating the axes.
-        #return self.mseg.math_bounding_box(pspict)
-        #return BoundingBox()
     def bounding_box(self,pspict=None):
         bb=self.mseg.bounding_box(pspict)
-        for ob in self.added_objects :
-            bb.AddBB(ob.bounding_box(pspict))
-        if self.marque:
-            C=self.mseg.center()
-            C.marque=self.marque
-            C.mark=self.mark
-            C.mark.graph=C
-            bb.AddBB(C.bounding_box(pspict))
+
+        # The other objects are passed to DrawGraphs, and thus their BB is
+        # already taken into account.
+        # Augustus 8, 2016
+
+        #for ob in self.added_objects :
+        #    bb.AddBB(ob.bounding_box(pspict))
+        #if self.marque:
+        #    C=self.mseg.center()
+        #    C.marque=self.marque
+        #    C.mark=self.mark
+        #    C.mark.graph=C
+        #    bb.AddBB(C.bounding_box(pspict))
         return bb
     def mark_point(self,pspict=None):
         return self.mseg.center()
