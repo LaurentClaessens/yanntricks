@@ -272,8 +272,7 @@ class BoundingBox(object):
         if P1 :
             self.add_math_object(P1,check_too_large=False)
             self.add_math_object(P2,check_too_large=False)
-        if parent :
-            raise DeprecationWarning,"Use mother instead"   # 2014
+
     def add_object(self,obj,pspict=None,fun="bounding_box",check_too_large=True):
         if self.math:
             fun="math_bounding_box"
@@ -359,22 +358,12 @@ class BoundingBox(object):
         if isinstance(graph,list):
             raise KeyError,"%s is a list"%graph
         if not pspict :
-            print "You should provide a pspict in order to add",graph
+            print "You should provide a pspict in order to add ",graph
         on=False
         if self.math:
-            try :
-                bb=graph.math_bounding_box(pspict=pspict)
-            except AttributeError :
-                on=True
-        if not self.math or on :
-            try :
-                bb=graph.bounding_box(pspict=pspict)
-            except (ValueError,AttributeError),msg :
-                print "Something got wrong with %s"%str(graph)
-                print msg
-                print("The graph : ",graph,type(graph))
-                raise
-        self.AddBB(bb)
+            self.AddBB(graph.math_bounding_box(pspict=pspict))
+        else :
+            self.AddBB(graph.bounding_box(pspict=pspict))
     def add_math_graph(self,graphe,pspict=None):
         try :
             self.addBB(graphe.math_bounding_box(pspict))
@@ -398,6 +387,18 @@ class BoundingBox(object):
         return BoundingBox(xmin=self.xmin,ymin=self.ymin,xmax=self.xmax,ymax=self.ymax)
     def __str__(self):
         return "<BoundingBox xmin={0},xmax={1}; ymin={2},ymax={3}>".format(self.xmin,self.xmax,self.ymin,self.ymax)
+    def __eq__(self,other):
+        if self.xmin!=other.xmin:
+            return False
+        if self.xmax!=other.xmax:
+            return False
+        if self.ymin!=other.ymin:
+            return False
+        if self.ymax!=other.ymax:
+            return False
+        return True
+    def __ne__(self,other):
+        return not self.__eq__(other)
     def __contains__(self,P):
         """
         Return True if the point P belongs to self and False otherwise.
