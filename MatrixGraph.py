@@ -214,13 +214,13 @@ class MatrixGraph(ObjectGraph):
         }
         \end{pmatrix}$
         """.replace("MATRIX_CODE",matrix_code)
-        P.put_mark(0,angle=0,text=fake_matrix,automatic_place=(pspict,"center"))
+        P.put_mark(0,angle=0,text=fake_matrix,pspict=pspict,position="center")
         pspict.DrawGraphs(P)
 
         for i in range(1,self.nlines+1):
             for j in range (1,self.ncolumns+1):
                 P=self.elements[i,j].central_point
-                P.put_mark(0,angle=0,text=self.elements[i,j].text,automatic_place=(pspict,"center"))
+                P.put_mark(0,angle=0,text=self.elements[i,j].text,pspict=pspict,position="center")
                 P.parameters.symbol=""
                 pspict.DrawGraphs(P)
 

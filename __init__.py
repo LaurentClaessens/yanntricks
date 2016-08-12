@@ -324,9 +324,6 @@ def BarDiagram(X,Y):
         raise ValueError,"X and Y must be of the same size."
     return BasicGeometricObjects.BarDiagramGraph(X,Y)
 
-def SudokuGrid(question,length=1):
-    return BasicGeometricObjects.SudokuGridGraph(question,length)
-
 def Text(P,text,hide=True):
     """
     A text.

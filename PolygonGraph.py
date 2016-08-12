@@ -79,7 +79,7 @@ class PolygonGraph(ObjectGraph):
             vect=(v1+v2).fix_size(dist)
             Q=P+vect
             angle=Segment(P,Q).angle()
-            P.put_mark(dist,angle,text,automatic_place=(pspict,"center"))
+            P.put_mark(dist,angle,text,pspict=pspict,position="center")
             self.added_objects.append(P)
     def math_bounding_box(self,pspict=None):
         bb=BoundingBox()
@@ -116,8 +116,6 @@ class RectangleGraph(PolygonGraph):
 
     graph_N returns the north side as a phystricks.Segment object
     The parameters of the four sides have to be set independently.
-
-    The drawing is done by \psframe, so that, in principle, all the options are available.
     """
     def __init__(self,NW,SE):
         #ObjectGraph.__init__(self,self)
@@ -143,8 +141,6 @@ class RectangleGraph(PolygonGraph):
         # Putting the style of the edges to none makes the 
         # CustomSurface (and then filling and hatching) not work because the edges'LaTeX code is use to create the tikz path
         # defining the surface.
-        #for s in self.edges:
-        #    s.parameters.style="none"
     def polygon(self):
         polygon= Polygon(self.NW,self.NE,self.SE,self.SW)
         polygon.parameters=self.parameters.copy()
@@ -158,7 +154,6 @@ class RectangleGraph(PolygonGraph):
     def default_associated_graph_class(self):
         """Return the class which is the Graph associated type"""
         return RectangleGraph
-
     def _segment(self,side):
         bare_name = "graph_"+side
         if not bare_name in self.__dict__.keys():
@@ -166,6 +161,11 @@ class RectangleGraph(PolygonGraph):
             #line.parameters=self.parameters.copy()
             self.__dict__[bare_name]=line
         return  self.__dict__[bare_name]
+    def action_on_pspict(self,pspict=None):
+        edges=[self.segment_N,self.segment_S,self.segment_E,self.segment_W]
+        for s in edges :
+            s.parameters=self.parameters
+        pspict.DrawGraphs(edges)
     def __getattr__(self,attrname):
         if "graph_" in attrname:
             return self._segment(attrname[6])

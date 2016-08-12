@@ -144,14 +144,14 @@ class CuboidGraph(object):
             self.segc2[2].parameters.style="dashed"
             self.segc2[1].parameters.style="dashed"
     def put_vertex_mark(self,pspict=None):
-        self.A.put_mark(0.2,135,"\( A\)",automatic_place=pspict)
-        self.B.put_mark(0.2,90,"\( B\)",automatic_place=pspict)
-        self.C.put_mark(0.2,-45,"\( C\)",automatic_place=pspict)
-        self.D.put_mark(0.2,180,"\( D\)",automatic_place=pspict)
-        self.E.put_mark(0.2,135,"\( E\)",automatic_place=pspict)
-        self.F.put_mark(0.2,0,"\( F\)",automatic_place=pspict)
-        self.G.put_mark(0.2,0,"\( G\)",automatic_place=pspict)
-        self.H.put_mark(0.2,135,"\( H\)",automatic_place=pspict)
+        self.A.put_mark(0.2,135,"\( A\)",pspict=pspict)
+        self.B.put_mark(0.2,90,"\( B\)",pspict=pspict)
+        self.C.put_mark(0.2,-45,"\( C\)",pspict=pspict)
+        self.D.put_mark(0.2,180,"\( D\)",pspict=pspict)
+        self.E.put_mark(0.2,135,"\( E\)",pspict=pspict)
+        self.F.put_mark(0.2,0,"\( F\)",pspict=pspict)
+        self.G.put_mark(0.2,0,"\( G\)",pspict=pspict)
+        self.H.put_mark(0.2,135,"\( H\)",pspict=pspict)
     def make_opaque(self):
         self.transparent=False
     def bounding_box(self,pspict=None):

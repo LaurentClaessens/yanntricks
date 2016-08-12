@@ -53,7 +53,6 @@ class AngleGraph(ObjectGraph):
         self.angleF=self.angleB
 
         ObjectGraph.__init__(self,self)
-        #self.mark_angle=self.media
         self._mark_angle=None
     def visual_angleIF(self,pspict):
         aI1=visual_polar_coordinates(Point( cos(self.angleI.radian),sin(self.angleI.radian) ),pspict).measure
@@ -94,6 +93,10 @@ class AngleGraph(ObjectGraph):
     def mark_point(self,pspict=None):
         ama=self.advised_mark_angle(pspict)
         return self.circle(visual=True,pspict=pspict).get_point(ama)
+    def get_mark(self,dist,angle,text,mark_point=None,added_angle=None,position="",pspict=None):
+        P=self.mark_point(pspict)
+        m=P.get_mark(dist,angle,text,position=position,pspict=pspict)
+        return m
     def action_on_pspict(self,pspict):
         circle=self.circle(visual=True,pspict=pspict)
         circle.parameters=self.parameters.copy()

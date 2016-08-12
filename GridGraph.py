@@ -18,7 +18,11 @@
 # copyright (c) Laurent Claessens, 2009-2016
 # email: laurent@claessens-donadello.eu
 
-class Grid(ObjectGraph):
+from sage.all import *
+from ObjectGraph import ObjectGraph
+from Constructors import *
+
+class GridGraph(ObjectGraph):
     """
     A grid. This is main lines to appear at regular interval on the picture.
 
@@ -53,7 +57,6 @@ class Grid(ObjectGraph):
             bb=BasicGeometricObjects.BoundingBox()
         ObjectGraph.__init__(self,self)
         self.BB = bb
-        self.options = Options()
         self.separator_name="GRID"
         self.add_option({"Dx":1,"Dy":1})        # Default values, have to be integer.
         self.Dx = self.options.DicoOptions["Dx"]
@@ -89,6 +92,8 @@ class Grid(ObjectGraph):
     def optionsParams(self):
         return self.options.sousOptions(["Dx","Dy"])
     def action_on_pspict(self,pspict):
+        from SmallComputations import MainGridArray
+        from SmallComputations import SubGridArray
         a = []
         # ++++++++++++ Border ++++++++ 
         if self.draw_border :

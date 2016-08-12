@@ -15,7 +15,7 @@ def VectorOne():
     v.append( v[1].rotation(-30) )
     v.append( v[1].orthogonal() )
 
-    v[1].put_mark(0.3,45,"$v$",automatic_place=(pspict,""))
+    v[1].put_mark(0.3,45,"$v$",pspict=pspict)
     v[1].parameters.color="brown"
     v[2].parameters.color="red"
     v[2].parameters.style = "dotted"

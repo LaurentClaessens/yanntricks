@@ -5,9 +5,9 @@ def Lines():
     A = Point(1,1)
     B = Point(5,2)
     C = Point(2,5)
-    A.put_mark(0.3,180,"$A$",automatic_place=(pspict,""))
-    B.put_mark(0.3,0,"$B$",automatic_place=(pspict,""))
-    C.put_mark(0.3,180,"$C$",automatic_place=(pspict,""))
+    A.put_mark(0.3,180,"$A$",pspict=pspict)
+    B.put_mark(0.3,0,"$B$",pspict=pspict)
+    C.put_mark(0.3,180,"$C$",pspict=pspict)
     pspict.DrawGraphs(A,B,C)
 
     S1 = Segment(A,B)
@@ -18,7 +18,7 @@ def Lines():
     pspict.DrawGraphs(S1,S2)
 
     P = Intersection(S1,S2)[0]
-    P.put_mark(0.3,-45,"$P$",automatic_place=(pspict,""))
+    P.put_mark(0.3,-45,"$P$",pspict=pspict)
 
     S3 = Segment(A,C)
     S4 = Segment(A,C)

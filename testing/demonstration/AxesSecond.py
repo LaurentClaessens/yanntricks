@@ -8,8 +8,8 @@ def AxesSecond():
         pspict.DrawGraphs(P)
 
     pspict.axes.no_graduation()
-    pspict.axes.single_axeX.put_mark(0.3,angle=-45,text="\( x\)",automatic_place=(pspict,""))
-    pspict.axes.single_axeY.put_mark(0.3,angle=0,text="\( y=\sinh(x)\)",automatic_place=(pspict,""))
+    pspict.axes.single_axeX.put_mark(0.3,angle=-45,text="\( x\)",pspict=pspict)
+    pspict.axes.single_axeY.put_mark(0.3,angle=0,text="\( y=\sinh(x)\)",pspict=pspict)
 
     pspict.DrawDefaultAxes()
     pspict.comment="The marks on the axes : \( x\) and \( y=\sinh(x)\)."

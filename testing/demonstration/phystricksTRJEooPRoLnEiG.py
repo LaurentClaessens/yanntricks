@@ -13,8 +13,8 @@ def TRJEooPRoLnEiG():
 
     textA="$ \lim_{s} (F\circ\gamma')  $"
     textB="$ K $"
-    A.put_mark(dist=0.3,angle=None,text=textA,automatic_place=(pspict,""))
-    B.put_mark(dist=0.3,angle=None,text=textB,automatic_place=(pspict,""))
+    A.put_mark(dist=0.3,angle=None,text=textA,pspict=pspict)
+    B.put_mark(dist=0.3,angle=None,text=textB,pspict=pspict)
 
     pspict.DrawGraphs(circle,A,tg,B)
 

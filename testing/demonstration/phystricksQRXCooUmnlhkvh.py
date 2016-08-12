@@ -7,7 +7,7 @@ def QRXCooUmnlhkvh():
     x=var('x')
     P=Point(1,3)
 
-    P.put_mark(0.2,angle=45,text="\(  e^{\int_{\Omega}\gamma}  \)",automatic_place=(pspict,"corner"))
+    P.put_mark(0.2,angle=45,text="\(  e^{\int_{\Omega}\gamma}  \)",pspict=pspict,position="corner")
     bb=P.mark.bounding_box(pspict)
     pspict.DrawGraphs(P,bb)
 

@@ -19,7 +19,7 @@ def LWVXooPyIlOKNd():
     square.parameters.color="red"
     h=square.edges[0].midpoint()
     h.parameters.symbol=""
-    h.put_mark(0.1,angle=90,text="\( \Delta_2(A)\)",automatic_place=(pspict,""))
+    h.put_mark(0.1,angle=90,text="\( \Delta_2(A)\)",pspict=pspict)
     pspict.DrawGraphs(matrix,square,h)
     
     for el in matrix.getElements() :

@@ -56,7 +56,7 @@ class ObjectGraph(object):
         from Parameters import Waviness
         self.wavy = True
         self.waviness = Waviness(self,dx,dy)
-    def get_mark(self,dist,angle,text,mark_point=None,automatic_place=False,added_angle=None,pspict=None):
+    def get_mark(self,dist,angle,text,mark_point=None,added_angle=None,position="",pspict=None):
 
         """
         - `angle` is degree or AngleMeasure
@@ -68,25 +68,10 @@ class ObjectGraph(object):
         from Constructors import Mark
         from MathStructures import AngleMeasure
 
-        if automatic_place==False:
-            if pspict:
-                automatic_place=(pspict,"")
-            else :
-                raise "You have to pass a pspicture"
         if self.marque:
             print("This is a second (or more) mark on the same point")
         self.marque = True
-        autom=automatic_place
         third=None
-        if not isinstance(autom,tuple):
-            print("You should not use 'automatic_place' like that")
-            pspict=autom
-            position=""
-        else :
-            pspict=automatic_place[0]
-            position=automatic_place[1]
-            if position=="for axes":
-                third=automatic_place[2]
 
         if angle is None :
             try :
@@ -114,22 +99,19 @@ class ObjectGraph(object):
                 position="E"
             if deg==180+90:
                 position="N"
-        mark=Mark(self,dist,angle,text,automatic_place=(pspict,position,third),mark_point=mark_point)
+        mark=Mark(self,dist,angle,text,mark_point=mark_point,position=position,pspict=pspict)
 
-        # We need to immediately add the LaTeX lines about box sizes, no waiting fig.conclude. This is to allow several pictures to use the same points and marks.  
-        # By the way, one cannot compute the self.mark.central_point() here because the axes are not yet computed.
-
+        # In each .psttricks file we need the lines that make compute the size of the text. Thus we call "get_box_size" for each.
         if not isinstance(pspict,list):
             pspict=[pspict]
-        if automatic_place :
-            for psp in pspict:
-                dimx,dimy = psp.get_box_size(text)
+        for psp in pspict:
+            dimx,dimy = psp.get_box_size(text)
         return mark
-    def put_mark(self,dist,angle,text,mark_point=None,automatic_place=False,added_angle=None,pspict=None):
+    def put_mark(self,dist,angle,text,mark_point=None,added_angle=None,position="",pspict=None):
         """
 
         If you want to put a mark on an object
-        P.put_mark(0.1,-90,"text",automatic_place=(pspict,"N"))
+        P.put_mark(0.1,-90,"text",pspict=pspict,position="N")
 
         mark_point is a function which returns the position of the mark point.
 
@@ -137,7 +119,7 @@ class ObjectGraph(object):
 
         - ``angle`` is given in degree.
         """
-        mark=self.get_mark(dist,angle,text,mark_point=mark_point,automatic_place=automatic_place,added_angle=added_angle,pspict=pspict)
+        mark=self.get_mark(dist,angle,text,mark_point=mark_point,added_angle=added_angle,position=position,pspict=pspict)
         self.added_objects.append(mark)
         self.mark=mark
     def add_option(self,opt):
@@ -186,12 +168,11 @@ class ObjectGraph(object):
         code=",".join(l)
         return code
     def action_on_pspict(self,pspict):
+        pass
+    def _draw_added_objects(self,pspict):
         # position 3598-30738
         for obj in self.added_objects :
             pspict.DrawGraphs(obj)
-        # One cannot make try ... except AttributeError since it should silently pass a real AttributeError in the implementation if specific_action_on_pspict
-        if "specific_action_on_pspict" in dir(self):
-            self.specific_action_on_pspict(pspict)
     def bounding_box(self,pspict):
         # The purpose of having a default bounding box is that some objects are uniquely build from 'action_on_pspict', so that the bounding box is not important to know
         # since the building block have theirs.

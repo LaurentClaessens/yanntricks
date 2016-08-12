@@ -24,11 +24,12 @@ from phystricks.ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
 
-class MarkGraph(object):
-    def __init__(self,graph,dist,angle,text,mark_point=None,automatic_place=False):
+class MarkGraph(ObjectGraph):
+    def __init__(self,graph,dist,angle,text,mark_point=None,position="",pspict=None):
         """
         Internally, the angle is recorded as 'AngleMeasure'.
         """
+        ObjectGraph.__init__(self,self)
         self._central_point=None
         self.mark_point=mark_point
         self.graph = graph
@@ -41,7 +42,8 @@ class MarkGraph(object):
 
         self.dist = dist
         self.text = text
-        self.automatic_place=automatic_place
+        self.position=position
+        self.pspict=pspict
         alpha=radian(angle)
         if isinstance(alpha,AngleMeasure):
             self.x=self.dist*cos(alpha.radian)
@@ -68,9 +70,9 @@ class MarkGraph(object):
 
         default=graph_mark_point.getVisualPolarPoint(self.dist,self.angle,pspict)
 
-        if self.automatic_place :
-            pspict=self.automatic_place[0]
-            position=self.automatic_place[1]
+        if self.position :
+            pspict=self.pspict
+            position=self.position
 
             # The idea here is to allow to use the same point in several pictures and to ask each figure to remember the box size.
             if not isinstance(pspict,list):
@@ -82,6 +84,7 @@ class MarkGraph(object):
                 dimy=float(dimy)/psp.yunit
 
             if position=="for axes":
+                raise
                 seg=self.automatic_place[2]
                 alpha=seg.angle().radian
                 d=self.dist+0.5*max(dimx*sin(alpha),dimy*cos(alpha))
@@ -141,8 +144,6 @@ class MarkGraph(object):
         bb.add_object(pt2,pspict)
         bb.parent=self
         return bb
-    def action_on_pspict(self,pspict=None):
-        pass
     def tikz_code(self,pspict=None):
         central_point=self.central_point(pspict)
         code="\draw "+central_point.coordinates(numerical=True,pspict=pspict)+" node {"+self.text+"};"

@@ -831,7 +831,7 @@ class pspicture(object):
         self.math_BB = BasicGeometricObjects.BoundingBox(math=True)     # self.BB and self.math_BB serve to add some objects by hand.
                                             # If you need the bounding box, use self.bounding_box()
                                             # or self.math_bounding_box()
-        self.axes=BasicGeometricObjects.Axes(Point(0,0),BasicGeometricObjects.BoundingBox(),pspict=self)
+        self.axes=Constructors.Axes(Point(0,0),Constructors.BoundingBox(),pspict=self)
         self.single_axeX=self.axes.single_axeX
         self.single_axeY=self.axes.single_axeY
         self.single_axeX.pspict=self
@@ -844,7 +844,7 @@ class pspicture(object):
         self.Mx_acceptable_BB=100
         self.My_acceptable_BB=100
 
-        self.grid = Grid(BasicGeometricObjects.BoundingBox())
+        self.grid = Constructors.Grid(Constructors.BoundingBox())
 
         # The order of declaration is important, because it is recorded in the Separator.number attribute.
         self.separator_list = SeparatorList()
@@ -1202,14 +1202,10 @@ class pspicture(object):
         # Augustus 8, 2016
         # See position 3598-30738
 
-        #try :
-        #    if graph.marque:
-        #        x=DrawElement(graph.mark,separator_name)
-        #        self.record_draw_graph.append(x)
-        #except AttributeError,msg :
-        #    pass   # Happens when the graph has no mark (most of time)
-
         self.math_BB.append(graph,self)
+        graph._draw_added_objects(self)
+        if "specific_action_on_pspict" in dir(self):
+            self.specific_action_on_pspict(pspict)
         graph.action_on_pspict(self)
     def DrawDefaultAxes(self):
         """

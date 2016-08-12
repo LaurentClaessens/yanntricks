@@ -12,7 +12,7 @@ def FunctionFive():
     pspict.DrawGraphs(f)
     for i in range(0,len(points)):
         P = points[i]
-        P.put_mark(0.2,None,"$P_{%s}$"%str(i),automatic_place=(pspict,""))
+        P.put_mark(0.2,None,"$P_{%s}$"%str(i),pspict=pspict)
         pspict.DrawGraphs(P)
 
     pspict.DrawDefaultAxes()

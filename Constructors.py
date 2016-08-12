@@ -214,7 +214,27 @@ def Circle(center,radius,angleI=0,angleF=360,visual=False,pspict=None):
 
 def CircleOA(O,A):
     """
-    return a circle with center 'O' and passing through the point 'A'
+    From the centrer O and a point A, return the circle.
+
+    INPUT:
+
+    - ``O`` - a point that will be the center of the circle.
+    
+    - ``A`` - a point on the circle.
+
+    OUTPUT:
+
+    A circle ready to be drawn of type :class:`CircleGraph`.
+
+    EXAMPLES::
+
+        sage: from phystricks import *
+        sage: A=Point(2,1)
+        sage: O=Point(0,0)
+        sage: circle=CircleOA(O,A)
+        sage: circle.radius
+        sqrt(5)
+
     """
     radius=Distance(O,A)
     return Circle(O,radius)
@@ -272,7 +292,9 @@ class BoundingBox(object):
         if P1 :
             self.add_math_object(P1,check_too_large=False)
             self.add_math_object(P2,check_too_large=False)
-
+    # Because I do not want BoundingBox to inherit from ObjectGraph
+    def _draw_added_objects(self,pspict):
+        pass
     def add_object(self,obj,pspict=None,fun="bounding_box",check_too_large=True):
         if self.math:
             fun="math_bounding_box"
@@ -413,7 +435,7 @@ class BoundingBox(object):
             return True
         return False
 
-def Mark(graph,dist,angle,text,mark_point=None,automatic_place=False):
+def Mark(graph,dist,angle,text,mark_point=None,position="",pspict=None):
     """
     Describe a mark on a point.
 
@@ -427,7 +449,7 @@ def Mark(graph,dist,angle,text,mark_point=None,automatic_place=False):
     - ``dist`` - the distance between `graph.mark_point()` and the mark.
     - ``angle`` - the angle given in degree or `AngleMeasure`.
     - ``text`` - the text to be printed on the mark. This is typically a LaTeX stuff like "$P$".
-    - ``automatic_place`` - this is a tuple (pspict,anchor) where pspict is the pspicture in which we are working and ̣`anchor` is one of "corner","N","S","W","E" or special cases (see below).
+    - ``position`` - is one of "corner","N","S","W","E" or special cases (see below).
 
             - "corner" will put the mark at the distance such that the corner of the bounding box is at the (relative) position (dist;angle) instead of the center of the mark.
             - "N" will put the mark in such a way that the center of the north side of the bounding box is at the position (dist;angle).
@@ -435,9 +457,10 @@ def Mark(graph,dist,angle,text,mark_point=None,automatic_place=False):
             - "for axes". In this case we expect to have a 3-tuple `(pspict,"for axes",segment)` where `segment` is a segment (typically the segment of an axe).  In this case, we suppose `self.angle` to be orthogonal to the segment.  The mark will be put sufficiently far for the bounding box not to cross the segment.
 
          What is done is that the closest corner of the bounding box is at position (dist;angle) from the point.
+    - ``pspict`` - the pspict in which the mark has to be computed and drawn.
     """
     import MarkGraph
-    return MarkGraph.MarkGraph(graph,dist,angle,text,mark_point=mark_point,automatic_place=automatic_place)
+    return MarkGraph.MarkGraph(graph,dist,angle,text,mark_point=mark_point,position=position,pspict=pspict)
 
 def AngleAOB(A,O,B,r=None):
     """
@@ -899,6 +922,10 @@ def Cuboid(op,P,a,b,c):
     from PerspectiveGraphs import CuboidGraph
     return CuboidGraph(op,P,a,b,c)
 
+def Grid(bb):
+    from GridGraph import GridGraph
+    return GridGraph(bb)
+
 def Axes(C,bb,pspict=None):
     """
     Describe a system of axes (two axes).
@@ -1243,6 +1270,10 @@ def extract_interval_information(curve):
         # we are thus returning 'curve.angleI.radian' instead of 'curve.angleI'
         return curve.angleI.radian,curve.angleF.radian
     return None,None
+
+def SudokuGrid(question,length=1):
+    from SudokuGridGraph import SudokuGridGraph
+    return SudokuGridGraph(question,length)
 
 def phyMatrix(nlines,ncolumns):
     from MatrixGraph import MatrixGraph

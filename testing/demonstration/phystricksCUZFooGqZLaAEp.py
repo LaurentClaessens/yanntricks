@@ -10,7 +10,7 @@ def CUZFooGqZLaAEp():
     O=Point(0,0)
     lp=Segment( O,Circle(O,5).getPoint(t0) )
     P=lp.midpoint()
-    P.put_mark(0.3,angle=None,added_angle=0,text="\( P\)",automatic_place=(pspict,""))
+    P.put_mark(0.3,angle=None,added_angle=0,text="\( P\)",pspict=pspict)
 
     Gamma = NonAnalyticPointParametricCurve(  lambda t:Point(a*cos(t),b*sin(t)).rotation(t0)+P  ,0,pi  )
     Gamma.parameters.plotpoints=50

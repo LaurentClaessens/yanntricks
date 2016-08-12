@@ -20,7 +20,6 @@
 # copyright (c) Laurent Claessens, 2010-2016
 # email: laurent@claessens-donadello.eu
 
-
 from __future__ import division
 from __future__ import unicode_literals
 
@@ -723,7 +722,7 @@ class HistographGraph(ObjectGraph):
         pspict.axes.do_mx_enlarge=False
         pspict.axes.do_my_enlarge=False
         if self.legende :
-            pspict.axes.single_axeX.put_mark(0.5,-90,self.legende,automatic_place=(pspict,"N"))
+            pspict.axes.single_axeX.put_mark(0.5,-90,self.legende,pspict=pspict,position="N")
         else :
             print "Are you sure that you don't want a legend on your histogram ?"
         # The construction of the list 'values' is created in such a way not to have '1.0' instead of '1'.
@@ -739,11 +738,11 @@ class HistographGraph(ObjectGraph):
         for xx in values:
             P=Point(xx*self.xscale,0)
             P.parameters.symbol="|"
-            P.put_mark(0.2,-90,str(xx),automatic_place=(pspict,"N"))    # see 71011299 before to change this 0.2
+            P.put_mark(0.2,-90,str(xx),pspict=pspict,position="N")    # see 71011299 before to change this 0.2
             pspict.DrawGraphs(P)
         for box in self.box_list :
             P=box.rectangle.segment_N.mark_point()
-            P.put_mark(0.2,90,"$"+str(box.n)+"$",automatic_place=(pspict,"S"))
+            P.put_mark(0.2,90,"$"+str(box.n)+"$",pspict=pspict,position="S")
             P.parameters.symbol=""
             pspict.DrawGraphs(P)
     def bounding_box(self,pspict):
@@ -861,7 +860,7 @@ class BarDiagramGraph(object):
             for i,h in enumerate(self.Y):
                 P=Point(self.X[i],h)
                 P.parameters.symbol=""
-                P.put_mark(0.2,90,"\({{:.{}f}}\)".format(self.numbering_decimals).format(h),automatic_place=(pspict,"S"))
+                P.put_mark(0.2,90,"\({{:.{}f}}\)".format(self.numbering_decimals).format(h),pspict=pspict,position="S")
                 nb.append(P)
         return nb
     def action_on_pspict(self,pspict):
@@ -882,81 +881,6 @@ class BarDiagramGraph(object):
         for P in self.numbering_marks(pspict):
             bb.append(P.mark,pspict)
         return bb
-    def latex_code(self,language=None,pspict=None):
-        return ""
-
-def sudoku_substitution(tableau,symbol_list=[  str(k) for k in range(-4,5) ]):
-    """
-    From a string representing a sudoku grid,
-    1. remove empty lines
-    2. remove spaces
-    3. substitute 1..9 to the symbol_list
-    """
-    import string
-    lines = tableau.split("\n")[1:]
-    n_lines=[   l.replace(" ","") for l in lines if len(l)!=0  ]
-    nn_lines=[]
-    for l in n_lines :
-        a=[]
-        for c in l.split(","):
-            if  c in string.digits:
-                a.append(  symbol_list[int(c)-1])
-            else :
-                a.append(c)
-        nn_lines.append(",".join(a))
-    n_tableau="\n".join(nn_lines)
-    return n_tableau
-
-class SudokuGridGraph(object):
-    def __init__(self,question,length=1):
-        self.question=sudoku_substitution(question)
-        self.length=length       # length of a cell
-
-    def action_on_pspict(self,pspict):
-        import string
-
-        vlines=[]
-        hlines=[]
-        content=[]
-        numbering=[]
-
-        # Numbering (1,2,3, ... and A,B,C ...)
-        for i in range(0,9):
-            A=Point(  (i+1)*self.length-self.length/2,self.length/2  )
-            A.parameters.symbol=""
-            A.put_mark(0,0,string.uppercase[i],automatic_place=(pspict,""))
-            B=Point(-self.length/2,-i*self.length-self.length/2)
-            B.parameters.symbol=""
-            B.put_mark(0,0,string.digits[i+1],automatic_place=(pspict,""))
-            numbering.append(A)
-            numbering.append(B)
-
-        # Grid
-        for i in range(0,10):
-            v=Segment(Point(i*self.length,0),Point(i*self.length,-9*self.length))
-            h=Segment(Point(0,-i*self.length),Point(9*self.length,-i*self.length))
-            # for the subgrid
-            if i%3==0 :
-                v.parameters.linewidth=2
-                h.parameters.linewidth=2
-            vlines.append(v)
-            hlines.append(h)
-        # Content of the cells
-        lines = self.question.split("\n")
-        for i,li in enumerate(lines):
-            for j,c in enumerate(li.split(",")):
-                A=Point(   j*self.length+self.length/2, -i*self.length-self.length/2  )
-                A.parameters.symbol=""
-                if c=="i":
-                    A.put_mark(3*self.length/9,-90,"\ldots",automatic_place=(pspict,"N"))
-                if c in [  str(k) for k in range(-9,10)  ] :
-                    A.put_mark(0,0,c,automatic_place=(pspict,""))
-                content.append(A)
-        pspict.DrawGraphs(vlines,hlines,content,numbering)
-    def math_bounding_box(self,pspict):
-        return BoundingBox()
-    def bounding_box(self,pspict):
-        return BoundingBox()
     def latex_code(self,language=None,pspict=None):
         return ""
 

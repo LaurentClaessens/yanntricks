@@ -326,15 +326,15 @@ class SegmentGraph(ObjectGraph):
         v=AffineVector(P,self.F).fix_size(size)
         self.added_objects.append(v)
         #self.arrow_list.append(v)
-    def put_measure(self,measure_distance,mark_distance,mark_angle,name,automatic_place):
-        measure=self.get_measure(measure_distance,mark_distance,mark_angle,name,automatic_place)
+    def put_measure(self,measure_distance,mark_distance,mark_angle,name,position="",pspict=None):
+        measure=self.get_measure(measure_distance,mark_distance,mark_angle,name,position=position,pspict=pspict)
         self.added_objects.append(measure)
-    def get_measure(self,measure_distance,mark_distance,mark_angle,name,automatic_place):
+    def get_measure(self,measure_distance,mark_distance,mark_angle,name,position="",pspict=None):
         """
         The difference between 'put_measure' and 'get_measure' is that 'get_measure' return the measure graph while 'put_measure' add the measure graph to the segment.
 
         This allows constructions like
-        mesL=Segment(F,D).get_measure(-0.2,0.1,90,"\( 10\)",automatic_place=(pspict,"S"))
+        mesL=Segment(F,D).get_measure(-0.2,0.1,90,"\( 10\)",pspict=pspict,position="S")
         and then draw mesL. The Segment(F,D) object is not drawn.
 
         If 'mark_angle' is 'None', then the angle will be perpendicular to 'self'
@@ -342,7 +342,7 @@ class SegmentGraph(ObjectGraph):
         if mark_angle==None:
             mark_angle=self.angle()+90*degree
         measure=MeasureLength(self,measure_distance)
-        measure.put_mark(mark_distance,mark_angle,name,automatic_place=automatic_place)
+        measure.put_mark(mark_distance,mark_angle,name,position=position,pspict=pspict)
         return measure
     def put_code(self,n=1,d=0.1,l=0.1,angle=45,pspict=None):
         """
@@ -998,7 +998,7 @@ def _vector_latex_code(segment,language=None,pspict=None):
     if segment.marque :
         P = segment.F
         P.parameters.symbol = ""
-        mark=segment.mark       # This -1 is quite arbitrary, but there are many pictures with more than one mark.
-        P.put_mark(mark.dist,mark.angle,mark.text,automatic_place=(pspict,''))
+        mark=segment.mark      
+        P.put_mark(mark.dist,mark.angle,mark.text,pspict=pspict)
         a = a + P.latex_code(language,pspict)
     return a

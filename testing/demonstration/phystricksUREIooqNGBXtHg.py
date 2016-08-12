@@ -9,10 +9,10 @@ def UREIooqNGBXtHg():
     C=Point(3,0)
     O=Point(0,0)
 
-    A.put_mark(0.2,angle=None,text="\( A\)",automatic_place=(pspict,""))
-    B.put_mark(0.2,angle=None,text="\( B\)",automatic_place=(pspict,""))
-    C.put_mark(0.2,angle=-90,text="\( C\)",automatic_place=(pspict,""))
-    O.put_mark(0.2,angle=225,text="\( O\)",automatic_place=(pspict,""))
+    A.put_mark(0.2,angle=None,text="\( A\)",pspict=pspict)
+    B.put_mark(0.2,angle=None,text="\( B\)",pspict=pspict)
+    C.put_mark(0.2,angle=-90,text="\( C\)",pspict=pspict)
+    O.put_mark(0.2,angle=225,text="\( O\)",pspict=pspict)
 
     pspict.math_BB.append( Point(4,4),pspict=pspict )
 
