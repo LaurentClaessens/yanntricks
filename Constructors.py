@@ -1287,4 +1287,11 @@ def EllipseOAB(O,A,B):
     from EllipseGraph import EllipseGraph
     return EllipseGraph(O,A,B)
 
+def BarDiagram(X,Y):
+    if len(X) != len(Y):
+        raise ValueError,"X and Y must be of the same size."
+    from BarDiagramGraph import BarDiagramGraph
+    return BarDiagramGraph(X,Y)
+
+
 from Utilities import *
