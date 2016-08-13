@@ -1205,6 +1205,7 @@ class pspicture(object):
         self.math_BB.append(graph,self)
         graph._draw_added_objects(self)
         if "specific_action_on_pspict" in dir(self):
+            raise # Juste pour voir dans quel cas ...
             self.specific_action_on_pspict(pspict)
         graph.action_on_pspict(self)
     def DrawDefaultAxes(self):

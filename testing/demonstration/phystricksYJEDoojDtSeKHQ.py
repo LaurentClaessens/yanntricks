@@ -25,6 +25,7 @@ def YJEDoojDtSeKHQ():
     surface=SurfaceBetweenFunctions(f1,f2,mx=-x0,Mx=b)
     surface.parameters.hatched()
     surface.Fsegment.parameters.style="dotted"
+    surface.Fsegment.parameters.color="green"
     surface.parameters.hatch.color="cyan"
 
     pspict.DrawGraphs(vert,surface,f1,f2,I,J)

@@ -718,6 +718,7 @@ class HistographGraph(ObjectGraph):
                 x_list.append(b.d_xmax)
         return x_list
     def specific_action_on_pspict(self,pspict):
+        raise
         pspict.axes.no_graduation()
         pspict.axes.do_mx_enlarge=False
         pspict.axes.do_my_enlarge=False
@@ -768,6 +769,7 @@ class MoustacheGraph(ObjectGraph):
         self.minimum=minimum
         self.maximum=maximum
     def specific_action_on_pspict(self,pspict):
+        raise
         my=self.delta_y-self.h/2
         My=self.delta_y+self.h/2
         h1=Segment(Point(self.minimum,my),Point(self.minimum,My))
@@ -809,6 +811,7 @@ class BoxDiagramGraph(ObjectGraph):
         self.h=h
         self.delta_y=delta_y
     def specific_action_on_pspict(self,pspict):
+        raise
         my=self.delta_y-self.h/2
         My=self.delta_y+self.h/2
         h1=Segment(Point(self.minimum,my),Point(self.minimum,My))

@@ -142,7 +142,7 @@ class RightAngleGraph(ObjectGraph):
         return P1
 
     def specific_action_on_pspict(self,pspict):
-    
+        raise
         if False :          # No more used (April 23, 2015)
             circle=Circle(self.intersection,self.r)
             K=Intersection(circle,self.d1)

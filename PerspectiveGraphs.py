@@ -91,6 +91,7 @@ class Circle3DGraph(ObjectGraph):
     def math_bounding_box(self,pspict=None):
         return self.curve2d.math_bounding_box(pspict)
     def specific_action_on_pspict(self,pspict):
+        raise
         if not self.divide:
             pspict.DrawGraphs(self.curve2d)
         if self.divide:
@@ -99,8 +100,9 @@ class Circle3DGraph(ObjectGraph):
             c1.parameters.style="dashed"
             pspict.DrawGraphs(c1,c2)
 
-class CuboidGraph(object):
+class CuboidGraph(ObjectGraph):
     def __init__(self,op,P,a,b,c):
+        ObjectGraph.__init__(self,self)
         self.op=op
         self.P=P
         self.Px=P[0]

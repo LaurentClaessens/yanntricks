@@ -89,6 +89,7 @@ class PolygonGraph(ObjectGraph):
     def bounding_box(self,pspict=None):
         return self.math_bounding_box(pspict)
     def specific_action_on_pspict(self,pspict):
+        raise
         """
         If self.parameters.color is not None, it will be the color of the edges.
 

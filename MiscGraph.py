@@ -53,6 +53,7 @@ class FractionPieDiagramGraph(ObjectGraph):
     def latex_code(self,language=None,pspict=None):
         return ""
     def specific_action_on_pspict(self,pspict):
+        raise
         if self.denominator==self.numerator:
             cs=Circle(self.center,self.radius)
             cs.parameters.filled()
