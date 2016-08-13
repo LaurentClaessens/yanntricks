@@ -26,10 +26,6 @@ from Parameters import Options
 
 class ObjectGraph(object):
     """ This class is supposed to be used to create other "<Foo>Graph" by inheritance. It is a superclass. """
-    # self.record_add_to_bb is a list of points to be added to the bounding box.
-    # Typically, when a point has a mark, one can only know the size of the box at the end of the picture 
-    #(because of xunit, yunit that change when using dilatation)
-    # Thus if one wants to draw the bounding box, it has to be done at the end.
     def __init__(self,obj):
         self.obj = obj
         self.parameters = Parameters(self.obj)
@@ -109,7 +105,6 @@ class ObjectGraph(object):
         return mark
     def put_mark(self,dist,angle,text,mark_point=None,added_angle=None,position="",pspict=None):
         """
-
         If you want to put a mark on an object
         P.put_mark(0.1,-90,"text",pspict=pspict,position="N")
 
@@ -119,8 +114,17 @@ class ObjectGraph(object):
 
         - ``angle`` is given in degree.
         """
-        mark=self.get_mark(dist,angle,text,mark_point=mark_point,added_angle=added_angle,position=position,pspict=pspict)
-        self.added_objects.append(mark)
+
+        if not isinstance(pspict,list):
+            pspicts=[pspict]
+
+        for psp in pspicts
+            mark=self.get_mark(dist,angle,text,mark_point=mark_point,added_angle=added_angle,position=position,pspict=psp)
+            psp.DrawGraphs(mark)
+
+        # We do not add the mark to the added objects because it is already passed to DrawGraph.
+        #self.added_objects.append(mark)
+
         self.mark=mark
     def add_option(self,opt):
         self.options.add_option(opt)
