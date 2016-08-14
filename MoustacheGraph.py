@@ -20,6 +20,8 @@
 # copyright (c) Laurent Claessens, 2010-2016
 # email: laurent@claessens-donadello.eu
 
+from __future__ import division
+
 from ObjectGraph import ObjectGraph
 from Constructors import *
 

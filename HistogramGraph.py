@@ -20,6 +20,8 @@
 # copyright (c) Laurent Claessens, 2010-2016
 # email: laurent@claessens-donadello.eu
 
+from __future__ import division
+
 from ObjectGraph import ObjectGraph
 from Constructors import *
 
@@ -49,12 +51,10 @@ class HistogramBox(ObjectGraph):
         rect=Rectangle(mx=xmin,Mx=xmax,my=ymin,My=ymax)
         rect.parameters=self.parameters.copy()
         return rect
+    def action_on_pspict(self,pspict=None):
+        pspict.DrawGraphs(self.rectangle)
     def bounding_box(self,pspict=None):
         return self.rectangle.bounding_box(pspict)
-    def latex_code(self,language=None,pspict=None):
-        # The put_mark can only be done here (and not in self.rectangle()) because one needs the pspict.
-        return self.rectangle.latex_code(language=language,pspict=pspict)
-
 
 class HistogramGraph(ObjectGraph):
     def __init__(self,tuple_box_list):
@@ -101,8 +101,7 @@ class HistogramGraph(ObjectGraph):
             if b.d_xmax not in x_list :
                 x_list.append(b.d_xmax)
         return x_list
-    def specific_action_on_pspict(self,pspict):
-        raise
+    def action_on_pspict(self,pspict):
         pspict.axes.no_graduation()
         pspict.axes.do_mx_enlarge=False
         pspict.axes.do_my_enlarge=False
@@ -130,6 +129,7 @@ class HistogramGraph(ObjectGraph):
             P.put_mark(0.2,90,"$"+str(box.n)+"$",pspict=pspict,position="S")
             P.parameters.symbol=""
             pspict.DrawGraphs(P)
+            pspict.DrawGraphs(box)
     def bounding_box(self,pspict):
         bb=BoundingBox()
         for b in self.box_list:
@@ -137,7 +137,3 @@ class HistogramGraph(ObjectGraph):
         return bb
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict=pspict)
-    def latex_code(self,language=None,pspict=None):
-        a=["% Histogram"]
-        a.extend([x.latex_code(language=language,pspict=pspict) for x in self.box_list])
-        return "\n".join(a)
