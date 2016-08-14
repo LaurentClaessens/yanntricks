@@ -90,8 +90,7 @@ class Circle3DGraph(ObjectGraph):
         return self.curve2d.bounding_box(pspict)
     def math_bounding_box(self,pspict=None):
         return self.curve2d.math_bounding_box(pspict)
-    def specific_action_on_pspict(self,pspict):
-        raise
+    def action_on_pspict(self,pspict):
         if not self.divide:
             pspict.DrawGraphs(self.curve2d)
         if self.divide:
