@@ -306,16 +306,6 @@ class ObliqueProjection(object):
         """
         return Cuboid(self,P,a,b,c)
 
-def BoxDiagram(values,h,delta_y):
-    return BasicGeometricObjects.BoxDiagramGraph(values,h,delta_y)
-
-def Moustache(minimum,Q1,M,Q3,maximum,h,delta_y=0):
-    """
-    Q1 and Q3 are first and third quartiles; M is the median.
-    h is the size of the box
-    """
-    return BasicGeometricObjects.MoustacheGraph(minimum,Q1,M,Q3,maximum,h,delta_y)
-
 def Text(P,text,hide=True):
 
     """

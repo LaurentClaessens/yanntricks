@@ -1304,4 +1304,12 @@ def BoxDiagram(values,h,delta_y=0):
     from BoxDiagramGraph import BoxDiagramGraph
     return BoxDiagramGraph(values,h,delta_y)
 
+def Moustache(minimum,Q1,M,Q3,maximum,h,delta_y=0):
+    """
+    Q1 and Q3 are first and third quartiles; M is the median.
+    h is the size of the box
+    """
+    from MoustacheGraph import MoustacheGraph
+    return MoustacheGraph(minimum,Q1,M,Q3,maximum,h,delta_y)
+
 from Utilities import *

@@ -20,6 +20,9 @@
 # copyright (c) Laurent Claessens, 2010-2016
 # email: laurent@claessens-donadello.eu
 
+from ObjectGraph import ObjectGraph
+from Constructors import *
+
 class MoustacheGraph(ObjectGraph):
     def __init__(self,minimum,Q1,M,Q3,maximum,h,delta_y=0):
         ObjectGraph.__init__(self,self)
@@ -30,8 +33,7 @@ class MoustacheGraph(ObjectGraph):
         self.delta_y=delta_y
         self.minimum=minimum
         self.maximum=maximum
-    def specific_action_on_pspict(self,pspict):
-        raise
+    def action_on_pspict(self,pspict):
         my=self.delta_y-self.h/2
         My=self.delta_y+self.h/2
         h1=Segment(Point(self.minimum,my),Point(self.minimum,My))

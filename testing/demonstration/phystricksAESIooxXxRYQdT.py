@@ -39,6 +39,8 @@ def AESIooxXxRYQdT():
 
     DS_statistics(moustaches,pspict)
 
+    pspict.comment="Box diagrams of student graduation"
+
     fig.no_figure()
     fig.conclude()
     fig.write_the_file()
