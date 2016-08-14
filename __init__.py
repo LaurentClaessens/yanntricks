@@ -316,10 +316,8 @@ def Moustache(minimum,Q1,M,Q3,maximum,h,delta_y=0):
     """
     return BasicGeometricObjects.MoustacheGraph(minimum,Q1,M,Q3,maximum,h,delta_y)
 
-def Histogram(tuple_box_list):
-    return BasicGeometricObjects.HistographGraph(tuple_box_list)
-
 def Text(P,text,hide=True):
+
     """
     A text.
 

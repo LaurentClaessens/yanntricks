@@ -20,6 +20,42 @@
 # copyright (c) Laurent Claessens, 2010-2016
 # email: laurent@claessens-donadello.eu
 
+from ObjectGraph import ObjectGraph
+from Constructors import *
+
+class HistogramBox(ObjectGraph):
+    """
+    describes a box in an histogram.
+    """
+    def __init__(self,a,b,n,histo):
+        """
+        It is given by the initial value, the final value and the "surrounding" histogram
+        """
+        ObjectGraph.__init__(self,self)
+        self.d_xmin=a
+        self.d_xmax=b
+        self.n=n
+        self.histo=histo
+        self.size=self.d_xmax-self.d_xmin
+        self.th_height=self.n/self.size
+        self.length=None
+        self.height=None
+    @lazy_attribute
+    def rectangle(self):
+        xmin=self.histo.xscale*self.d_xmin
+        xmax=self.histo.xscale*self.d_xmax
+        ymin=0
+        ymax=self.histo.yscale*self.th_height
+        rect=Rectangle(mx=xmin,Mx=xmax,my=ymin,My=ymax)
+        rect.parameters=self.parameters.copy()
+        return rect
+    def bounding_box(self,pspict=None):
+        return self.rectangle.bounding_box(pspict)
+    def latex_code(self,language=None,pspict=None):
+        # The put_mark can only be done here (and not in self.rectangle()) because one needs the pspict.
+        return self.rectangle.latex_code(language=language,pspict=pspict)
+
+
 class HistogramGraph(ObjectGraph):
     def __init__(self,tuple_box_list):
         ObjectGraph.__init__(self,self)

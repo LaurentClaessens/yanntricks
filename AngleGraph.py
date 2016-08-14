@@ -118,7 +118,7 @@ class RightAngleGraph(ObjectGraph):
         self.d2=d2
 
         # If the intersection point is one of the initial or final point of d1 or d2, then the sorting
-        # in 'specific_action_on_pspict' does not work.
+        # in 'action_on_pspict' does not work.
         # This happens in RightAngle(  Segment(D,E),Segment(D,F),l=0.2, n1=1,n2=1 ) because the same point 'D' is given
         # for both d1 and d2.
         # We need d1.I, d1.F, d2.I and d2.F to be four distinct points.
@@ -140,24 +140,7 @@ class RightAngleGraph(ObjectGraph):
         
         rv=self.r*v
         return P1
-
-    def specific_action_on_pspict(self,pspict):
-        raise
-        if False :          # No more used (April 23, 2015)
-            circle=Circle(self.intersection,self.r)
-            K=Intersection(circle,self.d1)
-            K.sort(key=lambda P:Distance_sq(P,self.d1.I))
-            L=Intersection(circle,self.d2)
-            L.sort(key=lambda P:Distance_sq(P,self.d2.I))
-            if self.n1==0:
-                P1=K[0]
-            if self.n1==1:
-                P1=K[1]
-            if self.n2==0:
-                P2=L[0]
-            if self.n2==1:
-                P2=L[1]
-
+    def action_on_pspict(self,pspict):
         P1=self.inter_point(self.intersection,self.d1.F,self.n1,pspict)
         P2=self.inter_point(self.intersection,self.d2.F,self.n2,pspict)
 

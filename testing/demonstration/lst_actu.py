@@ -11,8 +11,7 @@ myRequest = LaTeXparser.PytexTools.Request("mesure")
 myRequest.original_filename="demo.tex"
 
 myRequest.ok_filenames_list=["e_pictures"]
-myRequest.ok_filenames_list.extend(["2_functions"])
-myRequest.ok_filenames_list.extend(["<++>"])
+myRequest.ok_filenames_list.extend(["3_specific"])
 
 
 myRequest.new_output_filename="0-actu.pdf"

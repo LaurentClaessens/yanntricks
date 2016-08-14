@@ -1300,7 +1300,7 @@ def Histogram(tuple_box_list):
     from HistogramGraph import HistogramGraph
     return HistogramGraph(tuple_box_list)
 
-def BoxDiagram(values,h,delta_y=0)
+def BoxDiagram(values,h,delta_y=0):
     from BoxDiagramGraph import BoxDiagramGraph
     return BoxDiagramGraph(values,h,delta_y)
 
