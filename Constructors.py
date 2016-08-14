@@ -1293,5 +1293,15 @@ def BarDiagram(X,Y):
     from BarDiagramGraph import BarDiagramGraph
     return BarDiagramGraph(X,Y)
 
+def Histogram(tuple_box_list):
+    """
+    An histogram is given by a list of tuple '(a,b,n)' where 'a' and 'b' are the extremal values of the box and 'n' is the number of elements in the box.
+    """
+    from HistogramGraph import HistogramGraph
+    return HistogramGraph(tuple_box_list)
+
+def BoxDiagram(values,h,delta_y=0)
+    from BoxDiagramGraph import BoxDiagramGraph
+    return BoxDiagramGraph(values,h,delta_y)
 
 from Utilities import *

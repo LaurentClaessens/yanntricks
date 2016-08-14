@@ -116,9 +116,9 @@ class ObjectGraph(object):
         """
 
         if not isinstance(pspict,list):
-            pspicts=[pspict]
+            pspict=[pspict]
 
-        for psp in pspicts
+        for psp in pspict:
             mark=self.get_mark(dist,angle,text,mark_point=mark_point,added_angle=added_angle,position=position,pspict=psp)
             psp.DrawGraphs(mark)
 
