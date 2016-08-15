@@ -17,7 +17,9 @@ In fact, I always create my pictures using an automatic script that choose the f
 
 ### Testing
 
+```bash
 rm *.pyc && rm phystricks*.py && rm *.pstricks&& rm *.comment&& rm LabelFig*.aux
+```
 
 ```bash
 ./create_testing.py

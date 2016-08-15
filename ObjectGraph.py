@@ -24,6 +24,18 @@ from sage.all import numerical_approx
 from Parameters import Parameters
 from Parameters import Options
 
+class AddedObject(object):
+    def __init__(self):
+        self.dico={}
+    def append(self,pspict,obj):
+        if pspict not in self.dico.keys():
+            self.dico[pspict]=[]
+        self.dico[pspict].append(obj)
+    def __getitem__(self,pspict):
+        if pspict in self.dico.keys():
+            return self.dico[pspict]
+        return []
+
 class ObjectGraph(object):
     """ This class is supposed to be used to create other "<Foo>Graph" by inheritance. It is a superclass. """
     def __init__(self,obj):
@@ -35,13 +47,12 @@ class ObjectGraph(object):
         self.marque = False
         self.draw_bounding_box=False
 
-
         self.record_add_to_bb=[]         
         self.separator_name="DEFAULT"
         self.in_math_bounding_box=True
         self.in_bounding_box=True
         self._draw_edges=False
-        self.added_objects=[]
+        self.added_objects=AddedObject()
 
         # removed on March 11, 2016
         #self.add_option("linecolor=black")
@@ -115,12 +126,22 @@ class ObjectGraph(object):
         - ``angle`` is given in degree.
         """
 
+        # We cannot do
+        # pspict.DrawGraphs(mark)
+        # here.
+        # Indeed let G be any graph and P a point. Consider
+        # P.put_mark(...)
+        # pspict.DrawGraphs(G,P)
+        # If we do 'pspict.DrawGraphs(mark)' here, the mark will be drawn *under* 'G' while the logic of the 'DrawGraphs' line should
+        # be to draw P and its mark *after* G.
+        # This is why we have this 'added_objects' mechanism.
+
         if not isinstance(pspict,list):
             pspict=[pspict]
 
         for psp in pspict:
             mark=self.get_mark(dist,angle,text,mark_point=mark_point,added_angle=added_angle,position=position,pspict=psp)
-            psp.DrawGraphs(mark)
+            self.added_objects.append(psp,mark)
 
         # We do not add the mark to the added objects because it is already passed to DrawGraph.
         #self.added_objects.append(mark)
@@ -175,11 +196,12 @@ class ObjectGraph(object):
         pass
     def _draw_added_objects(self,pspict):
         # position 3598-30738
-        for obj in self.added_objects :
+        for obj in self.added_objects[pspict] :
             pspict.DrawGraphs(obj)
     def bounding_box(self,pspict):
-        # The purpose of having a default bounding box is that some objects are uniquely build from 'action_on_pspict', so that the bounding box is not important to know
-        # since the building block have theirs.
+        # The purpose of having a default bounding box is that some objects
+        # are uniquely build from 'action_on_pspict', so that the bounding box 
+        # is not important to know  since the building block have theirs.
         from Constructors import BoundingBox
         return BoundingBox()
     def latex_code(self,language=None,pspict=None):

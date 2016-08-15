@@ -80,7 +80,7 @@ class PolygonGraph(ObjectGraph):
             Q=P+vect
             angle=Segment(P,Q).angle()
             P.put_mark(dist,angle,text,pspict=pspict,position="center")
-            self.added_objects.append(P)
+            self.added_objects.append(pspict,P)
     def math_bounding_box(self,pspict=None):
         bb=BoundingBox()
         for P in self.points_list:
