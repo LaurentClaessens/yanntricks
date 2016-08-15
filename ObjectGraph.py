@@ -28,9 +28,13 @@ class AddedObject(object):
     def __init__(self):
         self.dico={}
     def append(self,pspict,obj):
-        if pspict not in self.dico.keys():
-            self.dico[pspict]=[]
-        self.dico[pspict].append(obj)
+        if not isinstance(pspict,list):
+            pspict=[pspict]
+
+        for psp in pspict:
+            if psp not in self.dico.keys():
+                self.dico[psp]=[]
+            self.dico[psp].append(obj)
     def __getitem__(self,pspict):
         if pspict in self.dico.keys():
             return self.dico[pspict]

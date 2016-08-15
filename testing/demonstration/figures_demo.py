@@ -94,7 +94,6 @@ figures_list.append(CUZFooGqZLaAEp)
 figures_list.append(JSYWooQYduLVLS)
 figures_list.append(LWVXooPyIlOKNd)
 figures_list.append(QRXCooUmnlhkvh)
-figures_list=[]
 figures_list.append(VLEGoolDFCdZDU)
 figures_list.append(MXKAoozETwoiTe)
 figures_list.append(XBAUooFtMWukKr)
