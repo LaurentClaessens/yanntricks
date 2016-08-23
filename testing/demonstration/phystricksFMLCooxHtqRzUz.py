@@ -1,52 +1,39 @@
 # -*- coding: utf8 -*-
 from phystricks import *
+
+def rotation(angle,pts):
+    ptsp=[  x.rotation(angle) for x in pts  ]
+    return tuple(ptsp)
+
+def truc(A,B,C,D,points_names,angle,pspict):
+    A,B,C,D=rotation(angle,[A,B,C,D])
+
+    quadri=Polygon(A,B,C,D)
+    quadri.put_mark(0.2,points_names=points_names,pspict=pspict)
+
+    no_symbol(A,B,C,D)
+    return quadri
+    
 def FMLCooxHtqRzUz():
     pspict,fig = SinglePicture("FMLCooxHtqRzUz")
-    #pspict.dilatation_X(1)
-    #pspict.dilatation_Y(1)
+
     pspict.dilatation(1)
 
-    x=var('x')
-    P=Point(0,0)
+    O=Point(0,0)
+    L=O+(1,1)
+    N=O+O-L
+    K=O+(-4,1)
+    M=O+O-K
+    quadri=truc(K,L,M,N,points_names="KLMN",angle=-27,pspict=pspict)
 
-    pspict.DrawGraphs(P)
-    pspict.DrawDefaultAxes()
+    dig1=Segment(quadri.vertices[0],quadri.vertices[2])
+    dig2=Segment(quadri.vertices[1],quadri.vertices[3])
+
+    dig1.divide_in_two(n=2,d=0.1,l=0.2,angle=45,pspict=pspict)
+    dig2.divide_in_two(n=1,d=0.1,l=0.2,angle=45,pspict=pspict)
+    pspict.DrawGraphs(dig1,dig2,quadri)
+    pspict.comment="The segments KM is divided by // and the segment NL by a simple /."
+
     fig.no_figure()
     fig.conclude()
     fig.write_the_file()
-
-----------------
-    pspicts,fig = MultiplePictures("FMLCooxHtqRzUz",3)
-    pspicts[0].mother.caption="<+caption1+>"
-    pspicts[1].mother.caption="<+caption2+>"
-    pspicts[2].mother.caption="<+caption3+>"
-
-    for psp in pspicts:
-        psp.dilatation_X(1)
-        psp.dilatation_Y(1)
-
-    <+Définition des objets+>
-
-    for psp in pspicts:
-        psp.DrawDefaultAxes()
-
-    fig.conclude()
-    fig.write_the_file()
-
-------------------------------
-
-    pspicts,figs = IndependentPictures("FMLCooxHtqRzUz",3)
-
-    for psp in pspicts:
-        psp.dilatation(1)
-
-    <+Définition des objets+>
-
-    for psp in pspicts:
-        psp.DrawDefaultAxes()
-
-    for fig in figs:
-        fig.no_figure()
-        fig.conclude()
-        fig.write_the_file()
-

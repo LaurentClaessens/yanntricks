@@ -17,7 +17,7 @@ def RJDEoobOibtkfv():
     # Create the picture itself using the computed numbers :
     x=var('x')
     f=phyFunction(section*x).graph(0,xmax)
-    f.put_mark(0.2,angle=None,added_angle=0,text="\( {} \)".format(page),automatic_place=(pspict,""))
+    f.put_mark(0.2,angle=None,added_angle=0,text="\( {} \)".format(page),pspict=pspict)
 
 
     pspict.DrawGraphs(f)

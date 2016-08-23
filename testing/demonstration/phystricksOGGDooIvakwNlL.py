@@ -1,49 +1,42 @@
 # -*- coding: utf8 -*-
 from phystricks import *
 def OGGDooIvakwNlL():
-    pspict,fig = SinglePicture("OGGDooIvakwNlL")
-    #pspict.dilatation_X(1)
-    #pspict.dilatation_Y(1)
-    pspict.dilatation(1)
+    pspicts,figs = IndependentPictures("OGGDooIvakwNlL",2)
 
-    x=var('x')
-    P=Point(0,0)
-
-    pspict.DrawGraphs(P)
-    pspict.DrawDefaultAxes()
-    fig.no_figure()
-    fig.conclude()
-    fig.write_the_file()
-
-----------------
-    pspicts,fig = MultiplePictures("OGGDooIvakwNlL",3)
-    pspicts[0].mother.caption="<+caption1+>"
-    pspicts[1].mother.caption="<+caption2+>"
-    pspicts[2].mother.caption="<+caption3+>"
-
-    for psp in pspicts:
-        psp.dilatation_X(1)
-        psp.dilatation_Y(1)
-
-    <+Définition des objets+>
-
-    for psp in pspicts:
-        psp.DrawDefaultAxes()
-
-    fig.conclude()
-    fig.write_the_file()
-
-------------------------------
-
-    pspicts,figs = IndependentPictures("OGGDooIvakwNlL",3)
-
-    for psp in pspicts:
+    for psp in pspicts :
         psp.dilatation(1)
 
-    <+Définition des objets+>
+    A=Point(0,0)
+    B=A+(4,0)
+    C=A+(1,2)
+    D=A+C-B
 
-    for psp in pspicts:
-        psp.DrawDefaultAxes()
+    parall=Polygon(A,B,C,D)
+    parall.put_mark(0.2,pspict=pspicts)
+    diag1=Segment(A,C)
+
+    no_symbol(parall.vertices)
+
+    a1=AngleAOB(C,A,D,r=0.3)
+    a2=AngleAOB(B,A,C)
+    c1=AngleAOB(D,C,A,)
+    c2=AngleAOB(A,C,B,r=0.3)
+
+    a1.put_mark(0.2,angle=None,text="\( a_1\)",pspict=pspicts[0])
+    a2.put_mark(0.2,angle=None,text="\( a_2\)",pspict=pspicts[0])
+    c1.put_mark(0.2,angle=None,text="\( c_1\)",pspict=pspicts[0])
+    c2.put_mark(0.2,angle=None,text="\( c_2\)",pspict=pspicts[0])
+
+    a1.put_mark(0.2,angle=None,text="\( b\)",pspict=pspicts[1])
+    a2.put_mark(0.2,angle=None,text="\( a\)",pspict=pspicts[1])
+    c1.put_mark(0.2,angle=None,text="\( a\)",pspict=pspicts[1])
+    c2.put_mark(0.2,angle=None,text="\( b\)",pspict=pspicts[1])
+
+    pspicts[0].DrawGraphs(parall,diag1,a1,a2,c1,c2)
+    pspicts[1].DrawGraphs(parall,diag1,a1,a2,c1,c2)
+
+    pspicts[0].comment="The marks are $a_1,a_2,c_1,c_2$"
+    pspicts[1].comment="The marks are $b,a,a,b$"
 
     for fig in figs:
         fig.no_figure()

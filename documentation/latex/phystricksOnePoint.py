@@ -5,8 +5,8 @@ def OnePoint():
 
     P = Point(1,1)
     P.parameters.color = "red"
-    P.put_mark(dist=0.2,angle=30,text="\(P\)",automatic_place=(pspict,""))
-    P.put_mark(dist=0.2,angle=-90,text="\(Q\)",automatic_place=(pspict,""))
+    P.put_mark(dist=0.2,angle=30,text="\(P\)",pspict=pspict)
+    P.put_mark(dist=0.2,angle=-90,text="\(Q\)",pspict=pspict)
 
     pspict.DrawGraphs(P)
 

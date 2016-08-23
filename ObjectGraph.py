@@ -24,21 +24,34 @@ from sage.all import numerical_approx
 from Parameters import Parameters
 from Parameters import Options
 
-class AddedObject(object):
+class AddedObjects(object):
     def __init__(self):
         self.dico={}
+        self.dico[None]=[]          # The None list is the list of objects associated with all the pspicts. See the __getitem__ method.
     def append(self,pspict,obj):
         if not isinstance(pspict,list):
             pspict=[pspict]
-
         for psp in pspict:
             if psp not in self.dico.keys():
                 self.dico[psp]=[]
             self.dico[psp].append(obj)
+    def extend(self,pspict,objs):
+        for ob in objs :
+            self.append(pspict,ob)
+    def fusion(self,other):
+        """
+        other is an other AddedObjects instance.
+        """
+        if self is other :
+            raise
+        for psp,objs in other.dico.items():
+            self.extend(psp,objs)
     def __getitem__(self,pspict):
         if pspict in self.dico.keys():
-            return self.dico[pspict]
-        return []
+            a = self.dico[pspict]
+            a.extend(self.dico[None])
+            return a
+        return self[None]
 
 class ObjectGraph(object):
     """ This class is supposed to be used to create other "<Foo>Graph" by inheritance. It is a superclass. """
@@ -56,7 +69,7 @@ class ObjectGraph(object):
         self.in_math_bounding_box=True
         self.in_bounding_box=True
         self._draw_edges=False
-        self.added_objects=AddedObject()
+        self.added_objects=AddedObjects()
 
         # removed on March 11, 2016
         #self.add_option("linecolor=black")
@@ -79,8 +92,6 @@ class ObjectGraph(object):
         from Constructors import Mark
         from MathStructures import AngleMeasure
 
-        if self.marque:
-            print("This is a second (or more) mark on the same point")
         self.marque = True
         third=None
 

@@ -17,9 +17,13 @@ In fact, I always create my pictures using an automatic script that choose the f
 
 ### Testing
 
+First clean up your directory :
+
 ```bash
 rm *.pyc && rm phystricks*.py && rm *.pstricks&& rm *.comment&& rm LabelFig*.aux
 ```
+
+Then generate the scripts, create the pictures and compile the LaTeX file.
 
 ```bash
 ./create_testing.py
@@ -29,7 +33,7 @@ pytex lst_testing.py --all --no-external
 
 ### Make your big document
 
-cREATE YOur `documentation.py` module defining the following lists :
+Create your `documentation.py` module defining the following lists :
 
 * document_directories.  The list of directories in which you have pictures.
 * not_to_be_done. The list of function names that have not to be testes.

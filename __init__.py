@@ -96,7 +96,7 @@ from phystricks.SmallComputations import *
 
 # TODO : f=phyFunction(x**2+3*x-10), then  g=f/3 does not work.
 # TODO : In figureHYeBZVj, the grid begins at negative numbers. Why ? (see smath available on  https://github.com/LaurentClaessens/smath)
-# TODO : waving functions behaves badly when X and Y dilatations are differents. See figureHYeBZVj
+# TODO : waving functions behaves badly when X and Y dilatations are different. See figureHYeBZVj
 
 def no_symbol(*arg):
     for l in arg:
@@ -107,19 +107,27 @@ def no_symbol(*arg):
             l.parameters.symbol=""
 
 def get_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None):
-    """
-    Add the code for equal lenght between segments s1 and s2
-    """
-    c1=s1.get_code(n=n,d=d,l=l,pspict=pspict)
-    c2=s2.get_code(n=n,d=d,l=l,pspict=pspict)
-    return [c1,c2]
+    from ObjectGraph import AddedObjects
+    if not isinstance(pspict,list):
+        pspict=[pspict]
+    added1=AddedObjects()
+    added2=AddedObjects()
+    for psp in pspict:
+        c1=s1.get_code(n=n,d=d,l=l,pspict=psp)
+        c2=s2.get_code(n=n,d=d,l=l,pspict=psp)
+        added1.append(psp,c1)
+        added2.append(psp,c2)
+    return added1,added2
 
 def put_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None):
-    codes=get_equal_lengths_code(s1,s2,n,d,l,angle,pspict)
-    c1=codes[0]
-    c2=codes[1]
-    s1.added_objects.extend( c1 )
-    s2.added_objects.extend( c2 )
+    """
+    Add the code for equal length between segments s1 and s2
+    """
+    added=get_equal_lengths_code(s1,s2,n,d,l,angle,pspict)
+    c1=added[0]
+    c2=added[1]
+    s1.added_objects.fusion( c1 )
+    s2.added_objects.fusion( c2 )
 
 def GenericFigure(nom,script_filename=None):
     """

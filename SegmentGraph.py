@@ -313,7 +313,7 @@ class SegmentGraph(ObjectGraph):
         if advised:
             P._advised_mark_angle=self.angle().degree+90
         return P
-    def put_arrow(self,position=0.5,size=0.01):
+    def put_arrow(self,position=0.5,size=0.01,pspict=None):
         """
         Add a small arrow at the given position. `position` is a number between 0 and 1.
 
@@ -324,11 +324,10 @@ class SegmentGraph(ObjectGraph):
         """
         P=self.get_point_proportion(position,advised=False)
         v=AffineVector(P,self.F).fix_size(size)
-        self.added_objects.append(v)
-        #self.arrow_list.append(v)
+        self.added_objects.append(pspict,v)
     def put_measure(self,measure_distance,mark_distance,mark_angle,name,position="",pspict=None):
         measure=self.get_measure(measure_distance,mark_distance,mark_angle,name,position=position,pspict=pspict)
-        self.added_objects.append(measure)
+        self.added_objects.append(pspict,measure)
     def get_measure(self,measure_distance,mark_distance,mark_angle,name,position="",pspict=None):
         """
         The difference between 'put_measure' and 'get_measure' is that 'get_measure' return the measure graph while 'put_measure' add the measure graph to the segment.
@@ -354,7 +353,7 @@ class SegmentGraph(ObjectGraph):
         'angle' is the angle with 'self'.
         """
         ao=self.get_code(n=n,d=d,l=l,angle=angle,pspict=pspict)
-        self.added_objects.extend(ao)
+        self.added_objects.extend(pspict,ao)
     def get_code(self,n=1,d=0.1,l=0.1,angle=45,pspict=None):
         #TODO : the angle given here should be visual
         ao=[]
@@ -380,11 +379,11 @@ class SegmentGraph(ObjectGraph):
         s1.put_code(n=n,d=d,l=l,pspict=pspict)
         s2.put_code(n=n,d=d,l=l,pspict=pspict)
         a=s1.added_objects
-        a.extend(s2.added_objects)
+        a.fusion(s2.added_objects)
         return a
     def divide_in_two(self,n=1,d=0.1,l=0.1,angle=45,pspict=None):
         a=self.get_divide_in_two(n=n,d=d,l=l,angle=angle,pspict=pspict)
-        self.added_objects.extend( a )
+        self.added_objects.fusion(a)
     def Point(self):
         """
         Return the point X such that as free vector, 0->X == self
@@ -515,8 +514,8 @@ class SegmentGraph(ObjectGraph):
             s2=Segment(M,self.F)
             s1.put_code(n=code[0],d=code[1],l=code[2],angle=code[3],pspict=code[4])
             s2.put_code(n=code[0],d=code[1],l=code[2],angle=code[3],pspict=code[4])
-            seg.added_objects.append(s1)
-            seg.added_objects.append(s2)
+            seg.added_objects.append(code[4],s1)
+            seg.added_objects.append(code[4],s2)
         return seg
     def orthogonal(self,point=None):
         """
