@@ -94,7 +94,7 @@ class GenericCurve(object):
                 too_small=ell
         raise ShouldNotHappenException("I give up with this dichotomy")
 
-    def getRegularFunctionParameters( self, lmin,lmax,fun,df,initial_point=False,final_point=False,xunit=1,yunit=1 ):
+    def getRegularFunctionParameters( self, lmin,lmax,fun,df,initial_point=False,final_point=False,xunit=1,yunit=1,numerical=True ):
         """
         `fun` - is a function on the curve, expressed by the parameter.
 
@@ -122,9 +122,11 @@ class GenericCurve(object):
         while ll is not None :
             ll=Vcurve.getNextRegularFunctionParameters(ll,lmax,fun,df,xunit=1,yunit=1)
             if ll is not None:
+                if numerical :
+                    ll=numerical_approx(ll)
                 PIs.append(ll)
         return PIs
-    def getRegularLengthParameters(self,mll,Mll,dl,initial_point=False,final_point=False,xunit=1,yunit=1):
+    def getRegularLengthParameters(self,mll,Mll,dl,initial_point=False,final_point=False,xunit=1,yunit=1,numerical=True):
         """ 
         return a list of values of the parameter such that the corresponding points are equally spaced by dl.
         Here, we compute the distance using the method arc_length.
