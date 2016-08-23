@@ -146,7 +146,7 @@ class SingleAxeGraph(ObjectGraph):
         self.pspict=pspict
         self.options=Options()
         self.IsLabel=False
-        self.axes_unit=AxesUnit(self.base.length(),"")
+        self.axes_unit=AxesUnit(self.base.length,"")
         self.Dx=1
         self.arrows="->"
         self.graduation=True
@@ -273,6 +273,3 @@ class SingleAxeGraph(ObjectGraph):
         return "\n".join(c)
     def __str__(self):
         return "<SingleAxeGraph: C={0} base={1} mx={2} Mx={3}>".format(self.C,self.base,self.mx,self.Mx)
-
-
-

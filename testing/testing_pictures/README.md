@@ -23,10 +23,14 @@ First clean up your directory :
 rm *.pyc && rm phystricks*.py && rm *.pstricks&& rm *.comment&& rm LabelFig*.aux
 ```
 
-Then generate the scripts, create the pictures and compile the LaTeX file.
+Then generate the scripts
 
 ```bash
 ./create_testing.py
+```
+and create the pictures and compile the LaTeX file :
+
+```bash
 time ./figures_testing.py --all
 pytex lst_testing.py --all --no-external
 ```

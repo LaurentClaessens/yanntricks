@@ -141,7 +141,7 @@ class SegmentGraph(ObjectGraph):
     @lazy_attribute
     def length(self):
         """
-        return the length of the segment
+        return (a numerical approximation of) the length of the segment
 
         EXAMPLES::
 
@@ -149,6 +149,12 @@ class SegmentGraph(ObjectGraph):
             sage: Segment(Point(1,1),Point(2,2)).length
             sqrt(2)
 
+        """
+        return numerical_approx(self.exact_length)
+    @lazy_attribute
+    def exact_length(self):
+        """
+        return the length of the segment.
         """
         return Distance(self.I,self.F)
     def advised_mark_angle(self,pspict=None):
@@ -267,11 +273,11 @@ class SegmentGraph(ObjectGraph):
             <Point(0,0)>
             sage: print curve(1)
             <Point(1/2*sqrt(2),1/2*sqrt(2))>
-            sage: print curve(segment.length())
+            sage: print curve(segment.length)
             <Point(1,1)>
         """
         x=var('x')
-        l=self.length()
+        l=self.length
         f1=phyFunction(self.I.x+x*(self.F.x-self.I.x)/l)
         f2=phyFunction(self.I.y+x*(self.F.y-self.I.y)/l)
         return ParametricCurve(f1,f2,(0,l))
@@ -302,7 +308,7 @@ class SegmentGraph(ObjectGraph):
         """
         Return a point on the segment at distance 'd' from the initial point (in the direction of the final point)
         """
-        return self.get_point_proportion(d/self.length(),advised=advised)
+        return self.get_point_proportion(d/self.length,advised=advised)
     def get_point_proportion(self,p,advised=True):
         """
         Return a point on the segment which is at the position
@@ -413,7 +419,7 @@ class SegmentGraph(ObjectGraph):
             sage: v= Segment(Point(0,0),Point(2,0)).get_normal_vector()
             sage: print v
             <vector I=<Point(1.0,0)> F=<Point(1.0,-1)>>
-            sage: v.length()
+            sage: v.length
             1
         """
         if self.vertical :
@@ -692,7 +698,7 @@ class SegmentGraph(ObjectGraph):
         """
         Add a length <l> at the extremity of the segment. Return a new object.
         """
-        L=self.length()
+        L=self.length
         coef=(l+L)/L
         v = coef*self
         return self.return_deformations(v)
@@ -702,16 +708,16 @@ class SegmentGraph(ObjectGraph):
 
         This function has not to be used by the end user. Use self.normalize() instead.
         """
-        L=self.length()
+        L=self.length
         if only_F and only_I:
             print("You cannot ask both only F and only I")
             raise ValueError
-        if L == 0:
+        if L <  0.001 :     # epsilon
             print "fix_size problem: this vector has a norm equal to zero"
             return self.copy()
         if self.arrow_type=="segment":
             if only_F==False and only_I==False:
-                v = self.dilatation(l/self.length())
+                v = self.dilatation(l/self.length)
             if only_F :
                 v=self.add_size( lF= l-L  )
             if only_I :
@@ -767,7 +773,7 @@ class SegmentGraph(ObjectGraph):
             <vector I=<Point(-2,-2)> F=<Point(0.000000000000000,0.000000000000000)>>
         """
         if self.arrow_type=="segment":
-            d=0.5*self.length()*(coef-1)
+            d=0.5*self.length*(coef-1)
             return self.add_size(d,d)
         if self.arrow_type=="vector":
             l=self.length*coef
@@ -826,8 +832,9 @@ class SegmentGraph(ObjectGraph):
                 l=-l
             v = self.fix_size(l)
         if self.arrow_type=="vector":
-            L=self.length()
-            if L==0:
+            L=self.length
+            rel=L==0
+            if L<0.001:     # epsilon
                 return self.copy()
             v = (l*self).__div__(L)     
             v.arrow_type="vector"

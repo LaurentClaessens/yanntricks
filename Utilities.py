@@ -66,7 +66,7 @@ def Distance(P,Q):
     """ return the distance between P and Q """
     return sqrt(Distance_sq(P,Q))
 
-def inner_product(v,w):
+def inner_product(v,w,numerical=True):
     """
     Return the inner product of vectors v and w
 
@@ -104,7 +104,10 @@ def inner_product(v,w):
         b=w.Point()
     except AttributeError:
         b=w
-    return a.x*b.x+a.y*b.y
+    s = a.x*b.x+a.y*b.y
+    if numerical:
+        return numerical_approx(s)
+    return s
 
 def Intersection(f,g,a=None,b=None,numerical=False,only_real=True):
     """
@@ -174,7 +177,7 @@ def Intersection(f,g,a=None,b=None,numerical=False,only_real=True):
             raise
     return pts
 
-def PointToPolaire(P=None,x=None,y=None,origin=None):
+def PointToPolaire(P=None,x=None,y=None,origin=None,numerical=True):
     """
     Return the polar coordinates of a point.
 
@@ -211,8 +214,11 @@ def PointToPolaire(P=None,x=None,y=None,origin=None):
         Py=y
     Qx=Px-Ox
     Qy=Py-Oy
+    if numerical:
+        Qx=numerical_approx(Qx)
+        Qy=numerical_approx(Qy)
     r=sqrt(  Qx**2+Qy**2 )
-    if Qx==0:
+    if abs(Qx)<0.001:   # epsilon
         if Qy>0:
             radian=pi/2
         else :
