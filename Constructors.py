@@ -101,8 +101,8 @@ def Segment(A,B=None,vector=None):
     """
     if vector:
         B=A+vector
-    import SegmentGraph
-    return SegmentGraph.SegmentGraph(A,B)
+    from SegmentGraph import SegmentGraph
+    return SegmentGraph(A,B)
 
 def PolarSegment(P,r,theta):
     """
