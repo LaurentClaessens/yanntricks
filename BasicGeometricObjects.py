@@ -39,7 +39,7 @@ def genericBracketAttributeToLanguage(attr,language):
             return "line width"
     return attr
 
-# TODO : to fill portion of circle should be as easy as:
+# TODO : filling a portion of circle should be as easy as:
 #    CerB=Cer.graph(alpha,alpha+90)
 #    CerB.parameters.filled()
 #    CerB.parameters.fill.color="blue"
