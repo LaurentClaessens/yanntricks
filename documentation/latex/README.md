@@ -1,6 +1,6 @@
 # PHYSTRICKS -- DOCUMENTATION
 
-This is the documentation for `phystricks`. 
+This is the documentation for `phystricks`. You can download a PDF [here](http://laurent.claessens-donadello.eu/pdf/phystricks-doc.pdf)
 
 ## Compilation
 

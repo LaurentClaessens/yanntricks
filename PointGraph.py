@@ -278,6 +278,7 @@ class PointGraph(ObjectGraph):
         return AffineVector(p,Point(p.x+self.x,p.y+self.y))
     def Vector(self):
         return AffineVector(Point(0,0),self)
+    @lazy_attribute
     def norm(self):
         """
         Return the norm of the segment between (0,0) and self.
@@ -292,7 +293,8 @@ class PointGraph(ObjectGraph):
         sage: Point(-pi,sqrt(2)).norm()
         sqrt(pi^2 + 2)
         """
-        return Segment(Point(0,0),self).length()
+        return Segment(Point(0,0),self).length
+    @lazy_attribute
     def length(self):
         """
         The same as self.norm()
@@ -304,13 +306,13 @@ class PointGraph(ObjectGraph):
             sage: P.length()
             sqrt(2)
         """
-        return self.norm()
+        return self.norm
     # La méthode normalize voit le point comme un vecteur partant de zéro, et en donne le vecteur de taille 1
     def normalize(self,l=None):
         """
         Return a vector of norm <l>. If <l> is not given, take 1.
         """
-        unit = self*(1/self.norm())
+        unit = self*(1/self.norm)
         if l :
             return unit*l
         return unit

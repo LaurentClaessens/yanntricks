@@ -57,6 +57,7 @@ figures_list=[]
 figures_list.append(AESIooxXxRYQdT)
 figures_list.append(QIPRoolQCEnZdx)
 figures_list.append(YOWDooyeyOJyml)
+figures_list=[]
 figures_list.append(PFCUoorQhitKoJ)
 figures_list.append(QIXEooejrojKjo)
 figures_list.append(AxesSecond)
