@@ -7,7 +7,7 @@ This document is only for testing and demonstration purpose.
 
 Clean the directory :
 ```bash
-rm *.pyc &&  rm *.pstricks&& rm *.comment&& rm LabelFig*.aux
+rm *.pyc &&  rm *.pstricks&& rm *.comment&& rm LabelFig*.*
 ```
 
 Launch twice the following commands.

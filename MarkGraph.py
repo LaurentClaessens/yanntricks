@@ -25,7 +25,7 @@ from Constructors import *
 from Utilities import *
 
 class MarkGraph(ObjectGraph):
-    def __init__(self,graph,dist,angle,text,mark_point=None,position="",pspict=None):
+    def __init__(self,graph,dist,angle,text,mark_point=None,position=None,pspict=None):
         """
         Internally, the angle is recorded as 'AngleMeasure'.
         """

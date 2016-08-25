@@ -80,7 +80,7 @@ class ObjectGraph(object):
         from Parameters import Waviness
         self.wavy = True
         self.waviness = Waviness(self,dx,dy)
-    def get_mark(self,dist,angle,text,mark_point=None,added_angle=None,position="",pspict=None):
+    def get_mark(self,dist,angle,text,mark_point=None,added_angle=None,position=None,pspict=None):
 
         """
         - `angle` is degree or AngleMeasure
@@ -107,10 +107,11 @@ class ObjectGraph(object):
         # - the constructor of 'mark' expects degree or AngleMeasure
 
         if added_angle: angle=angle+added_angle
-        if position=="" :
+        if position=="":
+            print("Ceci ne devrait pas arriver : ça devrait être None")
+            raise
+        if position=="" or position==None :             # TODO : remove the possibility ""
             position="corner"
-            if isinstance(self,AngleGraph):
-                position="center"
             alpha=AngleMeasure(value_degree=angle).positive()
             deg=alpha.degree
             if deg==0:
@@ -129,7 +130,7 @@ class ObjectGraph(object):
         for psp in pspict:
             dimx,dimy = psp.get_box_size(text)
         return mark
-    def put_mark(self,dist,angle,text,mark_point=None,added_angle=None,position="",pspict=None):
+    def put_mark(self,dist,angle,text,mark_point=None,added_angle=None,position=None,pspict=None):
         """
         If you want to put a mark on an object
         P.put_mark(0.1,-90,"text",pspict=pspict,position="N")

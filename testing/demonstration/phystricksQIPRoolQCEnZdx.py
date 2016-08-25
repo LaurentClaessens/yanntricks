@@ -9,15 +9,13 @@ def QIPRoolQCEnZdx():
     C=Point(3,0)
 
     trig=Polygon(A,B,C)
+    trig.parameters.color="blue"
 
     angA=AngleAOB(C,A,B,r=0.3)
     angA.put_mark(0.1,None,"\SI{110}{\degree}",pspict=pspict)
 
-    sAB=Segment(A,B)
-    sAC=Segment(A,C)
-
     pspict.comment="The angle at A has a mark 110 degree."
-    pspict.DrawGraphs(angA,trig,sAB,sAC)
+    pspict.DrawGraphs(angA,trig)
     fig.no_figure()
     fig.conclude()
     fig.write_the_file()

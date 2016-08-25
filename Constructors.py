@@ -435,7 +435,7 @@ class BoundingBox(object):
             return True
         return False
 
-def Mark(graph,dist,angle,text,mark_point=None,position="",pspict=None):
+def Mark(graph,dist,angle,text,mark_point=None,position=None,pspict=None):
     """
     Describe a mark on a point.
 

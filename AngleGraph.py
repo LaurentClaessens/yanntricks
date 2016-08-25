@@ -93,7 +93,12 @@ class AngleGraph(ObjectGraph):
     def mark_point(self,pspict=None):
         ama=self.advised_mark_angle(pspict)
         return self.circle(visual=True,pspict=pspict).get_point(ama)
-    def get_mark(self,dist,angle,text,mark_point=None,added_angle=None,position="",pspict=None):
+    def get_mark(self,dist,angle,text,mark_point=None,added_angle=None,position=None,pspict=None):
+
+        if position != None:
+            print("The mark of an angle should be given without position argument")
+            raise
+
         P=self.mark_point(pspict)
         m=P.get_mark(dist,angle,text,position=position,pspict=pspict)
         return m
