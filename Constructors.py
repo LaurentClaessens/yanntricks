@@ -435,7 +435,7 @@ class BoundingBox(object):
             return True
         return False
 
-def Mark(graph,dist,angle,text,mark_point=None,position=None,pspict=None):
+def Mark(graph=None,dist=None,angle=None,central_point=None,text="",mark_point=None,position=None,pspict=None):
     """
     Describe a mark on a point.
 
@@ -460,7 +460,7 @@ def Mark(graph,dist,angle,text,mark_point=None,position=None,pspict=None):
     - ``pspict`` - the pspict in which the mark has to be computed and drawn.
     """
     import MarkGraph
-    return MarkGraph.MarkGraph(graph,dist,angle,text,mark_point=mark_point,position=position,pspict=pspict)
+    return MarkGraph.MarkGraph(graph,dist,angle,text,central_point=central_point,mark_point=mark_point,position=position,pspict=pspict)
 
 def AngleAOB(A,O,B,r=None):
     """

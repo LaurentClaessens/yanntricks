@@ -130,7 +130,7 @@ class ObjectGraph(object):
         for psp in pspict:
             dimx,dimy = psp.get_box_size(text)
         return mark
-    def put_mark(self,dist,angle,text,mark_point=None,added_angle=None,position=None,pspict=None):
+    def put_mark(self,dist=None,angle=None,text="",mark_point=None,added_angle=None,position=None,pspict=None):
         """
         If you want to put a mark on an object
         P.put_mark(0.1,-90,"text",pspict=pspict,position="N")
@@ -220,9 +220,6 @@ class ObjectGraph(object):
         # is not important to know  since the building block have theirs.
         from Constructors import BoundingBox
         return BoundingBox()
-    def latex_code(self,language=None,pspict=None):
-        # default for the same reason than for the bounding box.
-        return ""
     def math_bounding_box(self,pspict):
         return self.bounding_box(pspict)
     def latex_code(self,pspict,language=None):

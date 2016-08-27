@@ -1072,7 +1072,7 @@ class pspicture(object):
         s = self.get_Id_value(interCounterId,default_value)
         return float(s)
 
-    def get_box_dimension(self,tex_expression,dimension_name):
+    def get_box_dimension(self,tex_expression,dimension_name,default_value="0pt"):
         """
         Return the dimension of the LaTeX box corresponding to the LaTeX expression tex_expression.
 
@@ -1090,11 +1090,10 @@ class pspicture(object):
             self.figure_mother.add_latex_line(r"\immediate\write\{}{{{}:{}-}}".format(self.figure_mother.newwriteName,interId,value),"WRITE_AND_LABEL")
 
             self.figure_mother.already_used_interId.append(interId)
-        #read_value=self.get_Id_value(interId,"dimension %s"%dimension_name,default_value="0pt")
-        read_value=self.get_Id_value(interId,default_value="0pt")
+        read_value=self.get_Id_value(interId,default_value=default_value)
         dimenPT=float(read_value.replace("pt",""))
         return (dimenPT)/30           # 30 is the conversion factor : 1pt=(1/3)mm
-    def get_box_size(self,tex_expression):
+    def get_box_size(self,tex_expression,default_value="0pt"):
         """
         return as 2-uple the dimensions of a LaTeX box containing an expression.
 
@@ -1120,8 +1119,8 @@ class pspicture(object):
 
         This functionality creates an intermediate file.
         """
-        height = self.get_box_dimension(tex_expression,"totalheightof")
-        width = self.get_box_dimension(tex_expression,"widthof")
+        height = self.get_box_dimension(tex_expression,"totalheightof",default_value=default_value)
+        width = self.get_box_dimension(tex_expression,"widthof",default_value=default_value)
         return width,height
     def dilatation(self,fact):
         self.dilatation_X(fact)
@@ -1159,17 +1158,43 @@ class pspicture(object):
         if not obj:
             obj=self
         self.record_bounding_box.append(obj)
+    def deal_with_graph(self,gr,separator_name):
+        from ObjectGraph import AddedObjects
+        from ObjectGraph import ObjectGraph
+        import collections
+        if isinstance(gr,AddedObjects):
+            self.DrawGraphs(gr[self])
+            return None
+        if isinstance(gr,collections.Iterable):
+            for h in gr:
+                self.DrawGraphs(h,separator_name=separator_name)
+            return None
+        self._DrawGraph(gr,separator_name=separator_name)
+        
+        # This is for testing purpose only. To be removed in production.
+        if not isinstance(gr,ObjectGraph):
+            print("ooKQKUooAxpKXr -- What are you drawing ?")
+            raise 
+
     def DrawGraphs(self,*args,**arg):
+        """
+        The function DrawGraphs basically takes a list of objects and performs
+        different kind of operation following the type of each "object" :
+
+        If the object it iterable, its elements are re-passed to DrawGraphs
+        If the object is an instance of "ObjectGraph", it is passed to _DrawGraph
+        If the object is 'AddedObject', the list corresponding to 'self' is re-passed to DrawGraphs.
+
+    """
         if "separator_name" not in arg.keys():
             separator_name="DEFAULT"
         else:
             separator_name=arg["separator_name"]
-        for gr in args:         # Here is why elements intened to be drawn cannot be iterable. Position 30282-11562
-            try :
-                for h in gr:
-                    self.DrawGraphs(h,separator_name=separator_name)
-            except TypeError:
-                self._DrawGraph(gr,separator_name=separator_name)
+
+        # Here is why objects intended to be drawn cannot be iterable. Position 30282-11562 
+        for gr in args:
+            self.deal_with_graph(gr,separator_name)
+
     def _DrawGraph(self,graph,separator_name=None):
         """
         Draw an object of type `<Something>Graph`.

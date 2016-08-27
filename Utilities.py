@@ -571,7 +571,8 @@ def general_function_get_point(fun,x,advised=True):
         P.mark(radius,P.advised_mark_angle,"$P$")
 
         NOTE:
-        If you don't plan to put a mark on the point, you are invited to use advised=False in order to speed up the computations.
+        If you don't plan to put a mark on the point, you are invited
+        to use advised=False in order to speed up the computations.
         """
         P = Point(float(x),fun(x))
         if advised :

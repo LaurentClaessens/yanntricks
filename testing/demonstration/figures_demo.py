@@ -5,6 +5,8 @@
 import sys
 from phystricks import *
 
+from phystricksOMPAooMbyOIqeA import OMPAooMbyOIqeA
+from phystricksDYJNooLVVFHEfN import DYJNooLVVFHEfN
 from phystricksFMLCooxHtqRzUz import FMLCooxHtqRzUz
 from phystricksOGGDooIvakwNlL import OGGDooIvakwNlL
 from phystricksQEFQoomlfmOQTM import QEFQoomlfmOQTM
@@ -101,6 +103,8 @@ figures_list.append(AESIooxXxRYQdT)
 figures_list.append(QIPRoolQCEnZdx)
 figures_list.append(YOWDooyeyOJyml)
 figures_list.append(FMLCooxHtqRzUz)
+figures_list.append(DYJNooLVVFHEfN)
+figures_list.append(OMPAooMbyOIqeA)
 """
 figures_list.append(<++>)
 figures_list.append(<++>)

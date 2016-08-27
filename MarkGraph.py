@@ -25,12 +25,12 @@ from Constructors import *
 from Utilities import *
 
 class MarkGraph(ObjectGraph):
-    def __init__(self,graph,dist,angle,text,mark_point=None,position=None,pspict=None):
+    def __init__(self,graph,dist,angle,text,mark_point=None,central_point=None,position=None,pspict=None):
         """
         Internally, the angle is recorded as 'AngleMeasure'.
         """
         ObjectGraph.__init__(self,self)
-        self._central_point=None
+        self._central_point=central_point
         self.mark_point=mark_point
         self.graph = graph
         self.parent = graph
@@ -38,19 +38,23 @@ class MarkGraph(ObjectGraph):
         if isinstance(angle,AngleMeasure):
             self.angle = angle
         else :
-            self.angle=AngleMeasure(value_degree=angle)
+            if angle is not None :
+                self.angle=AngleMeasure(value_degree=angle)
 
         self.dist = dist
         self.text = text
         self.position=position
         self.pspict=pspict
-        alpha=radian(angle)
-        if isinstance(alpha,AngleMeasure):
-            self.x=self.dist*cos(alpha.radian)
-            self.y=self.dist*sin(alpha.radian)
-        else :
-            self.x=self.dist*cos(alpha)
-            self.y=self.dist*sin(alpha)
+
+        if angle is not None:
+            alpha=radian(angle)
+            if isinstance(alpha,AngleMeasure):
+                self.x=self.dist*cos(alpha.radian)
+                self.y=self.dist*sin(alpha.radian)
+            else :
+                self.x=self.dist*cos(alpha)
+                self.y=self.dist*sin(alpha)
+
     def central_point(self,pspict=None):
         """
         Return the central point of the mark, that is the point where the mark arrives.
@@ -148,8 +152,8 @@ class MarkGraph(ObjectGraph):
         central_point=self.central_point(pspict)
         code="\draw "+central_point.coordinates(numerical=True,pspict=pspict)+" node {"+self.text+"};"
         return code
-    def latex_code(self,language=None,pspict=None):
-        if language=="pstricks":
-            raise DeprecationWarning
+    def latex_code(self,pspict,language=None):
         if language=="tikz":
-            return self.tikz_code(pspict=pspict)
+            return self.tikz_code(pspict)
+        else :
+            raise ValueError("We only do tikz here.")

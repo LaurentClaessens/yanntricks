@@ -70,6 +70,7 @@ class AngleGraph(ObjectGraph):
     def circle(self,visual=False,pspict=None):
         visualI,visualF=self.visual_angleIF(pspict)
         return Circle(self.O,self.r,visual=visual,pspict=pspict).graph(visualI,visualF)
+    @lazy_attribute
     def measure(self):
         return AngleMeasure(value_degree=self.angleF.degree-self.angleI.degree)
     def graph(self):
@@ -93,21 +94,46 @@ class AngleGraph(ObjectGraph):
     def mark_point(self,pspict=None):
         ama=self.advised_mark_angle(pspict)
         return self.circle(visual=True,pspict=pspict).get_point(ama)
-    def get_mark(self,dist,angle,text,mark_point=None,added_angle=None,position=None,pspict=None):
+    def get_mark(self,dist=None,angle=None,text="",mark_point=None,added_angle=None,position=None,pspict=None):
+        """
+        The mark on an angle is determined in the following way.
+        - if 'dist' and 'angle' are given, the center will be placed there (discouraged) -- in fact an exception is raised
+        If they are not given :
 
+        - the *center* of the mark is on the bisector at such a distance that the bounding box of the text will not intersect the lines that are defining the angle.
+        """
+
+
+        P=self.mark_point(pspict)
+        if self.measure.degree>90 :
+            return P.get_mark(dist=0.3,angle=self.advised_mark_angle,text=text,position=position,pspict=pspict)
+
+        if dist != None :
+            print("marks on angle should be all default")
+            raise
         if position != None:
             print("The mark of an angle should be given without position argument")
             raise
 
-        P=self.mark_point(pspict)
-        m=P.get_mark(dist,angle,text,position=position,pspict=pspict)
-        return m
+        # The default can be any value different than zero. It serves to 
+        # avoid a division by zero during the first compilation.
+        dimx,dimy = pspict.get_box_size(text,default_value="3pt")  
+
+        if self.angleA.degree == 0:
+            x=dimy/tan(self.measure.radian)
+            C=Point(self.O.x+x+dimx/2,self.O.y+dimy/2)
+            mark=Mark(self,dist=None,angle=None,text=text,mark_point=None,central_point=C,position=None,pspict=pspict)
+            return mark
+        
+        if 0<self.angleA.degree < 90 and 0<self.angleB.degree < 90 :
+
+
+        raise "Under construction for your case ..."
+
     def action_on_pspict(self,pspict):
         circle=self.circle(visual=True,pspict=pspict)
         circle.parameters=self.parameters.copy()
         pspict.DrawGraphs(circle)
-    def latex_code(self,language=None,pspict=None):
-        return ""
 
 class RightAngleGraph(ObjectGraph):
     def __init__(self,d1,d2,r,n1,n2):
