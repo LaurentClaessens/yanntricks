@@ -35,36 +35,7 @@ from Utilities import Intersection
 from phystricks.ObjectGraph import Options
 
 """
-A collection of tools for building LaTeX-pstricks figures with python.
-
-COMMAND LINE ARGUMENTS:
-
-    - ``--pdf`` - Create the PDF files of the pictures.
-
-    - ``--png`` - the picture arrives as an \includegraphics of a png. It also creates the `png` file.
-
-    - ``--create-png`` - create the png file, but does not change the `.pstricks`
-                         file. Thus the LaTeX output will not be modified.
-                         
-                         See :class:`TestPspictLaTeXCode` and the function :func:`create_png_file`
-                         in :class:`PspictureToOtherOutputs`
-
-    - ``--silent`` - do not print the warning about missing auxiliary file
-
-    NOTES:
-
-        - Here we are really speaking about pspicture. There will be one file of one 
-          \includegraphics for each pspicture. This is not figure-wise.
-
-    - ``--create-tests`` (Deprecated)  - create a `tmp` file in which the pspicture is written.
- 
-    - ``--tests`` (Deprecated)    - compares the produced pspicture with the corresponding `tmp` file and
-                    raises a ValueError if it does not correspond.
-                    If this option is set, nothing is written on the disk.
-
-                    The pdf is not created.
-
-                    See :class:`TestPspictLaTeXCode`
+A collection of tools for building LaTeX pictures with python.
 """
 
 """
@@ -87,7 +58,6 @@ class WrapperStr(object):
         return self.fun(str(arg))
 
 var=WrapperStr(var)
-
 
 import codecs
 import math, sys, os
@@ -139,7 +109,8 @@ def GenericFigure(nom,script_filename=None):
     label = "LabelFig"+nom          # The string "LabelFig" is hard-coded in the function main.figure.LaTeX_lines
     nFich = "Fig_"+nom+".pstricks"
 
-    fig=main.figure(caption,label,nFich,script_filename)
+    from Figure import Figure
+    fig=Figure(caption,label,nFich,script_filename)
     fig.figure_mother=fig   # I'm not sure that this line is useful.
     print fig.LaTeX_lines()
     return fig
@@ -475,7 +446,6 @@ def unify_point_name(s):
         if n not in rematch:
             rematch.append(n)
 
-
     from PointGraph import PointsNameList
     names=PointGraph.PointsNameList()
     for m in rematch:
@@ -483,75 +453,6 @@ def unify_point_name(s):
         s=s.replace("{%s}"%m,"{X%s}"%name).replace("(%s)"%m,"(X%s)"%name)
     return s
 
-class global_variables(object):
-    """
-    Some global variables
-
-    - ``create_formats`` - dictionary which says the exit files we want to produce. These can be
-
-                    * eps,pdf,pfd : I think that these names are self-explaining.
-
-                    * test : outputs a `tmp` file
-
-    - ``exit_format`` - the format one wants to use in the LaTeX file. By default it is pstricks.
-
-    - ``perform_tests`` - (default=False) If True, perform the tests.
-
-    The difference between `create_formats` and `exit_format` is that `create_format` says
-    what files are going to be _produced_ while `exit_format` is the format that LaTeX will see.
-
-    Notice that `create_formats` is a plural while `exit_format` is a singlular. This is
-    not a joke ;)
-    """
-    # pdf output is default from September, 9, 2012.
-    def __init__(self):
-        self.create_formats={"eps":False,"pdf":False,"png":False,"test":False}
-        #self.exit_format="pstricks"
-        self.exit_format="png"
-        self.create_formats["png"] = False
-        self.perform_tests = False
-        self.silent=False
-        self.no_compilation=True
-        self.create_documentation=False
-    def special_exit(self):
-        for sortie in self.create_formats.values():
-            if sortie:
-                return True
-        return False
-
-global_vars = global_variables()
-if "--silent" in sys.argv :
-    global_vars.silent=True
-if "--dvi" in sys.argv :
-    global_vars.exit_format="pstricks"
-    global_vars.create_formats["pdf"] = False
-    global_vars.create_formats["png"] = False
-if "--eps" in sys.argv :
-    global_vars.exit_format="eps"
-    global_vars.create_formats["eps"] = True
-if "--png" in sys.argv :
-    global_vars.create_formats["png"] = True
-if "--create-png" in sys.argv :
-    global_vars.create_formats["png"] = True
-if "--create-pdf" in sys.argv :
-    global_vars.create_formats["pdf"] = True
-    global_vars.create_formats["png"] = False
-    global_vars.exit_format="pdf"
-if "--create-eps" in sys.argv :
-    global_vars.create_formats["eps"] = True
-if "--create-tests" in sys.argv :
-    global_vars.create_formats["test"] = True
-    global_vars.create_formats["pdf"] = False
-if "--tests" in sys.argv :
-    global_vars.perform_tests = True
-    global_vars.create_formats["pdf"] = False
-if "--no-compilation" in sys.argv:
-    global_vars.no_compilation=True
-    for k in [x for x in global_vars.create_formats.keys() if x!="test" ]:
-        global_vars.create_formats[k]=False
-if "--documentation" in sys.argv:
-    global_vars.create_documentation=True
-
-
+import GlobalVariables
 import phystricks.BasicGeometricObjects as BasicGeometricObjects
 import phystricks.main as main

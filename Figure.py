@@ -18,8 +18,13 @@
 # copyright (c) Laurent Claessens, 2009-2016
 # email: laurent@claessens-donadello.eu
 
+import os
+
 import SmallComputations
 from Separator import Separator, SeparatorList
+from GlobalVariables import global_vars
+from Utilities import latinize
+from Utilities import newlengthName
 
 def add_latex_line_entete(truc,position=""):
     from Picture import Picture
@@ -121,7 +126,7 @@ class Figure(object):
         if name==None:
             number=len(self.record_subfigure)
             name="sub"+latinize(str(number))
-        ssfig=subfigure(caption,self.name+"ss"+name)
+        ssfig=SubFigure(caption,self.name+"ss"+name)
         ssfig.mother=self
         ssfig.figure_mother=self
         self._append_subfigure(ssfig)
@@ -298,4 +303,42 @@ class Figure(object):
 
         if self.send_noerror :
             raise PhystricksNoError(self)
-            
+
+class SubFigure(object):
+    """
+    This is a subfigure.
+
+    If no label are given, a default one will be set when included in the figure.
+    
+    EXAMPLES
+
+    .. literalinclude:: phystricksSubFigure.py
+    .. image:: Picture_FIGLabelFigSubFiguressLabelssFigFirstPICTFirstPoint-for_eps.png
+    .. image:: Picture_FIGLabelFigSubFiguressLabelssFigSecondPICTSecondPoint-for_eps.png
+    .. image:: Picture_FIGLabelFigSubFiguressLabelssFigThirdPICTthirdPoint-for_eps.png
+    """
+    def __init__(self,caption,name=None):
+        self.caption = caption
+        self.name = name
+        self.record_pspicture=[]
+        self.mother=None
+    def add_latex_line(self,ligne,separator_name):
+        self.mother.add_latex_line(ligne,separator_name)
+    def new_pspicture(self,name=None,pspict=None):
+        if name==None:
+            number=len(self.record_pspicture)
+            name="sub"+latinize(str(number))
+        if pspict is None :
+            pspict=pspicture("FIG"+self.name+"PICT"+name)
+        pspict.mother=self
+        pspict.figure_mother=self.mother    # The mother of a pspict inside a subfigure is the figure (not the subfigure)
+        pspict.subfigure_mother=self
+        self._add_pspicture(pspict)
+        return pspict
+    def subfigure_code(self):
+        a=[]
+        for pspict in self.record_pspicture :
+            a.append(pspict.contenu())
+        return "\n".join(a)
+    def _add_pspicture(self,pspicture):
+        self.record_pspicture.append(pspicture)

@@ -104,13 +104,12 @@ class AngleGraph(ObjectGraph):
         """
 
 
-        P=self.mark_point(pspict)
+        mark_point=self.mark_point(pspict)
         if self.measure.degree>90 :
-            return P.get_mark(dist=0.3,angle=self.advised_mark_angle,text=text,position=position,pspict=pspict)
+            return mark_point.get_mark(dist=0.3,angle=self.advised_mark_angle,text=text,position=position,pspict=pspict)
 
-        if dist != None :
-            print("marks on angle should be all default")
-            raise
+        if dist == None :
+            dist=0.3
         if position != None:
             print("The mark of an angle should be given without position argument")
             raise
@@ -119,14 +118,104 @@ class AngleGraph(ObjectGraph):
         # avoid a division by zero during the first compilation.
         dimx,dimy = pspict.get_box_size(text,default_value="3pt")  
 
+        # Now there are a lot of cases depending on the angles of the two lines determining the angle AOB.
+        # We will detail the computations for the case
+        #  0<self.angleA.degree < 90 and 0<self.angleB.degree < 90 
+        # The other cases are the same kind of trigonometry.
+        # I just let you know that if you know 3 angles and one length in a triangle, you know everything : 
+        # just draw the altitude and use Pythagoras along with some trigonometry.
+
+        # The cases are tested in the demo file 'OMPAooMbyOIqeA'
+
         if self.angleA.degree == 0:
+            print("ooXDDZooBhOJKx -- ",dimx,dimy)
             x=dimy/tan(self.measure.radian)
-            C=Point(self.O.x+x+dimx/2,self.O.y+dimy/2)
-            mark=Mark(self,dist=None,angle=None,text=text,mark_point=None,central_point=C,position=None,pspict=pspict)
-            return mark
+            K=Point(self.O.x+x+dimx/2,self.O.y+dimy/2)
+            v= AffineVector( self.O, K )
         
         if 0<self.angleA.degree < 90 and 0<self.angleB.degree < 90 :
+            print("ooXDDZooBhOJKx -- ",dimx,dimy)
+            # In this case, the mark will be attached
+            # - by the upper left to the line OB (let X be that point)
+            # - by the lower right to the line OA   (let Y be that point)
+            # We consider 'd', the diagonal of the mark that join OA to OB
+            # The triangle OXY has angle 'alpha' at O and 'beta' at Y.
+            # We consider the altitude 'h' of OXY from X.
+            # Let 'sigma' be the angle made by the diagonal of the box.
+            # beta = self.angleA + sigma
+            # Using Pythagoras'theorem and some trigonometry, we can determine all the lengths and angles.
+            # The one we are interested in is OX. Trigonometry then provides the coordinates of X. 
+            # Then the center of the mark's box is easy to compute as a translation by (dimx/2 , -dimy/2)
 
+            d=sqrt(dimx**2+dimy**2)     # diagonal of the box
+            sigma = arctan(dimy/dimx)
+            beta = self.angleA.radian+sigma
+
+            alpha=self.measure.radian
+
+            h=d*sin(beta)
+            l=h/sin(alpha)          # length OX
+
+            # Here are the coordinates of X (with respect to O)
+            x=l*cos(self.angleB.radian)
+            y=l*sin(self.angleB.radian)
+
+            # This is the vector O->central_point
+            v= AffineVector( self.O, Point( x+dimx/2,y-dimy/2) )   
+            # In fact we use this vector to translate from the mark_point.
+            # Thus we are sure that the mark will in the same time
+            # - not intersect the lines
+            # - be further than the code.
+
+        if 0<self.angleA.degree < 90 and 90<self.angleB.degree < 180 :
+            print("ooXDDZooBhOJKx -- ",dimx,dimy)
+            h=dimx*sin(self.angleA.radian)
+            l=h/sin(self.measure.radian)
+            gamma=pi-self.angleB.radian
+            x=l*cos(gamma)
+            y=l*sin(gamma)
+
+            Q=self.O+(-x,y)     # lower left angle of the box
+            v = AffineVector(self.O, Q+(dimx/2,dimy/2) )
+            
+        if 90<self.angleA.degree < 180 and 90<self.angleB.degree < 180 :
+            print("ooXDDZooBhOJKx -- ",dimx,dimy)
+            d=sqrt(dimx**2+dimy**2)
+            beta=pi-self.angleB.radian
+            alpha=atan(dimy/dimx)
+            gamma=alpha+beta
+            sigma=2*pi-self.measure.radian-gamma
+            h=d*sin(sigma)
+            l=h/sin(self.measure.radian)
+            tau=2*pi-self.angleB.radian
+
+            x=l*cos(tau)
+            y=l*sin(tau)
+            Q=self.O+(-x,y)
+            v=AffineVector(self.O,Q+(-dimx/2,dimy/2))
+
+        if 90<self.angleA.degree < 180 and  self.angleB.degree==180:
+            print("ooXDDZooBhOJKx -- ",dimx,dimy)
+            l=dimy/sin(self.measure.radian)
+            x=l*cos(self.measure.radian)
+            y=dimy
+            Q=self.O+(-x,y)
+            v=AffineVector( self.O, Q+(-dimx/2,-dimy/2) )
+
+        if 90<self.angleA.degree < 180 and 180<self.angleB.degree < 270 :
+            alpha=self.angleI.radian-pi/2
+            beta_p=self.angleF.radian-pi
+            h=dimy*sin(alpha)
+            l=h/sin(self.measure.radian)
+            x=l*cos(beta_p)
+            y=l*sin(beta_p)
+            Q=self.O+(-x,-y)
+            v=AffineVector(self.O ,Q+(-dimx/2,dimy/2) )
+            pspict.DrawGraphs(Q,v)
+            print("ooXDDZooBhOJKx -- ",dimx,dimy)
+
+        C=mark_point+v.fix_size(dist)
+        return Mark(self,dist=None,angle=None,text=text,mark_point=None,central_point=C,position=None,pspict=pspict)
 
         raise "Under construction for your case ..."
 

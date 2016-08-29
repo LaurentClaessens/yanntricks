@@ -195,64 +195,6 @@ def RemoveLastZeros(x,n):
         return u[:-1]
     return u
 
-def latinize(word):
-    """
-    return a "latinized" version of a string.
-
-    From a string, return something that can be used as point name, file name.
-    In particular, remove the special characters, put everything in lowercase,
-    and turn the numbers into letters.
-
-    This function is used in order to turn the script name into a
-    string that can be a filename for the LaTeX's intermediate file.
-
-    INPUT:
-
-    - ``word`` - string
-
-    OUTPUT:
-    string
-    
-    EXAMPLES::
-
-        sage: from phystricks.SmallComputations import *
-        sage: latinize("/home/MyName/.sage/my_script11.py")
-        'homeMyNameDsagemyscriptOODpy'
-
-    ::
-
-        sage: from phystricks.SmallComputations import *
-        sage: latinize("/home/MyName/.sage/my_script13.py")
-        'homeMyNameDsagemyscriptOThDpy'
-    """
-    latin = ""
-    for s in word:
-        if s.lower() in "abcdefghijklmnopqrstuvwxyz" :
-            latin = latin+s
-        if s=="1":
-            latin = latin+"ONE"
-        if s=="2":
-            latin = latin+"TWO"
-        if s=="3":
-            latin = latin+"THREE"
-        if s=="4":
-            latin = latin+"FOR"
-        if s=="5":
-            latin = latin+"FIVE"
-        if s=="6":
-            latin = latin+"SIX"
-        if s=="7":
-            latin = latin+"SEVEN"
-        if s=="8":
-            latin = latin+"HEITH"
-        if s=="9":
-            latin = latin+"NINE"
-        if s=="0":
-            latin = latin+"ZERO"
-        if s==".":
-            latin = latin+"DOT"
-    return latin
-
 
 def number_at_position(s,n):
     """

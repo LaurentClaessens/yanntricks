@@ -25,10 +25,14 @@ from sage.all import *
 
 from Utilities import PointsNameList
 from Separator import SeparatorList
+from GlobalVariables import global_vars
+from ObjectGraph import DrawElement
+from main import PspictureToOtherOutputs
+from Constructors import BoundingBox
 
 class Picture(object):
     r"""
-    Describe a pspicture
+    Describe a Picture
 
     METHODS:
 
@@ -142,6 +146,7 @@ class Picture(object):
         """
         It also remove the tikz externalize file.
         """
+        from Figure import add_latex_line_entete
         self.create_latex_code(language="tikz",pspict=self)
         add_latex_line_entete(self)
         self.add_latex_line("\\tikzsetnextfilename{{{0}}}".format(self.tikzfilename),"BEGIN PSPICTURE")
@@ -213,7 +218,7 @@ class Picture(object):
             # because a dilatation of the figure could have
             # changed the bounding box.
             # Same for the bounding box of the pspicture, since it is not know before now
-            if isinstance(graph,BasicGeometricObjects.BoundingBox):
+            if isinstance(graph,BoundingBox):
                 if graph.mother:
                     print "I'm drawing the bounding box of ",graph.mother
                     graph=graph.mother.bounding_box(self)
