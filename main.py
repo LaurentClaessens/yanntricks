@@ -501,11 +501,12 @@ class subfigure(object):
         self.mother=None
     def add_latex_line(self,ligne,separator_name):
         self.mother.add_latex_line(ligne,separator_name)
-    def new_pspicture(self,name=None):
+    def new_pspicture(self,name=None,pspict=None):
         if name==None:
             number=len(self.record_pspicture)
             name="sub"+latinize(str(number))
-        pspict=pspicture("FIG"+self.name+"PICT"+name)
+        if pspict is None :
+            pspict=pspicture("FIG"+self.name+"PICT"+name)
         pspict.mother=self
         pspict.figure_mother=self.mother    # The mother of a pspict inside a subfigure is the figure (not the subfigure)
         pspict.subfigure_mother=self

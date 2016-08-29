@@ -151,15 +151,20 @@ def SinglePicture(name,script_filename=None):
     fig.child_pspictures.append(pspict)
     return pspict,fig
 
-def MultiplePictures(name,n,script_filename=None):
+def MultiplePictures(name,n=None,pspicts=None,script_filename=None):
     r"""
-    Return a figure with multiple subfigures. This is the other 10% of cases.
+    Return a figure with multiple subfigures. 
 
     INPUT:
 
     - `name` - the name of the figure.
 
-    - `n` - the number of subfigures.
+    - `n` (optional)  - the number of subfigures.
+
+    -  `pspicts` (optional) : a list of pspictures to be appended.
+
+    You can either give `n` or `pspicts`. In the first case, `n` new pspictures are created;
+    in the second case, the given pspictures are attached to the multiple pictures.
 
     You have to think about naming the subfigures.
 
@@ -184,18 +189,28 @@ def MultiplePictures(name,n,script_filename=None):
     if not script_filename:
         script_filename=name
     fig = GenericFigure(name,script_filename)
-    pspicts=[]
-    for i in range(n):
-        subfigure=fig.new_subfigure("name"+str(i),"LabelSubFig"+name+str(i))
-        picture=subfigure.new_pspicture(name+"pspict"+str(i))
-        picture.figure_mother=fig
-        fig.child_pspictures.append(picture)
 
-        # The subfigure share the same file to write the lengths. 
-        #  (no more used since the figure manages the write and labels, Augustus, 28, 2014)
-        #picture.interWriteFile=picture.figure_mother.name+".phystricks.aux"
-        pspicts.append(picture)
-    return pspicts,fig
+
+    if n is not None :
+        pspictures_list=[]
+        for i in range(n):
+            subfigure=fig.new_subfigure("name"+str(i),"LabelSubFig"+name+str(i))
+            picture=subfigure.new_pspicture(name+"pspict"+str(i))
+            picture.figure_mother=fig
+            fig.child_pspictures.append(picture)
+            pspictures_list.append(picture)
+
+    if pspicts is not None :
+        pspictures_list=[]
+        n=len(pspicts)
+        for i,psp in enumerate(pspicts) :
+            subfigure=fig.new_subfigure("name"+str(i),"LabelSubFig"+name+str(i))
+            subfigure.new_pspicture(pspict=psp)
+            psp.figure_mother=fig
+            fig.child_pspictures.append(psp)
+            pspictures_list.append(psp)
+
+    return pspictures_list,fig
 
 def IndependentPictures(name,n):
     """
@@ -205,7 +220,7 @@ def IndependentPictures(name,n):
     figs=[]
     for i in range(0,n):
         # One has to latinize to be in grade of making subfigures :
-        # if not one gets thinks like \newcommand{\CaptionFigHPMIooTkqUKW0}{blahblah}  which does not work in LaTeX
+        # if not one gets things like \newcommand{\CaptionFigFoo1}{blahblah}  which does not work in LaTeX because of the "1"
         pspict,fig = SinglePicture(name+"oo"+SmallComputations.latinize(str(i)))
         pspicts.append(pspict)
         figs.append(fig)
