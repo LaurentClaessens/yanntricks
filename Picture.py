@@ -39,11 +39,6 @@ class Picture(object):
 
     - `self.latex_code()` - contains the tikz code of what has to be between \begin{tikz} and \end{tikz}. This is not the environment itself, neither the definition of xunit, yunit.
 
-    - `self.contenu_pstricks` - is the whole code including the x/yunit and \begin{pspicture}...\end{pspicture}.
-                                This is in fact a `lazy_attribute`.
-                                
-                                This has not to be used for creating other outputs than pure pstricks.
-                               
     - `self.latex_code_for_eps()` - the LaTeX code that produces the eps file. This function calls `self.contenu_pstricks`
 
     - `self.latex_code_for_png()` - the same.
@@ -121,6 +116,9 @@ class Picture(object):
         # The order of declaration is important, because it is recorded in the Separator.number attribute.
         self.separator_list = SeparatorList()
         self.separator_list.new_separator("ENTETE PSPICTURE")
+        self.separator_list.new_separator("OPEN_WRITE_AND_LABEL")
+        self.separator_list.new_separator("WRITE_AND_LABEL")
+        self.separator_list.new_separator("CLOSE_WRITE_AND_LABEL")
         self.separator_list.new_separator("BEFORE PSPICTURE")
         self.separator_list.new_separator("BEGIN PSPICTURE")        # This separator is supposed to contain only \begin{pspicture}
         self.separator_list.new_separator("GRID")
@@ -139,13 +137,10 @@ class Picture(object):
 
         # In fact now WRITE_AND_LABEL is managed by the figure.
 
-        self.write_and_label_separator_list=SeparatorList()
-        self.write_and_label_separator_list.new_separator("WRITE_AND_LABEL")
 
         self.auxiliary_file=AuxFile(self.name,picture=self)
 
-    @lazy_attribute
-    def contenu_tikz(self):
+    def tikz_code(self):
         """
         It also remove the tikz externalize file.
         """
@@ -381,10 +376,7 @@ class Picture(object):
         """
         if separator_name==None:
             separator_name="DEFAULT"
-        if separator_name=="WRITE_AND_LABEL" or separator_name=="CLOSE_WRITE_AND_LABEL":
-            self.write_and_label_separator_list[separator_name].add_latex_line(ligne,add_line_jump=add_line_jump)
-        else:
-            self.separator_list[separator_name].add_latex_line(ligne,add_line_jump=add_line_jump)
+        self.separator_list[separator_name].add_latex_line(ligne,add_line_jump=add_line_jump)
     def force_math_bounding_box(self,g):
         """
         Add an object to the math bounding box of the pspicture. This object will not be drawn, but the axes and the grid will take it into account.
@@ -415,7 +407,7 @@ class Picture(object):
     def test_if_test_file_is_present(self):
         test_file=SmallComputations.Fichier("test_pspict_LaTeX_%s.tmp"%(self.name))
         return os.path.isfile(test_file.filename)
-    def contenu(self):              # pspicture
+    def latex_code(self):
         r"""
         return the LaTeX code of the pspicture
         
@@ -425,8 +417,8 @@ class Picture(object):
         """
         to_other = PspictureToOtherOutputs(self)
         create_dico=global_vars.create_formats
-        # Create files for the requested formats, including tests
 
+        # Create files for the requested formats, including tests
         for k in create_dico.keys():
             if create_dico[k] :
                 to_other.__getattribute__("create_%s_file"%k)()
@@ -435,19 +427,15 @@ class Picture(object):
 
         if not global_vars.no_compilation :
             a = to_other.__getattribute__("input_code_"+global_vars.exit_format)
-            try:
-                size=numerical_approx(self.xsize,5)*numerical_approx(self.xunit,5)   
-            except ValueError :
-                print("self.xsize",self.xsize)
-                print("Approximation :",numerical_approx(self.xsize))
-                print("self.xunit",self.xunit)
-                print("Approximation : ",numerical_approx(self.xunit))
-                raise
+            size=numerical_approx(self.xsize,5)*numerical_approx(self.xunit,5)   
             include_line = a.replace('WIDTH',str(size)+"cm")
         else:
             include_line="\\includegraphicsSANSRIEN"    # If one does not compile, the inclusion make no sense
 
+        self.add_latex_line(self.auxiliary_file.open_latex_code(),"OPEN_WRITE_AND_LABEL")
+        self.add_latex_line(self.auxiliary_file.latex_code(),"WRITE_AND_LABEL")
+        self.add_latex_line(self.auxiliary_file.close_latex_code(),"CLOSE_WRITE_AND_LABEL")
         if self.language=="tikz":
-            return self.contenu_tikz
+            return self.tikz_code()
         else:
             return "\ifpdf {0}\n \else {1}\n \\fi".format(include_line,self.contenu_pstricks)

@@ -80,9 +80,9 @@ class Figure(object):
         self.separator_list=SeparatorList()
         self.separator_list.new_separator("ENTETE FIGURE")
         self.separator_list.new_separator("SPECIFIC_NEEDS")
-        self.separator_list.new_separator("OPEN_WRITE_AND_LABEL")
-        self.separator_list.new_separator("WRITE_AND_LABEL")
-        self.separator_list.new_separator("CLOSE_WRITE_AND_LABEL")
+        #self.separator_list.new_separator("OPEN_WRITE_AND_LABEL")
+        #self.separator_list.new_separator("WRITE_AND_LABEL")
+        #self.separator_list.new_separator("CLOSE_WRITE_AND_LABEL")
         self.separator_list.new_separator("HATCHING_COMMANDS")
         self.separator_list.new_separator("BEFORE SUBFIGURES")
         self.separator_list.new_separator("SUBFIGURES")
@@ -137,11 +137,6 @@ class Figure(object):
         if name==None:
             number=len(self.record_pspicture)
             name="sub"+latinize(str(number))
-        if pspict:
-            # If we try to attach an already created picture, we have to import
-            # the WRITE_AND_LABEL section.
-            print("ooXMBHooAOfckx-- ",self.separator_list)
-            self.separator_list.add_latex_line(pspict.separator_list["WRITE_AND_LABEL"])
         if pspict==None:
             from Picture import Picture
             pspict=Picture("FIG"+self.name+"PICT"+name)
@@ -246,7 +241,6 @@ class Figure(object):
 
 
         for f in self.record_subfigure :
-            print("ooVWJOooUOKoqn -- on passe record_subfigure",f)
             self.add_latex_line("\subfigure["+f.caption+"]{%","SUBFIGURES")
             self.add_latex_line(f.subfigure_code(),"SUBFIGURES")
             self.add_latex_line("\label{%s}"%f.name,"SUBFIGURES")
@@ -254,9 +248,9 @@ class Figure(object):
             self.add_latex_line("%","SUBFIGURES")
 
             for pspict in f.record_pspicture:
-                self.add_latex_line(pspict.auxiliary_file.open_latex_code(),"OPEN_WRITE_AND_LABEL")
-                self.add_latex_line(pspict.auxiliary_file.latex_code(),"WRITE_AND_LABEL")
-                self.add_latex_line(pspict.auxiliary_file.close_latex_code(),"CLOSE_WRITE_AND_LABEL")
+                pspict.add_latex_line(pspict.auxiliary_file.open_latex_code(),"OPEN_WRITE_AND_LABEL")
+                pspict.add_latex_line(pspict.auxiliary_file.latex_code(),"WRITE_AND_LABEL")
+                pspict.add_latex_line(pspict.auxiliary_file.close_latex_code(),"CLOSE_WRITE_AND_LABEL")
 
 
         after_all=r"""\caption{%s}\label{%s}
@@ -326,7 +320,7 @@ class SubFigure(object):
     def subfigure_code(self):
         a=[]
         for pspict in self.record_pspicture :
-            a.append(pspict.contenu())
+            a.append(pspict.latex_code())
         return "\n".join(a)
     def _add_pspicture(self,pspicture):
         self.record_pspicture.append(pspicture)
