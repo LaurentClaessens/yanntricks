@@ -66,9 +66,6 @@ class Figure(object):
         self.send_noerror = False
         self.language="tikz"
 
-        self.newwriteName = "writeOfphystricks"
-        self.interWriteFile = self.name+".phystricks.aux"
-        self.already_used_interId=[]
 
         self.specific_needs=""
         # TODO : specific_needs should be a list of specific_need that is a class.
@@ -77,8 +74,7 @@ class Figure(object):
 
         self.nFich=nFich
         self.fichier = SmallComputations.Fichier(self.nFich)
-        self.comment_filename=self.nFich.replace(".pstricks",".comment")        # This intermediate file will contain the comment of the pspict(s)
-                                                                                # for the sake of tests.
+        self.comment_filename=self.nFich.replace(".pstricks",".comment")        # This intermediate file will contain the comment of the pspict(s) for the sake of tests.  
 
         # The order of declaration is important, because it is recorded in the Separator.number attribute.
         self.separator_list=SeparatorList()
@@ -198,32 +194,15 @@ class Figure(object):
         return text
         
     def conclude(self):
-        code = r"""\ifthenelse{\isundefined{\NWN}}{\newwrite{\NWN}}{}""".replace("NWN",self.newwriteName)
-        self.add_latex_line(code,"OPEN_WRITE_AND_LABEL")
-
-        code =r"""\ifthenelse{\isundefined{\NLN}}{\newlength{\NLN}}{}""".replace("NLN",newlengthName())
-        self.add_latex_line(code,"OPEN_WRITE_AND_LABEL")
-
-        code="\immediate\openout\{}={}%".format(self.newwriteName,self.interWriteFile)
-        self.add_latex_line(code,"OPEN_WRITE_AND_LABEL")
-
-        code=r"\immediate\closeout\{}%".format(self.newwriteName)+"\n"
-        self.add_latex_line(code,"CLOSE_WRITE_AND_LABEL")
-
-        # Now we check that the file phystricks.aux exists. If not, we create it.
-        if not os.path.isfile(self.interWriteFile):
-            f=open(self.interWriteFile,"w")
-            f.write("default:content-")
-            f.close()
-        
-
         for pspict in self.record_pspicture :
-            # Here we add the picture itself. What happens depends on --eps, --pdf, --png, ...
-            self.add_latex_line(pspict.contenu(),"PSPICTURE")
 
-            # What has to be written in the WRITE_AND_LABEL part of the picture is written now
-            # This has to be done _after_ having called pspict.contenu().
-            self.add_latex_line(pspict.write_and_label_separator_list["WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
+            if not os.path.isfile(pspict.interWriteFile):
+                f=open(self.interWriteFile,"w")
+                f.write("default:content-")
+                f.close()
+        
+            self.add_latex_line(pspict.contenu(),"PSPICTURE")
+            self.add_latex_line(pspict.auxiliary_file.open_latex_code(),"OPEN_WRITE_AND_LABEL")
 
             # For the following big stuff, see the position 170321508
             def_length_tex=r"""                 \makeatletter
@@ -258,11 +237,16 @@ class Figure(object):
 
             if global_vars.perform_tests:
                 TestPspictLaTeXCode(pspict).test()
+                
         self.add_latex_line(self.specific_needs,"SPECIFIC_NEEDS")
+
         if not global_vars.special_exit() :
             if self.language=="pstricks":
                 self.add_latex_line("\psset{xunit=1,yunit=1}","BEFORE SUBFIGURES")
+
+
         for f in self.record_subfigure :
+            print("ooVWJOooUOKoqn -- on passe record_subfigure",f)
             self.add_latex_line("\subfigure["+f.caption+"]{%","SUBFIGURES")
             self.add_latex_line(f.subfigure_code(),"SUBFIGURES")
             self.add_latex_line("\label{%s}"%f.name,"SUBFIGURES")
@@ -270,7 +254,11 @@ class Figure(object):
             self.add_latex_line("%","SUBFIGURES")
 
             for pspict in f.record_pspicture:
-                self.add_latex_line(pspict.write_and_label_separator_list["WRITE_AND_LABEL"].code(),"WRITE_AND_LABEL")
+                self.add_latex_line(pspict.auxiliary_file.open_latex_code(),"OPEN_WRITE_AND_LABEL")
+                self.add_latex_line(pspict.auxiliary_file.latex_code(),"WRITE_AND_LABEL")
+                self.add_latex_line(pspict.auxiliary_file.close_latex_code(),"CLOSE_WRITE_AND_LABEL")
+
+
         after_all=r"""\caption{%s}\label{%s}
             \end{figure}
             """%(self.caption,self.name)

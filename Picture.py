@@ -28,7 +28,8 @@ from Separator import SeparatorList
 from GlobalVariables import global_vars
 from ObjectGraph import DrawElement
 from main import PspictureToOtherOutputs
-from Constructors import BoundingBox
+from Constructors import BoundingBox,Axes,Grid,Point
+from AuxFile import AuxFile
 
 class Picture(object):
     r"""
@@ -68,10 +69,12 @@ class Picture(object):
 
 
         """
-        from Constructors import BoundingBox,Axes,Grid,Point
-        self.name = name        # self.name is used in order to name the intermediate files when one produces the eps file.
-        self.comment=""         # A comment. This is not used to create the picture; the purpose is to remember a specific feature to be
-                                #            tested when recompiling.
+        self.name = name        # self.name is used in order to
+                                # name the intermediate files.
+
+        # A comment. This is not used to create the picture; the purpose is to remember a specific feature to be tested when recompiling.
+        self.comment=""         
+
         self.tikzfilename="tikz"+self.name
         self.mother=None
         self.figure_mother=None
@@ -97,9 +100,9 @@ class Picture(object):
         self.rotation_angle=None
         self.LabelSep = 1
         self.BB = BoundingBox(mother=self)
-        self.math_BB = BoundingBox(math=True)     # self.BB and self.math_BB serve to add some objects by hand.
-                                            # If you need the bounding box, use self.bounding_box()
-                                            # or self.math_bounding_box()
+        self.math_BB = BoundingBox(math=True)   
+        # self.BB and self.math_BB serve to add some objects by hand.
+        # If you need the bounding box, use self.bounding_box() or self.math_bounding_box()
         self.axes=Axes(Point(0,0),BoundingBox(),pspict=self)
         self.single_axeX=self.axes.single_axeX
         self.single_axeY=self.axes.single_axeY
@@ -139,7 +142,7 @@ class Picture(object):
         self.write_and_label_separator_list=SeparatorList()
         self.write_and_label_separator_list.new_separator("WRITE_AND_LABEL")
 
-        self.already_warned_CompileYourLaTeXFile=False
+        self.auxiliary_file=AuxFile(self.name,picture=self)
 
     @lazy_attribute
     def contenu_tikz(self):
@@ -231,167 +234,7 @@ class Picture(object):
                     print "phystricks error: object %s has no pstricks_code method"%(str(graph))
                 raise
         self.separator_list.fusion(list_used_separators,"PSTRICKS CODE")
-    def default_figure(self,name=None):
-        """
-        Create and return a Figure object that contains self.
 
-        Example. If pspict is in class pspicture :
-        fig=pspict.default_figure
-        fig.conclude()
-        fig.write_the_file()
-        """
-        if name == None :
-            figname= "DefaultFig"+self.name
-        else:
-            figname = name
-        fig=GenericFigure(figname)
-        fig._add_pspicture(self)
-        return fig
-    def write_the_figure_file(self,name):
-        """
-        Produce a file that contains self in a default figure.
-
-        To be used if you have a figure at hand and you just want to use it in a figure without particular needs.
-
-        If you want to use the figure outside a figure, use self.write_the_file instead.
-        """
-        fig=self.default_figure(name+self.name)
-        fig.conclude()
-        fig.write_the_file()
-    def initialize_counter(self):
-        if not self.counterDone:
-            # make LaTeX test if the counter exist before to create it. 
-            code = r"""\makeatletter\@ifundefined{{c@{}}}{{\newcounter{{{}}}}}{{}}\makeatother%""".format(counterName(),counterName())       
-            self.add_latex_line(code,"WRITE_AND_LABEL")
-            self.counterDone = True
-
-    def makeWriteValue(self,Id,value):
-        r"""Ask LaTeX to write the result of `value` into the standard auxiliary file with identifier `Id`
-
-            - `Id` some string that identifies what we will write (for reading the file later). Preferably ASCII string.
-
-            - `value` a LaTeX code that returns something; that something will be written. Typically this is a string like 
-                    \arabic{\thesection}
-        """
-        self.figure_mother.add_latex_line(r"\immediate\write\{}{{{}:{}-}}".format(self.figure_mother.newwriteName,Id,value),"WRITE_AND_LABEL")
-
-    @lazy_attribute
-    def id_values_dict(self):
-        """
-        Build the dictionary of stored values in the auxiliary file and rewrite that file.
-        """
-        d={}
-        try :
-            f=open(self.figure_mother.interWriteFile,"r")
-        except IOError :
-            if not self.already_warned_CompileYourLaTeXFile:
-                print "Warning: the auxiliary file %s seems not to exist. Compile your LaTeX file."%self.figure_mother.interWriteFile
-                self.already_warned_CompileYourLaTeXFile=True
-            if global_vars.perform_tests :
-                raise ValueError,"I cannot say that a test succeed if I cannot determine the bounding box"
-            if global_vars.create_formats["test"] :
-                raise ValueError, "I cannot create a test file when I'm unable to compute the bounding box."
-            return d
-        idlist = f.read().replace('\n','').replace(' ','').replace('\\par','').split("-")
-        f.close()
-
-        for els in idlist[0:-1]:
-            key=els.split(":")[0]
-            value=els.split(':')[1]
-            d[key]=value
-
-        f=open(self.figure_mother.interWriteFile,"w")
-        for k in d.keys():
-            f.write("%s:%s-\n"%(k,d[k]))
-        f.close()
-        return d
-    def get_Id_value(self,Id,default_value=0):
-        if Id not in self.id_values_dict.keys():
-            if not global_vars.silent:
-                if not self.already_warned_CompileYourLaTeXFile:
-                    print "Warning: the auxiliary file %s does not contain the id «%s». Compile your LaTeX file."%(self.figure_mother.interWriteFile,Id)
-                    self.already_warned_CompileYourLaTeXFile=True
-            if global_vars.perform_tests :
-                raise PhystricksTestError(justification="No tests file found.",pspict=self)
-            if global_vars.create_formats["test"] :
-                raise ValueError, "I cannot create a test file when I'm unable to compute the bounding box."
-            return default_value
-        value = self.id_values_dict[Id]
-        return value
-    def get_counter_value(self,counter_name,default_value=0):
-        """
-        return the value of the (LaTeX) counter <name> at this point of the LaTeX file
-
-        Makes LaTeX write the value of the counter in an auxiliary file, then reads the value in that file.  (needs several compilations to work)
-
-        RETURN : float
-
-        NOTE :
-
-        If you ask for the page with for example  `page = pspict.get_counter_value("page")` the given page will be the one at which LaTeX thinks the figure is. I recall that a figure is a floating object; if you have 10 of them in a row, the page number could be incorrect.
-        """
-
-        # Make LaTeX write the value of the counter in a specific file
-        interCounterId = "counter"+self.name+self.NomPointLibre.next()
-        self.initialize_counter()
-        s=r"\arabic{%s}"%counter_name
-        self.makeWriteValue(interCounterId,s)
-
-        # Read the file and return the value
-        s = self.get_Id_value(interCounterId,default_value)
-        return float(s)
-
-    def get_box_dimension(self,tex_expression,dimension_name,default_value="0pt"):
-        """
-        Return the dimension of the LaTeX box corresponding to the LaTeX expression tex_expression.
-
-        dimension_name is a valid LaTeX macro that can be applied to a LaTeX expression and that return a number. Like
-        widthof, depthof, heightof, totalheightof
-        """
-        import hashlib
-        from Utilities import newlengthName
-        h=hashlib.new("sha1")
-        h.update(tex_expression.encode("utf8"))
-        interId=dimension_name+h.hexdigest()
-        if interId not in self.figure_mother.already_used_interId :
-            self.figure_mother.add_latex_line(r"\setlength{{\{}}}{{\{}{{{}}}}}%".format(newlengthName(),dimension_name,tex_expression),"WRITE_AND_LABEL")
-            value=r"\the\%s"%newlengthName()
-
-            self.figure_mother.add_latex_line(r"\immediate\write\{}{{{}:{}-}}".format(self.figure_mother.newwriteName,interId,value),"WRITE_AND_LABEL")
-
-            self.figure_mother.already_used_interId.append(interId)
-        read_value=self.get_Id_value(interId,default_value=default_value)
-        dimenPT=float(read_value.replace("pt",""))
-        return (dimenPT)/30           # 30 is the conversion factor : 1pt=(1/3)mm
-    def get_box_size(self,tex_expression,default_value="0pt"):
-        """
-        return as 2-uple the dimensions of a LaTeX box containing an expression.
-
-        INPUT:
-        - ``tex_expression`` - a valid LaTeX expression.
-
-        OUTPUT:
-        - ``width,height`` - the dimensions of the box in centimeter.
-
-        EXAMPLE:
-        Type the following  in a script :
-        text = "$A_i=\int_a^bf_i$"
-        dimx,dimy=pspict.get_box_size(text)
-        print "The dimensions of the LaTeX text %s is (%s,%s)"%(text,str(dimx),str(dimy))
-
-        After having LaTeX-compiled the document containing the pspicture, a second
-        execution of the script should print :
-        The dimensions of the LaTeX text $A_i=\int_a^bf_i$ is (1.66653833333,0.46667)
-
-        NOTE:
-        As far as the problem is concerned from a LaTeX point of view, it was discussed here:
-        http://groups.google.fr/group/fr.comp.text.tex/browse_thread/thread/8431f21588b81530?hl=fr
-
-        This functionality creates an intermediate file.
-        """
-        height = self.get_box_dimension(tex_expression,"totalheightof",default_value=default_value)
-        width = self.get_box_dimension(tex_expression,"widthof",default_value=default_value)
-        return width,height
     def dilatation(self,fact):
         self.dilatation_X(fact)
         self.dilatation_Y(fact)
@@ -530,6 +373,8 @@ class Picture(object):
         self.grid.BB.ymin=SmallComputations.MultipleLower(self.grid.BB.ymin,Dy)
         self.grid.BB.ymax=SmallComputations.MultipleBigger(self.grid.BB.ymax,Dy)
         self.DrawGraphs(self.grid)
+    def get_box_size(self,tex_expression,default_value="0pt"):
+        return self.auxiliary_file.get_box_size(tex_expression,default_value)
     def add_latex_line(self,ligne,separator_name="DEFAULT",add_line_jump=True):
         """
         Add a line in the pstricks code. The optional argument <position> is the name of a marker like %GRID, %AXES, ...

@@ -69,7 +69,7 @@ class FigureGenerationSuite(object):
         """
         perform the tests
         """
-        figure.send_noerror = True
+        Figure.send_noerror = True
         print ""
         print "********************************************"
         print "*  This is the automatic figure generation"
