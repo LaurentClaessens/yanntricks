@@ -62,6 +62,7 @@ class MarkGraph(ObjectGraph):
         The central point of the mark is computed from self.graph.mark_point()
         Thus an object that wants to accept a mark needs a method mark_point that returns the point on which the mark will be put.
         """
+
         if self._central_point:
             return self._central_point
         if self.mark_point :

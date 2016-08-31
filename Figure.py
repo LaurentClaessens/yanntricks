@@ -20,6 +20,8 @@
 
 import os
 
+from sage.all import numerical_approx
+
 import SmallComputations
 from Separator import Separator, SeparatorList
 from GlobalVariables import global_vars
@@ -183,21 +185,20 @@ class Figure(object):
                 pspict=self.record_pspicture[0]
                 visual_xsize=pspict.visual_xsize()      # By the way, this is a reason why we cannot do this before to have
                                                         # concluded the picture.
-                text=text.replace("WIDTH",str(n(visual_xsize,3))+"cm")
+                text=text.replace("WIDTH",str(numerical_approx(visual_xsize,digits=3))+"cm")
             a.append(text)
         text = "\n".join(a)
         return text
         
     def conclude(self):
         for pspict in self.record_pspicture :
-
-            if not os.path.isfile(pspict.interWriteFile):
-                f=open(self.interWriteFile,"w")
-                f.write("default:content-")
-                f.close()
+            inter_file =  pspict.auxiliary_file.interWriteFile
+            if not os.path.isfile(inter_file):
+                with open(inter_file,"w") as f:
+                    f.write("default:content-")
         
-            self.add_latex_line(pspict.contenu(),"PSPICTURE")
-            self.add_latex_line(pspict.auxiliary_file.open_latex_code(),"OPEN_WRITE_AND_LABEL")
+            pspict.add_latex_line(pspict.auxiliary_file.open_latex_code(),"OPEN_WRITE_AND_LABEL")
+            self.add_latex_line(pspict.latex_code(),"PSPICTURE")
 
             # For the following big stuff, see the position 170321508
             def_length_tex=r"""                 \makeatletter
@@ -311,7 +312,8 @@ class SubFigure(object):
             number=len(self.record_pspicture)
             name="sub"+latinize(str(number))
         if pspict is None :
-            pspict=pspicture("FIG"+self.name+"PICT"+name)
+            from Picture import Picture
+            pspict=Picture("FIG"+self.name+"PICT"+name)
         pspict.mother=self
         pspict.figure_mother=self.mother    # The mother of a pspict inside a subfigure is the figure (not the subfigure)
         pspict.subfigure_mother=self

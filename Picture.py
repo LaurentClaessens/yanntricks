@@ -128,16 +128,6 @@ class Picture(object):
         self.separator_list.new_separator("END PSPICTURE")
         self.separator_list.new_separator("AFTER PSPICTURE")
 
-        # The separators corresponding to write and labels have to be apart 
-        # because they have to be included differently following
-        # 1. we are in a regular pspicture in a figure
-        # 2. we are in a subfigure environment : in that case one cannot
-        #    put the corresponding code between two subfigures
-        # 3. we are building the pdf file.
-
-        # In fact now WRITE_AND_LABEL is managed by the figure.
-
-
         self.auxiliary_file=AuxFile(self.name,picture=self)
 
     def tikz_code(self):
@@ -281,8 +271,8 @@ class Picture(object):
         
         # This is for testing purpose only. To be removed in production.
         if not isinstance(gr,ObjectGraph):
-            print("ooKQKUooAxpKXr -- What are you drawing ?")
-            raise 
+            print("It is better to draw objects that are subclassing ObjectGraph. We will try anyway. Trying to draw : ",gr,type(gr))
+
 
     def DrawGraphs(self,*args,**arg):
         """
@@ -363,10 +353,11 @@ class Picture(object):
         Dx=self.grid.Dx
         Dy=self.grid.Dy
         # Make the grid end on its "big" subdivisions.
-        self.grid.BB.xmin=SmallComputations.MultipleLower(self.grid.BB.xmin,Dx)
-        self.grid.BB.xmax=SmallComputations.MultipleBigger(self.grid.BB.xmax,Dx)
-        self.grid.BB.ymin=SmallComputations.MultipleLower(self.grid.BB.ymin,Dy)
-        self.grid.BB.ymax=SmallComputations.MultipleBigger(self.grid.BB.ymax,Dy)
+        from SmallComputations import MultipleLower,MultipleBigger
+        self.grid.BB.xmin=MultipleLower(self.grid.BB.xmin,Dx)
+        self.grid.BB.xmax=MultipleBigger(self.grid.BB.xmax,Dx)
+        self.grid.BB.ymin=MultipleLower(self.grid.BB.ymin,Dy)
+        self.grid.BB.ymax=MultipleBigger(self.grid.BB.ymax,Dy)
         self.DrawGraphs(self.grid)
     def get_box_size(self,tex_expression,default_value="0pt"):
         return self.auxiliary_file.get_box_size(tex_expression,default_value)

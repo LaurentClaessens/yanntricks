@@ -122,7 +122,8 @@ class ObjectGraph(object):
                 position="E"
             if deg==180+90:
                 position="N"
-        mark=Mark(self,dist,angle,text,mark_point=mark_point,position=position,pspict=pspict)
+
+        mark=Mark(graph=self,dist=dist,angle=angle,central_point=None,text=text,mark_point=mark_point,position=position,pspict=pspict)
 
         # In each .psttricks file we need the lines that make compute the size of the text. Thus we call "get_box_size" for each.
         if not isinstance(pspict,list):

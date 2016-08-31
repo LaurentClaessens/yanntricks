@@ -127,13 +127,16 @@ class AngleGraph(ObjectGraph):
 
         # The cases are tested in the demo file 'OMPAooMbyOIqeA'
 
+        aA=self.angleA
+        aB=self.angleB
+
         if self.angleA.degree == 0:
             print("ooXDDZooBhOJKx -- ",dimx,dimy)
             x=dimy/tan(self.measure.radian)
             K=Point(self.O.x+x+dimx/2,self.O.y+dimy/2)
             v= AffineVector( self.O, K )
         
-        if 0<self.angleA.degree < 90 and 0<self.angleB.degree < 90 :
+        elif 0<self.angleA.degree < 90 and 0<self.angleB.degree < 90 :
             print("ooXDDZooBhOJKx -- ",dimx,dimy)
             # In this case, the mark will be attached
             # - by the upper left to the line OB (let X be that point)
@@ -167,7 +170,7 @@ class AngleGraph(ObjectGraph):
             # - not intersect the lines
             # - be further than the code.
 
-        if 0<self.angleA.degree < 90 and 90<self.angleB.degree < 180 :
+        elif 0<self.angleA.degree < 90 and 90<self.angleB.degree < 180 :
             print("ooXDDZooBhOJKx -- ",dimx,dimy)
             h=dimx*sin(self.angleA.radian)
             l=h/sin(self.measure.radian)
@@ -178,7 +181,7 @@ class AngleGraph(ObjectGraph):
             Q=self.O+(-x,y)     # lower left angle of the box
             v = AffineVector(self.O, Q+(dimx/2,dimy/2) )
             
-        if 90<self.angleA.degree < 180 and 90<self.angleB.degree < 180 :
+        elif 90<self.angleA.degree < 180 and 90<self.angleB.degree < 180 :
             print("ooXDDZooBhOJKx -- ",dimx,dimy)
             d=sqrt(dimx**2+dimy**2)
             beta=pi-self.angleB.radian
@@ -194,7 +197,7 @@ class AngleGraph(ObjectGraph):
             Q=self.O+(-x,y)
             v=AffineVector(self.O,Q+(-dimx/2,dimy/2))
 
-        if 90<self.angleA.degree < 180 and  self.angleB.degree==180:
+        elif 90<self.angleA.degree < 180 and  (self.angleB.degree==180 or self.angleB.radian==pi) :
             print("ooXDDZooBhOJKx -- ",dimx,dimy)
             l=dimy/sin(self.measure.radian)
             x=l*cos(self.measure.radian)
@@ -202,7 +205,7 @@ class AngleGraph(ObjectGraph):
             Q=self.O+(-x,y)
             v=AffineVector( self.O, Q+(-dimx/2,-dimy/2) )
 
-        if 90<self.angleA.degree < 180 and 180<self.angleB.degree < 270 :
+        elif 90<self.angleA.degree < 180 and 180<self.angleB.degree < 270 :
             alpha=self.angleI.radian-pi/2
             beta_p=self.angleF.radian-pi
             h=dimy*sin(alpha)
@@ -210,9 +213,13 @@ class AngleGraph(ObjectGraph):
             x=l*cos(beta_p)
             y=l*sin(beta_p)
             Q=self.O+(-x,-y)
+            A=Q+(-dimx/2,dimy/2)
             v=AffineVector(self.O ,Q+(-dimx/2,dimy/2) )
-            pspict.DrawGraphs(Q,v)
+            pspict.DrawGraphs(A,v)
             print("ooXDDZooBhOJKx -- ",dimx,dimy)
+
+        else :
+            raise ValueError("Not yet implemented for angles :",self.angleA.degree,self.angleB.degree)
 
         C=mark_point+v.fix_size(dist)
         return Mark(self,dist=None,angle=None,text=text,mark_point=None,central_point=C,position=None,pspict=pspict)

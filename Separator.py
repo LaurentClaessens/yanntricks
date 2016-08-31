@@ -36,9 +36,6 @@ class SeparatorList(object):
         else:
             self.separator_list.append(separator)
     def code(self,not_to_be_used=[]):
-        if not_to_be_used :
-            print("ooHMJKooSAhXsq -- ",not_to_be_used)
-            raise "Je voulais juste savoir"
 
         return "".join(separator.code() for separator in self.separator_list if separator.title not in not_to_be_used)
     def fusion(self,title_list,new_title):

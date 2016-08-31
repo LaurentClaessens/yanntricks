@@ -130,7 +130,7 @@ class AxesGraph(object):
         self.add_option("Dy="+sDy)
         c=[]
         if self.draw_single_axeX :
-            c.append(self.single_axeX.latex_code(language=language,pspict=pspict))
+            c.append(self.single_axeX.latex_code(pspict=pspict,language=language))
         if self.draw_single_axeY :
             c.append(self.single_axeY.latex_code(language=language,pspict=pspict))
         return "\n".join(c)
@@ -256,7 +256,7 @@ class SingleAxeGraph(ObjectGraph):
             bb.addX(P.x)
             bb.addY(P.y)
         return bb
-    def latex_code(self,language,pspict):
+    def latex_code(self,pspict,language=None):
         """
         Return the pstricks code of the axe.
         """
@@ -264,12 +264,12 @@ class SingleAxeGraph(ObjectGraph):
         self.add_option("Dx="+sDx)
         c=[]
         if self.mark :
-            c.append(self.mark.latex_code(language,pspict))
+            c.append(self.mark.latex_code(pspict,language))
         if self.graduation :
             for graph in self.graduation_bars(pspict):
                 c.append(graph.latex_code(language=language,pspict=pspict))
         h=AffineVector(self.segment(pspict))
-        c.append(h.latex_code(language,pspict))
+        c.append(h.latex_code(pspict=pspict,language=language))
         return "\n".join(c)
     def __str__(self):
         return "<SingleAxeGraph: C={0} base={1} mx={2} Mx={3}>".format(self.C,self.base,self.mx,self.Mx)

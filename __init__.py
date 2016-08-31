@@ -189,10 +189,11 @@ def IndependentPictures(name,n):
     """
     pspicts=[]
     figs=[]
+    from Utilities import latinize
     for i in range(0,n):
         # One has to latinize to be in grade of making subfigures :
         # if not one gets things like \newcommand{\CaptionFigFoo1}{blahblah}  which does not work in LaTeX because of the "1"
-        pspict,fig = SinglePicture(name+"oo"+SmallComputations.latinize(str(i)))
+        pspict,fig = SinglePicture(name+"oo"+Utilities.latinize(str(i)))
         pspicts.append(pspict)
         figs.append(fig)
     return pspicts,figs
