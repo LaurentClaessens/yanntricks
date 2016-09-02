@@ -23,7 +23,7 @@ from __future__ import unicode_literals
 
 from sage.all import *
 
-from Utilities import PointsNameList
+from Utilities import PointsNameList,ensure_unicode
 from Separator import SeparatorList
 from GlobalVariables import global_vars
 from ObjectGraph import DrawElement
@@ -365,6 +365,7 @@ class Picture(object):
         """
         Add a line in the pstricks code. The optional argument <position> is the name of a marker like %GRID, %AXES, ...
         """
+        ensure_unicode(ligne)
         if separator_name==None:
             separator_name="DEFAULT"
         self.separator_list[separator_name].add_latex_line(ligne,add_line_jump=add_line_jump)

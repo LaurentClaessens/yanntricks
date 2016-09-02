@@ -153,6 +153,9 @@ class ObjectGraph(object):
         # be to draw P and its mark *after* G.
         # This is why we have this 'added_objects' mechanism.
 
+        from Utilities import ensure_unicode
+        text=ensure_unicode(text)
+
         if not isinstance(pspict,list):
             pspict=[pspict]
 

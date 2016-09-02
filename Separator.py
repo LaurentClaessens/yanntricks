@@ -126,8 +126,14 @@ class Separator(object):
                 print type(line)
                 print dir(line)
                 raise
-        self.latex_code.append(text)
+        try:
+            utext=text.decode("utf8")
+        except UnicodeEncodeError :
+            utext=text
+        self.latex_code.append(utext)
         if add_line_jump :
-            self.latex_code.append("\n")
+            self.latex_code.append(u"\n")
     def code(self):
-        return "".join(self.latex_code)
+        lc=self.latex_code
+        ulc=[  x.encode("utf8") for x in lc ]
+        return "".join(ulc)

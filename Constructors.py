@@ -460,6 +460,8 @@ def Mark(graph=None,dist=None,angle=None,central_point=None,text="",mark_point=N
     - ``pspict`` - the pspict in which the mark has to be computed and drawn.
     """
     import MarkGraph
+    from Utilities import ensure_unicode
+    text=ensure_unicode(text)
     return MarkGraph.MarkGraph(graph,dist,angle,text,central_point=central_point,mark_point=mark_point,position=position,pspict=pspict)
 
 def AngleAOB(A,O,B,r=None):
@@ -1293,12 +1295,12 @@ def BarDiagram(X,Y):
     from BarDiagramGraph import BarDiagramGraph
     return BarDiagramGraph(X,Y)
 
-def Histogram(tuple_box_list):
+def Histogram(tuple_box_list,legende=None):
     """
     An histogram is given by a list of tuple '(a,b,n)' where 'a' and 'b' are the extremal values of the box and 'n' is the number of elements in the box.
     """
     from HistogramGraph import HistogramGraph
-    return HistogramGraph(tuple_box_list)
+    return HistogramGraph(tuple_box_list,legende)
 
 def BoxDiagram(values,h,delta_y=0):
     from BoxDiagramGraph import BoxDiagramGraph
