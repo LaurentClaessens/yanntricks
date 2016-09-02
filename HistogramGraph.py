@@ -21,6 +21,7 @@
 # email: laurent@claessens-donadello.eu
 
 from __future__ import division
+from __future__ import unicode_literals
 
 from ObjectGraph import ObjectGraph
 from Constructors import *
@@ -57,7 +58,7 @@ class HistogramBox(ObjectGraph):
         return self.rectangle.bounding_box(pspict)
 
 class HistogramGraph(ObjectGraph):
-    def __init__(self,tuple_box_list):
+    def __init__(self,tuple_box_list,legende=None):
         ObjectGraph.__init__(self,self)
         self.tuple_box_list=tuple_box_list
         self.box_list=[]
@@ -71,7 +72,10 @@ class HistogramGraph(ObjectGraph):
         self.d_ymax=max([b.n for b in self.box_list])       # max of the data ordinate.
         self.xsize=self.d_xmax-self.d_xmin
         self.ysize=self.d_ymax              # d_ymin is zero (implicitly)
-        self.legende=None
+
+        self.legende=legende
+        print("Dans le init ",self.legende,type(self.legende))
+
         # TODO : For sure one can sort it easier.
         # The problem is that if several differences x.th_height-y.th_height are small, 
         # int(...) always returns 1 (or -1), so that the sorting gets wrong.
