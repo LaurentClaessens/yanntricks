@@ -688,3 +688,20 @@ def newlengthName():
     """
     return "lengthOf"+latinize(sysargvzero)
 
+def ensure_unicode(s):
+    if isinstance(s,str):
+        s=s.decode("utf8")
+    elif isinstance(s,unicode):
+        pass
+    else:
+        raise TypeError
+    return s
+
+
+def testtype(s):
+    print(s,type(s))
+    print("\n")
+    if isinstance(s,str):
+        raise
+def logging(s):
+    print(s)

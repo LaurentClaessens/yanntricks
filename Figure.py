@@ -27,6 +27,7 @@ from Separator import Separator, SeparatorList
 from GlobalVariables import global_vars
 from Utilities import latinize
 from Utilities import newlengthName
+from Utilities import ensure_unicode
 
 def add_latex_line_entete(truc,position=""):
     from Picture import Picture
@@ -253,7 +254,6 @@ class Figure(object):
                 pspict.add_latex_line(pspict.auxiliary_file.latex_code(),"WRITE_AND_LABEL")
                 pspict.add_latex_line(pspict.auxiliary_file.close_latex_code(),"CLOSE_WRITE_AND_LABEL")
 
-
         after_all=r"""\caption{%s}\label{%s}
             \end{figure}
             """%(self.caption,self.name)
@@ -262,6 +262,7 @@ class Figure(object):
            self.contenu = self.separator_list.code().replace("\n\n","\n")
         else :
            self.contenu = self.separator_list.code(not_to_be_used=["BEFORE SUBFIGURES","AFTER ALL"]).replace("\n\n","\n")
+        self.contenu=ensure_unicode(self.contenu)
     def write_the_file(self):
         """
         Write the figure in the file.
@@ -269,20 +270,18 @@ class Figure(object):
         Do not write if we are testing.
         It also remove the tikz externalize file.
         """
+        import codecs
         to_be_written=self.contenu              # self.contenu is created in self.conclude
         if not global_vars.perform_tests :
-            self.fichier.open_file("w")
-            self.fichier.file.write(to_be_written)
-            self.fichier.file.close()
+            with codecs.open(self.nFich,"w",encoding="utf8") as f:
+                f.write(to_be_written)
         print "--------------- For your LaTeX file ---------------"
         print(self.LaTeX_lines())
         print "---------------------------------------------------"
         # One only sends the "no error" signal if we are performing a list of tests.
 
-        import codecs
-        f=codecs.open(self.comment_filename,"w",encoding='utf8')
-        f.write(self.comments())
-        f.close()
+        with codecs.open(self.comment_filename,"w",encoding='utf8') as f:
+            f.write(self.comments())
 
         if self.send_noerror :
             raise PhystricksNoError(self)

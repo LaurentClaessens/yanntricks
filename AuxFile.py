@@ -99,7 +99,7 @@ class AuxFile(object):
         if Id not in self.id_values_dict().keys():
             if not global_vars.silent:
                 if not self.already_warned_CompileYourLaTeXFile:
-                    print "Warning: the auxiliary file {} does not contain the id «{}». Compile your LaTeX file.".format(self.interWriteFile,Id)
+                    print("Warning: the auxiliary file {} does not contain the id «{}». Compile your LaTeX file.".format(self.interWriteFile,Id))
                     self.already_warned_CompileYourLaTeXFile=True
             if global_vars.perform_tests :
                 raise PhystricksTestError(justification="No tests file found.",pspict=self)
@@ -139,12 +139,13 @@ class AuxFile(object):
         widthof, depthof, heightof, totalheightof
         """
         import hashlib
+        utex_expression=tex_expression.encode("utf8")
         h=hashlib.new("sha1")
-        h.update(tex_expression.encode("utf8"))
+        h.update(utex_expression)
         interId=dimension_name+h.hexdigest()
         if interId not in self.already_used_interId :
-            self.add_latex_line(r"\setlength{{\{}}}{{\{}{{{}}}}}%".format(newlengthName(),dimension_name,tex_expression))
-            value=r"\the\%s"%newlengthName()
+            self.add_latex_line(r"\setlength{{\{}}}{{\{}{{{}}}}}%".format(newlengthName(),dimension_name,utex_expression))
+            value=r"\the\{}".format(newlengthName())
 
             self.add_latex_line(r"\immediate\write\{}{{{}:{}-}}".format(self.newwriteName,interId,value))
 

@@ -86,10 +86,6 @@ class AngleMeasure(object):
         dep_value_degree=value_degree
         dep_value_radian=value_radian
 
-        # 'CircleGraph' creates its angleI like that :
-        #    self.angleI = AngleMeasure(value_degree=angleI,keep_negative=True)
-        #  in this case, 'value_degree' can be either a number, either a 'AngleMeasure' because the user has choice when writing something like
-        #     cir=Circle(O,A,angleI=...,angleF=...)
         for k in [value_degree,value_radian]:
             if isinstance(k,AngleMeasure):
                 angle_measure=k

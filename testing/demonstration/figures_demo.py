@@ -56,6 +56,13 @@ from phystricksJSYWooQYduLVLS import JSYWooQYduLVLS
 from phystricksQIPRoolQCEnZdx import QIPRoolQCEnZdx
 
 figures_list=[]
+figures_list.append(QIPRoolQCEnZdx)
+figures_list.append(YOWDooyeyOJyml)
+figures_list.append(FMLCooxHtqRzUz)
+figures_list.append(DYJNooLVVFHEfN)
+figures_list.append(OMPAooMbyOIqeA)
+figures_list=[]
+figures_list.append(OGGDooIvakwNlL)
 figures_list.append(PFCUoorQhitKoJ)
 figures_list.append(QIXEooejrojKjo)
 figures_list.append(AxesSecond)
@@ -98,14 +105,7 @@ figures_list.append(XBAUooFtMWukKr)
 figures_list.append(OMZOoowEtRUuMi)
 figures_list.append(QHXKooHTpEuXMw)
 figures_list.append(QEFQoomlfmOQTM)
-figures_list=[]
 figures_list.append(AESIooxXxRYQdT)
-figures_list.append(QIPRoolQCEnZdx)
-figures_list.append(YOWDooyeyOJyml)
-figures_list.append(FMLCooxHtqRzUz)
-figures_list.append(DYJNooLVVFHEfN)
-figures_list.append(OMPAooMbyOIqeA)
-figures_list.append(OGGDooIvakwNlL)
 """
 figures_list.append(<++>)
 figures_list.append(<++>)

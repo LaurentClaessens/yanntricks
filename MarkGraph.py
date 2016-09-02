@@ -100,13 +100,15 @@ class MarkGraph(ObjectGraph):
                 return default
 
             if position=="corner":
-                if self.x>=0:
+                sx=numerical_approx(self.x)
+                sy=numerical_approx(self.y)
+                if sx>=0:
                     lx=dimx*0.5
-                if self.x<0:
+                if sx<0:
                     lx=-dimx*0.5
-                if self.y>=0:
+                if sy>=0:
                     ly=dimy*0.5
-                if self.y<0:
+                if sy<0:
                     ly=-dimy*0.5
                 return default.translate(lx,ly)
             if position=="N":

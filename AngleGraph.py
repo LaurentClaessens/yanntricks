@@ -105,8 +105,8 @@ class AngleGraph(ObjectGraph):
 
 
         mark_point=self.mark_point(pspict)
-        if self.measure.degree>90 :
-            return mark_point.get_mark(dist=0.3,angle=self.advised_mark_angle,text=text,position=position,pspict=pspict)
+        if self.measure.degree>90 or self.measure.degree<-90 : 
+            return mark_point.get_mark(dist=0.3,angle=self.advised_mark_angle(pspict),text=text,position=position,pspict=pspict)
 
         if dist == None :
             dist=0.3
@@ -126,9 +126,6 @@ class AngleGraph(ObjectGraph):
         # just draw the altitude and use Pythagoras along with some trigonometry.
 
         # The cases are tested in the demo file 'OMPAooMbyOIqeA'
-
-        aA=self.angleA
-        aB=self.angleB
 
         if self.angleA.degree == 0:
             print("ooXDDZooBhOJKx -- ",dimx,dimy)
@@ -170,6 +167,12 @@ class AngleGraph(ObjectGraph):
             # - not intersect the lines
             # - be further than the code.
 
+        elif 0<self.angleA.degree < 90 and ( self.angleB.degree==90 or self.angleB.radian==pi/2  ):
+            x=0
+            y=dimx/tan(self.measure.radian)
+            Q=self.O+(0,y)
+            v=AffineVector(self.O,Q+(-dimx/2,dimy/2))
+
         elif 0<self.angleA.degree < 90 and 90<self.angleB.degree < 180 :
             print("ooXDDZooBhOJKx -- ",dimx,dimy)
             h=dimx*sin(self.angleA.radian)
@@ -180,6 +183,11 @@ class AngleGraph(ObjectGraph):
 
             Q=self.O+(-x,y)     # lower left angle of the box
             v = AffineVector(self.O, Q+(dimx/2,dimy/2) )
+
+        elif (self.angleA.radian==pi/2 or self.angleA.degree==90) and 90<self.angleB.degree<180 :
+            l=dimx/tan(self.measure.radian)
+            Q=self.O+(0,l)
+            v=AffineVector(self.O,Q+(-dimx/2,dimy/2))
             
         elif 90<self.angleA.degree < 180 and 90<self.angleB.degree < 180 :
             print("ooXDDZooBhOJKx -- ",dimx,dimy)
@@ -197,7 +205,7 @@ class AngleGraph(ObjectGraph):
             Q=self.O+(-x,y)
             v=AffineVector(self.O,Q+(-dimx/2,dimy/2))
 
-        elif 90<self.angleA.degree < 180 and  (self.angleB.degree==180 or self.angleB.radian==pi) :
+        elif 90<self.angleA.degree < 180 and (self.angleB.degree==180 or self.angleB.radian==pi) :
             print("ooXDDZooBhOJKx -- ",dimx,dimy)
             l=dimy/sin(self.measure.radian)
             x=l*cos(self.measure.radian)
@@ -206,20 +214,80 @@ class AngleGraph(ObjectGraph):
             v=AffineVector( self.O, Q+(-dimx/2,-dimy/2) )
 
         elif 90<self.angleA.degree < 180 and 180<self.angleB.degree < 270 :
-            alpha=self.angleI.radian-pi/2
-            beta_p=self.angleF.radian-pi
+            alpha=3*pi/2-self.angleB.radian
             h=dimy*sin(alpha)
             l=h/sin(self.measure.radian)
-            x=l*cos(beta_p)
-            y=l*sin(beta_p)
-            Q=self.O+(-x,-y)
-            A=Q+(-dimx/2,dimy/2)
-            v=AffineVector(self.O ,Q+(-dimx/2,dimy/2) )
-            pspict.DrawGraphs(A,v)
-            print("ooXDDZooBhOJKx -- ",dimx,dimy)
+            gamma=self.angleA.radian-pi/2
+            x=l*sin(gamma)
+            y=l*cos(gamma)
+            Q=self.O+(-x,y)
+            v=AffineVector(self.O,Q+(-dimx/2,-dimy/2))
+
+        elif (self.angleA.degree==180 or self.angleA.radian==pi) and  180<self.angleB.degree < 270:
+            alpha=pi/2-self.measure.radian
+            x=dimy*tan(alpha)
+            Q=self.O+(-x,0)
+            v=AffineVector(self.O,Q+(-dimx/2,-dimy/2))
+
+        elif 180<self.angleA.degree < 270 and (self.angleB.degree==270 or self.angleB.radian==3*pi/2) :
+            y=dimx/tan(self.measure.radian)
+            Q=self.O+(0,-y)
+            v=AffineVector(self.O,Q+(-dimx/2,dimy/2)  )
+
+        elif 180<self.angleA.degree < 270 and 270<self.angleB.degree < 360 :
+            alpha=self.angleA.radian-pi
+            h=dimx*cos(alpha)
+            beta=pi/2-self.measure.radian
+            l=h/cos(beta)
+            gamma=2*pi-self.angleB.radian
+            x=l*cos(gamma)
+            y=l*sin(gamma)
+            Q=self.O+(x,-y)
+            v=AffineVector(self.O,Q+(-dimx/2,-dimy/2))
+
+        elif 270<self.angleA.degree < 360 and 0<self.angleB.degree<90:
+            alpha=self.angleB.radian
+            l=dimy*cos(alpha)
+            beta=pi/2-alpha
+            x=l*sin(beta)
+            y=l*cos(beta)
+            Q=self.O+(x,y)
+            v=AffineVector(self.O,Q+(dimx/2,-dimy/2))
+
+        elif (self.angleA.radian==3*pi/2 or self.angleA.degree==270) and 270<self.angleB.degree<360 :
+            l=dimx/tan(self.measure.radian)
+            x=0
+            y=l
+            Q=self.O+(x,-y)
+            v=AffineVector(self.O,Q+(dimx/2,-dimy/2))
+
+        elif 180<self.angleA.degree < 270 and 270<self.angleB.degree<360:
+            alpha=self.measure.radian-pi
+            h=dimx*sin(alpha)
+            l=h/sin(self.measure.radian)
+            beta=self.angleA.radian-3*pi/2
+            x=l*sin(beta)
+            y=l*cos(beta)
+            Q=self.O+(x,-y)
+            v=AffineVector( self.O,Q+(-dimx/2,-dimy/2)  )
+
+        elif 270<self.angleA.degree < 360 and (self.angleB.degree==360 or self.angleB.radian==2*pi or self.angleB.radian==0 or self.angleB.degree==0) :
+            l=dimy/tan(self.measure.radian)
+            Q=self.O+(l,0)
+            v=AffineVector(self.O,Q+(dimx/2,-dimy/2))
+
+        elif 260<self.angleA.degree < 360 and ( self.angleB.degree>360 or 0<self.angleB.degree<90):
+            alpha=self.angleA.radian-pi/2
+            h=dimy*sin(alpha)
+            l=h/sin(self.measure.radian)
+            beta=pi/2-self.angleB.radian
+            x=l*sin(beta)
+            y=l*cos(beta)
+            Q=self.O+(x,y)
+            v=AffineVector(self.O,Q+(dimx/2,-dimy/2))
 
         else :
-            raise ValueError("Not yet implemented for angles :",self.angleA.degree,self.angleB.degree)
+            raise ValueError("Not yet implemented for angles :",numerical_approx(self.angleA.degree),numerical_approx(self.angleB.degree))
 
         C=mark_point+v.fix_size(dist)
         return Mark(self,dist=None,angle=None,text=text,mark_point=None,central_point=C,position=None,pspict=pspict)

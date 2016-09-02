@@ -538,8 +538,11 @@ def visualPolarCoordinates(r,theta,xunit=1,yunit=1):
     arg_is_angle_measure=False
     orig_theta=theta
     if isinstance(theta,AngleMeasure):
-        theta=theta.radian
+        theta=numerical_approx(theta.radian)
         arg_is_angle_measure=True
+    else :
+        theta=numerical_approx(theta)
+
     if cos(theta)==0:
         return (r/yunit,orig_theta)
     if cos(theta)==1:
