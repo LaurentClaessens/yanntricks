@@ -52,18 +52,12 @@ class Picture(object):
 
     def __init__(self,name="CAN_BE_A_PROBLEM_IF_TRY_TO_PRODUCE_EPS_OR_PDF"):
         r"""
-        A name is required for producing intermediate files. This is the case when one wants to produce eps/pdf files of one wants to
-           make interactions with LaTeX (see pspict.get_counter_value).
-
-        SOME INTERESTING ATTRIBUTES:
 
         - `self.BB` is the bounding box for LaTeX purpose.
 
         - `self.math_BB` is the bounding box of objects that are "mathematically relevant". This bounding box does not take into account
             marks of points and thinks like that. This is the bounding box that is going to be used for the axes and the grid.
             When a graph object has a method math_bounding_box, this is the one taken into account in the math_BB here.
-
-
         """
         self.name = name        # self.name is used in order to
                                 # name the intermediate files.

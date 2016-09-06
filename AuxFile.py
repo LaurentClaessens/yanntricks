@@ -52,7 +52,6 @@ class AuxFile(object):
         return "\n".join(self._latex_line_list)
     def add_latex_line(self,line):
         self._latex_line_list.append(line)
-
     def makeWriteValue(self,Id,value):
         r"""Ask LaTeX to write the result of `value` into the standard auxiliary file with identifier `Id`
 
@@ -61,7 +60,7 @@ class AuxFile(object):
             - `value` a LaTeX code that returns something; that something will be written. Typically this is a string like 
                     \arabic{\thesection}
         """
-        self.add_latex_line(r"\immediate\write\{}{{{}:{}-}}".format(self.newwriteName,Id,value),"WRITE_AND_LABEL")
+        self.add_latex_line(r"\immediate\write\{}{{{}:{}-}}".format(self.newwriteName,Id,value))
 
     def id_values_dict(self):
         """
@@ -119,8 +118,8 @@ class AuxFile(object):
         """
 
         # Make LaTeX write the value of the counter in a specific file
-        interCounterId = "counter"+self.name+self.NomPointLibre.next()
-        self.initialize_counter()
+        interCounterId = "counter"+self.name+self.picture.NomPointLibre.next()
+        #self.initialize_counter()
         s=r"\arabic{%s}"%counter_name
         self.makeWriteValue(interCounterId,s)
 

@@ -7,8 +7,8 @@ def RJDEoobOibtkfv():
     pspict,fig = SinglePicture("RJDEoobOibtkfv")
 
     # Taking the value of the LaTeX's counters "section" and "page"
-    section=pspict.get_counter_value("section",default_value=1)
-    page=pspict.get_counter_value("page")
+    section=pspict.auxiliary_file.get_counter_value("section",default_value=1)
+    page=pspict.auxiliary_file.get_counter_value("page")
 
     # You compute with is as normal Python float
     xmax=5/section
