@@ -55,6 +55,8 @@ class BoundingBox_class(object):
         if P1 :
             self.add_math_object(P1,check_too_large=False)
             self.add_math_object(P2,check_too_large=False)
+        self.take_math_BB=False
+        self.take_BB=True
     # Because I do not want BoundingBox to inherit from ObjectGraph
     def _draw_added_objects(self,pspict):
         pass
