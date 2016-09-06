@@ -13,8 +13,11 @@ def QIXEooejrojKjo():
     pspict.axes.single_axeX.Dx=5
     pspict.axes.single_axeY.Dx=5
 
+    from phystricks.Utilities import logging
+    logging("Avant draw default axes")
     pspict.DrawDefaultAxes()
     pspict.comment="The numbering on the axes are not too far, not too close from the axis although there is a dilatation"
     fig.no_figure()
+    logging("Avant conclude")
     fig.conclude()
     fig.write_the_file()

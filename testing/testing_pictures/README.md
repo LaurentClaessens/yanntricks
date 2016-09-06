@@ -20,7 +20,7 @@ In fact, I always create my pictures using an automatic script that choose the f
 First clean up your directory :
 
 ```bash
-rm *.pyc && rm phystricks*.py && rm *.pstricks&& rm *.comment&& rm LabelFig*.aux
+rm *.pyc & rm phystricks*.py & rm *.pstricks& rm *.comment& rm LabelFig*.aux&rm tikzFIGLabelFig*& rm FIGLabelFig*.aux
 ```
 
 Then generate the scripts
