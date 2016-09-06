@@ -30,6 +30,7 @@ from ObjectGraph import DrawElement
 from main import PspictureToOtherOutputs
 from Constructors import BoundingBox,Axes,Grid,Point
 from AuxFile import AuxFile
+from BoundingBox import BoundingBox_class
 
 class Picture(object):
     r"""
@@ -212,7 +213,7 @@ class Picture(object):
             # because a dilatation of the figure could have
             # changed the bounding box.
             # Same for the bounding box of the pspicture, since it is not know before now
-            if isinstance(graph,BoundingBox):
+            if isinstance(graph,BoundingBox_class):
                 if graph.mother:
                     print "I'm drawing the bounding box of ",graph.mother
                     graph=graph.mother.bounding_box(self)
