@@ -74,7 +74,6 @@ class HistogramGraph(ObjectGraph):
         self.ysize=self.d_ymax              # d_ymin is zero (implicitly)
 
         self.legende=legende
-        print("Dans le init ",self.legende,type(self.legende))
 
         # TODO : For sure one can sort it easier.
         # The problem is that if several differences x.th_height-y.th_height are small, 

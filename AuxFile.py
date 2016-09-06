@@ -23,11 +23,8 @@ from Utilities import newlengthName
 
 class AuxFile(object):
     """
-    The auxiliary file serves make a 'dialog' between LaTeX and phystricks. 
-    We write therein the box sizes.
-
-    This class also creates the LaTeX code that make pdflatex write the
-    box sizes in the auxiliary file.
+    The auxiliary file serves to make a 'dialog' between LaTeX and phystricks. 
+    We ask LaTeX to write the box sizes therein.
 
     Each `Picture` has an auxiliary file.
     """
