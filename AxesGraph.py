@@ -33,6 +33,7 @@ class AxesGraph(ObjectGraph):
         # default axes system of `pspict`. This has an influence in the
         # computation of the bounding box.
         ObjectGraph.__init__(self,self)
+        self.take_math_BB=False
         self.C = C                      
         self.BB = bb.copy()
         self.pspict=pspict
@@ -126,6 +127,11 @@ class AxesGraph(ObjectGraph):
         sDy=RemoveLastZeros(self.Dy,10)
         self.add_option("Dx="+sDx)
         self.add_option("Dy="+sDy)
+
+        self.single_axeX.Mx=self.BB.xmax
+        self.single_axeX.mx=self.BB.xmin
+        self.single_axeY.Mx=self.BB.ymax
+        self.single_axeY.mx=self.BB.ymin
 
         if self.do_enlarge :
             self.enlarge_a_little(self.enlarge_size,pspict=pspict)  

@@ -123,16 +123,16 @@ class MarkGraph(ObjectGraph):
             raise ValueError
         else :
             return default
-    def math_bounding_box(self,pspict=None):
-        """
-        Return the mathematics bounding box of its base object.
+      #def math_bounding_box(self,pspict=None):
+       # """
+       # Return the mathematics bounding box of its base object.
 
-        A mark has non own math_bounding_box because we do not want the axes to fit the marks.
-        - we want the global bounding box to enclose the marks; if not the mark risks to be bu in the pdf/png version and/or the
-            figure can be badly centred.
-        - we don't want the math_boundig_box to enclose the marks because the axes don't have to enclose them.
-        """
-        return self.graph.math_bounding_box(pspict)
+       # A mark has non own math_bounding_box because we do not want the axes to fit the marks.
+        #- we want the global bounding box to enclose the marks; if not the mark risks to be bu in the pdf/png version and/or the
+        #    figure can be badly centred.
+        #- we don't want the math_boundig_box to enclose the marks because the axes don't have to enclose them.
+        #"""
+       # return self.graph.math_bounding_box(pspict)
     def bounding_box(self,pspict=None):
         central_point=self.central_point(pspict)
         if not central_point:

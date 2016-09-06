@@ -712,7 +712,8 @@ def ensure_unicode(s):
         pass
     else:
         testtype(s)
-        raise TypeError
+        raise TypeError("You are trying to convert to unicode the \
+                following object "+str(s)+" of type "+str(type(s)))
     return s
 
 def testtype(s):

@@ -218,7 +218,7 @@ class ObjectGraph(object):
     def bounding_box(self,pspict):
         # The purpose of having a default bounding box is that some objects
         # are uniquely build from 'action_on_pspict', so that the bounding box 
-        # is not important to know  since the building block have theirs.
+        # is not important to know since the building block have theirs.
         from Constructors import BoundingBox
         return BoundingBox()
     def math_bounding_box(self,pspict):

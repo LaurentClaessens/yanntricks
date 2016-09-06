@@ -7,46 +7,14 @@ def GGHOookMhIxqIK():
     pspict.dilatation(1)
 
     x=var('x')
-    P=Point(0,0)
+    f=phyFunction(2.7*sin(x)).graph(-5,5)
+    pspict.DrawGraphs(f)
 
-    pspict.DrawGraphs(P)
+    # The grid must be drawn before the axes because we want the axes to take
+    # the grid into account
+    pspict.DrawDefaultGrid()
     pspict.DrawDefaultAxes()
+    pspict.comment="\( x\mapsto 2.7\sin(x)\), the axes and the grid"
     fig.no_figure()
     fig.conclude()
     fig.write_the_file()
-
-----------------
-    pspicts,fig = MultiplePictures("GGHOookMhIxqIK",3)
-    pspicts[0].mother.caption="<+caption1+>"
-    pspicts[1].mother.caption="<+caption2+>"
-    pspicts[2].mother.caption="<+caption3+>"
-
-    for psp in pspicts:
-        psp.dilatation_X(1)
-        psp.dilatation_Y(1)
-
-    <+Définition des objets+>
-
-    for psp in pspicts:
-        psp.DrawDefaultAxes()
-
-    fig.conclude()
-    fig.write_the_file()
-
-------------------------------
-
-    pspicts,figs = IndependentPictures("GGHOookMhIxqIK",3)
-
-    for psp in pspicts:
-        psp.dilatation(1)
-
-    <+Définition des objets+>
-
-    for psp in pspicts:
-        psp.DrawDefaultAxes()
-
-    for fig in figs:
-        fig.no_figure()
-        fig.conclude()
-        fig.write_the_file()
-

@@ -31,7 +31,6 @@ from main import PspictureToOtherOutputs
 from Constructors import BoundingBox,Axes,Grid,Point
 from AuxFile import AuxFile
 
-
 class Picture(object):
     r"""
     Describe a Picture
@@ -255,7 +254,9 @@ class Picture(object):
                 return False
             return True
 
-        for a in sublist(self.record_draw_graph,condition):
+        math_list=self.record_draw_graph[:]
+        math_list.extend(self.record_force_math_bounding_box)
+        for a in sublist(math_list,condition):
             self.math_BB.AddBB(a.graph.math_bounding_box(pspict=self))
             self.already_computed_BB.append(a)
         return self.math_BB
@@ -379,11 +380,7 @@ class Picture(object):
 
         Sometimes you want the axes to be slightly larger. You can impose the length of the axes.
         """
-        BB = self.math_bounding_box(pspict=self)
-        BB.add_object(self.axes.C,self,fun="math_bounding_box")
-        # If you add the no-math bounding box, it adds 0.1  and 
-        # it becomes ugly when dilating. 
-        self.axes.BB.add_object(BB)
+        self.axes.BB=self.math_bounding_box(pspict=self)
         self.DrawGraphs(self.axes)
     def DrawDefaultGrid(self):
         self.grid.BB = self.math_bounding_box(pspict=self)
@@ -411,22 +408,22 @@ class Picture(object):
         Add an object to the math bounding box of the pspicture. This object will not be drawn, but the axes and the grid will take it into account.
         """
         self.record_force_math_bounding_box.append(g)
-    def math_bounding_box(self,pspict=None):
-        """
-        Return the current BoundingBox, that is the BoundingBox of the objects that are currently in the list of objects to be drawn.
-        """
-        bb = self.math_BB.copy()
-        for obj in self.record_force_math_bounding_box :
-            bb.add_math_object(obj)
-        for graphe in [x.graph for x in self.record_draw_graph if x.take_math_BB]:
-            bb.add_math_object(graphe,pspict=self)
-        # These two lines are only useful if the size of the single
-        # axes were modified by hand  because the method
-        # self.math_bounding_box is called by self.DrawDefaultAxes that
-        # updates the size of the singles axes later.
-        bb.add_object(self.axes.single_axeX,pspict=self)
-        bb.add_object(self.axes.single_axeY,pspict=self)
-        return bb
+    #def math_bounding_box(self,pspict=None):
+    #    """
+    #    Return the current BoundingBox, that is the BoundingBox of the objects that are currently in the list of objects to be drawn.
+    #    """
+    #    bb = self.math_BB.copy()
+    #    for obj in self.record_force_math_bounding_box :
+    #        bb.add_math_object(obj)
+    #    for graphe in [x.graph for x in self.record_draw_graph if x.take_math_BB]:
+    #        bb.add_math_object(graphe,pspict=self)
+    #    # These two lines are only useful if the size of the single
+    #    # axes were modified by hand  because the method
+    #    # self.math_bounding_box is called by self.DrawDefaultAxes that
+    #    # updates the size of the singles axes later.
+    #    bb.add_object(self.axes.single_axeX,pspict=self)
+    #    bb.add_object(self.axes.single_axeY,pspict=self)
+    #    return bb
     def test_if_test_file_is_present(self):
         test_file=SmallComputations.Fichier("test_pspict_LaTeX_%s.tmp"%(self.name))
         return os.path.isfile(test_file.filename)
