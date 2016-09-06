@@ -54,7 +54,10 @@ class AddedObjects(object):
         return self[None]
 
 class ObjectGraph(object):
-    """ This class is supposed to be used to create other "<Foo>Graph" by inheritance. It is a superclass. """
+    """ 
+    This class is supposed to be used to create other "<Foo>Graph"
+    by inheritance. 
+    """
     def __init__(self,obj):
         self.obj = obj
         self.parameters = Parameters(self.obj)
@@ -70,6 +73,9 @@ class ObjectGraph(object):
         self.in_bounding_box=True
         self._draw_edges=False
         self.added_objects=AddedObjects()
+
+        self.take_BB=True
+        self.take_math_BB=True
 
         # removed on March 11, 2016
         #self.add_option("linecolor=black")

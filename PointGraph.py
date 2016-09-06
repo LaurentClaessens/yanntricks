@@ -470,12 +470,20 @@ class PointGraph(ObjectGraph):
             sage: c==a
             False
         """
+
+        # The type verification is to avoid to get other.x
+        # when comparing with an object that is completely different.
+        # This happens when checking if the BB is already computed :
+        # see also 13756-24006
+        if not isinstance(other,PointGraph):
+            return False
         if self.x == other.x and self.y==other.y :
             return True
         return False
     def __add__(self,v):
         """
-        Addition of a point with a vector is the parallel translation, while addition of a point with an other point is simply
+        Addition of a point with a vector is the parallel translation,
+        while addition of a point with an other point is simply
         the addition of coordinates.
 
         INPUT:

@@ -247,18 +247,19 @@ class Picture(object):
         Update and return the math bounding box of the picture.
         """
 
+        # See also 13756-24006
         from Utilities import sublist
-        def condition(x):
-            if not x.take_math_BB:
+        def condition(s):
+            if not s.take_math_BB:
                 return False
-            if x in self.already_computed_BB :
+            if s in self.already_computed_BB :
                 return False
             return True
 
-        math_list=self.record_draw_graph[:]
+        math_list=[x.graph for x in self.record_draw_graph]
         math_list.extend(self.record_force_math_bounding_box)
         for a in sublist(math_list,condition):
-            self.math_BB.AddBB(a.graph.math_bounding_box(pspict=self))
+            self.math_BB.AddBB(a.math_bounding_box(pspict=self))
             self.already_computed_BB.append(a)
         return self.math_BB
     def bounding_box(self,pspict=None):
@@ -375,11 +376,13 @@ class Picture(object):
         graph.action_on_pspict(pspict=self)
     def DrawDefaultAxes(self):
         """
-        This function computes the bounding box of the axes and add them to the list to be drawn.
+        This function computes the bounding box of the axes and add
+        them to the list to be drawn.
 
         The length of the axes is computed here (via self.math_bounding_box).
 
-        Sometimes you want the axes to be slightly larger. You can impose the length of the axes.
+        Sometimes you want the axes to be slightly larger. You can impose 
+        the length of the axes.
         """
         self.axes.BB=self.math_bounding_box(pspict=self)
         self.DrawGraphs(self.axes)

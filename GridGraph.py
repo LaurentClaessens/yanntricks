@@ -146,5 +146,3 @@ class GridGraph(ObjectGraph):
                 S.merge_options(self.main_horizontal)
                 a.append(S)
         pspict.DrawGraphs(a,separator_name=self.separator_name)
-    def latex_code(self,language=None,pspict=None):
-        return ""
