@@ -535,16 +535,23 @@ def check_too_large(obj,pspict=None):
     if pspict:
         import Exceptions
         try :
-            if mx<pspict.mx_acceptable_BB :
+            # In some circumstances, the comparison
+            # mx<pspict.mx_acceptable_BB
+            # provokes a MemoryError.
+            n_Mx=numerical_approx(Mx)
+            n_mx=numerical_approx(mx)
+            n_My=numerical_approx(My)
+            n_my=numerical_approx(my)
+            if n_mx<pspict.mx_acceptable_BB :
                 print("mx=",mx,"when pspict.mx_acceptable_BB=",pspict.mx_acceptable_BB)
                 raise Exceptions.PhystricksCheckBBError()
-            if my<pspict.my_acceptable_BB :
+            if n_my<pspict.my_acceptable_BB :
                 print("my=",my,"when pspict.my_acceptable_BB=",pspict.my_acceptable_BB)
                 raise Exceptions.PhystricksCheckBBError()
-            if Mx>pspict.Mx_acceptable_BB :
+            if n_Mx>pspict.Mx_acceptable_BB :
                 print("Mx=",Mx,"when pspict.Mx_acceptable_BB=",pspict.Mx_acceptable_BB)
                 raise Exceptions.PhystricksCheckBBError()
-            if My>pspict.My_acceptable_BB:
+            if n_My>pspict.My_acceptable_BB:
                 print("My=",My,"when pspict.My_acceptable_BB=",pspict.My_acceptable_BB)
                 raise Exceptions.PhystricksCheckBBError()
         except Exceptions.PhystricksCheckBBError :
@@ -694,14 +701,15 @@ def ensure_unicode(s):
     elif isinstance(s,unicode):
         pass
     else:
+        testtype(s)
         raise TypeError
     return s
-
 
 def testtype(s):
     print(s,type(s))
     print("\n")
     if isinstance(s,str):
         raise
-def logging(s):
-    print(s)
+def logging(*args):
+    for s in args:
+        print(s)
