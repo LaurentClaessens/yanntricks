@@ -31,6 +31,7 @@ from main import PspictureToOtherOutputs
 from Constructors import BoundingBox,Axes,Grid,Point
 from AuxFile import AuxFile
 
+
 class Picture(object):
     r"""
     Describe a Picture
@@ -104,7 +105,8 @@ class Picture(object):
         self.single_axeX.pspict=self
         self.single_axeY.pspict=self
         self.draw_default_axes=False
-        self._bounding_box=None
+
+        self.already_computed_BB=[]
 
         self.mx_acceptable_BB=-100
         self.my_acceptable_BB=-100
@@ -141,8 +143,8 @@ class Picture(object):
         self.add_latex_line("\\begin{{tikzpicture}}[xscale={0},yscale={1},inner sep=2.25pt,outer sep=0pt]".format(1,1),"BEGIN PSPICTURE")
         self.add_latex_line("\\end{tikzpicture}","END PSPICTURE")
 
-        self.xsize=self.bounding_box(self).xsize()
-        self.ysize=self.bounding_box(self).ysize()
+        self.xsize=self.bounding_box(pspict=self).xsize()
+        self.ysize=self.bounding_box(pspict=self).ysize()
         return self.separator_list.code()
 
     def visual_xsize(self):
@@ -164,8 +166,12 @@ class Picture(object):
         # Most of the difficulty is when the user use pspicture.dilatation_X and Y with different coefficients.
         # TODO : take it into account.
 
-        # Creating the bounding box
         list_to_be_drawn = [a for a in self.record_draw_graph if a.take_graph]
+
+        # The following is only for testing purpose :
+        for a in self.record_draw_graph:
+            if not a.take_graph:
+                raise
 
         list_used_separators=[]
         # STEP : update the bounding box
@@ -177,8 +183,9 @@ class Picture(object):
             #    pspict.math_BB.ymax+=1
             # placed after DrawGraph
 
-        # STEP : add the axes
-        if self.draw_default_axes:
+        # STEP : add the axes  
+        #if self.draw_default_axes:
+        if False:
             self.axes.add_bounding_box(self.math_BB,self)     # Here the axes take into account the content of pspict.
             graph=self.axes
             if self.axes.do_enlarge :
@@ -212,7 +219,7 @@ class Picture(object):
                     graph=graph.mother.bounding_box(self)
             separator_name=x.separator_name
             try :
-                self.add_latex_line(graph.latex_code(language=self.language,pspict=self),separator_name)
+                self.add_latex_line(ligne=graph.latex_code(language=self.language,pspict=self),separator_name=separator_name)
                 list_used_separators.append(separator_name)
             except AttributeError,data:
                 if not "latex_code" in dir(graph):
@@ -235,17 +242,34 @@ class Picture(object):
         self.dilatation_Y(l/self.BB.tailleY())
     def AddPoint(self,P):
         self.add_latex_line(self.CodeAddPoint(P))
+    def math_bounding_box(self,pspict=None):
+        """
+        Update and return the math bounding box of the picture.
+        """
+        for a in [x.graph.bounding_box(self) for x in self.record_draw_graph if x.take_math_BB] :
+            if a not in self.already_computed_BB :
+                self.math_BB.AddBB(a)
+                self.already_computed_BB.append(a)
+        return self.math_BB
     def bounding_box(self,pspict=None):
-        if not self._bounding_box:
-            print "Warning : this will be an approximation. In particular the enlarging of the axes will not be taken into account"
-            # the bounding box of the figure is not know before the end of `create_language_code`
-            # because we have to know the content of the pspicture and the enlarging of the axes.
-            bb=self.BB
-            for a in [x.graph.bounding_box(self) for x in self.record_draw_graph if x.take_math_BB or x.take_BB] :
-                bb.AddBB(a)
-            return bb
-        return self._bounding_box
+        """
+        Update and return the bounding box of the picture.
+        """
+        # The math bounding box of the picture has to be computed in the function 'DrawDefaultAxes'. 
+        # But the axes themselves have to be taken into account in the bounding box of the picture.
+
+        # The list 'already_computed_BB' recors the objects for which the bounding box is 
+        # already computed and taken into account. The same object can have different BB in different 
+        # pictures; then we have to compute the BB of an object as many times as the number of pictures
+        # that include the object.
+        self.BB.append(self.math_bounding_box(),pspict=self)
+        for a in [x.graph.bounding_box(self) for x in self.record_draw_graph if x.take_math_BB or x.take_BB] :
+            if a not in self.already_computed_BB :
+                self.BB.AddBB(a)
+                self.already_computed_BB.append(a)
+        return self.BB
     def DrawBB(self):
+        raise DeprecationWarning
         self.DrawBoundingBox(self.BB)
     def DrawBoundingBox(self,obj=None,color="cyan"):
         """Draw the bounding box of an object when it has a method bounding_box
@@ -327,7 +351,7 @@ class Picture(object):
 
         self.math_BB.append(graph,self)
         graph._draw_added_objects(self)
-        graph.action_on_pspict(self)
+        graph.action_on_pspict(pspict=self)
     def DrawDefaultAxes(self):
         """
         This function computes the bounding box of the axes and add them to the list to be drawn.
@@ -335,19 +359,13 @@ class Picture(object):
         The length of the axes is computed here (via self.math_bounding_box).
 
         Sometimes you want the axes to be slightly larger. You can impose the length of the axes.
-
-        EXAMPLE::
-
-        .. literalinclude:: phystricksEnlargeAxes.py
-        .. image:: Picture_FIGLabelFigEnlargeAxesPICTEnlargeAxes-for_eps.png
-
         """
         BB = self.math_bounding_box(pspict=self)
-        BB.add_object(self.axes.C,self,fun="math_bounding_box")     # If you add the no-math bounding box, it adds 0.1
-                                                                    # and it becomes ugly when dilating
-                                                                    # Notice that we pass here too early to use self.xunit,self.yunit
+        BB.add_object(self.axes.C,self,fun="math_bounding_box")
+        # If you add the no-math bounding box, it adds 0.1  and 
+        # it becomes ugly when dilating. 
         self.axes.BB.add_object(BB)
-        self.draw_default_axes=True
+        self.DrawGraphs(self.axes)
     def DrawDefaultGrid(self):
         self.grid.BB = self.math_bounding_box()
         Dx=self.grid.Dx
@@ -382,19 +400,13 @@ class Picture(object):
         for obj in self.record_force_math_bounding_box :
             bb.add_math_object(obj)
         for graphe in [x.graph for x in self.record_draw_graph if x.take_math_BB]:
-            try :
-                bb.add_math_object(graphe,pspict=self)
-            except NoMathBoundingBox,message:
-                bb.append(graphe,self)
-        # These two lines are only useful if the size of the single axes were modified by hand
-        # because the method self.math_bounding_box is called by self.DrawDefaultAxes that
+            bb.add_math_object(graphe,pspict=self)
+        # These two lines are only useful if the size of the single
+        # axes were modified by hand  because the method
+        # self.math_bounding_box is called by self.DrawDefaultAxes that
         # updates the size of the singles axes later.
-        try:
-            bb.add_object(self.axes.single_axeX,pspict=self)
-            bb.add_object(self.axes.single_axeY,pspict=self)
-        except ValueError,msg:
-            if u"is not yet defined" not in msg.__unicode__():  # position 27319 see BasicGeometricObjects.SingleAxeGraph.segment
-                raise
+        bb.add_object(self.axes.single_axeX,pspict=self)
+        bb.add_object(self.axes.single_axeY,pspict=self)
         return bb
     def test_if_test_file_is_present(self):
         test_file=SmallComputations.Fichier("test_pspict_LaTeX_%s.tmp"%(self.name))
@@ -402,32 +414,11 @@ class Picture(object):
     def latex_code(self):
         r"""
         return the LaTeX code of the pspicture
-        
-        Also creates the files corresponding to the `exit_format`.
-
-        It produces an "ifpdf" that choice a pspicture or an \includegraphics
         """
-        to_other = PspictureToOtherOutputs(self)
-        create_dico=global_vars.create_formats
-
-        # Create files for the requested formats, including tests
-        for k in create_dico.keys():
-            if create_dico[k] :
-                to_other.__getattribute__("create_%s_file"%k)()
-
-        # return the LaTeX code of self
-
-        if not global_vars.no_compilation :
-            a = to_other.__getattribute__("input_code_"+global_vars.exit_format)
-            size=numerical_approx(self.xsize,5)*numerical_approx(self.xunit,5)   
-            include_line = a.replace('WIDTH',str(size)+"cm")
-        else:
-            include_line="\\includegraphicsSANSRIEN"    # If one does not compile, the inclusion make no sense
-
         self.add_latex_line(self.auxiliary_file.open_latex_code(),"OPEN_WRITE_AND_LABEL")
         self.add_latex_line(self.auxiliary_file.latex_code(),"WRITE_AND_LABEL")
         self.add_latex_line(self.auxiliary_file.close_latex_code(),"CLOSE_WRITE_AND_LABEL")
         if self.language=="tikz":
             return self.tikz_code()
         else:
-            return "\ifpdf {0}\n \else {1}\n \\fi".format(include_line,self.contenu_pstricks)
+            pass

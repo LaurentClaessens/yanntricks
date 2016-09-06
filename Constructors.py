@@ -381,6 +381,7 @@ class BoundingBox(object):
             raise KeyError,"%s is a list"%graph
         if not pspict :
             print "You should provide a pspict in order to add ",graph
+            raise
         on=False
         if self.math:
             self.AddBB(graph.math_bounding_box(pspict=pspict))
@@ -969,7 +970,7 @@ def SingleAxe(C,base,mx,Mx,pspict=None):
         sage: from phystricks import *
         sage: axe = SingleAxe(Point(1,1),Vector(0,1),-2,2)
         """
-    from AxesGraph import SingleAxeGraph
+    from SingleAxeGraph import SingleAxeGraph
     return SingleAxeGraph(C,base,mx,Mx,pspict)
 
 def intervals(curve1,curve2,interval,interval1,interval2):

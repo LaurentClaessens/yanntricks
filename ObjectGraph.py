@@ -163,9 +163,6 @@ class ObjectGraph(object):
             mark=self.get_mark(dist,angle,text,mark_point=mark_point,added_angle=added_angle,position=position,pspict=psp)
             self.added_objects.append(psp,mark)
 
-        # We do not add the mark to the added objects because it is already passed to DrawGraph.
-        #self.added_objects.append(mark)
-
         self.mark=mark
     def add_option(self,opt):
         self.options.add_option(opt)
