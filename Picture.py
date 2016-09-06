@@ -246,27 +246,46 @@ class Picture(object):
         """
         Update and return the math bounding box of the picture.
         """
-        for a in [x.graph.bounding_box(self) for x in self.record_draw_graph if x.take_math_BB] :
-            if a not in self.already_computed_BB :
-                self.math_BB.AddBB(a)
-                self.already_computed_BB.append(a)
+
+        from Utilities import sublist
+        def condition(x):
+            if not x.take_math_BB:
+                return False
+            if x in self.already_computed_BB :
+                return False
+            return True
+
+        for a in sublist(self.record_draw_graph,condition):
+            self.math_BB.AddBB(a.graph.math_bounding_box(pspict=self))
+            self.already_computed_BB.append(a)
         return self.math_BB
     def bounding_box(self,pspict=None):
         """
         Update and return the bounding box of the picture.
         """
-        # The math bounding box of the picture has to be computed in the function 'DrawDefaultAxes'. 
-        # But the axes themselves have to be taken into account in the bounding box of the picture.
+        # The math bounding box of the picture has to be computed in the 
+        # function 'DrawDefaultAxes'. But the axes themselves have to be taken
+        # into account in the bounding box of the picture.
 
-        # The list 'already_computed_BB' recors the objects for which the bounding box is 
-        # already computed and taken into account. The same object can have different BB in different 
-        # pictures; then we have to compute the BB of an object as many times as the number of pictures
-        # that include the object.
+        # The list 'already_computed_BB' recors the objects for which
+        # the bounding box is already computed and taken into account. 
+        # The same object can have different BB in different pictures;
+        # then we have to compute the BB of an object as many times as
+        # the number of pictures that include the object.
         self.BB.append(self.math_bounding_box(),pspict=self)
-        for a in [x.graph.bounding_box(self) for x in self.record_draw_graph if x.take_math_BB or x.take_BB] :
-            if a not in self.already_computed_BB :
-                self.BB.AddBB(a)
-                self.already_computed_BB.append(a)
+
+        from Utilities import sublist
+        def condition(x):
+            if x in self.already_computed_BB :
+                return False
+            if x.take_BB:
+                return True
+            if x.take_math_BB:
+                return True
+
+        for a in sublist(self.record_draw_graph,condition):
+            self.BB.AddBB(a.graph.bounding_box(pspict=self))
+            self.already_computed_BB.append(a)
         return self.BB
     def DrawBB(self):
         raise DeprecationWarning
@@ -367,7 +386,7 @@ class Picture(object):
         self.axes.BB.add_object(BB)
         self.DrawGraphs(self.axes)
     def DrawDefaultGrid(self):
-        self.grid.BB = self.math_bounding_box()
+        self.grid.BB = self.math_bounding_box(pspict=self)
         Dx=self.grid.Dx
         Dy=self.grid.Dy
         # Make the grid end on its "big" subdivisions.

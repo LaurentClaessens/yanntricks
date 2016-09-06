@@ -695,6 +695,16 @@ def newlengthName():
     """
     return "lengthOf"+latinize(sysargvzero)
 
+def sublist(l,condition):
+    """
+    Extract a sublist of 'l' made of the elements that satisfy the condition.
+
+    Do not return a new list, but is an iterator.
+    """
+    for x in l:
+        if condition(x):
+            yield x
+
 def ensure_unicode(s):
     if isinstance(s,str):
         s=s.decode("utf8")
