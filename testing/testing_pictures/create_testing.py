@@ -12,7 +12,7 @@ class OnePicture(object):
     latex_skel="""
     %\lstinputlisting{CODE_FILENAME}
 
-    \\newcommand{\CaptionFigPICTURE_NAME}{This is a default caption, automatically generated; do not change.}
+    \\newcommand{\CaptionFigPICTURE_NAME}{This is an automatically generated default caption; do not change.}
     \\begin{center}
         \input{Fig_PICTURE_NAME.pstricks}
     \end{center}

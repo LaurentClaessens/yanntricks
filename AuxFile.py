@@ -71,7 +71,7 @@ class AuxFile(object):
             f=open(self.interWriteFile,"r")
         except IOError :
             if not self.already_warned_CompileYourLaTeXFile:
-                print "Warning: the auxiliary file %s seems not to exist. Compile your LaTeX file."%self.interWriteFile
+                print "Warning: the auxiliary file %s does not seem to exist. Compile your LaTeX file."%self.interWriteFile
                 self.already_warned_CompileYourLaTeXFile=True
             if global_vars.perform_tests :
                 raise ValueError,"I cannot say that a test succeed if I cannot determine the bounding box"

@@ -9,7 +9,7 @@ import plugins_agreg
 
 myRequest = LaTeXparser.PytexTools.Request("mesure")
 
-myRequest.add_plugin(plugins_agreg.set_isAgreg,"before_pytex")
+#myRequest.add_plugin(plugins_agreg.set_isAgreg,"before_pytex")
 
 myRequest.original_filename="testing.tex"
 

@@ -322,3 +322,17 @@ Here is the code :
 \lstinputlisting{phystricksRJDEoobOibtkfv.py}
 
 The default value for the \info{section} counter is given to avoid division by zero, because zero is the default-default value : the one which is returned at first compilation, when the auxiliary file does not yet contain the value of the counter (there is a bootstrap here).
+
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+\section{Axes and grid}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Adding axes and grid is as simple as
+
+\lstinputlisting{sageSnip_11.py}
+
+Since the grid has to adapt itself to the drawn objects and the axes have to adapt to the grid :
+\begin{itemize}
+    \item You have to put these lines \emph{after} any other \info{pspict.DrawGraphs} invocation. If not, the result is unpredictable, but is often an error due to a too large bounding box.
+    \item You have to invoke the grid before the axes.
+\end{itemize}
