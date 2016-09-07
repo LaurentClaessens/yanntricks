@@ -1,0 +1,2 @@
+pspict.DrawDefaultGrid()
+pspict.DrawDefaultAxes()
