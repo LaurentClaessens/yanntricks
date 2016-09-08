@@ -16,8 +16,8 @@ def GestionRepere():
 
     pspict.axes.no_graduation()
 
-    pspict.DrawDefaultAxes()
     pspict.DrawDefaultGrid()
+    pspict.DrawDefaultAxes()
 
     fig.no_figure()
     fig.conclude()

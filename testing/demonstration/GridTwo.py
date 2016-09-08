@@ -14,9 +14,8 @@ def GridTwo():
     pspict.grid.num_subX = 0
     pspict.grid.num_subY = 5
 
-    pspict.DrawDefaultAxes()
     pspict.DrawDefaultGrid()
-
+    pspict.DrawDefaultAxes()
 
     fig.no_figure()
     fig.conclude()

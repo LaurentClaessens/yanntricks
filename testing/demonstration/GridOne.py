@@ -7,8 +7,8 @@ def GridOne():
 
     pspict.DrawGraphs(F)
 
-    pspict.DrawDefaultAxes()
     pspict.DrawDefaultGrid()
+    pspict.DrawDefaultAxes()
 
     fig.no_figure()
     fig.conclude()

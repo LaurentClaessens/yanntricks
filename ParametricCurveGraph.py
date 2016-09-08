@@ -531,8 +531,6 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
         ymax=self.ymax(self.llamI,self.llamF)
         bb = BoundingBox( Point(xmin,ymin),Point(xmax,ymax)  )
         return bb
-    def math_bounding_box(self,pspict=None):
-        return self.bounding_box(pspict)
     def action_on_pspict(self,pspict):
         if self.wavy :
             waviness = self.waviness
@@ -548,7 +546,5 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
             pspict.DrawGraphs(curve)
         for v in self.record_arrows:
             pspict.DrawGraphs(v)
-    def latex_code(self,language=None,pspict=None):
-        return ""
 
 

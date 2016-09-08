@@ -26,7 +26,6 @@ from MathStructures import AxesUnit
 from Utilities import *
 from SmallComputations import RemoveLastZeros
 
-from Utilities import logging
 
 class SingleAxeGraph(ObjectGraph):
     def __init__(self,C,base,mx,Mx,pspict=None):

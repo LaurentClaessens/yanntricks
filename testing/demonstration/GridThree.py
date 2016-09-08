@@ -12,8 +12,8 @@ def GridThree():
     pspict.grid.sub_horizontal.parameters.color = "magenta"
     pspict.grid.main_horizontal.parameters.style = "dashed"
 
-    pspict.DrawDefaultAxes()
     pspict.DrawDefaultGrid()
+    pspict.DrawDefaultAxes()
 
     fig.no_figure()
     fig.conclude()

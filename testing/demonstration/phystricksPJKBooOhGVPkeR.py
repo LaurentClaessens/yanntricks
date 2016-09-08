@@ -7,8 +7,8 @@ def PJKBooOhGVPkeR():
     s=phyFunction(x**2-1).fit_inside(xmin=-2,xmax=2,ymin=-0.5,ymax=3)
 
     pspict.DrawGraphs(s)
-    pspict.DrawDefaultAxes()
     pspict.DrawDefaultGrid()
+    pspict.DrawDefaultAxes()
     pspict.comment="Le graphe de \( x^2-1\) dans la boite  xmin=-2,xmax=2,ymin=-0.5,ymax=3"
 
     fig.no_figure()

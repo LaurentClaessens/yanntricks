@@ -116,11 +116,13 @@ class InterpolationCurveGraph(ObjectGraph):
             sublen=max(len(pl)/500,1)   # We draw packs of 100 points
             list_of_list=numpy.array_split(pl,sublen)
             for spl in list_of_list :
-                # digits is computed in such a way to have a precision of 0.001 (3 digits after the dot)
                 l=[abs(P.x) for P in spl]
                 l.extend(  [abs(P.y) for P in spl]  )
-                namax=max(l)
-                digits=3+ceil(  log(namax,10) )
+                namax=max(l)  # Largest coordinate present in the curve.
+
+                # The absolution value is for the case where the whole
+                # curve is in the ball of radius 0.001 for example.
+                digits=3+abs(ceil(  log(namax,10) ))
                 params=self.params(language="tikz")
                 a.append("\draw [{0}] {1};".format(params,"--".join(   [x.coordinates(numerical=True,digits=digits,pspict=pspict) for x in spl]  ) ))
             return "\n".join(a)

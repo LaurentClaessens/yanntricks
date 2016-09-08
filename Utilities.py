@@ -722,5 +722,19 @@ def testtype(s):
     if isinstance(s,str):
         raise
 def logging(*args):
+    """
+    This function is for debug purpose. It serves to roughly print stuff
+    on the screen. Then "grep logging" helps to remove all the garbage.
+    """
     for s in args:
         print(s)
+
+def phystricks_warning(  message, category, filename, lineno, file=None ):
+    """
+    Print the message on screen and write it in a file.
+
+    This function is intended to replace 'warnings.showwarning'
+    """
+    print(message)
+    with open("phystricks_warning.log","a") as f:
+        f.write(str(message)+"\n")

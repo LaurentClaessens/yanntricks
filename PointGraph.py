@@ -357,7 +357,7 @@ class PointGraph(ObjectGraph):
         if pspict :
             x=x*pspict.xunit
             y=y*pspict.yunit
-            if pspict.rotation_angle  is not None:
+            if pspict.rotation_angle is not None:
                 ang=pspict.rotation_angle*pi/180
                 nx=x*cos(ang)+y*sin(ang)
                 ny=-x*sin(ang)+y*cos(ang)
@@ -369,7 +369,6 @@ class PointGraph(ObjectGraph):
             if digits==None :
                 digits=10
             x=numerical_approx(x,digits=digits)
-
             y=numerical_approx(y,digits=digits)
         # Avoid something like "0.125547e-6" (LaTeX will not accept).
         if numerical_isZero(x,0.001):

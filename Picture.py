@@ -309,19 +309,16 @@ class Picture(object):
             return None
         self._DrawGraph(gr,separator_name=separator_name)
         
-        # This is for testing purpose only. To be removed in production.
-        if not isinstance(gr,ObjectGraph):
-            print("It is better to draw objects that are subclassing ObjectGraph. We will try anyway. Trying to draw : ",gr,type(gr))
-
-
     def DrawGraphs(self,*args,**arg):
         """
         The function DrawGraphs basically takes a list of objects and performs
         different kind of operation following the type of each "object" :
 
         If the object it iterable, its elements are re-passed to DrawGraphs
-        If the object is an instance of "ObjectGraph", it is passed to _DrawGraph
-        If the object is 'AddedObject', the list corresponding to 'self' is re-passed to DrawGraphs.
+        If the object is an instance of "ObjectGraph", it is passed to
+        _DrawGraph
+        If the object is 'AddedObject', the list corresponding to 'self' is
+        re-passed to DrawGraphs.
 
     """
         if "separator_name" not in arg.keys():
@@ -406,22 +403,6 @@ class Picture(object):
         Add an object to the math bounding box of the pspicture. This object will not be drawn, but the axes and the grid will take it into account.
         """
         self.record_force_math_bounding_box.append(g)
-    #def math_bounding_box(self,pspict=None):
-    #    """
-    #    Return the current BoundingBox, that is the BoundingBox of the objects that are currently in the list of objects to be drawn.
-    #    """
-    #    bb = self.math_BB.copy()
-    #    for obj in self.record_force_math_bounding_box :
-    #        bb.add_math_object(obj)
-    #    for graphe in [x.graph for x in self.record_draw_graph if x.take_math_BB]:
-    #        bb.add_math_object(graphe,pspict=self)
-    #    # These two lines are only useful if the size of the single
-    #    # axes were modified by hand  because the method
-    #    # self.math_bounding_box is called by self.DrawDefaultAxes that
-    #    # updates the size of the singles axes later.
-    #    bb.add_object(self.axes.single_axeX,pspict=self)
-    #    bb.add_object(self.axes.single_axeY,pspict=self)
-    #    return bb
     def test_if_test_file_is_present(self):
         test_file=SmallComputations.Fichier("test_pspict_LaTeX_%s.tmp"%(self.name))
         return os.path.isfile(test_file.filename)

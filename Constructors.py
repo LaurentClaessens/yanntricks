@@ -628,7 +628,8 @@ def PolarCurve(fr,ftheta=None):
 
 def LagrangePolynomial(*args):
     """
-    return as `phyFunction` the Lagrange polynomial passing trough the given points
+    return as `phyFunction` the Lagrange polynomial passing
+    trough the given points
 
     You can either provide a list of points or some points.
     """

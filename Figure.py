@@ -29,6 +29,7 @@ from Utilities import latinize
 from Utilities import newlengthName
 from Utilities import ensure_unicode
 
+
 def add_latex_line_entete(truc,position=""):
     from Picture import Picture
     from Figure import Figure
