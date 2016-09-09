@@ -12,6 +12,7 @@ vieux/*
 documentation/sphynx/*
 instance.vim
 testing/phystricks*.py
+testing/demonstration/phystricks_warning.log
 testing/testing_pictures/*.aux
 testing/testing_pictures/*.pstricks
 testing/testing_pictures/*.comment

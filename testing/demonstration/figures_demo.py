@@ -4,6 +4,7 @@
 import sys
 from phystricks import *
 
+from phystricksCNVAooybLqXmVS import CNVAooybLqXmVS
 from phystricksHUBEoofsPjXOQx import HUBEoofsPjXOQx
 from phystricksGGHOookMhIxqIK import GGHOookMhIxqIK
 from phystricksOMPAooMbyOIqeA import OMPAooMbyOIqeA
@@ -85,7 +86,6 @@ figures_list.append(VectorOne)
 figures_list.append(TRJEooPRoLnEiG)
 figures_list.append(UREIooqNGBXtHg)
 figures_list.append(DEIToomZFknFmn)
-figures_list.append(QNHAooSYgkWVhJ)
 figures_list.append(UARHooLMWqvyaI)
 figures_list.append(HELQooLGapRQrr)
 figures_list.append(YJEDoojDtSeKHQ)
@@ -107,9 +107,11 @@ figures_list.append(QEFQoomlfmOQTM)
 figures_list.append(AESIooxXxRYQdT)
 figures_list.append(OMPAooMbyOIqeA)
 figures_list.append(GGHOookMhIxqIK)
+figures_list.append(CNVAooybLqXmVS)
+figures_list=[]
+figures_list.append(QNHAooSYgkWVhJ)
 figures_list.append(HUBEoofsPjXOQx)
 """
-figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)

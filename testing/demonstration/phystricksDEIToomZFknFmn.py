@@ -2,6 +2,7 @@
 from phystricks import *
 def DEIToomZFknFmn():
     pspict,fig = SinglePicture("DEIToomZFknFmn")
+    pspict.dilatation(1)
 
     x=var('x')
     a=0.5
@@ -18,7 +19,6 @@ def DEIToomZFknFmn():
 
     pspict.DrawGraphs(surface)
     pspict.DrawDefaultAxes()
-    pspict.dilatation(1)
     pspict.comment="The surface is filled in red, the curves are blue and the vertical segments are black."
     fig.no_figure()
     fig.conclude()

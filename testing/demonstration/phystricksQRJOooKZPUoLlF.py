@@ -5,6 +5,8 @@ def QRJOooKZPUoLlF():
     Copied from  LLVMooWOkvAB in mazhe
     """
     pspict,fig = SinglePicture("QRJOooKZPUoLlF")
+    pspict.dilatation(3)
+
     x=var('x')
     f1=phyFunction(x)
     f2=phyFunction(x**2)
@@ -18,7 +20,6 @@ def QRJOooKZPUoLlF():
 
     pspict.DrawGraphs(surface)
     pspict.DrawDefaultAxes()
-    pspict.dilatation(3)
     pspict.comment="lines in green, one arrow in each sense and area hatched in grey."
     fig.no_figure()
     fig.conclude()

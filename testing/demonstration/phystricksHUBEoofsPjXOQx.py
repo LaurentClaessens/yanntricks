@@ -14,5 +14,6 @@ def HUBEoofsPjXOQx():
 
     pspict.DrawDefaultAxes()
     pspict.comment="The $\chi^2$ distribution."
+    fig.no_figure()
     fig.conclude()
     fig.write_the_file()
