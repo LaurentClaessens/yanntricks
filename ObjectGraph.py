@@ -23,6 +23,9 @@
 from sage.all import numerical_approx
 from Parameters import Parameters
 from Parameters import Options
+from Exceptions import ShouldNotHappenException
+
+from Utilities import logging
 
 class AddedObjects(object):
     def __init__(self):
@@ -101,6 +104,10 @@ class ObjectGraph(object):
         self.marque = True
         third=None
 
+        if position in ["N","S","E","W"] and angle is not None:
+            raise ShouldNotHappenException("When you want a position\
+ like N,S,E, or W, the mark angle should not be given.")
+
         if angle is None :
             try :
                 angle=self.advised_mark_angle(pspict=pspict)
@@ -112,11 +119,9 @@ class ObjectGraph(object):
         # - for the possibility of "added_angle"
         # - the constructor of 'mark' expects degree or AngleMeasure
 
-        if added_angle: angle=angle+added_angle
-        if position=="":
-            print("Ceci ne devrait pas arriver : ça devrait être None")
-            raise
-        if position=="" or position==None :             # TODO : remove the possibility ""
+        if added_angle: 
+            angle=angle+added_angle
+        if  position==None :        
             position="corner"
             alpha=AngleMeasure(value_degree=angle).positive()
             deg=alpha.degree
@@ -129,15 +134,21 @@ class ObjectGraph(object):
             if deg==180+90:
                 position="N"
 
-        mark=Mark(graph=self,dist=dist,angle=angle,central_point=None,text=text,mark_point=mark_point,position=position,pspict=pspict)
+        if position in ["N","S","E","W"] :
+            angle=None
 
-        # In each .psttricks file we need the lines that make compute the size of the text. Thus we call "get_box_size" for each.
+        mark=Mark(graph=self,dist=dist,angle=angle,central_point=None,\
+                text=text,mark_point=mark_point,position=position,pspict=pspict)
+
+        # In each .psttricks file we need the lines that make compute
+        # the size of the text. Thus we call "get_box_size" for each.
         if not isinstance(pspict,list):
             pspict=[pspict]
         for psp in pspict:
             dimx,dimy = psp.get_box_size(text)
         return mark
-    def put_mark(self,dist=None,angle=None,text="",mark_point=None,added_angle=None,position=None,pspict=None):
+    def put_mark(self,dist=None,angle=None,text="",\
+            mark_point=None,added_angle=None,position=None,pspict=None):
         """
         If you want to put a mark on an object
         P.put_mark(0.1,-90,"text",pspict=pspict,position="N")
@@ -167,6 +178,11 @@ class ObjectGraph(object):
 
         for psp in pspict:
             mark=self.get_mark(dist,angle,text,mark_point=mark_point,added_angle=added_angle,position=position,pspict=psp)
+
+            if position=="E" and angle is not None :
+                raise ShouldNotHappenException("When you want a position\
+like N,S,E, or W, the mark angle should not be given.")
+
             self.added_objects.append(psp,mark)
 
         self.mark=mark

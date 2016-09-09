@@ -147,7 +147,7 @@ class Figure(object):
     def comments(self):
         a=[]
         for pspict in self.child_pspictures:
-            comment=pspict.comment.decode('utf8')
+            comment=ensure_unicode(pspict.comment)
             if comment != "":
                 a.append("Comment : "+comment)
         return "\n".join(a)

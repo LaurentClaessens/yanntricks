@@ -4,6 +4,8 @@
 import sys
 from phystricks import *
 
+from phystricksASZLoocnIGlRHf import ASZLoocnIGlRHf
+from phystricksOYBTooNUcJLzDH import OYBTooNUcJLzDH
 from phystricksOMPAooMbyOIqeA import OMPAooMbyOIqeA
 from phystricksBHESoofmkTbbZR import BHESoofmkTbbZR
 from phystricksCNVAooybLqXmVS import CNVAooybLqXmVS
@@ -105,9 +107,9 @@ figures_list.append(CNVAooybLqXmVS)
 figures_list.append(QNHAooSYgkWVhJ)
 figures_list.append(HUBEoofsPjXOQx)
 figures_list.append(BHESoofmkTbbZR)
+figures_list.append(OYBTooNUcJLzDH)
+figures_list.append(ASZLoocnIGlRHf)
 """
-figures_list.append(<++>)
-figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)
 """
@@ -121,4 +123,4 @@ if __name__=="__main__":
     if "--all" in sys.argv :
         AllFigures()
     else:
-        ProjPoly()
+        pass

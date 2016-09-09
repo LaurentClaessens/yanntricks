@@ -5,7 +5,6 @@ def BHESoofmkTbbZR():
     pspict.dilatation(4)
 
     x=var('x')
-
     eps=0.001
     f=phyFunction(sin(1/x)).graph(eps,1)
 

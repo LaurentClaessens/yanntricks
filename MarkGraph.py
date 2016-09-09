@@ -22,7 +22,9 @@
 
 from phystricks.ObjectGraph import ObjectGraph
 from Constructors import *
-from Utilities import *
+from Exceptions import ShouldNotHappenException
+
+from Utilities import logging
 
 class MarkGraph(ObjectGraph):
     def __init__(self,graph,dist,angle,text,mark_point=None,central_point=None,position=None,pspict=None):
@@ -35,6 +37,7 @@ class MarkGraph(ObjectGraph):
         self.graph = graph
         self.parent = graph
     
+        self.angle=None
         if isinstance(angle,AngleMeasure):
             self.angle = angle
         else :
@@ -60,46 +63,49 @@ class MarkGraph(ObjectGraph):
         Return the central point of the mark, that is the point where the mark arrives.
 
         The central point of the mark is computed from self.graph.mark_point()
-        Thus an object that wants to accept a mark needs a method mark_point that returns the point on which the mark will be put.
+        Thus an object that wants to accept a mark needs a method 
+        mark_point that returns the point on which the mark will be put.
         """
 
         if self._central_point:
             return self._central_point
         if self.mark_point :
-            graph_mark_point=self.mark_point
+            mark_point=self.mark_point
         else :
             try :
-                graph_mark_point=self.graph.mark_point(pspict=pspict)
-            except TypeError :          # Happens when mark_point is redefined as a 'lambda' function
-                graph_mark_point=self.graph.mark_point()
+                mark_point=self.graph.mark_point(pspict=pspict)
+            except TypeError :   
+                # Happens when mark_point is redefined as a 'lambda' function
+                mark_point=self.graph.mark_point()
 
-        default=graph_mark_point.getVisualPolarPoint(self.dist,self.angle,pspict)
+        #default=mark_point.getVisualPolarPoint(self.dist,self.angle,pspict)
+
+        # We are now going to compute the affine vector from the mark point
+        # to the center of the mark.
+        # It will be 'center_vector'
+        # In a first time we compute it as there were no dilatations,
+        # and then we will deform it to take xunit,yunit into account.
+
 
         if self.position :
+
             pspict=self.pspict
             position=self.position
 
-            # The idea here is to allow to use the same point in several pictures and to ask each figure to remember the box size.
+            # The idea here is to allow to use the same point
+            # in several pictures and to ask each figure to
+            # remember the box size.
             if not isinstance(pspict,list):
                 pspict=[pspict]
 
             for psp in pspict:
                 dimx,dimy = psp.get_box_size(self.text)
-                dimx=float(dimx)/psp.xunit
-                dimy=float(dimy)/psp.yunit
-
-            if position=="for axes":
-                raise
-                seg=self.automatic_place[2]
-                alpha=seg.angle().radian
-                d=self.dist+0.5*max(dimx*sin(alpha),dimy*cos(alpha))
-                beta=self.angle
-                return graph_mark_point.getVisualPolarPoint(d,beta,pspict=pspict[0])
 
             if position=="center":
-                return default
+                angle=self.angle.radian
+                center_vector=Vector( self.dist*cos(angle),self.dist*sin(angle)  )
 
-            if position=="corner":
+            elif position=="corner":
                 sx=numerical_approx(self.x)
                 sy=numerical_approx(self.y)
                 if sx>=0:
@@ -110,29 +116,39 @@ class MarkGraph(ObjectGraph):
                     ly=dimy*0.5
                 if sy<0:
                     ly=-dimy*0.5
-                return default.translate(lx,ly)
-            if position=="N":
-                return default.translate(0,-dimy*0.5)
-            if position=="S":
-                return default.translate(0,dimy*0.5)
-            if position=="W":
-                return default.translate(dimx*0.5,0)
-            if position=="E":
-                return default.translate(-dimx*0.5,0)
-            print("Something wrong. I think the 'position' argument is not good :",position)
-            raise ValueError
-        else :
-            return default
-      #def math_bounding_box(self,pspict=None):
-       # """
-       # Return the mathematics bounding box of its base object.
+                center_vector = default_vector+(lx,ly)
+            elif position=="N":
+                center_vector = Vector(0,-self.dist-dimy/2)
+            elif position=="S":
+                center_vector = Vector(0,self.dist+dimy/2)
+            elif position=="W":
+                center_vector=Vector(self.dist+dimx/2,0)
+            elif position=="E":
+                center_vector=Vector(-self.dist-dimx/2,0)
+            else :
+                raise ShouldNotHappenException(\
+                        "Something wrong. I think the 'position'\
+argument is not good :"+position)
 
-       # A mark has non own math_bounding_box because we do not want the axes to fit the marks.
-        #- we want the global bounding box to enclose the marks; if not the mark risks to be bu in the pdf/png version and/or the
-        #    figure can be badly centred.
-        #- we don't want the math_boundig_box to enclose the marks because the axes don't have to enclose them.
-        #"""
-       # return self.graph.math_bounding_box(pspict)
+        else :      # if 'position' is not given
+            center_vector=Vector(self.dist*cos(self.angle.radian),\
+                self.dist*sin(self.angle.radian))
+
+        # Now we convert the 'center_vector' into a visual vector.
+
+        # The following is completely arbitrary.
+        # TODO : each mark should be associated with a picture.
+        #           and here, 'pspict' should never be a list.
+        if isinstance(pspict,list):
+            xunit=pspict[0].xunit
+            yunit=pspict[0].yunit
+        else :
+            xunit=pspict.xunit
+            yunit=pspict.yunit
+        visual_center_vector=Vector(\
+                center_vector.Dx/xunit,center_vector.Dy/yunit)
+        return mark_point+visual_center_vector
+
     def bounding_box(self,pspict=None):
         central_point=self.central_point(pspict)
         if not central_point:

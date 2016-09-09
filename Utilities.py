@@ -462,6 +462,7 @@ def visual_length(v,l,xunit=None,yunit=None,pspict=None):
         from phystricks import Vector
         return Vector(x,y)
 
+
 def visual_polar(P,r,theta,pspict=None):
     """
     Return a point at VISUAL coordinates (r,theta) from the point P.
@@ -474,6 +475,14 @@ def visual_polar(P,r,theta,pspict=None):
     v=Vector( cos(alpha)/xunit,sin(alpha)/yunit  )
     w=visual_length(v,r,pspict=pspict)
     return P+w
+
+def polar_to_visual_polar(r,theta,pspict=None):
+    """
+    From '(r,theta)', return the (s,alpha) such that the point
+    (s,alpha) visualy appears as (r,theta).
+    """
+    P=visual_polar( Point(0,0),r,theta,pspict  )
+    return P.polar_coordinates()
 
 def visual_polar_coordinates(P,pspict=None):
     """

@@ -114,11 +114,14 @@ class SingleAxeGraph(ObjectGraph):
             if self.numbering :
                 # The 0.2 here is hard coded in Histogram, see 71011299
 
+                mark_angle=self.mark_angle
                 if self.segment().horizontal :
                     position="N"
+                    mark_angle=None
                 if self.segment().vertical :
                     position="E"
-                P.put_mark(0.2,self.mark_angle,symbol,pspict=pspict,position=position)
+                    mark_angle=None
+                P.put_mark(0.2,mark_angle,symbol,pspict=pspict,position=position)
                 bars_list.append(P.mark)
 
             a=visual_polar(P,0.1,bar_angle,pspict)
