@@ -168,6 +168,10 @@ class FigureGenerationSuite(object):
             all_tests_passed = False
         if all_tests_passed :
             print "All tests passes !"
+            from Defaults import WARNING_FILENAME
+            with open(WARNING_FILENAME,"r") as f:
+                for l in f:
+                    print(l)
         else:
             raise PhystricksTestError
 

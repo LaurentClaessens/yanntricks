@@ -735,6 +735,7 @@ def phystricks_warning(  message, category, filename, lineno, file=None ):
 
     This function is intended to replace 'warnings.showwarning'
     """
+    from Defaults import WARNING_FILENAME
     print(message)
-    with open("phystricks_warning.log","a") as f:
+    with open(WARNING_FILENAME,"a") as f:
         f.write(str(message)+"\n")
