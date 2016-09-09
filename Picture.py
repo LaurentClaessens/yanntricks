@@ -221,10 +221,23 @@ class Picture(object):
                 raise
         self.separator_list.fusion(list_used_separators,"PSTRICKS CODE")
 
+    def test_dilatation_first(self):
+        """
+        Return True if nothing is already done on the picture.
+
+        The dilatation has to be the first information given to a pictute. The aim of this function is to raise an exception when one tries to use
+        pspict.dilatation(...)
+        after having used 'DrawGraphs'
+        """
+        if not self.record_draw_graph == []:
+            from phystricks.Exceptions import ShouldNotHappenException
+            raise ShouldNotHappenException("Dilatation has to be \
+given right after the creation of the picture.")
     def dilatation(self,fact):
         self.dilatation_X(fact)
         self.dilatation_Y(fact)
     def dilatation_X(self,fact):
+        self.test_dilatation_first()
         self.xunit = self.xunit * fact
     def dilatation_Y(self,fact):
         self.yunit = self.yunit * fact

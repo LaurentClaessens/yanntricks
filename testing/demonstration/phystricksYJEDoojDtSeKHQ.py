@@ -5,6 +5,7 @@ def YJEDoojDtSeKHQ():
     Copied from examssepti from mazhe
     """
     pspict,fig = SinglePicture("YJEDoojDtSeKHQ")
+    pspict.dilatation(3)
 
     a=-1
     b=0.5
@@ -30,7 +31,6 @@ def YJEDoojDtSeKHQ():
 
     pspict.DrawGraphs(vert,surface,f1,f2,I,J)
     pspict.DrawDefaultAxes()
-    pspict.dilatation(3)
     pspict.comment=r"""\begin{itemize}
     \item one line in blue, one in red
     \item at the right : dotted green 
