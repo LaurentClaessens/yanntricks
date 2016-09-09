@@ -108,9 +108,15 @@ class InterpolationCurveGraph(ObjectGraph):
         """
         return self.bounding_box(pspict)
     def tikz_code(self,pspict=None):
+        # LaTeX cannot parse too long lines (few thousand of letters). But
+        # if we draw 1000 points of a curve with 15 digits for each coordinate
+        # we easily break that limit of line length.
+        # Thus we only ask for 3 digits after the point.
         pl=self.points_list
         if self.mode=="trivial":
-            # One cannot draw each segment separately : this causes the parameters.style='dashed' to not work for example.
+            # One cannot draw each segment separately : 
+            # this causes the parameters.style='dashed' 
+            # to not work for example.
             import numpy
             a=[]
             sublen=max(len(pl)/500,1)   # We draw packs of 100 points
