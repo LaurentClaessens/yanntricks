@@ -95,8 +95,11 @@ class Figure(object):
         self.separator_list.new_separator("BEFORE PSPICTURE")
         self.separator_list.new_separator("PSPICTURE")
         self.separator_list.new_separator("AFTER PSPICTURE")
-        # the separators 'BEFORE SUBFIGURE' and 'AFTER ALL' will not be written in the case when self.figure_environment=False.
-        self.separator_list.new_separator("AFTER ALL")  # caption and \end{figure}
+        # the separators 'BEFORE SUBFIGURE' and 'AFTER ALL' will not 
+        # be written in the case when self.figure_environment=False.
+
+        # "AFTER ALL" is for caption and \end{figure} 
+        self.separator_list.new_separator("AFTER ALL") 
         add_latex_line_entete(self)
         self.add_latex_line("\\begin{figure}[ht]","BEFORE SUBFIGURES")
         self.add_latex_line("\centering","BEFORE SUBFIGURES")
@@ -104,19 +107,6 @@ class Figure(object):
         self.figure_environment=False
     def rotation(self,angle):
         self.rotation_angle=angle
-    def dilatation_X(self,fact):
-        """ Makes a dilatation of the whole picture in the X direction. A contraction if the coefficient is lower than 1 """
-        raise# It seem to me that one never use dilatation on the figure (always on the pspicture)
-        self.xunit = self.xunit * fact
-    def dilatation_Y(self,fact):
-        raise   # It seem to me that one never use dilatation on the figure (always on the pspicture)
-        self.yunit = self.yunit * fact
-    def dilatation(self,fact):
-        """ dilatations or contract that picture in both directions with the same coefficient """
-
-        raise# It seem to me that one never use dilatation on the figure (always on the pspicture)
-        self.dilatation_X(fact)
-        self.dilatation_Y(fact)
     def new_subfigure(self,caption,name=None):
         """
         Create a subfigure in the figure and return it.
