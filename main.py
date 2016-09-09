@@ -58,12 +58,14 @@ class FigureGenerationSuite(object):
 
     """
     def __init__(self,test_list,first=0,title="My beautiful document"):
+        from Defaults import WARNING_FILENAME
         self.test_list=test_list
         self.first=first
         self.title=title
         self.failed_list=[]
         self.documentation_list=[]
         self.to_be_recompiled_list=[]
+        open(WARNING_FILENAME,"w").close()
 
     def generate(self):
         """

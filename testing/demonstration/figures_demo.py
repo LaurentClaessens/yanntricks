@@ -4,10 +4,11 @@
 import sys
 from phystricks import *
 
+from phystricksOMPAooMbyOIqeA import OMPAooMbyOIqeA
+from phystricksBHESoofmkTbbZR import BHESoofmkTbbZR
 from phystricksCNVAooybLqXmVS import CNVAooybLqXmVS
 from phystricksHUBEoofsPjXOQx import HUBEoofsPjXOQx
 from phystricksGGHOookMhIxqIK import GGHOookMhIxqIK
-from phystricksOMPAooMbyOIqeA import OMPAooMbyOIqeA
 from phystricksDYJNooLVVFHEfN import DYJNooLVVFHEfN
 from phystricksFMLCooxHtqRzUz import FMLCooxHtqRzUz
 from phystricksOGGDooIvakwNlL import OGGDooIvakwNlL
@@ -32,15 +33,12 @@ from FunctionFirst import FunctionFirst
 from FunctionFive import FunctionFive
 from FunctionFour import FunctionFour
 from FunctionSecond import FunctionSecond
-from GestionRepere import GestionRepere
 from GridOne import GridOne
 from GridThree import GridThree
 from GridTwo import GridTwo
-from Lines import Lines
 from MarkOnPoint import MarkOnPoint
 from ParametricOne import ParametricOne
 from ParametricTwo import ParametricTwo
-from VectorOne import VectorOne
 from phystricksTRJEooPRoLnEiG import TRJEooPRoLnEiG
 from phystricksQRXCooUmnlhkvh import QRXCooUmnlhkvh
 from phystricksUREIooqNGBXtHg import UREIooqNGBXtHg
@@ -74,15 +72,11 @@ figures_list.append(FunctionFirst)
 figures_list.append(FunctionFive)
 figures_list.append(FunctionFour)
 figures_list.append(FunctionSecond)
-figures_list.append(GestionRepere)
-figures_list.append(GridOne)
 figures_list.append(GridThree)
 figures_list.append(GridTwo)
-figures_list.append(Lines)
 figures_list.append(MarkOnPoint)
 figures_list.append(ParametricOne)
 figures_list.append(ParametricTwo)
-figures_list.append(VectorOne)
 figures_list.append(TRJEooPRoLnEiG)
 figures_list.append(UREIooqNGBXtHg)
 figures_list.append(DEIToomZFknFmn)
@@ -108,11 +102,10 @@ figures_list.append(AESIooxXxRYQdT)
 figures_list.append(OMPAooMbyOIqeA)
 figures_list.append(GGHOookMhIxqIK)
 figures_list.append(CNVAooybLqXmVS)
-figures_list=[]
 figures_list.append(QNHAooSYgkWVhJ)
 figures_list.append(HUBEoofsPjXOQx)
+figures_list.append(BHESoofmkTbbZR)
 """
-figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)
