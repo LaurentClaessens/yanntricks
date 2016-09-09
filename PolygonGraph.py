@@ -24,7 +24,6 @@ from sage.all import *
 
 from ObjectGraph import ObjectGraph
 from Constructors import *
-from Utilities import *
 
 class PolygonGraph(ObjectGraph):
     """
@@ -41,8 +40,12 @@ class PolygonGraph(ObjectGraph):
         self.edges=[]
         self.vertices=points_list
         self.points_list=self.vertices
-        self.edge=Segment(Point(0,0),Point(1,1))    # This is an arbitrary segment that only serves to have a
-                                                    # "model" for the parameters.
+
+        # edge_model is a dummy segment that serve to model the 
+        # parameters of the edges.
+        # In other words, by default the edges of the polygon will have the
+        # parameters of self.edge_model
+        self.edge_model=Segment(Point(0,0),Point(1,1))
         for i in range(0,len(self.points_list)):
             segment=Segment(self.points_list[i],self.points_list[(i+1)%len(self.points_list)])
             self.edges.append(segment)
@@ -105,68 +108,7 @@ class PolygonGraph(ObjectGraph):
         if self.draw_edges:
             for edge in self.edges:
                 if not self.independent_edge :
-                    edge.parameters=self.edge.parameters
+                    edge.parameters=self.edge_model.parameters.copy()
                     if self.parameters.color!=None:
                         edge.parameters.color=self.parameters.color
                 pspict.DrawGraphs(edge)
-
-class RectangleGraph(PolygonGraph):
-    """
-    The parameters of the four lines are by default the same, but they can be adapted separately.
-
-    graph_N returns the north side as a phystricks.Segment object
-    The parameters of the four sides have to be set independently.
-    """
-    def __init__(self,NW,SE):
-        #ObjectGraph.__init__(self,self)
-        self.NW = NW
-        self.SE = SE
-        self.SW = Point(self.NW.x,self.SE.y)
-        self.NE = Point(self.SE.x,self.NW.y)
-        PolygonGraph.__init__(self,[self.SW,self.SE,self.NE,self.NW])
-        self.mx=self.NW.x
-        self.Mx=self.SE.x
-        self.my=self.SE.y
-        self.My=self.NW.y
-        self.rectangle = self.obj
-
-        self.segment_N=Segment(self.NW,self.NE)
-        self.segment_S=Segment(self.SW,self.SE)
-        self.segment_E=Segment(self.NE,self.SE)
-        self.segment_W=Segment(self.NW,self.SW)
-
-        # Use self.edges instead of self.segments (September, 18, 2014)
-        #self.segments=[self.segment_N,self.segment_S,self.segment_E,self.segment_W]
-
-        # Putting the style of the edges to none makes the 
-        # CustomSurface (and then filling and hatching) not work because the edges'LaTeX code is use to create the tikz path
-        # defining the surface.
-    def polygon(self):
-        polygon= Polygon(self.NW,self.NE,self.SE,self.SW)
-        polygon.parameters=self.parameters.copy()
-        return polygon
-    def first_diagonal(self):
-        return Segment(self.NW,self.SE)
-    def second_diagonal(self):
-        return Segment(self.SW,self.NE)
-    def center(self):
-        return self.first_diagonal().center()
-    def default_associated_graph_class(self):
-        """Return the class which is the Graph associated type"""
-        return RectangleGraph
-    def _segment(self,side):
-        bare_name = "graph_"+side
-        if not bare_name in self.__dict__.keys():
-            line = self.__getattribute__("segment_"+side)()
-            #line.parameters=self.parameters.copy()
-            self.__dict__[bare_name]=line
-        return  self.__dict__[bare_name]
-    def action_on_pspict(self,pspict=None):
-        edges=[self.segment_N,self.segment_S,self.segment_E,self.segment_W]
-        for s in edges :
-            s.parameters=self.parameters
-        pspict.DrawGraphs(edges)
-    def __getattr__(self,attrname):
-        if "graph_" in attrname:
-            return self._segment(attrname[6])
-        raise AttributeError
