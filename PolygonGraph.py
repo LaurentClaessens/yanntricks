@@ -59,7 +59,7 @@ class PolygonGraph(ObjectGraph):
         make the edges customisation independent the one to the other.
         """
         for s in self.edges :
-            s.parameters=self.edge.parameters.copy()
+            s.parameters=self.edge_model.parameters.copy()
         self.independent_edge=True
     def no_edges(self):
         """

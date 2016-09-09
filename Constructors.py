@@ -720,7 +720,7 @@ def Rectangle(*args,**arg):
         # TODO : I should be able to pass directly the dictionary to BoundingBox
         NW=bb.getVertex("NW")
         SE=bb.getVertex("SE")
-    from PolygonGraph import RectangleGraph
+    from RectangleGraph import RectangleGraph
     return RectangleGraph(NW,SE)
 
 def Circle3D(op,O,A,B,angleI=0,angleF=2*pi):
