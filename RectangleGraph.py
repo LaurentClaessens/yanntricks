@@ -28,7 +28,6 @@ class RectangleGraph(PolygonGraph):
     The parameters of the four lines are by default the same, but they can be adapted separately.
 
     graph_N returns the north side as a phystricks.Segment object
-    The parameters of the four sides have to be set independently.
     """
     def __init__(self,NW,SE):
         #ObjectGraph.__init__(self,self)
@@ -68,16 +67,12 @@ class RectangleGraph(PolygonGraph):
     def _segment(self,side):
         bare_name = "graph_"+side
         if not bare_name in self.__dict__.keys():
+            raise # Just to know who on Earth uses that.
             line = self.__getattribute__("segment_"+side)()
-            #line.parameters=self.parameters.copy()
             self.__dict__[bare_name]=line
         return  self.__dict__[bare_name]
-    def action_on_pspict(self,pspict=None):
-        edges=[self.segment_N,self.segment_S,self.segment_E,self.segment_W]
-        for s in edges :
-            s.parameters=self.edge_model.parameters.copy()
-        pspict.DrawGraphs(edges)
     def __getattr__(self,attrname):
+        raise # Just to know who on Earth uses that.
         if "graph_" in attrname:
             return self._segment(attrname[6])
         raise AttributeError
