@@ -25,6 +25,7 @@ from Constructors import *
 from phystricks.MathStructures import *
 from Exceptions import ShouldNotHappenException
 
+
 def is_real(z):
     if type(z) in [int,sage.rings.real_mpfr.RealNumber]:
         return True
@@ -738,13 +739,14 @@ def logging(*args):
     for s in args:
         print(s)
 
-def phystricks_warning(  message, category, filename, lineno, file=None ):
-    """
-    Print the message on screen and write it in a file.
-
-    This function is intended to replace 'warnings.showwarning'
-    """
+def warning(text,pspict=None):
     from Defaults import WARNING_FILENAME
-    print(message)
-    with open(WARNING_FILENAME,"a") as f:
-        f.write(str(message)+"\n")
+    import codecs
+    text=ensure_unicode(text)
+    if pspict :
+        text="in "+pspict.name+" : "+text
+    print(text)
+    with codecs.open(WARNING_FILENAME,"a",encoding="utf8") as f:
+        f.write(text+"\n")
+
+
