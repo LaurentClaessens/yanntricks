@@ -27,10 +27,11 @@ from Constructors import *
 from Utilities import *
 
 class SegmentGraph(ObjectGraph):
-    def __init__(self,A,B,arrow_type="segment"):
+    #def __init__(self,A,B,arrow_type="segment"):
+    def __init__(self,A,B):
         self.I = A
         self.F = B
-        self.arrow_type=arrow_type
+        #self.arrow_type=arrow_type
         ObjectGraph.__init__(self,self)
         #self.arrow_list=[]
         self.measure=None
@@ -171,7 +172,7 @@ class SegmentGraph(ObjectGraph):
             return phyFunction( self.slope*x+self.independent )
     def symmetric_by(self,O):
         """
-        return a segment wich is symmetric to 'self' with respect to the point 'O'
+        return a segment which is symmetric to 'self' with respect to the point 'O'
         """
         A=self.I.symmetric_by(O)
         B=self.F.symmetric_by(O)

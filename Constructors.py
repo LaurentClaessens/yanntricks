@@ -136,14 +136,6 @@ def AffineVector(A=None,B=None):
         sage: print av
         <vector I=<Point(1,1)> F=<Point(2,2)>>
 
-    If you pass an object which has a method `segment`, the
-    :func:`AffineVector` will provide the corresponding affine vector::
-
-        sage: from phystricks.BasicGeometricObjects import SingleAxe
-        sage: axe=SingleAxe(  Point(-2,2),Vector(1,1),-3,3  )
-        sage: print AffineVector(axe)
-        <vector I=<Point(-5,-1)> F=<Point(1,5)>>
-
     NOTE:
 
     The main difference between a :func:`Segment` an :func:`AffineVector` is that
@@ -151,16 +143,16 @@ def AffineVector(A=None,B=None):
     behaviour under rotation, dilatation and operations like that.
 
     """
+    from AffineVector import AffineVectorGraph
     if B :      # If B is given, I suppose that we gave two points
-        vect=Segment(A,B)
+        vect=AffineVectorGraph(A,B)
     else :
         try :
-            vect=A.segment()
+            seg=A.segment()
+            vect=AffineVector(seg.I,seg.F)
         except AttributeError :
-            vect=A
-    vect.arrow_type="vector"
+            vect=AffineVector(A)
     return vect
-
 
 def Vector(*args):
     """
