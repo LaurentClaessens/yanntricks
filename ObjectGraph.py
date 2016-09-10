@@ -20,10 +20,12 @@
 # copyright (c) Laurent Claessens, 2010-2016
 # email: laurent@claessens-donadello.eu
 
+
 from sage.all import numerical_approx
 from Parameters import Parameters
 from Parameters import Options
 from Exceptions import ShouldNotHappenException
+from Utilities import warning
 
 from Utilities import logging
 
@@ -89,12 +91,13 @@ class ObjectGraph(object):
         from Parameters import Waviness
         self.wavy = True
         self.waviness = Waviness(self,dx,dy)
-    def get_mark(self,dist,angle,text,mark_point=None,added_angle=None,position=None,pspict=None):
+    def get_mark(self,dist,angle=None,text=None,mark_point=None,added_angle=None,position=None,pspict=None):
 
         """
         - `angle` is degree or AngleMeasure
         
-        In the internal representation of the mark, the angle type will be `AngleMeasure`
+        In the internal representation of the mark, 
+        the angle type will be `AngleMeasure`
         """
 
         from AngleGraph import AngleGraph
@@ -105,10 +108,11 @@ class ObjectGraph(object):
         third=None
 
         if position in ["N","S","E","W"] and angle is not None:
-            raise ShouldNotHappenException("When you want a position\
- like N,S,E, or W, the mark angle should not be given.")
+            angle=None
+            warning("When you want a position like N,S,E, or W, the mark\
+angle should not be given.",pspict=pspict)
 
-        if angle is None :
+        if angle is None and position not in ["N","S","E","W"] :
             try :
                 angle=self.advised_mark_angle(pspict=pspict)
             except AttributeError :
@@ -166,7 +170,8 @@ class ObjectGraph(object):
         # Indeed let G be any graph and P a point. Consider
         # P.put_mark(...)
         # pspict.DrawGraphs(G,P)
-        # If we do 'pspict.DrawGraphs(mark)' here, the mark will be drawn *under* 'G' while the logic of the 'DrawGraphs' line should
+        # If we do 'pspict.DrawGraphs(mark)' here, the mark will be 
+        # drawn *under* 'G' while the logic of the 'DrawGraphs' line should
         # be to draw P and its mark *after* G.
         # This is why we have this 'added_objects' mechanism.
 
@@ -179,9 +184,8 @@ class ObjectGraph(object):
         for psp in pspict:
             mark=self.get_mark(dist,angle,text,mark_point=mark_point,added_angle=added_angle,position=position,pspict=psp)
 
-            if position=="E" and angle is not None :
-                raise ShouldNotHappenException("When you want a position\
-like N,S,E, or W, the mark angle should not be given.")
+            if position in ["N","S","E","W"] and angle is not None :
+                warning("When you want a position like N,S,E, or W, the mark angle should not be given.")
 
             self.added_objects.append(psp,mark)
 

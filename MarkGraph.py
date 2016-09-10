@@ -106,17 +106,23 @@ class MarkGraph(ObjectGraph):
                 center_vector=Vector( self.dist*cos(angle),self.dist*sin(angle)  )
 
             elif position=="corner":
-                sx=numerical_approx(self.x)
-                sy=numerical_approx(self.y)
-                if sx>=0:
-                    lx=dimx*0.5
-                if sx<0:
-                    lx=-dimx*0.5
-                if sy>=0:
-                    ly=dimy*0.5
-                if sy<0:
-                    ly=-dimy*0.5
-                center_vector = default_vector+(lx,ly)
+
+                angle=numerical_approx(self.angle.radian)
+                v=Vector(self.dist*cos(angle),self.dist*sin(angle))
+                co=numerical_approx(cos(self.angle.radian))
+                si=numerical_approx(sin(self.angle.radian))
+                # The case co==0 or si==0 should not happen because 
+                # we already dealt with these angles and turned them 
+                # into "position=N,S,E,W" with angle==None.
+                if co>0 :
+                    lx=dimx/2
+                else:
+                    lx=-dimx/2
+                if si>0:
+                    ly=dimy/2
+                else :
+                    ly=-dimy/2
+                center_vector=v+(lx,ly)
             elif position=="N":
                 center_vector = Vector(0,-self.dist-dimy/2)
             elif position=="S":
