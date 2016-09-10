@@ -731,22 +731,22 @@ def testtype(s):
     print("\n")
     if isinstance(s,str):
         raise
-def logging(*args):
+def debug_print(*args):
     """
     This function is for debug purpose. It serves to roughly print stuff
-    on the screen. Then "grep logging" helps to remove all the garbage.
+    on the screen. Then "grep debug_print" helps to remove all the garbage.
     """
     for s in args:
         print(s)
 
-def warning(text,pspict=None):
-    from Defaults import WARNING_FILENAME
+def logging(text,pspict=None):
+    from Defaults import LOGGING_FILENAME
     import codecs
     text=ensure_unicode(text)
     if pspict :
         text="in "+pspict.name+" : "+text
     print(text)
-    with codecs.open(WARNING_FILENAME,"a",encoding="utf8") as f:
+    with codecs.open(LOGGING_FILENAME,"a",encoding="utf8") as f:
         f.write(text+"\n")
 
 

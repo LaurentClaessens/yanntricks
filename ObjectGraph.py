@@ -25,8 +25,6 @@ from sage.all import numerical_approx
 from Parameters import Parameters
 from Parameters import Options
 from Exceptions import ShouldNotHappenException
-from Utilities import warning
-
 from Utilities import logging
 
 class AddedObjects(object):
@@ -107,9 +105,12 @@ class ObjectGraph(object):
         self.marque = True
         third=None
 
+        from Utilities import debug_print
+        debug_print("Dans get_mark",angle,position)
+
         if position in ["N","S","E","W"] and angle is not None:
             angle=None
-            warning("When you want a position like N,S,E, or W, the mark\
+            logging("When you want a position like N,S,E, or W, the mark\
 angle should not be given.",pspict=pspict)
 
         if angle is None and position not in ["N","S","E","W"] :
@@ -142,6 +143,7 @@ angle should not be given.",pspict=pspict)
             angle=None
 
         
+        debug_print("Dans get_mark, je vais créer ",angle,position)
         mark=Mark(graph=self,dist=dist,angle=angle,central_point=None,\
                 text=text,mark_point=mark_point,position=position,pspict=pspict)
 
@@ -186,7 +188,7 @@ angle should not be given.",pspict=pspict)
             mark=self.get_mark(dist,angle,text,mark_point=mark_point,added_angle=added_angle,position=position,pspict=psp)
 
             if position in ["N","S","E","W"] and angle is not None :
-                warning("When you want a position like N,S,E, or W, the mark angle should not be given.")
+                logging("When you want a position like N,S,E, or W, the mark angle should not be given.")
 
             self.added_objects.append(psp,mark)
 
