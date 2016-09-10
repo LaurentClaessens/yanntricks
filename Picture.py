@@ -59,10 +59,13 @@ class Picture(object):
             marks of points and thinks like that. This is the bounding box that is going to be used for the axes and the grid.
             When a graph object has a method math_bounding_box, this is the one taken into account in the math_BB here.
         """
-        self.name = name        # self.name is used in order to
-                                # name the intermediate files.
+        from Utilities import ensure_unicode
+        self.name = ensure_unicode(name)  # In order to produce filenmane
+                                          # for the intermediate files.
 
-        # A comment. This is not used to create the picture; the purpose is to remember a specific feature to be tested when recompiling.
+        # A comment. This is not used to create the picture; 
+        # the purpose is to remember a specific feature to be 
+        # tested when recompiling.
         self.comment=""         
 
         self.tikzfilename="tikz"+self.name

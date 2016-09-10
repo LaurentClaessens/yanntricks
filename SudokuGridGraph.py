@@ -85,10 +85,10 @@ class SudokuGridGraph(ObjectGraph):
         lines = self.question.split("\n")
         for i,li in enumerate(lines):
             for j,c in enumerate(li.split(",")):
-                A=Point(   j*self.length+self.length/2, -i*self.length-self.length/2  )
+                A=Point(j*self.length+self.length/2,-i*self.length-self.length/2)
                 A.parameters.symbol=""
                 if c=="i":
-                    A.put_mark(3*self.length/9,-90,"\ldots",pspict=pspict,position="N")
+                    A.put_mark(3*self.length/9,text="\ldots",pspict=pspict,position="N")
                 if c in [  str(k) for k in range(-9,10)  ] :
                     A.put_mark(0,0,c,pspict=pspict)
                 content.append(A)

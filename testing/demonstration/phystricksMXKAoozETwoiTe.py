@@ -8,6 +8,6 @@ def MXKAoozETwoiTe():
 
     pspict.DrawGraphs(H)
     pspict.DrawDefaultAxes()
-    pspict.comment="3 boxes of heigth 20,65,15. These figures are written on the boxes."
+    pspict.comment="3 boxes of height 20,65,15. These figures are written on the boxes."
     fig.conclude()
     fig.write_the_file()

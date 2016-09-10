@@ -141,6 +141,7 @@ angle should not be given.",pspict=pspict)
         if position in ["N","S","E","W"] :
             angle=None
 
+        
         mark=Mark(graph=self,dist=dist,angle=angle,central_point=None,\
                 text=text,mark_point=mark_point,position=position,pspict=pspict)
 
@@ -155,7 +156,7 @@ angle should not be given.",pspict=pspict)
             mark_point=None,added_angle=None,position=None,pspict=None):
         """
         If you want to put a mark on an object
-        P.put_mark(0.1,-90,"text",pspict=pspict,position="N")
+        P.put_mark(0.1,text="foobar",pspict=pspict,position="N")
 
         mark_point is a function which returns the position of the mark point.
 

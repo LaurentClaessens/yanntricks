@@ -46,7 +46,7 @@ class BarDiagramGraph(ObjectGraph):
             for i,h in enumerate(self.Y):
                 P=Point(self.X[i],h)
                 P.parameters.symbol=""
-                P.put_mark(0.2,90,"\({{:.{}f}}\)".format(self.numbering_decimals).format(h),pspict=pspict,position="S")
+                P.put_mark(0.2,text="\({{:.{}f}}\)".format(self.numbering_decimals).format(h),pspict=pspict,position="S")
                 nb.append(P)
         return nb
     def action_on_pspict(self,pspict):

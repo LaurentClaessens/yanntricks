@@ -18,7 +18,7 @@ def YJEDoojDtSeKHQ():
     x0=sqrt(sqrt(5)-1)/2*sqrt(2)
     I=f1.get_point(-x0)
     J=Point(-x0,0)
-    J.put_mark(0.1,-90,"\( -x_0\)",pspict=pspict,position="N")
+    J.put_mark(0.1,text="\( -x_0\)",pspict=pspict,position="N")
 
     vert=Segment(I,J)
     vert.parameters.style="dotted"

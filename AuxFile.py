@@ -18,13 +18,10 @@
 # copyright (c) Laurent Claessens, 2016
 # email: laurent@claessens-donadello.eu
 
-import warnings
-
 from GlobalVariables import global_vars
 from Utilities import newlengthName
-from Utilities import phystricks_warning
+from Utilities import warning
 
-warnings.showwarning = phystricks_warning
 
 class AuxFile(object):
     """
@@ -76,7 +73,7 @@ class AuxFile(object):
             f=open(self.interWriteFile,"r")
         except IOError :
             if not self.already_warned_CompileYourLaTeXFile:
-                warnings.warn("Warning: the auxiliary file %s does not seem to exist. Compile your LaTeX file."%self.interWriteFile)
+                warning("Warning: the auxiliary file %s does not seem to exist. Compile your LaTeX file."%self.interWriteFile,pspict=self.picture)
                 self.already_warned_CompileYourLaTeXFile=True
             if global_vars.perform_tests :
                 raise ValueError,"I cannot say that a test succeed if I cannot determine the bounding box"
@@ -100,7 +97,7 @@ class AuxFile(object):
         if Id not in self.id_values_dict().keys():
             if not global_vars.silent:
                 if not self.already_warned_CompileYourLaTeXFile:
-                    warnings.warn("Warning: the auxiliary file {} does not contain the id «{}». Compile your LaTeX file.".format(self.interWriteFile,Id))
+                    warning("Warning: the auxiliary file {} does not contain the id «{}». Compile your LaTeX file.".format(self.interWriteFile,Id),pspict=self.picture)
                     self.already_warned_CompileYourLaTeXFile=True
             if global_vars.perform_tests :
                 raise PhystricksTestError(justification="No tests file found.",pspict=self)

@@ -109,7 +109,7 @@ class HistogramGraph(ObjectGraph):
         pspict.axes.do_mx_enlarge=False
         pspict.axes.do_my_enlarge=False
         if self.legende :
-            pspict.axes.single_axeX.put_mark(0.5,-90,self.legende,pspict=pspict,position="N")
+            pspict.axes.single_axeX.put_mark(dist=0.5,text=self.legende,pspict=pspict,position="N")
         else :
             print "Are you sure that you don't want a legend on your histogram ?"
         # The construction of the list 'values' is created in such a way not to have '1.0' instead of '1'.
@@ -125,11 +125,11 @@ class HistogramGraph(ObjectGraph):
         for xx in values:
             P=Point(xx*self.xscale,0)
             P.parameters.symbol="|"
-            P.put_mark(0.2,-90,str(xx),pspict=pspict,position="N")    # see 71011299 before to change this 0.2
+            P.put_mark(0.2,text=str(xx),pspict=pspict,position="N")    # see 71011299 before to change this 0.2
             pspict.DrawGraphs(P)
         for box in self.box_list :
             P=box.rectangle.segment_N.mark_point()
-            P.put_mark(0.2,90,"$"+str(box.n)+"$",pspict=pspict,position="S")
+            P.put_mark(0.2,text="$"+str(box.n)+"$",pspict=pspict,position="S")
             P.parameters.symbol=""
             pspict.DrawGraphs(P)
             pspict.DrawGraphs(box)
