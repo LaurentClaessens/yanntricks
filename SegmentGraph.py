@@ -553,43 +553,7 @@ class SegmentGraph(ObjectGraph):
         v=self.F-self.I
         Q=P+v
         return Segment(P,Q)
-    def decomposition(self,v):
-        """
-        return the decomposition of `self` into a `v`-component and a normal component.
 
-        INPUT:
-
-        - ``v`` - a segment or a vector
-
-        OUTPUT:
-
-        a tuple of vectors that are the decomposition of `self` into `v` and `v-perp` directions
-
-        NOTE:
-
-        The result does not depend on `v`, but only on the *direction* of `v`.
-
-        EXAMPLES::
-
-            sage: from phystricks import *
-            sage: v=Vector(2,3)
-            sage: vx,vy = v.decomposition(Segment(Point(0,0),Point(0,1)))
-            sage: print vx
-            <vector I=<Point(0,0)> F=<Point(0,3)>>
-            sage: print vy
-            <vector I=<Point(0,0)> F=<Point(2,0)>>
-
-        .. literalinclude:: phystricksExDecomposition.py
-        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition0PICTExDecompositionpspict0-for_eps.png
-        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition1PICTExDecompositionpspict1-for_eps.png
-        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition2PICTExDecompositionpspict2-for_eps.png
-        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition3PICTExDecompositionpspict3-for_eps.png
-        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition4PICTExDecompositionpspict4-for_eps.png
-        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition5PICTExDecompositionpspict5-for_eps.png
-        """
-        v1=self.projection(v)
-        v2=self-v1
-        return v1,v2
     def translate(self,vecteur):
         v = Segment(self.I.translate(vecteur),self.F.translate(vecteur))
         return v

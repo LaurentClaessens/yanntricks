@@ -59,7 +59,6 @@ from phystricksQIPRoolQCEnZdx import QIPRoolQCEnZdx
 
 figures_list=[]
 figures_list.append(QIPRoolQCEnZdx)
-figures_list=[]
 figures_list.append(FMLCooxHtqRzUz)
 figures_list.append(DYJNooLVVFHEfN)
 figures_list.append(OGGDooIvakwNlL)

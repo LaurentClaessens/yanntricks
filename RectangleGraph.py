@@ -60,7 +60,7 @@ class RectangleGraph(PolygonGraph):
     def second_diagonal(self):
         return Segment(self.SW,self.NE)
     def center(self):
-        return self.first_diagonal().center()
+        return self.first_diagonal().midpoint()
     def default_associated_graph_class(self):
         """Return the class which is the Graph associated type"""
         return RectangleGraph

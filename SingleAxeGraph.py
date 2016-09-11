@@ -52,10 +52,12 @@ class SingleAxeGraph(ObjectGraph):
         self.mark_angle=degree(base.angle().radian-pi/2)
         self.enlarge_size=0.5
     
-    # SingleAxe.segment cannot be a lazy attribute because we use it for some projections before to compute the bounding box.
+    # SingleAxe.segment cannot be a lazy attribute because 
+    # we use it for some projections before to compute the bounding box.
     def segment(self,projection=False,pspict=None):
         if self.mx == 0 and self.Mx == 0 :
-            # I think that we only pass here in order either to do a projection either to create an initial bounding box.
+            # I think that we only pass here in order either to do 
+            #a projection either to create an initial bounding box.
             # If xunit or yunit are very low, then returning something like
             #   Segment(self.C-self.base.visual_length(1,pspict=pspict),self.C+self.base.visual_length(1,pspict=pspict))      
             # causes bounding box to be too large.
@@ -161,7 +163,13 @@ class SingleAxeGraph(ObjectGraph):
         if self.graduation :
             for graph in self.graduation_bars(pspict):
                 pspict.DrawGraphs(graph,separator_name="AXES")
+
         v=AffineVector(self.segment(pspict=pspict))
+
+
+        a=self.segment(pspict=pspict)
+        b=AffineVector(a)
+
         pspict.DrawGraphs(v,separator_name="AXES")
     def __str__(self):
         return "<SingleAxeGraph: C={0} base={1} mx={2} Mx={3}>".format(self.C,self.base,self.mx,self.Mx)

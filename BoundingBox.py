@@ -109,9 +109,9 @@ class BoundingBox_class(object):
         if pos=="SW":
             return Point(self.xmin,self.ymin)
     def N(self):
-        return Segment(self.getVertex("NW"),self.getVertex("NE")).center()
+        return Segment(self.getVertex("NW"),self.getVertex("NE")).midpoint()
     def S(self):
-        return Segment(self.getVertex("SW"),self.getVertex("SE")).center()
+        return Segment(self.getVertex("SW"),self.getVertex("SE")).midpoint()
     def coordinates(self,pspict=None):
         return self.getVertex("SW").coordinates(pspict=pspict)+self.getVertex("NE").coordinates(pspict=pspict)
     def xsize(self):

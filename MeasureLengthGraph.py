@@ -55,17 +55,17 @@ class MeasureLengthGraph(SegmentGraph):
         #for ob in self.added_objects :
         #    bb.AddBB(ob.bounding_box(pspict))
         #if self.marque:
-        #    C=self.mseg.center()
+        #    C=self.mseg.midpoint()
         #    C.marque=self.marque
         #    C.mark=self.mark
         #    C.mark.graph=C
         #    bb.AddBB(C.bounding_box(pspict))
         return bb
     def mark_point(self,pspict=None):
-        return self.mseg.center()
+        return self.mseg.midpoint()
     def latex_code(self,language=None,pspict=None):
         a=[]
-        C=self.mseg.center()
+        C=self.mseg.midpoint()
         vI=AffineVector(C,self.mI)
         vF=AffineVector(C,self.mF)
         vI.parameters=self.parameters.copy()

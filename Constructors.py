@@ -109,7 +109,8 @@ def Segment(A,B=None,vector=None):
 
 def PolarSegment(P,r,theta):
     """
-    returns a segment on the base point P (class Point) of length r angle theta (degree)
+    returns a segment on the base point P (class Point) of 
+    length r and angle theta (degree)
     """
     alpha = radian(theta)
     import SegmentGraph

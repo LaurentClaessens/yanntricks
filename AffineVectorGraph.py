@@ -23,7 +23,7 @@
 from sage.all import lazy_attribute
 
 from ObjectGraph import ObjectGraph
-from Constructors import Segment,AffineVector,Point
+from Constructors import Segment,AffineVector,Vector,Point
 
 class AffineVectorGraph(ObjectGraph):
     def __init__(self,I,F):
@@ -46,6 +46,7 @@ class AffineVectorGraph(ObjectGraph):
     @lazy_attribute
     def slope(self):
         return self.segment.slope
+    @lazy_attribute
     def length(self):
         """
         Return a numerical approximation of the length.
@@ -64,6 +65,59 @@ class AffineVectorGraph(ObjectGraph):
     def rotation(self,angle):
         s=self.segment.rotation(angle)
         return AffineVector(s)
+    def projection(self,seg):
+        """
+        Return the projection of 'self' on the segment 'seg' (you can also
+        pass a vector).
+        """
+        I=self.I.projection(seg)
+        F=self.F.projection(seg)
+        return AffineVector(I,F)
+    def decomposition(self,v):
+        """
+        return the decomposition of `self` into a `v`-component and
+        a normal (to v) component.
+
+        INPUT:
+
+        - ``v`` - a segment or a vector
+
+        OUTPUT:
+
+        a tuple of vectors that are the decomposition of `self` 
+        into `v` and `v-perp` directions
+
+        NOTE:
+
+        The result does not depend on `v`, but only on the direction of `v`.
+
+        EXAMPLES::
+
+            sage: from phystricks import *
+            sage: v=Vector(2,3)
+            sage: vx,vy = v.decomposition(Segment(Point(0,0),Point(0,1)))
+            sage: print vx
+            <vector I=<Point(0,0)> F=<Point(0,3)>>
+            sage: print vy
+            <vector I=<Point(0,0)> F=<Point(2,0)>>
+
+        .. literalinclude:: phystricksExDecomposition.py
+        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition0PICTExDecompositionpspict0-for_eps.png
+        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition1PICTExDecompositionpspict1-for_eps.png
+        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition2PICTExDecompositionpspict2-for_eps.png
+        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition3PICTExDecompositionpspict3-for_eps.png
+        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition4PICTExDecompositionpspict4-for_eps.png
+        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition5PICTExDecompositionpspict5-for_eps.png
+        """
+        O=Point(0,0)
+
+        # Vector based at O which represents 'self'
+        v0=Vector(self.Dx,self.Dy)      
+
+        A=v0.F.projection(v)
+        v1=Vector(A)
+        v2=v0-v1
+        return v1,v2
     def advised_mark_angle(self,pspict=None):
         return self.segment.advised_mark_angle(pspict)
     def midpoint(self,advised=True):
@@ -83,7 +137,7 @@ class AffineVectorGraph(ObjectGraph):
 
         By default, normalize to 1.
         """
-        L=self.length()
+        L=self.length
         if L<0.001:     # epsilon
             logging("This vector is too small to normalize. I return a copy.")
             return self.copy()
@@ -92,10 +146,12 @@ class AffineVectorGraph(ObjectGraph):
         return "<vector I=%s F=%s>"%(str(self.I),str(self.F))
     def __add__(self,other):
         return AffineVector(self.I,self.F+other)
+    def __sub__(self,other):
+        return self+(-other)
     def __mul__(self,coef):
         I=self.I
-        nx=self.F.x+self.Dx*coef
-        ny=self.F.y+self.Dy*coef
+        nx=self.I.x+self.Dx*coef
+        ny=self.I.y+self.Dy*coef
         F=Point(nx,ny)
         return AffineVector(I,F)
     def __rmul__(self,coef):

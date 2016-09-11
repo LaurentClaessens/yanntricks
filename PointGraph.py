@@ -61,8 +61,9 @@ class PointGraph(ObjectGraph):
         INPUT:
 
         - ``seg`` - a segment
-        - ``direction`` - (default=None) a vector. If given, we use a projection parallel to
-                            `vector` instead of the orthogonal projection.
+        - ``direction`` - (default=None) a vector.
+        If given, we use a projection parallel to 
+        `vector` instead of the orthogonal projection.
 
         OUTPUT:
 
@@ -70,7 +71,8 @@ class PointGraph(ObjectGraph):
 
         EXAMPLES:
 
-        Return a point even if the projections happens to lies outside the segment::
+        Return a point even if the projections happens
+        to lies outside the segment::
 
             sage: from phystricks import *
             sage: s1=Segment( Point(0,0),Point(2,1) )
@@ -83,19 +85,13 @@ class PointGraph(ObjectGraph):
 
             sage: print Point(5,0).projection(Vector(2,1))
             <Point(4,2)>
-
-        Computations are exact::
-
-            sage: v=Vector(2,1)
-            sage: print Point(sqrt(2),pi).projection(v)
-            <Point(2/5*pi + 4/5*sqrt(2),1/5*pi + 2/5*sqrt(2))>
-
         """
-        try :
-            seg=seg.segment(projection=True)
-        except AttributeError :
-            pass
-
+        from AffineVectorGraph import AffineVectorGraph
+        from SingleAxeGraph import SingleAxeGraph
+        if isinstance(seg,AffineVectorGraph):
+            seg=seg.segment
+        if isinstance(seg,SingleAxeGraph):
+            seg=seg.segment()
         if direction is None:
             if seg.vertical :
                 direction=Segment(  self, self+( 1,0  )  )
