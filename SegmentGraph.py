@@ -49,8 +49,6 @@ class SegmentGraph(ObjectGraph):
         This is the coefficient a in the equation
         y = ax + b
 
-        Notice that the result does not depend on the order
-
         This is not the same as the coefficient a in self.equation
         ax + by + c == 0
         
@@ -100,8 +98,8 @@ class SegmentGraph(ObjectGraph):
         return Point(x,self.slope*x+self.independent)
     @lazy_attribute
     def vertical(self):
-        # The condition  'self.I.x == self.F.x' brings somethimes non vertical lines that are in fact vertical (dx=10e-16)
-        if abs( self.I.x-self.F.x )<0.0001:
+        # The condition  'self.I.x == self.F.x' brings sometimes non vertical lines that are in fact vertical (dx=10e-16)
+        if abs( self.I.x-self.F.x )<0.0001:    # epsilon
             return True
         return False
     @lazy_attribute
@@ -283,9 +281,7 @@ class SegmentGraph(ObjectGraph):
         f2=phyFunction(self.I.y+x*(self.F.y-self.I.y)/l)
         return ParametricCurve(f1,f2,(0,l))
     def copy(self):
-        v=Segment(self.I,self.F)
-        v.arrow_type=self.arrow_type
-        return v
+        return Segment(self.I,self.F)
     def get_regular_points(self,dx):
         """
         Notice that it does not return the last point of the segment, unless the length is a multiple of dx.
@@ -299,7 +295,7 @@ class SegmentGraph(ObjectGraph):
         The wavelength is dx and the amplitude is dy.
         The first and the last points are self.I and self.F and are then *on* the segment. Thus the wave begins and ends on the segment.
         """
-        normal = self.get_normal_vector().fix_size(dy)
+        normal = self.get_normal_vector().normalize(dy)
         PI = self.get_regular_points(dx)
         PIs = [self.I]
         PIs.extend( [  PI[i]+normal*(-1)**i for i in range(1,len(PI))  ] )
@@ -330,7 +326,7 @@ class SegmentGraph(ObjectGraph):
         The arrow is a vector of size (by default) 0.01. 
         """
         P=self.get_point_proportion(position,advised=False)
-        v=AffineVector(P,self.F).fix_size(size)
+        v=AffineVector(P,self.F).normalize(size)
         self.added_objects.append(pspict,v)
     def put_measure(self,measure_distance,mark_distance,mark_angle,name,position=None,pspict=None):
         measure=self.get_measure(measure_distance,mark_distance,mark_angle,name,position=position,pspict=pspict)
@@ -364,7 +360,7 @@ class SegmentGraph(ObjectGraph):
     def get_code(self,n=1,d=0.1,l=0.1,angle=45,pspict=None):
         #TODO : the angle given here should be visual
         ao=[]
-        vect=AffineVector(self.I,self.F).fix_visual_size(d,pspict)
+        vect=AffineVector(self.I,self.F).normalize(d)
         center=self.midpoint(advised=False)
         positions=[]
         if n%2==1:
@@ -399,6 +395,7 @@ class SegmentGraph(ObjectGraph):
         """
         return self.F-self.I
     def center(self,advised=True):
+        raise DeprecationWarning
         return self.midpoint(advised=advised)
     def midpoint(self,advised=True):
         P = self.get_point_proportion(0.5,advised)
@@ -424,10 +421,10 @@ class SegmentGraph(ObjectGraph):
             1
         """
         if self.vertical :
-            v = Point(-1,0).Vector().origin(self.center())
+            v = Point(-1,0).Vector().fix_origin(self.midpoint())
         else :
             P = Point(self.slope,-1)
-            v = P.Vector().normalize().origin(self.center())
+            v = P.Vector().normalize().fix_origin(self.midpoint())
         if P:
             v=AffineVector(P,P+v)
         return v
@@ -435,9 +432,9 @@ class SegmentGraph(ObjectGraph):
         """
         return a tangent vector at center of the segment
         """
-        C=self.center()
+        C=self.midpoint()
         v=self.AffineVector()
-        return v.origin(self.center()).fix_size(1)
+        return v.fix_origin(self.midpoint()).normalize(1)
     def polaires(self):
         return PointToPolaire(self.Point())
     def angle(self):
@@ -461,22 +458,10 @@ class SegmentGraph(ObjectGraph):
             sage: S=Segment(Point(1,1),Point(2,0))
             sage: S.angle().degree
             315
-
-            sage: v=AffineVector(Point(2,3),Point(2-4/sqrt(3),-1))
-            sage: v.angle().radian.simplify_trig()
-            4/3*pi
         """
         return self.polaires().measure.positive()
-    def origin(self,P):
-        """
-        return a vector (in affine space) whose origin is P.
-        """
-        return AffineVector(P,Point(P.x+self.Dx,P.y+self.Dy))
     def direction(self):
         return self.F-self.I
-    def return_deformations(self,segment):
-        segment.arrow_type=self.arrow_type
-        return segment
     def projection(self,segment,advised=False):
         """
         Return the projection of self on the given segment
@@ -506,13 +491,13 @@ class SegmentGraph(ObjectGraph):
         v = Segment(self.I.projection(segment),self.F.projection(segment))
         if advised:
             v._advised_mark_angle=self.angle().degree+90
-        return self.return_deformations(v)
+        return v
     def bisector(self,code=None):
         """
         return the segment which is orthogonal to the center of 'self'.
         """
         normal=self.get_normal_vector()
-        M=self.center()
+        M=self.midpoint()
         P1=M+normal
         P2=M-normal
         seg=Segment(P1,P2)
@@ -526,7 +511,8 @@ class SegmentGraph(ObjectGraph):
         return seg
     def orthogonal(self,point=None):
         """
-        return the segment with a rotation of 90 degree. The new segment is, by default, still attached to the same point.
+        return the segment with a rotation of 90 degree.
+        The new segment is, by default, still attached to the same point.
 
         If 'point' is given, the segment will be attached to that point
 
@@ -534,18 +520,19 @@ class SegmentGraph(ObjectGraph):
         """
         new_Dx=-self.Dy
         new_Dy=self.Dx
-        v=Segment(self.I,Point(self.I.x+new_Dx,self.I.y+new_Dy))
-        defo=self.return_deformations(v)
+        ortho=Segment(self.I,Point(self.I.x+new_Dx,self.I.y+new_Dy))
         if not point:
-            return defo
-        defo=defo.fix_origin(point)
+            return ortho
+        return orhto.fix_origin(point)
     def orthogonal_trough(self,P):
         """
         return a segment orthogonal to self passing trough P.
 
-        The starting point is 'P' and the final point is the intersection with 'self'
+        The starting point is 'P' and the final point is the 
+        intersection with 'self'
 
-        If these two points are the same --when d^2(P,Q)<0.001 (happens when 'P' belongs to 'self'), the end point is not guaranteed.
+        If these two points are the same --when d^2(P,Q)<0.001 
+        (happens when 'P' belongs to 'self'), the end point is not guaranteed.
 
         By the way, when you want
         Segment(A,B).orthogonal_trough(B)
@@ -605,7 +592,7 @@ class SegmentGraph(ObjectGraph):
         return v1,v2
     def translate(self,vecteur):
         v = Segment(self.I.translate(vecteur),self.F.translate(vecteur))
-        return self.return_deformations(v)
+        return v
     def fix_origin(self,a,b=None):
         """
         Return the segment fixed at `P`. This is the translation of `self`  by `P-self`.  In other words, it returns the segment which is parallel to self trough the given point.
@@ -649,32 +636,35 @@ class SegmentGraph(ObjectGraph):
         F=P+self
         s=Segment(I,P+self)
 
-        return self.return_deformations(s)
+        return s
     def inverse(self):
         """
         Return the segment BA instead of AB.
 
-        Not to be confused with (-self). The latter is a rotation of 180 degree of self.
+        Not to be confused with (-self). The latter is a rotation
+        of 180 degree of self.
         """
         v = Segment(self.F,self.I)
-        return self.return_deformations(v)
+        return v
     def rotation(self,angle):
         """
-        Return the segment attached to the same point but with a rotation of angle.
+        Return the segment attached to the same point but with
+        a rotation of angle.
 
         INPUT:
 
-        - ``angle`` - the value of the rotation angle (in radian).
+        - ``angle`` - the value of the rotation angle (degree or AngleMeasure)
 
         """
         a=angle
         if isinstance(angle,AngleMeasure):
             a=angle.degree
         v = PolarSegment(self.I,self.polaires().r,self.polaires().degree+a)
-        return self.return_deformations(v)
+        return v
     def get_visual_length(self,xunit=None,yunit=None,pspict=None):
         """
-        Return the visual length of self. That is the length taking xunit and  yunit into account
+        Return the visual length of self. That is the length
+        taking xunit and  yunit into account
         """
         if pspict:
             xunit=pspict.xunit
@@ -689,6 +679,7 @@ class SegmentGraph(ObjectGraph):
         """
         return a segment with the same initial point, but with visual length  `l`
         """
+        from Visual import visual_length
         if pspict:
             xunit=pspict.xunit
             yunit=pspict.yunit
@@ -702,12 +693,13 @@ class SegmentGraph(ObjectGraph):
         L=self.length
         coef=(l+L)/L
         v = coef*self
-        return self.return_deformations(v)
+        return v
     def fix_size(self,l,only_F=False,only_I=False):
         """
-        return a new vector or segment with size l.
+        return a new segment with size l.
 
-        This function has not to be used by the end user. Use self.normalize() instead.
+        This function has not to be used by the end user. 
+        Use self.normalize() instead.
         """
         L=self.length
         if only_F and only_I:
@@ -716,16 +708,13 @@ class SegmentGraph(ObjectGraph):
         if L <  0.001 :     # epsilon
             print "fix_size problem: this vector has a norm equal to zero"
             return self.copy()
-        if self.arrow_type=="segment":
-            if only_F==False and only_I==False:
-                v = self.dilatation(l/self.length)
-            if only_F :
-                v=self.add_size( lF= l-L  )
-            if only_I :
-                v=self.add_size( lI= l-L  )
-        if self.arrow_type=="vector":
-            return self.normalize(l)
-        return self.return_deformations(v)
+        if only_F==False and only_I==False:
+            v = self.dilatation(l/self.length)
+        if only_F :
+            v=self.add_size( lF= l-L  )
+        if only_I :
+            v=self.add_size( lI= l-L  )
+        return v
     def add_size(self,lI=0,lF=0):
         """
         Return a new Segment with extra length lI at the initial side and lF at the final side. 
@@ -733,12 +722,11 @@ class SegmentGraph(ObjectGraph):
         F=self.add_size_extremity(lF).F
         I=self.inverse().add_size_extremity(lI).F
         v = Segment(I,F)
-        return self.return_deformations(v)
+        return v
     def dilatation(self,coef):
         """
         Return a Segment which is dilated by the coefficient coef 
 
-        If self is a segment:
             This adds the same length at both extremities.
             The segment A --> B dilated by 0.5 returns
             a segment C --> D where [CD] is the _central_ half of [AB].
@@ -749,16 +737,11 @@ class SegmentGraph(ObjectGraph):
             l*self
             with a scalar l.
 
-        If self is a vector:
-            This adds the length only at the end.
-            The affine vector A --> B dilated by 0.5 returns
-            an affine vector A --> D where D is the _central_ point of [AB].
-
         INPUT:
         - ``coef`` - a number. This is the dilatation coefficient
 
         OUTPUT:
-        a new vector or segment
+        a new segment
 
         EXAMPLES::
 
@@ -773,12 +756,8 @@ class SegmentGraph(ObjectGraph):
             sage: print v.dilatation(0.5)                
             <vector I=<Point(-2,-2)> F=<Point(0.000000000000000,0.000000000000000)>>
         """
-        if self.arrow_type=="segment":
-            d=0.5*self.length*(coef-1)
-            return self.add_size(d,d)
-        if self.arrow_type=="vector":
-            l=self.length*coef
-            return self.normalize(l)
+        d=0.5*self.length*(coef-1)
+        return self.add_size(d,d)
     def dilatationI(self,coef):
         """
         return a dilated segment, but only enlarges at the initial extremity.
@@ -796,15 +775,12 @@ class SegmentGraph(ObjectGraph):
         return Segment(v.I,v.F)
     def normalize(self,l=1):
         """
-        If self.arrow_type is "segment", it normalize the segment to <l> by dilating in both extremities
-
-        If self.arrow_type is "vector", it normalize the vector to <l> but keeps the origin.
+        Normalize the segment to <l> by dilating in both extremities
 
         NOTES:
         * If self is of length zero, return a copy of self.
         * If not length is given, normalize to 1.
         * If the given new length is negative, 
-            if self is a vector, change the sense
             if self is a segment, consider the absolute value
 
         INPUT:
@@ -822,24 +798,11 @@ class SegmentGraph(ObjectGraph):
             sage: print s.normalize(-1)
             <segment I=<Point(0,0)> F=<Point(1,0)>>
 
-            sage: v=AffineVector(Point(1,1),Point(3,1))
-            sage: print v.normalize(2)
-            <vector I=<Point(1,1)> F=<Point(3,1)>>
-            sage: print v.normalize(-1)
-            <vector I=<Point(1,1)> F=<Point(0,1)>>
         """
-        if self.arrow_type=="segment":
-            if l<0 : 
-                l=-l
-            v = self.fix_size(l)
-        if self.arrow_type=="vector":
-            L=self.length
-            rel=L==0
-            if L<0.001:     # epsilon
-                return self.copy()
-            v = (l*self).__div__(L)     
-            v.arrow_type="vector"
-        return self.return_deformations(v)
+        if l<0 : 
+            l=-l
+        v = self.fix_size(l)
+        return v
     def graph(self,mx=None,Mx=None):
         if not mx:
             C = SegmentGraph(self.I,self.F)
@@ -858,45 +821,29 @@ class SegmentGraph(ObjectGraph):
         - ``coef`` - the multiplying coefficient
 
         OUTPUT:
-        A new segment or vector.
+        A new segment.
 
         EXAMPLES::
-
-            sage: from phystricks import *
-            sage: v=Vector(1,1)
-            sage: print 2*v
-            <vector I=<Point(0,0)> F=<Point(2,2)>>
-            sage: print -2*v
-            <vector I=<Point(0,0)> F=<Point(-2,-2)>>
 
             sage: s=Segment(Point(1,1),Point(2,2))
             sage: print 3*s
             <segment I=<Point(1,1)> F=<Point(4,4)>>
 
         The initial point stays the same (this is not the same behaviour as in self.normalize !)
-        If the coefficient is negative :
-            if self is a vector : change the sense of the vector
-            if self is a segment : don't care about the sign of coeff
         """
-        if self.arrow_type=="segment":
-            if coef<=0:
-                coef=-coef
+        if coef<=0:
+            coef=-coef
         v = Segment(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
-        return self.return_deformations(v)
+        return v
     def __add__(self,other):
         """
-        In the case of addition of two segments with same origin, return a segment
-        representing the vector sum.
-
-        If the two segments have not the same origin, the `other` one is first translated.
-
         If the other is a vector, return the translated segment
 
         INPUT:
         - ``other`` - an other segment
 
         OUTPUT:
-        A new vector or segment that has the same origin as `self`.
+        A new  segment that has the same origin as `self`.
 
         EXAMPLES::
 
@@ -905,21 +852,10 @@ class SegmentGraph(ObjectGraph):
             sage: b=Vector(2,3)
             sage: print a+b
             <vector I=<Point(0,0)> F=<Point(3,4)>>
-
-            sage: a=Segment(Point(1,1),Point(3,4))
-            sage: b=AffineVector(Point(1,1),Point(-1,3))
-            sage: print a+b
-            <segment I=<Point(-1,3)> F=<Point(1,6)>>
         """
-        if isinstance(other,SegmentGraph):
-            if self.arrow_type=="segment" and other.arrow_type=="vector":
-                return Segment(   self.I+other,self.F+other  )
-            if self.I != other.I:
-                other=other.fix_origin(self.I)
-            v=Vector(self.F.x-self.I.x+other.F.x-other.I.x, self.F.y-self.I.y+other.F.y-other.I.y,)
-            return self.return_deformations(v.origin(self.I))
-        elif isinstance(other,tuple):
-            return self.return_deformations(  Segment(self.I+other,self.F+other)  )
+        from AffineVectorGraph import AffineVectorGraph
+        if isinstance(other,AffineVectorGraph):
+            return Segment(   self.I+other,self.F+other  )
         else:
             raise TypeError,"I do not know how to sum %s with %s"%(self,other)
     def __sub__(self,other):
@@ -927,30 +863,20 @@ class SegmentGraph(ObjectGraph):
     def __rmul__(self,coef):
         return self*coef
     def __neg__(self):
-        if self.arrow_type=="segment":
-            return Segment(self.F,self.I)
-        return self*(-1)
+        return Segment(self.F,self.I)
     def __div__(self,coef):
         return self * (1/coef)
     def __div__(self,coef):
         return self * (1/coef)
     def __str__(self):
-        if self.arrow_type=="segment":
-            return "<segment I=%s F=%s>"%(str(self.I),str(self.F))
-        if self.arrow_type=="vector":
-            return "<vector I=%s F=%s>"%(str(self.I),str(self.F))
+        return "<segment I=%s F=%s>"%(str(self.I),str(self.F))
     def mark_point(self,pspict=None):
         """
-        return the point on which a mark has to be placed if we use the method put_mark.
-
-        If we have a segment, the mark is at center while if it is a vector the mark
-        has to be placed on the extremity.
-
+        return the point on which a mark has to be placed
+        if we use the method put_mark.  
+        If we have a segment, the mark is at center 
         """
-        if self.arrow_type == "vector" :
-            return self.F.copy()
-        else :
-            return self.center().copy()
+        return self.midpoint().copy()
     def bounding_box(self,pspict):
         if self.in_bounding_box:
             return BoundingBox(self.I,self.F)       # If you change this, maybe you have to adapt math_bounding_box
@@ -964,48 +890,25 @@ class SegmentGraph(ObjectGraph):
     def representativePoints(self):
         return [self.I,self.F]
     def latex_code(self,language=None,pspict=None):
-        """
-        Return the LaTeX's code (pstricks or tikz) of a Segment when is is seen as a segment
-        """
         if self.parameters.style=="none":
             return ""
-        if self.arrow_type=="vector":
-                return _vector_latex_code(self,language=language,pspict=pspict)
-        if self.arrow_type=="segment":
-            if self.wavy:
-                waviness = self.waviness
-                curve=InterpolationCurve(self.get_wavy_points(waviness.dx,waviness.dy),context_object=self)
-                curve.parameters=self.parameters.copy()
-                return curve.latex_code(language=language,pspict=pspict)
-            else:
-                if language=="pstricks":
-                    raise DeprecationWarning
-                if language=="tikz":
-                    a=[]
-                    c1=self.I.coordinates(numerical=True,digits=3,pspict=pspict)
-                    c2=self.F.coordinates(numerical=True,digits=3,pspict=pspict)
-                    if 'I' in c1 or "I" in c2 :
-                        print(self.I,self.F)
-                        raise
-                    a.append("\draw [{2}] {0} -- {1};".format(c1,c2,self.params(language="tikz")))
+        if self.wavy:
+            waviness = self.waviness
+            curve=InterpolationCurve(self.get_wavy_points(waviness.dx,waviness.dy),context_object=self)
+            curve.parameters=self.parameters.copy()
+            return curve.latex_code(language=language,pspict=pspict)
+        else:
+            if language=="pstricks":
+                raise DeprecationWarning
+            if language=="tikz":
+                a=[]
+                c1=self.I.coordinates(numerical=True,digits=3,pspict=pspict)
+                c2=self.F.coordinates(numerical=True,digits=3,pspict=pspict)
+                if 'I' in c1 or "I" in c2 :
+                    print(self.I,self.F)
+                    raise
+                a.append("\draw [{2}] {0} -- {1};".format(c1,c2,self.params(language="tikz")))
         return "\n".join(a)
     def tikz_code(self,pspict=None):
         return self.latex_code(language="tikz",pspict=pspict)
 
-def _vector_latex_code(segment,language=None,pspict=None):
-    """
-    Return the LaTeX's code of a Segment when is is seen as a vector.
-    """
-    params=segment.params(language=language)
-    if language=="pstricks":
-        raise DeprecationWarning
-    if language=="tikz":
-        params=params+",->,>=latex"
-        a = "\draw [{0}] {1} -- {2};".format(params,segment.I.coordinates(numerical=True,pspict=pspict),segment.F.coordinates(numerical=True,pspict=pspict))
-    if segment.marque :
-        P = segment.F
-        P.parameters.symbol = ""
-        mark=segment.mark      
-        P.put_mark(mark.dist,mark.angle,mark.text,pspict=pspict)
-        a = a + P.latex_code(language,pspict)
-    return a

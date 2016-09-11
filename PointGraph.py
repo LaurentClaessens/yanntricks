@@ -247,8 +247,17 @@ class PointGraph(ObjectGraph):
         else :
             v=Vector(a,b)
         return self+v
-    def origin(self,p):
-        return AffineVector(p,Point(p.x+self.x,p.y+self.y))
+    def origin(self,P):
+        """
+        Let S be the point self.
+
+        Return the affine vector   PK
+        where K is such that   PK=OS
+
+        In other words, it return the affine vector O->self but
+        attached on point P instead of O.
+        """
+        return AffineVector(P,Point(P.x+self.x,P.y+self.y))
     def Vector(self):
         return AffineVector(Point(0,0),self)
     @lazy_attribute

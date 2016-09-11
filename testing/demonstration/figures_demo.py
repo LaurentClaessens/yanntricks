@@ -59,7 +59,7 @@ from phystricksQIPRoolQCEnZdx import QIPRoolQCEnZdx
 
 figures_list=[]
 figures_list.append(QIPRoolQCEnZdx)
-figures_list.append(YOWDooyeyOJyml)
+figures_list=[]
 figures_list.append(FMLCooxHtqRzUz)
 figures_list.append(DYJNooLVVFHEfN)
 figures_list.append(OGGDooIvakwNlL)
@@ -92,6 +92,7 @@ figures_list.append(PJKBooOhGVPkeR)
 figures_list.append(LVPSoozFTyaeCG)
 figures_list.append(CUZFooGqZLaAEp)
 figures_list.append(JSYWooQYduLVLS)
+figures_list.append(YOWDooyeyOJyml)
 figures_list.append(LWVXooPyIlOKNd)
 figures_list.append(QRXCooUmnlhkvh)
 figures_list.append(VLEGoolDFCdZDU)

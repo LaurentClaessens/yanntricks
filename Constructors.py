@@ -26,7 +26,7 @@ def BoundingBox(P1=None,P2=None,xmin=1000,xmax=-1000,ymin=1000,ymax=-1000,parent
     from BoundingBox import BoundingBox_class
     return BoundingBox_class(P1,P2,xmin,xmax,ymin,ymax,parent,mother,math)
 
-def Point(a,b):
+def Point(x,y):
     """
     return a point.
 
@@ -53,8 +53,8 @@ def Point(a,b):
     Notice that the coordinates of the point have to be numerical in order to be passed to tikz (and then LaTeX) at the end::
 
     """
-    import PointGraph
-    return PointGraph.PointGraph(a,b)
+    from PointGraph import PointGraph
+    return PointGraph(x,y)
 
 def PolarPoint(r,theta):
     """
@@ -128,31 +128,14 @@ def AffineVector(A=None,B=None):
         sage: from phystricks import *
         sage: print AffineVector(Point(1,1),Point(pi,sqrt(2)))
         <vector I=<Point(1,1)> F=<Point(pi,sqrt(2))>>
-
-    It can be simply derived from a segment::
-
-        sage: segment=Segment( Point(1,1),Point(2,2)  )
-        sage: av=AffineVector(segment)
-        sage: print av
-        <vector I=<Point(1,1)> F=<Point(2,2)>>
-
-    NOTE:
-
-    The main difference between a :func:`Segment` an :func:`AffineVector` is that
-    the latter will be draw with an arrow. There are also some difference in their
-    behaviour under rotation, dilatation and operations like that.
-
     """
-    from AffineVector import AffineVectorGraph
-    if B :      # If B is given, I suppose that we gave two points
-        vect=AffineVectorGraph(A,B)
-    else :
-        try :
-            seg=A.segment()
-            vect=AffineVector(seg.I,seg.F)
-        except AttributeError :
-            vect=AffineVector(A)
-    return vect
+    from AffineVectorGraph import AffineVectorGraph
+    from PointGraph import PointGraph
+    from SegmentGraph import SegmentGraph
+    if isinstance(A,PointGraph):
+        return AffineVectorGraph(A,B)
+    if isinstance(A,SegmentGraph):
+        return AffineVector(A.I,A.F)
 
 def Vector(*args):
     """

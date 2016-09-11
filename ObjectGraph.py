@@ -105,9 +105,6 @@ class ObjectGraph(object):
         self.marque = True
         third=None
 
-        from Utilities import debug_print
-        debug_print("Dans get_mark",angle,position)
-
         if position in ["N","S","E","W"] and angle is not None:
             angle=None
             logging("When you want a position like N,S,E, or W, the mark\
@@ -143,7 +140,6 @@ angle should not be given.",pspict=pspict)
             angle=None
 
         
-        debug_print("Dans get_mark, je vais créer ",angle,position)
         mark=Mark(graph=self,dist=dist,angle=angle,central_point=None,\
                 text=text,mark_point=mark_point,position=position,pspict=pspict)
 

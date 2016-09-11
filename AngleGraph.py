@@ -25,6 +25,7 @@ from __future__ import division
 from phystricks.ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
+from Visual import visual_polar_coordinates
 
 class AngleGraph(ObjectGraph):
     """
@@ -319,7 +320,7 @@ class AngleGraph(ObjectGraph):
             raise ValueError("Not yet implemented for angles :",numerical_approx(self.angleA.degree),numerical_approx(self.angleB.degree))
 
         if dist is not None :
-            v=v.fix_size(dist)
+            v=v.normalize(dist)
         C=mark_point+v
         return Mark(self,dist=None,angle=None,text=text,mark_point=None,central_point=C,position=None,pspict=pspict)
 
@@ -357,6 +358,7 @@ class RightAngleGraph(ObjectGraph):
         self.n2=n2
         self.intersection=Intersection(d1,d2)[0]
     def inter_point(self,I,F,n,pspict):
+        from Visual import visual_length
         v1=AffineVector(I,F)
         v=visual_length(v1,l=1,pspict=pspict)
         if n==0:

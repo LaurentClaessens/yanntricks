@@ -77,9 +77,9 @@ class PolygonGraph(ObjectGraph):
             text=text_list[i]
             A=self.points_list[(i-1)%n]
             B=self.points_list[(i+1)%n]
-            v1=AffineVector(A,P).fix_origin(P).fix_size(1)
-            v2=AffineVector(B,P).fix_origin(P).fix_size(1)
-            vect=(v1+v2).fix_size(dist)
+            v1=AffineVector(A,P).fix_origin(P).normalize(1)
+            v2=AffineVector(B,P).fix_origin(P).normalize(1)
+            vect=(v1+v2).normalize(dist)
             Q=P+vect
             angle=Segment(P,Q).angle()
             P.put_mark(dist,angle,text,pspict=pspict,position="center")

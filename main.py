@@ -58,14 +58,14 @@ class FigureGenerationSuite(object):
 
     """
     def __init__(self,test_list,first=0,title="My beautiful document"):
-        from Defaults import WARNING_FILENAME
+        from Defaults import LOGGING_FILENAME
         self.test_list=test_list
         self.first=first
         self.title=title
         self.failed_list=[]
         self.documentation_list=[]
         self.to_be_recompiled_list=[]
-        open(WARNING_FILENAME,"w").close()
+        open(LOGGING_FILENAME,"w").close()
 
     def generate(self):
         """
@@ -170,8 +170,8 @@ class FigureGenerationSuite(object):
             all_tests_passed = False
         if all_tests_passed :
             print "All tests passes !"
-            from Defaults import WARNING_FILENAME
-            with open(WARNING_FILENAME,"r") as f:
+            from Defaults import LOGGING_FILENAME
+            with open(LOGGING_FILENAME,"r") as f:
                 for l in f:
                     print(l)
         else:

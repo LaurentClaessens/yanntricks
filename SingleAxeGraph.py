@@ -20,11 +20,15 @@
 # copyright (c) Laurent Claessens, 2010-2016
 # email: laurent@claessens-donadello.eu
 
+from sage.all import pi,sqrt,SR
+
 from phystricks.ObjectGraph import ObjectGraph
 from phystricks.ObjectGraph import Options
 from MathStructures import AxesUnit
-from Utilities import *
 from SmallComputations import RemoveLastZeros
+from Constructors import BoundingBox,Segment,AffineVector
+from Visual import visual_polar
+from Utilities import degree
 
 
 class SingleAxeGraph(ObjectGraph):
@@ -59,7 +63,7 @@ class SingleAxeGraph(ObjectGraph):
             if projection :
                 return Segment(self.C,self.C+self.base)
             else :
-                return Segment(self.C-self.base.fix_size(1),self.C+self.base.fix_size(1))      
+                return Segment(self.C-self.base.normalize(1),self.C+self.base.normalize(1))      
 
                 # raising an error here makes impossible to draw pictures with only vertical stuff. As an example, the following 
                 # was crashing :

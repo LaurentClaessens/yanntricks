@@ -20,11 +20,111 @@
 # copyright (c) Laurent Claessens, 2016
 # email: laurent@claessens-donadello.eu
 
+from sage.all import lazy_attribute
+
+from ObjectGraph import ObjectGraph
+from Constructors import Segment,AffineVector,Point
+
 class AffineVectorGraph(ObjectGraph):
-    def __init__(self,A,B):
+    def __init__(self,I,F):
         ObjectGraph.__init__(self,self)
-        self.I = A
-        self.F = B
+        self.I = I
+        self.F = F
         self.segment=Segment(self.I,self.F)
-    def __getattr__(self,name):
-        return self.segment.__getattr__(name)
+    @lazy_attribute
+    def Dx(self):
+        return self.F.x-self.I.x
+    @lazy_attribute
+    def Dy(self):
+        return self.F.y-self.I.y
+    @lazy_attribute
+    def horizontal(self):
+        return self.segment.horizontal
+    @lazy_attribute
+    def vertical(self):
+        return self.segment.vertical
+    @lazy_attribute
+    def slope(self):
+        return self.segment.slope
+    def length(self):
+        """
+        Return a numerical approximation of the length.
+        """
+        return self.segment.length
+    def fix_visual_size(self,l,xunit=None,yunit=None,pspict=None):
+        s=self.segment.fix_visual_size(l,xunit,yunit,pspict)
+        return AffineVector(s.I,s.F)
+    def exact_length(self):
+        return self.segment.exact_length
+    def angle(self):
+        return self.segment.angle()
+    def orthogonal(self):
+        ortho_seg=self.segment.orthogonal()
+        return AffineVector(ortho_seg)
+    def rotation(self,angle):
+        s=self.segment.rotation(angle)
+        return AffineVector(s)
+    def advised_mark_angle(self,pspict=None):
+        return self.segment.advised_mark_angle(pspict)
+    def midpoint(self,advised=True):
+        return self.segment.midpoint(advised)
+    def fix_origin(self,P):
+        """
+        Return the affine vector that is equal to 'self' but attached
+        to point P.
+        """
+        return AffineVector(P,Point(P.x+self.Dx,P.y+self.Dy))
+    def normalize(self,l=1):
+        """
+        Return a new affine vector with
+        - same starting point
+        - same direction (if 'l' is negative, change the direction)
+        - size l
+
+        By default, normalize to 1.
+        """
+        L=self.length()
+        if L<0.001:     # epsilon
+            logging("This vector is too small to normalize. I return a copy.")
+            return self.copy()
+        return (l*self).__div__(L)     
+    def __str__(self):
+        return "<vector I=%s F=%s>"%(str(self.I),str(self.F))
+    def __add__(self,other):
+        return AffineVector(self.I,self.F+other)
+    def __mul__(self,coef):
+        I=self.I
+        nx=self.F.x+self.Dx*coef
+        ny=self.F.y+self.Dy*coef
+        F=Point(nx,ny)
+        return AffineVector(I,F)
+    def __rmul__(self,coef):
+        return self*coef
+    def __div__(self,coef):
+        return self*(1/coef)
+    def __neg__(self):
+        """
+        return -self. 
+
+        That is an affine vector attached to the same point, but
+        with the opposite direction.
+        """
+        nx=self.I.x-self.Dx
+        ny=self.I.y-self.Dy
+        return AffineVector(self.I, Point(nx,ny)  )
+    def mark_point(self,pspict=None):
+        return self.F.copy()
+    def tikz_code(self,pspict=None):
+        params=self.params(language="tikz")
+        params=params+",->,>=latex"
+        I_coord = self.I.coordinates(numerical=True,pspict=pspict)
+        F_coord = self.F.coordinates(numerical=True,pspict=pspict)
+        a = "\draw [{0}] {1} -- {2};".format(params,I_coord,F_coord,pspict=pspict)
+        return a
+    def latex_code(self,language=None,pspict=None):
+        if self.parameters.style=="none":
+            return ""
+        if language=="pstricks":
+            raise DeprecationWarning
+        if language=="tikz":
+            return self.tikz_code(pspict=pspict)

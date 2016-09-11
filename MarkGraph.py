@@ -87,8 +87,6 @@ class MarkGraph(ObjectGraph):
         # and then we will deform it to take xunit,yunit into account.
 
 
-        from Utilities import debug_print
-        debug_print("Dans central_point ",self.angle,self.position)
         if self.position :
 
             pspict=self.pspict
@@ -124,10 +122,7 @@ class MarkGraph(ObjectGraph):
                     ly=dimy/2
                 else :
                     ly=-dimy/2
-                debug_print("Avant de faire center_vector :",v,lx,ly)
                 center_vector=v+(lx,ly)
-                debug_print("center_vector",center_vector)
-                debug_print("sa longueur",center_vector.length)
             elif position=="N":
                 center_vector = Vector(0,-self.dist-dimy/2)
             elif position=="S":

@@ -191,7 +191,7 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
             except TypeError:
                 ll.append(a)
         for llam in ll:
-            v=self.get_tangent_vector(llam).fix_size(0.01)
+            v=self.get_tangent_vector(llam).normalize(0.01)
             self.record_arrows.append(v)
     def middle_point(self):
         """
@@ -202,24 +202,25 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
         """
         Return the point on the curve for the value llam of the parameter.
         
-        Add the attribute advised_mark_angle which gives the normal exterior angle at the given point.
-        If you want to put a mark on the point P (obtained by get_point), you should consider to write
-        P.put_mark(r,P.advised_mark_angle,text)
-        The so build angle is somewhat "optimal" for a visual point of view. The attribute self.get_point(llam).advised_mark_angle is given in degree.
+        Add the attribute advised_mark_angle which gives the normal
+        exterior angle at the given point.
+        If you want to put a mark on the point P (obtained by get_point),
+        you should consider to write
+            P.put_mark(r,P.advised_mark_angle,text)
+        The so build angle is somewhat "optimal" for a visual point 
+        of view. The attribute self.get_point(llam).advised_mark_angle 
+        is given in degree.
 
         The advised angle is given in degree.
 
-        The optional boolean argument <advised> serves to avoid infinite loops because we use get_point in get_normal_vector.
+        The optional boolean argument <advised> serves to avoid infinite
+        loops because we use get_point in get_normal_vector.
         """
         if isinstance(llam,AngleMeasure):
             llam=llam.radian
         P = Point(self.f1(llam),self.f2(llam))
         if advised :
-            try :
-                P._advised_mark_angle=self.get_normal_vector(llam).angle()
-            except TypeError :
-                print "It seems that something got wrong somewhere in the computation of the advised mark angle. Return 0 as angle."
-                P._advised_mark_angle=0
+            P._advised_mark_angle=self.get_normal_vector(llam).angle()
         return P
     def get_tangent_vector(self,llam,advised=False):
         """
@@ -286,35 +287,33 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
 
         anchor=self.get_point(llam,advised=False)
         tangent=self.get_tangent_vector(llam)
-        N = AffineVector(tangent.orthogonal())
+        N = tangent.orthogonal()
         if Green_convention :
             return N
         # The delicate part is to decide if we want to return N or -N. We select the angle which is on the same side of the curve than the second derivative.  If v is the second derivative, either N or -N has positive inner product with v. We select the one with negative inner product since the second derivative vector is inner.
-        try :
-            second=self.get_second_derivative_vector(llam)
-        except :
-            print "Something got wrong with the computation of the second derivative. I return the default normal vector. The latter could not be outwards."
-            return N
+        second=self.get_second_derivative_vector(llam)
+            # If there is an error here, we were returning N before.
         if inner_product(N,second) >= 0:
             v=-N
         else :
             v=N
-        return AffineVector(v.origin(anchor))
+        return v.fix_origin(anchor)
     def get_second_derivative_vector(self,llam,advised=False,normalize=True):
         r"""
         return the second derivative vector normalised to 1.
 
         INPUT:
 
-        - ``llam`` - the value of the parameter on which we want the second derivative.
+        - ``llam`` - the value of the parameter on which we want 
+        the second derivative.
 
         - ``advised`` - (default=False) If True, the initial point is given with
                                             an advised_mark_angle.
 
-        - ``normalize`` - (defautl=True) If True, provides a vector normalized to 1.
-                                            if False, the norm is not guaranteed and depend on the 
-                                            parametrization..
-
+        - ``normalize`` - (defautl=True) If True, provides a vector
+                            normalized to 1.
+                           if False, the norm is not guaranteed and depends
+                           on the parametrization.  
         EXAMPLES::
 
             sage: from phystricks import *
@@ -332,29 +331,32 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
             sage: print F.get_second_derivative_vector(1)
             <vector I=<Point(1,1)> F=<Point(1,2)>>
 
-        Note : if the parametrization is not normal, this is not orthogonal to the tangent.
+        Note : if the parametrization is not normal,
+        this is not orthogonal to the tangent.
         If you want a normal vector, use self.get_normal_vector
         """
         initial=self.get_point(llam,advised)
         c=self.get_derivative(llam,2)
         if normalize :
             try:
-                return c.Vector().origin(initial).normalize()
+                return c.Vector().fix_origin(initial).normalize()
             except ZeroDivisionError :
                 print "I cannot normalize a vector of size zero"
-                return c.Vector().origin(initial)
+                return c.Vector().fix_origin(initial)
         else :
-            return c.Vector().origin(initial)
+            return c.Vector().fix_origin(initial)
     def get_derivative(self,llam,order=1):
         """
-        Return the derivative of the curve. If the curve is f(t), return f'(t) or f''(t) or higher derivatives.
+        Return the derivative of the curve. If the curve is f(t),
+        return f'(t) or f''(t) or higher derivatives.
 
         Return a Point, not a vector. This is not normalised.
         """
         return self.derivative(order).get_point(llam,False)
     def get_tangent_segment(self,llam):
         """
-        Return a tangent segment of length 2 centred at the given point. It is essentially two times get_tangent_vector.
+        Return a tangent segment of length 2 centred at the given point.
+        It is essentially two times get_tangent_vector.
         """
         v=self.get_tangent_vector(llam)
         mv=-v
@@ -366,7 +368,7 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
         P=self.get_point(llam)
         first=self.get_derivative(llam,1)
         second=self.get_derivative(llam,2)
-        coefficient = (first.x**2+first.y**2)/(first.x*second.y-second.x*first.y)
+        coefficient=(first.x**2+first.y**2)/(first.x*second.y-second.x*first.y)
         Ox=P.x-first.y*coefficient
         Oy=P.y+first.x*coefficient
         center=Point(Ox,Oy)
@@ -418,7 +420,7 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
         return self.get_minmax_data(deb,fin)['ymin']
     def get_normal_point(self,x,dy):
         vecteurNormal =  self.get_normal_vector(x)
-        return self.get_point(x).translate(self.get_normal_vector.fix_size(dy))
+        return self.get_point(x).translate(self.get_normal_vector.normalize(dy))
     def length(self,mll=None,Mll=None):
         """
         numerically returns the arc length on the curve between two bounds of the parameters.
