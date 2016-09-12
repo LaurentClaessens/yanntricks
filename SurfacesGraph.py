@@ -138,18 +138,18 @@ class SurfaceBetweenParametricCurvesGraph(ObjectGraph):
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def action_on_pspict(self,pspict=None):
-       
         c1=self.curve1.graph(self.mx1,self.Mx1)
         c2=self.curve2.graph(self.mx2,self.Mx2)
 
-        # By convention, the first line goes from left to right and the second one to right to left.
+        # By convention, the first line goes from left to right
+        # and the second one to right to left.
         # The same is followed in SurfaceBetweenLines
-
+         
         if c1.I.x > c1.F.x:
             c1=c1.reverse()
         if c2.I.x < c2.F.x:
             c2=c2.reverse()
-
+          
         reIsegment=Segment(c2.F,c1.I)
         reFsegment=Segment(c1.F,c2.I)
         reIsegment.parameters=self.Isegment.parameters

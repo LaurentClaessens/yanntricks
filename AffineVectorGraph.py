@@ -24,6 +24,7 @@ from sage.all import lazy_attribute
 
 from ObjectGraph import ObjectGraph
 from Constructors import Segment,AffineVector,Vector,Point
+from Utilities import logging
 
 class AffineVectorGraph(ObjectGraph):
     def __init__(self,I,F):
@@ -118,6 +119,10 @@ class AffineVectorGraph(ObjectGraph):
         v1=Vector(A)
         v2=v0-v1
         return v1,v2
+    def copy(self):
+        return AffineVector(self.I,self.F)
+    def translate(self,v):
+        return AffineVector(self.I+v,self.F+v)
     def advised_mark_angle(self,pspict=None):
         return self.segment.advised_mark_angle(pspict)
     def midpoint(self,advised=True):

@@ -404,7 +404,9 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
             raise
         d = MyMinMax(parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) ).get_minmax_data(),decimals=decimals)
         # for the curve (x,0), Sage gives a bounding box ymin=-1,ymax=1.
-        # In order to avoid that problem, when the surface under a function is created, the second curve (the one of y=0) is given the attribute nul_function to True
+        # In order to avoid that problem, when the surface under a function
+        # is created, the second curve (the one of y=0) is given
+        # the attribute nul_function to True
         # See 2252914222
         if self.f2.nul_function:
             d["ymin"]=0
@@ -423,7 +425,8 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
         return self.get_point(x).translate(self.get_normal_vector.normalize(dy))
     def length(self,mll=None,Mll=None):
         """
-        numerically returns the arc length on the curve between two bounds of the parameters.
+        numerically returns the arc length on the curve between
+        two bounds of the parameters.
 
         If no parameters are given, return the total length.
         
@@ -436,8 +439,8 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
 
         EXAMPLES:
 
-        The length of the circle of radius `sqrt(2)` in the first quadrant. We check that we 
-        get the correct result up to 0.01::
+        The length of the circle of radius `sqrt(2)` in the first quadrant.
+        We check that we get the correct result up to 0.01::
 
             sage: from phystricks import *
             sage: curve=ParametricCurve(x,sqrt(2-x**2))
@@ -522,11 +525,12 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
         b=self.llamF
         f1=self.f1.sage(x=b-(x-a))
         f2=self.f2.sage(x=b-(x-a))
-        return ParametricCurve(f1,f2).graph(a,b)
+        curve = ParametricCurve(f1,f2).graph(a,b)
+        curve.f1.nul_function=self.f1.nul_function
+        curve.f2.nul_function=self.f2.nul_function
+        
+        return curve
     def bounding_box(self,pspict=None):
-        if self.llamI==self.llamF:
-            print("ooQKUJooJIZpsO -- Something wrong")
-            raise
         xmin=self.xmin(self.llamI,self.llamF)
         xmax=self.xmax(self.llamI,self.llamF)
         ymin=self.ymin(self.llamI,self.llamF)

@@ -728,14 +728,14 @@ class SegmentGraph(ObjectGraph):
         """
         v=AffineVector(self)
         w=-v
-        wp=w.dilatation(coef)
+        wp=w*coef
         return Segment(wp.F,v.F)
     def dilatationF(self,coef):
         """
         return a dilated segment, but only enlarges at the final extremity.
         """
         v=self.AffineVector()
-        v=v.dilatation(coef)
+        v=v*coef
         return Segment(v.I,v.F)
     def normalize(self,l=1):
         """
@@ -818,8 +818,15 @@ class SegmentGraph(ObjectGraph):
             <vector I=<Point(0,0)> F=<Point(3,4)>>
         """
         from AffineVectorGraph import AffineVectorGraph
+        from PointGraph import PointGraph
         if isinstance(other,AffineVectorGraph):
             return Segment(   self.I+other,self.F+other  )
+        if isinstance(other,PointGraph):
+            return self+Vector(other)
+        if isinstance(other,tuple):
+            if len(other)!=2:
+                raise TypeError("You can add a SegmentGraph with a tuple of length 2, not "+str(len(other)))
+            return self+Vector(other)
         else:
             raise TypeError,"I do not know how to sum %s with %s"%(self,other)
     def __sub__(self,other):

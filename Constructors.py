@@ -138,21 +138,21 @@ def AffineVector(A=None,B=None):
     if isinstance(A,SegmentGraph):
         return AffineVector(A.I,A.F)
 
-def Vector(*args):
+def Vector(A,B=None):
     """
     From the coordinates x,y, return the corresponding vector, i.e. the affine vector from (0,0) to (x,y).
 
     You can also only give a Point
-
-    Note : it is a good practice to use `AffineVector` instead because it is more explicit.
     """
-    try :
-        x=args[0]
-        y=args[1]
-    except IndexError :
-        x=args[0].x
-        y=args[0].y
-    return AffineVector(Point(0,0),Point(x,y))
+    from PointGraph import PointGraph
+    O=Point(0,1)
+    if isinstance(A,PointGraph):
+        return AffineVector(O,A)
+    if isinstance(A,tuple):
+        if len(A)!=2 :
+            raise TypeError("You can define a vector from a tuple of length 2, not "+str(len(other)))
+        return AffineVector(O,Point( A[0],A[1]  ))
+    return AffineVector(Point(0,0),Point(A,B))
 
 def Circle(center,radius,angleI=0,angleF=360,visual=False,pspict=None):
     """
@@ -799,11 +799,13 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,interval1=None,in
     """
     Represents a surface between two parametric curves.
 
-    'curve1' and 'curve2' are parametric curves or objects that have a method 'parametric_curve'
+    'curve1' and 'curve2' are parametric curves or objects that have
+    a method 'parametric_curve'
 
         FOR THE INTERVALS :
 
-        - interval=(pI,PF)    where pI and pF are the initial and final value of this parameter
+        - interval=(pI,PF)    where pI and pF are the initial and final
+        value of this parameter
 
         If you want to choose these parameters separately, use
         - interval1=(pI1,pF1),interval2=(pI2,pF2)
@@ -811,7 +813,8 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,interval1=None,in
         You have to give either 'interval' or both 'interval1' and 'interval2'
 
         - If "interval" is given, it erases all other choices.
-        - If neither 'interval' and 'interval1' are given, search in 'curve1' if there is something to eat.
+        - If neither 'interval' and 'interval1' are given,
+        search in 'curve1' if there is something to eat.
 
     OPTIONAL ARGUMENTS :
 
@@ -847,14 +850,16 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,interval1=None,in
         sage: curve2=ParametricCurve(x,x**3).graph(2,5)
         sage: region=SurfaceBetweenParametricCurves(curve1,curve2)
 
-    The segment "closing" the domain are available by the attributes `Isegment and Fsegment`::
+    The segment "closing" the domain are available by
+    the attributes `Isegment and Fsegment`::
 
         sage: print region.Isegment
         <segment I=<Point(2,8)> F=<Point(2,4)>>
         sage: print region.Fsegment
         <segment I=<Point(3,9)> F=<Point(5,125)>>
 
-    The initial and final values of the parameters can be given in different ways.
+    The initial and final values of the parameters can be given
+    in different ways.
     The "normal" way is to provide the curves by triples `(curve,mx,Mx)`::
 
         sage: f1=phyFunction(x**2)
@@ -872,7 +877,8 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,interval1=None,in
         sage: print curve.mx1,curve.Mx1,curve.mx2,curve.Mx2
         1 2 3 4
 
-    If the optional argument `interval` is provided, it erases the other intervals::
+    If the optional argument `interval` is provided, it erases
+    the other intervals::
 
         sage: f1=phyFunction(x**2).graph(1,2)
         sage: f2=phyFunction(x)
@@ -891,6 +897,7 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,interval1=None,in
     from SegmentGraph import SegmentGraph
     from Utilities import EnsureParametricCurve
     exceptions = [CircleGraph,SegmentGraph]
+
     on=True
     for ex in exceptions :
         if isinstance(curve1,ex):
@@ -906,6 +913,7 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,interval1=None,in
     if on:
         iz22=curve2.f2.nul_function
         iz12=curve1.f2.nul_function
+
 
     mx=[None,None]
     Mx=[None,None]
@@ -933,6 +941,7 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,interval1=None,in
 
     from SurfacesGraph import SurfaceBetweenParametricCurvesGraph
     surf = SurfaceBetweenParametricCurvesGraph(c1,c2,(mx1,mx2),(Mx1,Mx2),reverse1,reverse2)
+
     surf.add_option("fillstyle=vlines,linestyle=none")  
     return surf
 
@@ -940,9 +949,11 @@ def SurfaceUnderFunction(f,mx,Mx):
     """
     Represent a surface under a function.
 
-    This is a particular case of SurfaceBetweenFunctions when the second function is the y=0 axis.
+    This is a particular case of SurfaceBetweenFunctions when
+    the second function is the y=0 axis.
 
-    The function `f` becomes `self.f1` while self.f2 will be the function 0 (this is a consequence of inheritance).
+    The function `f` becomes `self.f1` while self.f2 will be the
+    function 0 (this is a consequence of inheritance).
     The function f will also be recorded as self.f.
 
     INPUT:
@@ -967,7 +978,7 @@ def SurfaceUnderFunction(f,mx,Mx):
         surf = SurfaceBetweenLines(line1,line2)
         return surf
     f2=phyFunction(0)
-    f2.nul_function=True     # Serves to compute the bounding box, see 2252914222
+    f2.nul_function=True  # See 2252914222
     return SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
 
 def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
@@ -976,10 +987,14 @@ def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
 
     INPUT:
 
-    - ``f1,f2`` - functions (sage or phyFunction). ``f1`` is considered to be the upper function while ``f2`` is the lower function.
+    - ``f1,f2`` - functions (sage or phyFunction). ``f1`` is considered
+    to be the upper function while ``f2`` is the lower function.
 
-    - ``mx,Mx`` - (optional) initial and end values of x. If these are not given, we suppose that `f1` and `f2` are graphs.
-        If `f1` is a graph while `mx` is given, the value of `f1.mx` is forgotten and the given `mx` is taken into account.
+    - ``mx,Mx`` - (optional) initial and end values of x.
+    If these are not given, we suppose that `f1` and `f2` are graphs.
+        If `f1` is a graph while `mx` is given, t
+        he value of `f1.mx` is forgotten and the given `mx`
+        is taken into account.
 
     EXAMPLES:
 
@@ -989,7 +1004,8 @@ def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
         sage: surf=SurfaceBetweenFunctions(sin(x)+3,cos(x),0,2*pi)
         sage: surf.parameters.color="blue"
 
-    If you want the function ``f1`` to be red without changing the color of the surface, you have to change the color AND the style::
+    If you want the function ``f1`` to be red without changing
+    the color of the surface, you have to change the color AND the style::
 
         sage: surf.f1.parameters.color="red"
 
@@ -1024,7 +1040,7 @@ def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
     x=var('x')
     curve1=ParametricCurve(x,f1,(mx1,Mx1))
     curve2=ParametricCurve(x,f2,(mx2,Mx2))
-    return SurfaceBetweenParametricCurves(curve1,curve2,(mx1,Mx1),(mx2,Mx2))
+    return SurfaceBetweenParametricCurves(curve1,curve2,(mx1,Mx1),(mx,Mx2))
 
 def extract_interval_information(curve):
     """

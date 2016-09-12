@@ -37,6 +37,7 @@ class CustomSurfaceGraph(ObjectGraph):
         self.add_option("fillstyle=none,linestyle=none")
         self.graphList=args
         self.edges=Parameters()
+
     def bounding_box(self,pspict=None):
         bb=BoundingBox()
         for obj in self.graphList :
@@ -45,13 +46,13 @@ class CustomSurfaceGraph(ObjectGraph):
     def math_bounding_box(self,pspict=None):
         bb=BoundingBox()
         for obj in self.graphList :
-            bb.AddBB(obj.math_bounding_box(pspict))
+            bb.AddBB(obj.math_bounding_box(pspict=pspict))
         return bb
     def tikz_code(self,pspict=None):
         """
         If the CustomSurface has to be filled, we start by plotting the filling.
 
-        Then we plot, separately, the lines forming the border. Thus we can have different colors and line style for the different edges.
+        Then we plot, separately, the lines making the border. Thus we can have different colors and line style for the different edges.
         """
         # The color attribution priority is the following.
         # if self.parameters.color is given, then this will be the color

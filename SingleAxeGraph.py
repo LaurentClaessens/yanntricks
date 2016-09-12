@@ -30,7 +30,6 @@ from Constructors import BoundingBox,Segment,AffineVector
 from Visual import visual_polar
 from Utilities import degree
 
-
 class SingleAxeGraph(ObjectGraph):
     def __init__(self,C,base,mx,Mx,pspict=None):
         ObjectGraph.__init__(self,self)
@@ -75,6 +74,9 @@ class SingleAxeGraph(ObjectGraph):
                 #pspict.DrawDefaultAxes()
                 #pspict.dilatation(1)
                 #fig.conclude()
+        # The axes have to cross at (0,0)
+        if self.mx>0 :
+            self.mx=0
         return Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
     def add_option(self,opt):
         self.options.add_option(opt)
@@ -145,7 +147,8 @@ class SingleAxeGraph(ObjectGraph):
             BB.append(graph,pspict)
         return BB
     def math_bounding_box(self,pspict):
-        # The math_bounding box does not take into account the things that are inside the picture (not even if this are default axes)
+        # The math_bounding box does not take into account the things
+        # that are inside the picture (not even if this are default axes)
         bb=BoundingBox()
         for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,self.Dx,self.mark_origin):
             P=(x*self.base).F
@@ -165,10 +168,6 @@ class SingleAxeGraph(ObjectGraph):
                 pspict.DrawGraphs(graph,separator_name="AXES")
 
         v=AffineVector(self.segment(pspict=pspict))
-
-
-        a=self.segment(pspict=pspict)
-        b=AffineVector(a)
 
         pspict.DrawGraphs(v,separator_name="AXES")
     def __str__(self):

@@ -52,6 +52,7 @@ def test_imaginary_part_point(P,epsilon=0.0001):
     """
     return the tuple '(isreal,P)' whit the same description of 'test_imaginary_part'
     """
+    from Constructors import Point
     realx,x=test_imaginary_part(P.x)
     realy,y=test_imaginary_part(P.y)
     on=False
@@ -98,6 +99,7 @@ def inner_product(v,w,numerical=True):
     0
     """
     from PointGraph import PointGraph
+    from Constructors import Point
     from AffineVectorGraph import AffineVectorGraph
     O=Point(0,0)
     if isinstance(v,PointGraph):
@@ -147,6 +149,12 @@ def Intersection(f,g,a=None,b=None,numerical=False,only_real=True):
 
     If 'numerical' is True, it search for the intersection points of the functions 'f' and 'g' (it only work with functions). In this case an interval is required.
     """
+    from AffineVectorGraph import AffineVectorGraph
+
+    if isinstance(f,AffineVectorGraph):
+        f=f.segment
+    if isinstance(g,AffineVectorGraph):
+        g=g.segment
 
     if numerical and "sage" in dir(f) :
         import SmallComputations
@@ -432,6 +440,7 @@ simplify_degree=DegreeConversions.simplify
 simplify_radian=RadianConversions.simplify
 
 def EnsurephyFunction(f):
+    from Constructors import phyFunction
     try :
         k= phyFunction(f.sage)
     except AttributeError :
@@ -656,10 +665,10 @@ def testtype(s):
     print("\n")
     if isinstance(s,str):
         raise
-def debug_print(*args):
+def dprint(*args):
     """
     This function is for debug purpose. It serves to roughly print stuff
-    on the screen. Then "grep debug_print" helps to remove all the garbage.
+    on the screen. Then "grep dprint" helps to remove all the garbage.
     """
     for s in args:
         print(s)
