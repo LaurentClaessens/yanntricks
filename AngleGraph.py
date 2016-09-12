@@ -99,7 +99,8 @@ class AngleGraph(ObjectGraph):
         """
         The mark on an angle is determined in the following way.
 
-        A vector 'v' is computed in such a way that placing the center of the mark at
+        A vector 'v' is computed in such a way that placing
+        the center of the mark at
         self.O+v
         makes the mark being just  in the angle 
 
@@ -116,8 +117,11 @@ class AngleGraph(ObjectGraph):
 
 
         mark_point=self.mark_point(pspict)
+
         if self.measure.degree>90 or self.measure.degree<-90 : 
-            return mark_point.get_mark(dist=0.3,angle=self.advised_mark_angle(pspict),text=text,position=position,pspict=pspict)
+            if dist is None:
+                dist=0.2
+            return mark_point.get_mark(dist=dist,angle=self.advised_mark_angle(pspict),text=text,position=position,pspict=pspict)
 
         if position != None:
             print("The mark of an angle should be given without position argument")
@@ -140,7 +144,6 @@ class AngleGraph(ObjectGraph):
             x=dimy/tan(self.measure.radian)
             K=Point(self.O.x+x+dimx/2,self.O.y+dimy/2)
             v= AffineVector( self.O, K )
-        
         elif 0<self.angleA.degree < 90 and 0<self.angleB.degree < 90 :
             # In this case, the mark will be attached
             # - by the upper left to the line OB (let X be that point)
@@ -320,6 +323,8 @@ class AngleGraph(ObjectGraph):
             raise ValueError("Not yet implemented for angles :",numerical_approx(self.angleA.degree),numerical_approx(self.angleB.degree))
 
         if dist is not None :
+            if dist<v.length :
+                logging("You are giving a distance lower than I computed to be the minimal. You have some risks to have a mark of an angle intersecting the edges of the angle.")
             v=v.normalize(dist)
         C=mark_point+v
         return Mark(self,dist=None,angle=None,text=text,mark_point=None,central_point=C,position=None,pspict=pspict)
