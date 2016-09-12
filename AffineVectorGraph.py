@@ -145,6 +145,7 @@ class AffineVectorGraph(ObjectGraph):
         L=self.length
         if L<0.001:     # epsilon
             logging("This vector is too small to normalize. I return a copy.")
+            raise       # Just to know who
             return self.copy()
         return (l*self).__div__(L)     
     def __str__(self):

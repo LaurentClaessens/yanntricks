@@ -26,14 +26,15 @@ from ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
 
+from PointGraph import PointGraph
+
 class SegmentGraph(ObjectGraph):
-    #def __init__(self,A,B,arrow_type="segment"):
     def __init__(self,A,B):
         self.I = A
         self.F = B
-        #self.arrow_type=arrow_type
+        if not isinstance(A,PointGraph) or not isinstance(B,PointGraph):
+            raise
         ObjectGraph.__init__(self,self)
-        #self.arrow_list=[]
         self.measure=None
     @lazy_attribute
     def Dx(self):
