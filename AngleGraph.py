@@ -25,7 +25,7 @@ from __future__ import division
 from phystricks.ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
-from Visual import visual_polar_coordinates
+from Visual import visual_polar_coordinates, visual_length,visual_vector
 
 class AngleGraph(ObjectGraph):
     """
@@ -324,12 +324,11 @@ class AngleGraph(ObjectGraph):
 
         if dist is not None :
             if dist<v.length :
-                logging("You are giving a distance lower than I computed to be the minimal. You have some risks to have a mark of an angle intersecting the edges of the angle.")
+                logging("You are giving a distance lower than I computed to be the minimal ({}). You have some risks to have a mark of an angle intersecting the edges of the angle.".format(v.length),pspict=pspict)
             v=v.normalize(dist)
+        v=visual_vector(v,pspict=pspict)
         C=mark_point+v
         return Mark(self,dist=None,angle=None,text=text,mark_point=None,central_point=C,position=None,pspict=pspict)
-
-        raise "Under construction for your case ..."
 
     def action_on_pspict(self,pspict):
         circle=self.circle(visual=True,pspict=pspict)
@@ -363,7 +362,6 @@ class RightAngleGraph(ObjectGraph):
         self.n2=n2
         self.intersection=Intersection(d1,d2)[0]
     def inter_point(self,I,F,n,pspict):
-        from Visual import visual_length
         v1=AffineVector(I,F)
         v=visual_length(v1,l=1,pspict=pspict)
         if n==0:
