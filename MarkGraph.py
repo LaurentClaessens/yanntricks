@@ -122,6 +122,9 @@ class MarkGraph(ObjectGraph):
                     ly=dimy/2
                 else :
                     ly=-dimy/2
+                if self.dist < 0 :
+                    lx=-lx
+                    ly=-ly
                 center_vector=v+(lx,ly)
             elif position=="N":
                 center_vector = Vector(0,-self.dist-dimy/2)
@@ -153,7 +156,9 @@ argument is not good :"+position)
             yunit=pspict.yunit
         visual_center_vector=Vector(\
                 center_vector.Dx/xunit,center_vector.Dy/yunit)
-        return mark_point+visual_center_vector
+
+        cp = mark_point+visual_center_vector
+        return cp
 
     def bounding_box(self,pspict=None):
         central_point=self.central_point(pspict)
