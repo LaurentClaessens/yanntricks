@@ -25,6 +25,8 @@ from sage.all import *
 from ObjectGraph import ObjectGraph
 from Constructors import *
 
+from Utilities import testtype,dprint
+
 class PolygonGraph(ObjectGraph):
     """
     INPUT:
@@ -67,6 +69,7 @@ class PolygonGraph(ObjectGraph):
         """
         self.draw_edges=False
     def put_mark(self,dist,text_list=None,points_names=None,mark_point=None,pspict=None):
+        from Visual import visual_vector,polar_to_visual_polar
         n=len(self.points_list)
         if not text_list and not points_names:
             import string
@@ -82,7 +85,12 @@ class PolygonGraph(ObjectGraph):
             vect=(v1+v2).normalize(dist)
             Q=P+vect
             angle=Segment(P,Q).angle()
-            P.put_mark(dist,angle,text,pspict=pspict,position="center")
+
+            polar=polar_to_visual_polar(dist,angle.degree,pspict=pspict)
+            r=polar.r
+            a=polar.measure
+
+            P.put_mark(r,a,text,pspict=pspict,position="center")
             self.added_objects.append(pspict,P)
     def math_bounding_box(self,pspict=None):
         bb=BoundingBox()
