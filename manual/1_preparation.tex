@@ -336,3 +336,16 @@ Since the grid has to adapt itself to the drawn objects and the axes have to ada
     \item You have to put these lines \emph{after} any other \info{pspict.DrawGraphs} invocation. If not, the result is unpredictable, but is often an error due to a too large bounding box.
     \item You have to invoke the grid before the axes.
 \end{itemize}
+
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+\section{Known issues}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+There are some known issues.
+\begin{enumerate}
+    \item
+        When performing a dilatation (especially with different \( x\) and \( y\) factors), some objects do not behave correctly. This is the case of the marks on polygon and the coding of a drawing (small bars in order to indicate that two lines have same length).
+    \item
+        Rotating a whole picture is very poorly tested.
+    \item The following pictures in \href{ http://laurent.claessens-donadello.eu/smath.pdf }{ smath } are incorrect :  \info{JSYR},  \info{ZBHL},  \info{KYVA},  \info{DYJN}. Probably due to a bad managing of the dilatation.
+\end{enumerate}

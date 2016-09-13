@@ -29,7 +29,4 @@ def AllFigures():
     tests.summary()
 
 if __name__=="__main__":
-    if "--all" in sys.argv :
-        AllFigures()
-    else:
-        ProjPoly()
+    AllFigures()
