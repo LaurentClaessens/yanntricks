@@ -329,12 +329,16 @@ class SegmentGraph(ObjectGraph):
         P=self.get_point_proportion(position,advised=False)
         v=AffineVector(P,self.F).normalize(size)
         self.added_objects.append(pspict,v)
-    def put_measure(self,measure_distance,mark_distance,mark_angle,name,position=None,pspict=None):
+    def put_measure(self,measure_distance,mark_distance,mark_angle,\
+                            name,position=None,pspict=None):
         measure=self.get_measure(measure_distance,mark_distance,mark_angle,name,position=position,pspict=pspict)
         self.added_objects.append(pspict,measure)
-    def get_measure(self,measure_distance,mark_distance,mark_angle,name,position=None,pspict=None):
+    def get_measure(self,measure_distance,mark_distance,\
+                    mark_angle=None,name=None,position=None,pspict=None):
         """
-        The difference between 'put_measure' and 'get_measure' is that 'get_measure' return the measure graph while 'put_measure' add the measure graph to the segment.
+        The difference between 'put_measure' and 'get_measure'
+        is that 'get_measure' returns the measure graph while
+        'put_measure' adds the measure graph to the segment.
 
         This allows constructions like
         mesL=Segment(F,D).get_measure(-0.2,0.1,90,"\( 10\)",pspict=pspict,position="S")

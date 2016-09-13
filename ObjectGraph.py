@@ -139,7 +139,6 @@ class ObjectGraph(object):
         if position in ["N","S","E","W"] :
             angle=None
 
-        
         mark=Mark(graph=self,dist=dist,angle=angle,central_point=None,\
                 text=text,mark_point=mark_point,position=position,pspict=pspict)
 

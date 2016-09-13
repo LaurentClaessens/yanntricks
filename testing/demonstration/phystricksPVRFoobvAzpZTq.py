@@ -2,51 +2,27 @@
 from phystricks import *
 def PVRFoobvAzpZTq():
     pspict,fig = SinglePicture("PVRFoobvAzpZTq")
-    #pspict.dilatation_X(1)
-    #pspict.dilatation_Y(1)
-    pspict.dilatation(1)
+    pspict.dilatation(0.5)
 
-    x=var('x')
-    P=Point(0,0)
+    D=Point(0,0)
+    E=Point(8,0)
+    c1=Circle(D,12)
+    c2=Circle(E,6)
+    F=Intersection(c1,c2)[1]
 
-    pspict.DrawGraphs(P)
-    pspict.DrawDefaultAxes()
+    triangle=Polygon(D,E,F)
+
+    S=triangle.edges[2].midpoint()
+    T=triangle.edges[1].midpoint()
+
+    print("UN")
+    mes1=Segment(D,S).get_measure(-0.3,0.1,None,"\( 6\)",pspict=pspict,position="corner")
+    #mes3=Segment(E,T).get_measure(0.3,-0.1,None,"\( 3\)",pspict=pspict,position="corner")
+    print("QUATRE")
+    mes4=Segment(T,F).get_measure(0.3,-0.1,None,"\( 7\)",pspict=pspict,position="corner")
+
+    #pspict.DrawGraphs(mes1,mes3,mes4,triangle)
+    pspict.DrawGraphs(mes1,mes4,triangle)
     fig.no_figure()
     fig.conclude()
     fig.write_the_file()
-
-----------------
-    pspicts,fig = MultiplePictures("PVRFoobvAzpZTq",3)
-    pspicts[0].mother.caption="<+caption1+>"
-    pspicts[1].mother.caption="<+caption2+>"
-    pspicts[2].mother.caption="<+caption3+>"
-
-    for psp in pspicts:
-        psp.dilatation_X(1)
-        psp.dilatation_Y(1)
-
-    <+Définition des objets+>
-
-    for psp in pspicts:
-        psp.DrawDefaultAxes()
-
-    fig.conclude()
-    fig.write_the_file()
-
-------------------------------
-
-    pspicts,figs = IndependentPictures("PVRFoobvAzpZTq",3)
-
-    for psp in pspicts:
-        psp.dilatation(1)
-
-    <+Définition des objets+>
-
-    for psp in pspicts:
-        psp.DrawDefaultAxes()
-
-    for fig in figs:
-        fig.no_figure()
-        fig.conclude()
-        fig.write_the_file()
-

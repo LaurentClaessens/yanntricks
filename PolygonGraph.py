@@ -25,8 +25,6 @@ from sage.all import *
 from ObjectGraph import ObjectGraph
 from Constructors import *
 
-from Utilities import testtype,dprint
-
 class PolygonGraph(ObjectGraph):
     """
     INPUT:

@@ -47,19 +47,6 @@ class MeasureLengthGraph(SegmentGraph):
         # take the measures in consideration when creating the axes.
     def bounding_box(self,pspict=None):
         bb=self.mseg.bounding_box(pspict)
-
-        # The other objects are passed to DrawGraphs, and thus their BB is
-        # already taken into account.
-        # Augustus 8, 2016
-
-        #for ob in self.added_objects :
-        #    bb.AddBB(ob.bounding_box(pspict))
-        #if self.marque:
-        #    C=self.mseg.midpoint()
-        #    C.marque=self.marque
-        #    C.mark=self.mark
-        #    C.mark.graph=C
-        #    bb.AddBB(C.bounding_box(pspict))
         return bb
     def mark_point(self,pspict=None):
         return self.mseg.midpoint()
