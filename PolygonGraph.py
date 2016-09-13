@@ -70,7 +70,7 @@ class PolygonGraph(ObjectGraph):
         n=len(self.points_list)
         if not text_list and not points_names:
             import string
-            text_list=[   "\( {} \)".format(x) for x in  string.ascii_uppercase[0:n]  ]
+            text_list=["\( {} \)".format(x) for x in string.ascii_uppercase[0:n]]
         if points_names :
             text_list=[    "\( {} \)".format(x) for x in points_names   ]
         for i,P in enumerate(self.points_list):
