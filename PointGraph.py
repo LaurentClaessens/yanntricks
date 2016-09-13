@@ -48,6 +48,7 @@ class PointGraph(ObjectGraph):
         ay=abs(numerical_approx(self.y))
         if ay<0.00001 and ay>0 :
             self.y=0
+
     def advised_mark_angle(self,pspict):
         if self._advised_mark_angle is None :
             self._advised_mark_angle=self.angle()
