@@ -109,8 +109,8 @@ class ObjectGraph(object):
         from Parameters import Waviness
         self.wavy = True
         self.waviness = Waviness(self,dx,dy)
-    def get_mark(self,dist,angle=None,text=None,mark_point=None,added_angle=None,position=None,pspict=None):
-
+    def get_mark(self,dist,angle=None,text=None,mark_point=None,\
+            added_angle=None,position=None,pspict=None):
         """
         - `angle` is degree or AngleMeasure
         

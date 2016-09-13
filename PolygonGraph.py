@@ -67,7 +67,8 @@ class PolygonGraph(ObjectGraph):
         When X.no_edges() is used, the edges of the polygon will not be drawn.
         """
         self.draw_edges=False
-    def put_mark(self,dist,text_list=None,points_names=None,mark_point=None,pspict=None,pspicts=None):
+    def put_mark(self,dist,text_list=None,points_names=None,\
+                    mark_point=None,pspict=None,pspicts=None):
         from Visual import visual_vector,polar_to_visual_polar
 
         pspicts=make_psp_list(pspict,pspicts)
@@ -75,7 +76,7 @@ class PolygonGraph(ObjectGraph):
         n=len(self.points_list)
         if not text_list and not points_names:
             import string
-            text_list=["\( {} \)".format(x) for x in string.ascii_uppercase[0:n]]
+            text_list=["\({}\)".format(x) for x in string.ascii_uppercase[0:n]]
         if points_names :
             text_list=[    "\( {} \)".format(x) for x in points_names   ]
         for i,P in enumerate(self.points_list):

@@ -7,7 +7,7 @@ def QEFQoomlfmOQTM():
         psp.dilatation(1)
 
     P=Point(0,0)
-    P.put_mark(0.2,45,"P",pspict=[pspicts[0],pspicts[2]])
+    P.put_mark(0.2,45,"P",pspicts=[pspicts[0],pspicts[2]])
 
     for psp in pspicts:
         psp.DrawGraphs(P)

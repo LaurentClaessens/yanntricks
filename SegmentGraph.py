@@ -22,7 +22,7 @@
 
 from sage.all import *
 
-from ObjectGraph import ObjectGraph
+from ObjectGraph import ObjectGraph,AddedObjects
 from Constructors import *
 from Utilities import *
 
@@ -319,10 +319,11 @@ class SegmentGraph(ObjectGraph):
         return P
     def put_arrow(self,position=0.5,size=0.01,pspict=None):
         """
-        Add a small arrow at the given position. `position` is a number between 0 and 1.
+        Add a small arrow at the given position. 
+        `position` is a number between 0 and 1.
 
-        The arrow is pointed from self.I to self.F and is by default put at the middle of the
-        segment.
+        The arrow is pointed from self.I to self.F and is by
+        default put at the middle of the segment.
 
         The arrow is a vector of size (by default) 0.01. 
         """
@@ -330,11 +331,14 @@ class SegmentGraph(ObjectGraph):
         v=AffineVector(P,self.F).normalize(size)
         self.added_objects.append(pspict,v)
     def put_measure(self,measure_distance,mark_distance,mark_angle,\
-                            name,position=None,pspict=None):
-        measure=self.get_measure(measure_distance,mark_distance,mark_angle,name,position=position,pspict=pspict)
-        self.added_objects.append(pspict,measure)
-    def get_measure(self,measure_distance,mark_distance,\
-                    mark_angle=None,name=None,position=None,pspict=None):
+                            name,position=None,pspict=None,pspicts=None):
+        pspicts=make_psp_list(pspict,pspicts)
+        for psp in pspicts:
+            measure=self.get_measure(measure_distance,mark_distance,mark_angle,\
+                    name,position=position,pspict=psp)
+            self.added_objects.append(psp,measure)
+    def get_measure(self,measure_distance,mark_distance, mark_angle=None,\
+                    name=None,position=None,pspict=None,pspicts=None):
         """
         The difference between 'put_measure' and 'get_measure'
         is that 'get_measure' returns the measure graph while
@@ -347,14 +351,16 @@ class SegmentGraph(ObjectGraph):
         If 'mark_angle' is 'None', then the angle
         will be perpendicular to 'self'
         """
+        pspicts=make_psp_list(pspict,pspicts)
 
         if mark_angle==None and position not in ["N","S","E","W"]:
             mark_angle=self.angle()+90*degree
         measure=MeasureLength(self,measure_distance)
 
-        measure.put_mark(mark_distance,mark_angle,name,position=position,pspict=pspict)
+        measure.put_mark(mark_distance,mark_angle,name,\
+                position=position,pspicts=pspicts)
         return measure
-    def put_code(self,n=1,d=0.1,l=0.1,angle=45,pspict=None):
+    def put_code(self,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=None):
         """
         add small line at the center of the segment.
 
@@ -365,7 +371,7 @@ class SegmentGraph(ObjectGraph):
         """
         ao=self.get_code(n=n,d=d,l=l,angle=angle,pspict=pspict)
         self.added_objects.extend(pspict,ao)
-    def get_code(self,n=1,d=0.1,l=0.1,angle=45,pspict=None):
+    def get_code(self,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=None):
         #TODO : the angle given here should be visual
         ao=[]
         vect=AffineVector(self.I,self.F).normalize(d)
@@ -383,18 +389,24 @@ class SegmentGraph(ObjectGraph):
             mini=mini1+AffineVector(mini1.midpoint(),P)
             ao.append(mini)
         return ao
-    def get_divide_in_two(self,n=1,d=0.1,l=0.1,angle=45,pspict=None):
+    def get_divide_in_two(self,n=1,d=0.1,l=0.1,angle=45\
+                            ,pspict=None,pspicts=None):
+        pspicts=make_psp_list(pspict,pspicts)
         M=self.midpoint()
         s1=Segment(self.I,M)
         s2=Segment(M,self.F)
-        s1.put_code(n=n,d=d,l=l,pspict=pspict)
-        s2.put_code(n=n,d=d,l=l,pspict=pspict)
-        a=s1.added_objects
-        a.fusion(s2.added_objects)
+        a=AddedObjects()
+        for psp in pspicts:
+            s1.put_code(n=n,d=d,l=l,pspict=psp)
+            s2.put_code(n=n,d=d,l=l,pspict=psp)
+            a.fusion(s1.added_objects)
+            a.fusion(s2.added_objects)
         return a
-    def divide_in_two(self,n=1,d=0.1,l=0.1,angle=45,pspict=None):
-        a=self.get_divide_in_two(n=n,d=d,l=l,angle=angle,pspict=pspict)
-        self.added_objects.fusion(a)
+    def divide_in_two(self,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=None):
+        pspicts=make_psp_list(pspict,pspicts)
+        for psp in pspicts:
+            a=self.get_divide_in_two(n=n,d=d,l=l,angle=angle,pspict=pspict)
+            self.added_objects.fusion(a)
     def Point(self):
         """
         Return the point X such that as free vector, 0->X == self
