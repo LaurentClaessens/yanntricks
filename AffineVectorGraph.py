@@ -20,7 +20,7 @@
 # copyright (c) Laurent Claessens, 2016
 # email: laurent@claessens-donadello.eu
 
-from sage.all import lazy_attribute
+from sage.all import lazy_attribute,numerical_approx
 
 from ObjectGraph import ObjectGraph
 from Constructors import Segment,AffineVector,Vector,Point
@@ -60,6 +60,10 @@ class AffineVectorGraph(ObjectGraph):
         return self.segment.exact_length
     def angle(self):
         return self.segment.angle()
+    def numerical_approx(self):
+        I=Point( numerical_approx(self.I.x),numerical_approx(self.I.y) )
+        F=Point( numerical_approx(self.F.x),numerical_approx(self.F.y) )
+        return AffineVector(I,F)
     def orthogonal(self):
         ortho_seg=self.segment.orthogonal()
         return AffineVector(ortho_seg)
