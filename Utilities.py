@@ -670,8 +670,8 @@ def dprint(*args):
     This function is for debug purpose. It serves to roughly print stuff
     on the screen. Then "grep dprint" helps to remove all the garbage.
     """
-    for s in args:
-        print(s)
+    a=[str(x) for x in list(args)]
+    print(" ".join(a))
 
 def logging(text,pspict=None):
     from Defaults import LOGGING_FILENAME
