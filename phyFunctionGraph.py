@@ -416,17 +416,18 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
         return AngleMeasure(value_degree=0)
     def representative_graph_object(self):
         """
-        Return is the object that will be drawn. It serves to control the chain function --> parametric_curve --> interpolation curve
+        Return is the object that will be drawn. It serves to control the chain 
+        function --> parametric_curve --> interpolation curve
         """
         return self.parametric_curve()
     def action_on_pspict(self,pspict):
         still_have_to_draw=True
-        if self.marque :
-            P = self.mark_point()
-            P.parameters.symbol=""
-            P.marque = True
-            P.mark = self.mark
-            pspict.DrawGraphs(P)
+        #if self.marque :
+        #    P = self.mark_point()
+        #    P.parameters.symbol=""
+        #    P.marque = True
+        #    P.mark = self.mark
+        #    pspict.DrawGraphs(P)
         if self.wavy :          
             waviness = self.waviness
             curve=self.parametric_curve()

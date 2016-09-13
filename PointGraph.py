@@ -407,8 +407,10 @@ class PointGraph(ObjectGraph):
         Yradius=0.1/yunit
         bb = BoundingBox(Point(self.x-Xradius,self.y-Yradius),Point(self.x+Xradius,self.y+Yradius))
         for P in self.record_add_to_bb:
-            print("ooZWUKooPNfsMa",P)
+            raise # To know who
             bb.AddPoint(P)
+        for obj in self.added_objects[pspict]:
+            bb.append(obj,pspict)
         return bb
     def math_bounding_box(self,pspict=None):
         """Return a bounding box which include itself and that's it."""
@@ -440,9 +442,12 @@ class PointGraph(ObjectGraph):
         return ""
     def latex_code(self,language=None,pspict=None,with_mark=False):
         l=[]
-        if self.marque and with_mark:
-            for mark in self.marks_list:
-                l.append(self.mark.latex_code(language=language,pspict=pspict))
+
+        # Marks are part of the added objects
+        # September 13, 2016
+        #if self.marque and with_mark:
+        #    for mark in self.marks_list:
+        #        l.append(self.mark.latex_code(language=language,pspict=pspict))
         if language=="pstricks":
             raise DeprecationWarning
         if language=="tikz":

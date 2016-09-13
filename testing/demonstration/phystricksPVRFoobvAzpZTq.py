@@ -15,14 +15,11 @@ def PVRFoobvAzpZTq():
     S=triangle.edges[2].midpoint()
     T=triangle.edges[1].midpoint()
 
-    print("UN")
     mes1=Segment(D,S).get_measure(-0.3,0.1,None,"\( 6\)",pspict=pspict,position="corner")
-    #mes3=Segment(E,T).get_measure(0.3,-0.1,None,"\( 3\)",pspict=pspict,position="corner")
-    print("QUATRE")
     mes4=Segment(T,F).get_measure(0.3,-0.1,None,"\( 7\)",pspict=pspict,position="corner")
 
-    #pspict.DrawGraphs(mes1,mes3,mes4,triangle)
     pspict.DrawGraphs(mes1,mes4,triangle)
+    pspict.comment="The marks 6 and 7 are well positioned"
     fig.no_figure()
     fig.conclude()
     fig.write_the_file()

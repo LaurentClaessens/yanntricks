@@ -129,8 +129,8 @@ class SingleAxeGraph(ObjectGraph):
                 if self.segment().vertical :
                     position="E"
                     mark_angle=None
-                P.put_mark(0.2,mark_angle,symbol,pspict=pspict,position=position)
-                bars_list.append(P.mark)
+                m=P.get_mark(0.2,mark_angle,symbol,pspict=pspict,position=position)
+                bars_list.append(m)
 
             a=visual_polar(P,0.1,bar_angle,pspict)
             b=visual_polar(P,0.1,bar_angle+180,pspict)

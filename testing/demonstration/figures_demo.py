@@ -58,10 +58,8 @@ from phystricksJSYWooQYduLVLS import JSYWooQYduLVLS
 from phystricksQIPRoolQCEnZdx import QIPRoolQCEnZdx
 
 figures_list=[]
-figures_list.append(QIPRoolQCEnZdx)
-figures_list.append(FMLCooxHtqRzUz)
-figures_list=[]
 figures_list.append(DYJNooLVVFHEfN)
+figures_list=[]
 figures_list.append(OGGDooIvakwNlL)
 figures_list.append(PFCUoorQhitKoJ)
 figures_list.append(QIXEooejrojKjo)
@@ -74,6 +72,8 @@ figures_list.append(FunctionFirst)
 figures_list.append(FunctionFive)
 figures_list.append(FunctionFour)
 figures_list.append(FunctionSecond)
+figures_list.append(QIPRoolQCEnZdx)
+figures_list.append(FMLCooxHtqRzUz)
 figures_list.append(GridThree)
 figures_list.append(GridTwo)
 figures_list.append(MarkOnPoint)

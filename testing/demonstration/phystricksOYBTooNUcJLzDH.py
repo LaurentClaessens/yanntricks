@@ -9,6 +9,7 @@ def OYBTooNUcJLzDH():
     mx=0.5
     Mx=3.5
     f = phyFunction(3*(x-2)**2+3).graph(mx,Mx)
+    f.put_mark(0.3,text="f(x)=foo",pspict=pspict)
 
     A=Point(1.08712907082472,0)
     B=Point(2.91287,0)
@@ -23,6 +24,7 @@ def OYBTooNUcJLzDH():
     \\begin{itemize}
     \item Axes do not intersect because point (0,0) is not on the picture.
     \item Marks on points \( a\) and \( b\) well positioned.
+    \item It is written «f(x)=foo» on the function.
     \\end{itemize}
     """
     fig.no_figure()

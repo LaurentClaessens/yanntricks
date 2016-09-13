@@ -344,11 +344,14 @@ class SegmentGraph(ObjectGraph):
         mesL=Segment(F,D).get_measure(-0.2,0.1,90,"\( 10\)",pspict=pspict,position="S")
         and then draw mesL. The Segment(F,D) object is not drawn.
 
-        If 'mark_angle' is 'None', then the angle will be perpendicular to 'self'
+        If 'mark_angle' is 'None', then the angle
+        will be perpendicular to 'self'
         """
-        if mark_angle==None:
+
+        if mark_angle==None and position not in ["N","S","E","W"]:
             mark_angle=self.angle()+90*degree
         measure=MeasureLength(self,measure_distance)
+
         measure.put_mark(mark_distance,mark_angle,name,position=position,pspict=pspict)
         return measure
     def put_code(self,n=1,d=0.1,l=0.1,angle=45,pspict=None):

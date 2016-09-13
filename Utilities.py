@@ -660,6 +660,16 @@ def ensure_unicode(s):
                 following object "+str(s)+" of type "+str(type(s)))
     return s
 
+def make_psp_list(pspict,pspicts):
+    if isinstance(pspict,list):
+        raise
+    a=[]
+    if pspict is not None:
+        a.append(pspict)
+    if pspicts is not None:
+        a.extend(pspicts)
+    return a
+
 def testtype(s):
     print(s,type(s))
     print("\n")

@@ -24,6 +24,7 @@ from sage.all import *
 
 from ObjectGraph import ObjectGraph
 from Constructors import *
+from Utilities import make_psp_list
 
 class PolygonGraph(ObjectGraph):
     """
@@ -66,8 +67,11 @@ class PolygonGraph(ObjectGraph):
         When X.no_edges() is used, the edges of the polygon will not be drawn.
         """
         self.draw_edges=False
-    def put_mark(self,dist,text_list=None,points_names=None,mark_point=None,pspict=None):
+    def put_mark(self,dist,text_list=None,points_names=None,mark_point=None,pspict=None,pspicts=None):
         from Visual import visual_vector,polar_to_visual_polar
+
+        pspicts=make_psp_list(pspict,pspicts)
+
         n=len(self.points_list)
         if not text_list and not points_names:
             import string
@@ -84,12 +88,14 @@ class PolygonGraph(ObjectGraph):
             Q=P+vect
             angle=Segment(P,Q).angle()
 
-            polar=polar_to_visual_polar(dist,angle.degree,pspict=pspict)
-            r=polar.r
-            a=polar.measure
+            for psp in pspicts :
+                polar=polar_to_visual_polar(dist,angle.degree,pspict=psp)
+                r=polar.r
+                a=polar.measure
 
-            P.put_mark(r,a,text,pspict=pspict,position="center")
-            self.added_objects.append(pspict,P)
+                P.put_mark(r,a,text,pspict=psp,position="center")
+                self.added_objects.append(psp,P)
+
     def math_bounding_box(self,pspict=None):
         bb=BoundingBox()
         for P in self.points_list:

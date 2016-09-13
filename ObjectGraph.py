@@ -67,7 +67,7 @@ class ObjectGraph(object):
         self.wavy = False
         self.waviness = None
         self.options = Options()
-        self.marque = False
+        #self.marque = False
         self.draw_bounding_box=False
 
         self.record_add_to_bb=[]         
@@ -187,7 +187,7 @@ class ObjectGraph(object):
 
             self.added_objects.append(psp,mark)
 
-        self.mark=mark
+        #self.mark=mark
     def add_option(self,opt):
         self.options.add_option(opt)
     def get_option(opt):

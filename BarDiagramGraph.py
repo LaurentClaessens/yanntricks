@@ -65,7 +65,7 @@ class BarDiagramGraph(ObjectGraph):
     def bounding_box(self,pspict):
         bb=self.math_bounding_box(pspict)
         for P in self.numbering_marks(pspict):
-            bb.append(P.mark,pspict)
+            bb.append(P,pspict)
         return bb
     def latex_code(self,language=None,pspict=None):
         return ""

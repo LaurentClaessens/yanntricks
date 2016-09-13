@@ -376,8 +376,11 @@ given right after the creation of the picture.")
         x=DrawElement(graph,separator_name)
         self.record_draw_graph.append(x)
 
-        # If an object has a mark, it the latter is already in the 'added_objects' list and the mark is already passed to a DrawGraph.
-        # Adding here the mark to the "record_draw_graph" list make pass twice by the computation of its bounding box (and draw it twice)
+        # If an object has a mark, it the latter is already 
+        # in the 'added_objects' list and the mark is already passed 
+        # to a DrawGraph. Adding here the mark to the "record_draw_graph"
+        # list make pass twice by the computation of its bounding box
+        # (and draw it twice)
         # Augustus 8, 2016
         # See position 3598-30738
 
