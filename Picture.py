@@ -128,6 +128,8 @@ class Picture(object):
         self.separator_list.new_separator("AFTER PSPICTURE")
 
         self.auxiliary_file=AuxFile(self.name,picture=self)
+        
+        self.add_latex_line(self.name,"AFTER PSPICTURE")        # testing
 
     def tikz_code(self):
         """
