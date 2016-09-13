@@ -68,7 +68,7 @@ def visual_polar(P,r,theta,pspict=None):
 def polar_to_visual_polar(r,theta,pspict=None):
     """
     From '(r,theta)', return the (s,alpha) such that the point
-    (s,alpha) visualy appears as (r,theta).
+    (s,alpha) visually appears as (r,theta).
     """
     P=visual_polar( Point(0,0),r,theta,pspict  )
     return P.polar_coordinates()
@@ -93,3 +93,19 @@ def visual_polar_coordinates(P,pspict=None):
         yunit=pspict.yunit
     Q=Point(xunit*P.x,yunit*P.y)
     return Q.polar_coordinates()
+
+def visual_vector(v,pspict=None):
+    """
+    return a vector at the same base as 'v' but such that
+    it will visually appears as 'v'
+    """
+    from Utilities import logging
+    from Constructors import AffineVector
+    if pspict is None:
+        logging("Trying to make visual_vector with no pspict ?")
+        return v
+    xunit=pspict.xunit
+    yunit=pspict.yunit
+    I=v.I
+    F=I+(v.Dx/xunit,v.Dy/yunit)
+    return AffineVector(I,F)
