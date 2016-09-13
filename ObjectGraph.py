@@ -60,6 +60,25 @@ class ObjectGraph(object):
     """ 
     This class is supposed to be used to create other "<Foo>Graph"
     by inheritance. 
+
+         Marks are drawn as added objects. We keep a link to the
+         mark because some users want to modify by hand some properties 
+         of a mark.
+
+         EXAMPLE :
+
+        Let A,B,C,D,E,F be point.
+
+        poly=Polygon(A,B,C,D,E,F)
+        poly.put_mark(0.3,pspict=pspict)
+            
+        F.mark.angle=180
+        F.mark.pspict=pspict
+        F.mark.position="E"
+
+        This mechanism has one limitation : self.mark only keep the last
+        mark put on the object.
+
     """
     def __init__(self,obj):
         self.obj = obj
@@ -67,7 +86,6 @@ class ObjectGraph(object):
         self.wavy = False
         self.waviness = None
         self.options = Options()
-        #self.marque = False
         self.draw_bounding_box=False
 
         self.record_add_to_bb=[]         
@@ -79,6 +97,8 @@ class ObjectGraph(object):
 
         self.take_BB=True
         self.take_math_BB=True
+
+        self.mark=None
 
         # removed on March 11, 2016
         #self.add_option("linecolor=black")
@@ -150,7 +170,8 @@ class ObjectGraph(object):
             dimx,dimy = psp.get_box_size(text)
         return mark
     def put_mark(self,dist=None,angle=None,text="",\
-            mark_point=None,added_angle=None,position=None,pspict=None):
+            mark_point=None,added_angle=None,position=None,\
+            pspict=None,pspicts=None):
         """
         If you want to put a mark on an object
         P.put_mark(0.1,text="foobar",pspict=pspict,position="N")
@@ -162,24 +183,11 @@ class ObjectGraph(object):
         - ``angle`` is given in degree.
         """
 
-        # We cannot do
-        # pspict.DrawGraphs(mark)
-        # here.
-        # Indeed let G be any graph and P a point. Consider
-        # P.put_mark(...)
-        # pspict.DrawGraphs(G,P)
-        # If we do 'pspict.DrawGraphs(mark)' here, the mark will be 
-        # drawn *under* 'G' while the logic of the 'DrawGraphs' line should
-        # be to draw P and its mark *after* G.
-        # This is why we have this 'added_objects' mechanism.
-
-        from Utilities import ensure_unicode
+        from Utilities import ensure_unicode,make_psp_list
         text=ensure_unicode(text)
+        pspicts=make_psp_list(pspict,pspicts)
 
-        if not isinstance(pspict,list):
-            pspict=[pspict]
-
-        for psp in pspict:
+        for psp in pspicts:
             mark=self.get_mark(dist,angle,text,mark_point=mark_point,added_angle=added_angle,position=position,pspict=psp)
 
             if position in ["N","S","E","W"] and angle is not None :
@@ -187,7 +195,7 @@ class ObjectGraph(object):
 
             self.added_objects.append(psp,mark)
 
-        #self.mark=mark
+        self.mark=mark
     def add_option(self,opt):
         self.options.add_option(opt)
     def get_option(opt):
