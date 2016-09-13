@@ -78,15 +78,14 @@ Notice that :
 
 The trick is that *phystricks* does not only produces the `tikz` code for the picture, but also make LaTeX write the size of the box in an auxiliary file. Thus in a second pass of *phystricks*, the size of the box is known and the label can be correctly placed.
 
-
 The LaTeX code inserted in your picture is compiled by LaTeX in the same time as your document.
 
 ### More informations
 
 
 For more informations you can read the documentation. An look at the real live examples :
-* [the documentation](http://student.ulb.ac.be/%7Elclaesse/phystricks-doc.pdf)
-* [the demonstrative document](http://student.ulb.ac.be/%7Elclaesse/phystricks-demo.pdf)
-* the pictures in [mazhe](http://student.ulb.ac.be/%7Elclaesse/mazhe.pdf), download the sources at [github](https://github.com/LaurentClaessens/mazhe)
-* the pictures in [smath](http://student.ulb.ac.be/%7Elclaesse/smath.pdf), download the sources at [github](https://github.com/LaurentClaessens/smath)
+* [the documentation](http://laurent.claessens-donadello.eu/pdf/phystricks-doc.pdf)
+* [the demonstrative document](http://laurent.claessens-donadello.eu/pdf/phystricks-demo.pdf)
+* the pictures in [mazhe](http://laurent.claessens-donadello.eu/pdf/mazhe.pdf), download the sources at [github](https://github.com/LaurentClaessens/mazhe)
+* the pictures in [smath](http://laurent.claessens-donadello.eu/pdf/smath.pdf), download the sources at [github](https://github.com/LaurentClaessens/smath)
 
