@@ -419,6 +419,16 @@ class PointGraph(ObjectGraph):
         # it creates infinite loop.
         bb=BoundingBox(xmin=self.point.x,xmax=self.point.x,ymin=self.point.y,ymax=self.point.y)
         return bb
+    def isNumericallyEqual(self,other,epsilon=0.01):
+        # return true if 'self' and 'other' are coordinates difference
+        # lower than 'epsilon'
+        if not isinstance(other,PointGraph):
+            raise TypeError("You are comparing a PointGraph with "+type(other))
+        if abs(self.x-other.x)>epsilon:
+            return False
+        if abs(self.y-other.y)>epsilon:
+            return False
+        return True
     def tikz_code(self,pspict=None):
         symbol_dict={}
         symbol_dict[None]="$\\bullet$"
