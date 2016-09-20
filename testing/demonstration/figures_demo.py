@@ -57,6 +57,7 @@ from phystricksPFCUoorQhitKoJ import PFCUoorQhitKoJ
 from phystricksEXIIooJzzoJeai import EXIIooJzzoJeai
 from phystricksJSYWooQYduLVLS import JSYWooQYduLVLS
 from phystricksQIPRoolQCEnZdx import QIPRoolQCEnZdx
+from phystricksALAYooKKrRTkCG import ALAYooKKrRTkCG
 
 figures_list=[]
 figures_list.append(DYJNooLVVFHEfN)
@@ -111,7 +112,15 @@ figures_list.append(BHESoofmkTbbZR)
 figures_list.append(OYBTooNUcJLzDH)
 figures_list.append(ASZLoocnIGlRHf)
 figures_list.append(MBWHooeesXIrsz)
+figures_list.append(ALAYooKKrRTkCG)
 """
+figures_list.append(<++>)
+figures_list.append(<++>)
+figures_list.append(<++>)
+figures_list.append(<++>)
+figures_list.append(<++>)
+figures_list.append(<++>)
+figures_list.append(<++>)
 figures_list.append(<++>)
 """
 

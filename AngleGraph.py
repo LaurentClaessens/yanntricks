@@ -353,7 +353,7 @@ class RightAngleGraph(ObjectGraph):
         # This happens in RightAngle(  Segment(D,E),Segment(D,F),l=0.2, n1=1,n2=1 ) because the same point 'D' is given
         # for both d1 and d2.
         # We need d1.I, d1.F, d2.I and d2.F to be four distinct points.
-        if self.d1.I==self.d2.I or self.d1.I==self.d2.F or self.d1.F==self.d2.I or self.d1.F==self.d2.F:
+        if self.d1.I.isNumericallyEqual(self.d2.I) or self.d1.I.isNumericallyEqual(self.d2.F) or self.d1.F.isNumericallyEqual(self.d2.I) or self.d1.F.isNumericallyEqual(self.d2.F):
             self.d1=d1.dilatation(1.5)
             self.d2=d2.dilatation(1.5)
 
@@ -361,17 +361,28 @@ class RightAngleGraph(ObjectGraph):
         self.n1=n1
         self.n2=n2
         self.intersection=Intersection(d1,d2)[0]
+
+        # If the intersection point is one of the given points, there will be troubles.
+        # For then angle between AB and CD at point I, we need A,B,C,D and I to be five different points. 
+        if self.intersection.isNumericallyEqual(self.d1.I) or self.intersection.isNumericallyEqual(self.d1.F):
+            self.d1=d1.dilatation(1.5)
+        if self.intersection.isNumericallyEqual(self.d2.I) or self.intersection.isNumericallyEqual(self.d2.F):
+            self.d2=d2.dilatation(1.5)
+
     def inter_point(self,I,F,n,pspict):
         v1=AffineVector(I,F)
         v=visual_length(v1,l=1,pspict=pspict)
+
         if n==0:
             P1=I - self.r*v
         if n==1:
             P1=I + self.r*v
         
-        rv=self.r*v
         return P1
     def action_on_pspict(self,pspict):
+
+        # self.intersection is the point where the angle is located.
+
         P1=self.inter_point(self.intersection,self.d1.F,self.n1,pspict)
         P2=self.inter_point(self.intersection,self.d2.F,self.n2,pspict)
 
