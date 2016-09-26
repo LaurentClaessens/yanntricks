@@ -668,6 +668,8 @@ def make_psp_list(pspict,pspicts):
         a.append(pspict)
     if pspicts is not None:
         a.extend(pspicts)
+    if a==[] :
+        raise ShouldNotHappenException("Picture missing. You have to use at least one of 'pspict=...' or 'pspicts=[...]'")
     return a
 
 def testtype(s):
