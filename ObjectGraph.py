@@ -196,6 +196,7 @@ class ObjectGraph(object):
             self.added_objects.append(psp,mark)
 
         self.mark=mark
+
     def add_option(self,opt):
         self.options.add_option(opt)
     def get_option(opt):

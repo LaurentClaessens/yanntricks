@@ -19,26 +19,29 @@ Including complex figures in LaTeX is always difficult because you
 
 *phystricks* is a python (Sage in fact) module defining classes like point, segment, parametric curve, ... and many geometric relations between them. You describe your picture using Python and *phystricks* creates the `tikz` code to be included in your LaTeX file.
 
-Here is the whole (no cheat) code you need for the following image :
+### Example
 
 ```python
 # -*- coding: utf8 -*-
+
 from phystricks import *
-def TRJEooPRoLnEiG():
-    pspict,fig = SinglePicture("TRJEooPRoLnEiG")
+def VSJOooJXAwbVEt():
+    pspict,fig = SinglePicture("VSJOooJXAwbVEt")
     pspict.dilatation(1)
 
     O=Point(0,0)
 
-    circle=Circle( O,2  )
-    tg=circle.get_tangent_vector(30)
+    circle=Circle( O,2 )           # center, radius
+
+    # Points are parametrized by their angle (degree)
     A=circle.get_point(130)
     B=circle.get_point(220)
+    tg=circle.get_tangent_vector(30)  
 
-    textA="$ \lim_{s} (F\circ\gamma')  $"
-    textB="$ K $"
-    A.put_mark(dist=0.3,angle=None,text="$ \lim_{s} (F\circ\gamma')  $",automatic_place=(pspict,""))
-    B.put_mark(dist=0.3,angle=None,text="$ K $",automatic_place=(pspict,""))
+    # dist : the distance between the circle and the mark.
+    # text : the LaTeX code that will be placed there.
+    A.put_mark(dist=0.3,text="$\lim_{s}(F\circ\gamma')$",pspict=pspict)
+    B.put_mark(dist=0.3,text="$K$",pspict=pspict)
 
     pspict.DrawGraphs(circle,A,tg,B)
 
@@ -55,15 +58,15 @@ The you compile the picture with Sage :
 │ Type "notebook()" for the browser-based notebook interface.        │
 │ Type "help()" for help.                                            │
 └────────────────────────────────────────────────────────────────────┘
-sage: attach("<filename>.py");TRJEooPRoLnEiG()
-
+sage: attach("<filename>.py")
+sage: VSJOooJXAwbVEt()
 ```
 
-Now the file `Fig_TRJEooPRoLnEiG.pstricks` is created and you just have to add the following lines in you LaTeX document :
+Now the file `Fig_VSJOooJXAwbVEt.pstricks` is created and you just have to add the following lines in you LaTeX document :
 
 ```latex
 \begin{center}
-   \input{Fig_VMNerGf.pstricks}
+   \input{Fig_VSJOooJXAwbVEt.pstricks}
 \end{center}
 ```
 What you get is :
@@ -73,6 +76,7 @@ What you get is :
 As you see, taking the tangent vector is a simple as calling the method `get_tangent_vector` with as argument the angle on the circle.
 
 Notice that :
+
 * The labels are well placed : they are in such a way that they will not intersect the circle.
 * At no point the Sage code speaks about the size of the box containing the labels.
 
@@ -84,6 +88,7 @@ The LaTeX code inserted in your picture is compiled by LaTeX in the same time as
 
 
 For more informations you can read the documentation. An look at the real live examples :
+
 * [the documentation](http://laurent.claessens-donadello.eu/pdf/phystricks-doc.pdf)
 * [the demonstrative document](http://laurent.claessens-donadello.eu/pdf/phystricks-demo.pdf)
 * the pictures in [mazhe](http://laurent.claessens-donadello.eu/pdf/mazhe.pdf), download the sources at [github](https://github.com/LaurentClaessens/mazhe)
