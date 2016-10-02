@@ -68,7 +68,9 @@ class Picture(object):
         # tested when recompiling.
         self.comment=""         
 
-        self.tikzfilename="tikz"+self.name
+        from Utilities import SubdirectoryFilenames
+        self.tikzfilename=SubdirectoryFilenames("tikz"+self.name).from_here()
+
         self.mother=None
         self.figure_mother=None
         self.language="tikz"

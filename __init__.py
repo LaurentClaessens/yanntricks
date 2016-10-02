@@ -108,10 +108,10 @@ def GenericFigure(nom,script_filename=None):
         script_filename=nom
     caption = "\CaptionFig"+nom     # This is also hard-coded in the function main.figure.LaTeX_lines
     label = "LabelFig"+nom          # The string "LabelFig" is hard-coded in the function main.figure.LaTeX_lines
-    nFich = "Fig_"+nom+".pstricks"
+    filename = "Fig_"+nom+".pstricks"
 
     from Figure import Figure
-    fig=Figure(caption,label,nFich,script_filename)
+    fig=Figure(caption,label,filename,script_filename)
     fig.figure_mother=fig   # I'm not sure that this line is useful.
     print fig.LaTeX_lines()
     return fig

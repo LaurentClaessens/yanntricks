@@ -55,7 +55,7 @@ class Figure(object):
                 name of the file in which the data is written.
     - `self.interWriteFile` is the name of the file in which the data will be written.
     """
-    def __init__(self,caption,name,nFich,script_filename):
+    def __init__(self,caption,name,filename,script_filename):
         self.script_filename=script_filename
         self.caption = caption
         self.name = name
@@ -76,17 +76,27 @@ class Figure(object):
         # The idea is to leave to the user the control if the command has to be included in the file 
         # which creates the png and in the "final" file independently.
 
-        self.nFich=nFich
-        self.fichier = SmallComputations.Fichier(self.nFich)
-        self.comment_filename=self.nFich.replace(".pstricks",".comment")        # This intermediate file will contain the comment of the pspict(s) for the sake of tests.  
+        # Filenames
+        # filename.from_here() is the filename of the produced file
+        # given relatively to the current directory, that is 
+        # relatively to the directory where the picture source is.
+
+        # filename.from_main() is the filename of the produced file
+        # given relatively to the main latex directory, that is
+        # relatively to where LaTeX will see it.
+
+        from Utilities import SubdirectoryFilenames
+        self.filename=SubdirectoryFilenames(filename)
+
+        #self.fichier = SmallComputations.Fichier(self.filename)
+        
+        # This intermediate file will contain the comment of the pspict(s) for the sake of tests.  
+        self.comment_filename=self.filename.from_here().replace(".pstricks",".comment")        
 
         # The order of declaration is important, because it is recorded in the Separator.number attribute.
         self.separator_list=SeparatorList()
         self.separator_list.new_separator("ENTETE FIGURE")
         self.separator_list.new_separator("SPECIFIC_NEEDS")
-        #self.separator_list.new_separator("OPEN_WRITE_AND_LABEL")
-        #self.separator_list.new_separator("WRITE_AND_LABEL")
-        #self.separator_list.new_separator("CLOSE_WRITE_AND_LABEL")
         self.separator_list.new_separator("HATCHING_COMMANDS")
         self.separator_list.new_separator("BEFORE SUBFIGURES")
         self.separator_list.new_separator("SUBFIGURES")
@@ -162,17 +172,11 @@ class Figure(object):
             a.append("The result is on figure \\ref{"+self.name+"}. % From file "+self.script_filename)
             # The pseudo_caption is changed to the function name later.
             a.append("\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
-            a.append("\\input{%s}"%(self.nFich))
+            a.append("\\input{%s}"%(self.filename.from_main()))
         else :
-            #text="""\\begin{wrapfigure}{r}{WIDTH}
-#   \\vspace{-0.5cm}        % à adapter.
-#   \centering
-#   INCLUSION
-#\end{wrapfigure}
-#ou
             text="""\\begin{center}
    INCLUSION
-\end{center}""".replace("INCLUSION","\\input{%s}"%(self.nFich))
+\end{center}""".replace("INCLUSION","\\input{%s}"%(self.filename.from_main()))
             if len(self.record_pspicture)==1:
                 pspict=self.record_pspicture[0]
                 visual_xsize=pspict.visual_xsize()      # By the way, this is a reason why we cannot do this before to have
@@ -184,7 +188,7 @@ class Figure(object):
         
     def conclude(self):
         for pspict in self.record_pspicture :
-            inter_file =  pspict.auxiliary_file.interWriteFile
+            inter_file =  pspict.auxiliary_file.interWriteFile.from_here()
             if not os.path.isfile(inter_file):
                 with open(inter_file,"w") as f:
                     f.write("default:content-")
@@ -264,7 +268,7 @@ class Figure(object):
         import codecs
         to_be_written=self.contenu              # self.contenu is created in self.conclude
         if not global_vars.perform_tests :
-            with codecs.open(self.nFich,"w",encoding="utf8") as f:
+            with codecs.open(self.filename.from_here(),"w",encoding="utf8") as f:
                 f.write(to_be_written)
         print "--------------- For your LaTeX file ---------------"
         print(self.LaTeX_lines())

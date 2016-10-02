@@ -21,7 +21,7 @@
 from GlobalVariables import global_vars
 from Utilities import newlengthName
 from Utilities import logging
-
+from Utilities import SubdirectoryFilenames
 
 class AuxFile(object):
     """
@@ -34,7 +34,7 @@ class AuxFile(object):
         self.name=name
         self.picture=picture
         self.newwriteName = "writeOfphystricks"
-        self.interWriteFile = self.name+".phystricks.aux"
+        self.interWriteFile = SubdirectoryFilenames(self.name+".phystricks.aux")
         self._latex_line_list=[]
         self.already_used_interId=[]
         self.already_warned_CompileYourLaTeXFile=False
@@ -44,7 +44,7 @@ class AuxFile(object):
         a.append(code)
         code = r"""\ifthenelse{\isundefined{\NLN}}{\newlength{\NLN}}{}""".replace("NLN",newlengthName())
         a.append(code)
-        code = "\immediate\openout\{}={}%".format(self.newwriteName,self.interWriteFile)
+        code = "\immediate\openout\{}={}%".format(self.newwriteName,self.interWriteFile.from_main())
         a.append(code)
         return "\n".join(a)
     def close_latex_code(self):
@@ -70,10 +70,10 @@ class AuxFile(object):
         """
         d={}
         try :
-            f=open(self.interWriteFile,"r")
+            f=open(self.interWriteFile.from_here(),"r")
         except IOError :
             if not self.already_warned_CompileYourLaTeXFile:
-                logging("Warning: the auxiliary file %s does not seem to exist. Compile your LaTeX file."%self.interWriteFile,pspict=self.picture)
+                logging("Warning: the auxiliary file %s does not seem to exist. Compile your LaTeX file."%self.interWriteFile.from_main(),pspict=self.picture)
                 self.already_warned_CompileYourLaTeXFile=True
             if global_vars.perform_tests :
                 raise ValueError,"I cannot say that a test succeed if I cannot determine the bounding box"
@@ -88,7 +88,7 @@ class AuxFile(object):
             value=els.split(':')[1]
             d[key]=value
 
-        f=open(self.interWriteFile,"w")
+        f=open(self.interWriteFile.from_here(),"w")
         for k in d.keys():
             f.write("%s:%s-\n"%(k,d[k]))
         f.close()
@@ -97,7 +97,7 @@ class AuxFile(object):
         if Id not in self.id_values_dict().keys():
             if not global_vars.silent:
                 if not self.already_warned_CompileYourLaTeXFile:
-                    logging("Warning: the auxiliary file {} does not contain the id «{}». Compile your LaTeX file.".format(self.interWriteFile,Id),pspict=self.picture)
+                    logging("Warning: the auxiliary file {} does not contain the id «{}». Compile your LaTeX file.".format(self.interWriteFile.from_main(),Id),pspict=self.picture)
                     self.already_warned_CompileYourLaTeXFile=True
             if global_vars.perform_tests :
                 raise PhystricksTestError(justification="No tests file found.",pspict=self)

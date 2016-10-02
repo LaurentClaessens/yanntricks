@@ -695,4 +695,34 @@ def logging(text,pspict=None):
     with codecs.open(LOGGING_FILENAME,"a",encoding="utf8") as f:
         f.write(text+"\n")
 
+class SubdirectoryFilenames(object):
+    """
+    If the file "Directories.py" exists, read the directories in which the 
+    tex files have to be put.
+    return the filename relative to the main latex file directory.
+    """
+    def __init__(self,filename):
+        self.filename=filename
 
+    def from_here(self):
+        import os.path
+        if not os.path.isfile("Directories.py"):
+            return self.filename
+
+        from Directories import PICTURES_TEX
+        current="."
+        tex=os.path.relpath(PICTURES_TEX,current)
+        return os.path.relpath(self.filename,tex)
+    def from_main(self):
+        import os.path
+        if not os.path.isfile("Directories.py"):
+            return self.filename
+
+        from Directories import PICTURES_TEX
+        from Directories import MAIN_TEX
+        current="."
+
+        main=os.path.relpath(MAIN_TEX,current)
+        tex=os.path.relpath(PICTURES_TEX,current)
+        vfile=os.path.join(tex,self.filename)
+        return os.path.relpath(vfile,main)
