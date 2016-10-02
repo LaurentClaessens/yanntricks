@@ -29,7 +29,6 @@ from Utilities import latinize
 from Utilities import newlengthName
 from Utilities import ensure_unicode
 
-
 def add_latex_line_entete(truc,position=""):
     from Picture import Picture
     from Figure import Figure
@@ -86,7 +85,7 @@ class Figure(object):
         # relatively to where LaTeX will see it.
 
         from Utilities import SubdirectoryFilenames
-        self.filename=SubdirectoryFilenames(filename)
+        self.filename=SubdirectoryFilenames(filename,"tex")
 
         #self.fichier = SmallComputations.Fichier(self.filename)
         

@@ -34,7 +34,8 @@ class AuxFile(object):
         self.name=name
         self.picture=picture
         self.newwriteName = "writeOfphystricks"
-        self.interWriteFile = SubdirectoryFilenames(self.name+".phystricks.aux")
+        self.interWriteFile = SubdirectoryFilenames(self.name+".phystricks.aux",position="main")
+
         self._latex_line_list=[]
         self.already_used_interId=[]
         self.already_warned_CompileYourLaTeXFile=False

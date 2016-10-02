@@ -102,7 +102,9 @@ def put_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=No
 
 def GenericFigure(nom,script_filename=None):
     """
-    This function returns a figure with some default values. It creates coherent label, file name and prints the lines to be appended in the LaTeX file to include the figure.
+    This function returns a figure with some default values. 
+    It creates coherent label, file name and prints the lines 
+    to be appended in the LaTeX file to include the figure.
     """
     if not script_filename:
         script_filename=nom

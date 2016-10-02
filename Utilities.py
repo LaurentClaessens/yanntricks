@@ -700,9 +700,36 @@ class SubdirectoryFilenames(object):
     If the file "Directories.py" exists, read the directories in which the 
     tex files have to be put.
     return the filename relative to the main latex file directory.
+
+    - `filename` is a string containing the filename with no directory indications.
+    - `position` can be "here", "main" or "tex" (default "here")
+
+        if "here" : the file is in the current directory when the picture is created.
+                    That is the current directory with respecto to Sage
+        if "main" : the file is in the main latex directory
+        if "tex" : the file is un the picture latex directory, that is the
+                    directory in which the file ".pstricks" is put.
+
+    In all cases if the file "Directories.py" is not found, everything will
+    return the unmodified filename.
+
     """
-    def __init__(self,filename):
-        self.filename=filename
+    def __init__(self,filename,position="here"):
+        import os.path
+        self.position=position
+        if os.path.isfile("Directories.py"):
+            from Directories import PICTURES_TEX
+            from Directories import MAIN_TEX
+            if position=="main":
+                ff=os.path.join(MAIN_TEX,filename)
+                self.abs_filename=os.path.abspath(ff)
+            if position=="tex":
+                ff=os.path.join(PICTURES_TEX,filename)
+                self.abs_filename=os.path.abspath(ff)
+            if position=="here":
+                self.abs_filename=os.path.abspath(filename)
+        else :
+            self.abs_filename=os.path.abspath(filename)
 
     def from_here(self):
         import os.path
@@ -712,7 +739,8 @@ class SubdirectoryFilenames(object):
         from Directories import PICTURES_TEX
         current="."
         tex=os.path.relpath(PICTURES_TEX,current)
-        return os.path.relpath(self.filename,tex)
+        ff=os.path.relpath(self.abs_filename,current)
+        return ff
     def from_main(self):
         import os.path
         if not os.path.isfile("Directories.py"):
@@ -724,5 +752,7 @@ class SubdirectoryFilenames(object):
 
         main=os.path.relpath(MAIN_TEX,current)
         tex=os.path.relpath(PICTURES_TEX,current)
-        vfile=os.path.join(tex,self.filename)
+        vfile=self.abs_filename
+
+        ff=os.path.relpath(self.abs_filename,main)
         return os.path.relpath(vfile,main)
