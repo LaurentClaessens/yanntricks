@@ -11,9 +11,9 @@ def FunctionFour():
         points.append(f.get_point(i))
 
     pspict.DrawGraphs(f)
-    for i in range(0,len(points)):
-        points[i].put_mark(0.2,None,"$P_{%s}$"%str(i),pspict=pspict)
-        pspict.DrawGraphs(points[i])
+    for P in points :
+        P.put_mark(0.2,text="$P_{{{}}}$".format(P.x),pspict=pspict)
+        pspict.DrawGraphs(P)
 
     pspict.DrawDefaultAxes()
     pspict.comment="Points are regularly spaced with respect to abscisses."

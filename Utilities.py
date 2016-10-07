@@ -716,6 +716,7 @@ class SubdirectoryFilenames(object):
     """
     def __init__(self,filename,position="here"):
         import os.path
+        self.filename=filename
         self.position=position
         if os.path.isfile("Directories.py"):
             from Directories import PICTURES_TEX

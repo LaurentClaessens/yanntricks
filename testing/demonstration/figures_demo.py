@@ -26,6 +26,7 @@ from phystricksVLEGoolDFCdZDU import VLEGoolDFCdZDU
 from phystricksCUZFooGqZLaAEp import CUZFooGqZLaAEp
 from phystricksPJKBooOhGVPkeR import PJKBooOhGVPkeR
 from phystricksLVPSoozFTyaeCG import LVPSoozFTyaeCG
+from phystricksPVRFoobvAzpZTq import PVRFoobvAzpZTq
 from AxesSecond import AxesSecond
 from phystricksYOWDooyeyOJyml import YOWDooyeyOJyml
 from exCircle import exCircle
@@ -34,9 +35,9 @@ from exCircleTwo import exCircleTwo
 from phystricksOnePoint import OnePoint
 from FunctionFirst import FunctionFirst
 from FunctionFive import FunctionFive
-from FunctionFour import FunctionFour
+from phystricksFunctionFour import FunctionFour
 from FunctionSecond import FunctionSecond
-from GridOne import GridOne
+from phystricksGridOne import GridOne
 from GridThree import GridThree
 from GridTwo import GridTwo
 from MarkOnPoint import MarkOnPoint
@@ -113,8 +114,8 @@ figures_list.append(OYBTooNUcJLzDH)
 figures_list.append(ASZLoocnIGlRHf)
 figures_list.append(MBWHooeesXIrsz)
 figures_list.append(ALAYooKKrRTkCG)
+figures_list.append(PVRFoobvAzpZTq)
 """
-figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)
