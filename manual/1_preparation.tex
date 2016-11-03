@@ -101,11 +101,34 @@ The result should be
    \input{Fig_OnePoint.pstricks}
 \end{center}
 
+%--------------------------------------------------------------------------------------------------------------------------- 
+\subsection{Segments}
+%---------------------------------------------------------------------------------------------------------------------------
+
+%///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+\subsubsection{Orthogonal}
+%///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+If \info{seg} is a segment from \info{A} to \info{B}. There are many cases in which you want a segment orthogonal to \info{seg}.
+
+\begin{enumerate}
+    \item
+        Let \info{P} be a point outside \info{seg}. The segment from \info{P} to its orthogonal projection on \info{seg} is
+
+        \lstinputlisting{sageSnip_12.py}
+    \item
+        Let \info{P} be a point on \info{seg}. The segment from \info{P} which is orthogonal to \info{seg} is
+
+        \lstinputlisting{sageSnip_13.py}
+
+        If you do not provide the optional argument \info{point}, it will be the initial point of \info{seg}.
+\end{enumerate}
+
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 \section{Drawing curves}
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-All the curves are internally converted into parametric curve and then transformed into a large number of small segments. Tikz will only see these segments. For that reason, we are able to draw virtually anything that Sage can compute : we are not bound by Tikz's internals, and even less by \LaTeX's \sout{legacy}\sout{embarrassing}\sout{made me crazy} limitations.
+All the curves are internally converted into parametric curve and then transformed into a large number of small segments. Tikz will only see these segments. For that reason, we are able to draw virtually anything that Sage can compute : we are not bound by Tikz's internals, and even less by \LaTeX's \sout{legacyembarrassingmakemecrazy} limitations.
 
 %--------------------------------------------------------------------------------------------------------------------------- 
 \subsection{Drawing functions}
