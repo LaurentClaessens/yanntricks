@@ -543,7 +543,7 @@ class SegmentGraph(ObjectGraph):
         ortho=Segment(self.I,Point(self.I.x+new_Dx,self.I.y+new_Dy))
         if not point:
             return ortho
-        return orhto.fix_origin(point)
+        return ortho.fix_origin(point)
     def orthogonal_trough(self,P):
         """
         return a segment orthogonal to self passing trough P.
