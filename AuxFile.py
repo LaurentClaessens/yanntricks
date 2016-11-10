@@ -20,8 +20,8 @@
 
 from GlobalVariables import global_vars
 from Utilities import newlengthName
-from Utilities import logging
-from Utilities import SubdirectoryFilenames
+from NoMathUtilities import logging
+from NoMathUtilities import SubdirectoryFilenames
 
 class AuxFile(object):
     """

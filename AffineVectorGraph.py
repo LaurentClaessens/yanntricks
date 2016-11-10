@@ -24,7 +24,7 @@ from sage.all import lazy_attribute,numerical_approx
 
 from ObjectGraph import ObjectGraph
 from Constructors import Segment,AffineVector,Vector,Point
-from Utilities import logging
+from NoMathUtilities import logging
 
 class AffineVectorGraph(ObjectGraph):
     def __init__(self,I,F):

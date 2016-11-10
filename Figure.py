@@ -27,7 +27,7 @@ from Separator import Separator, SeparatorList
 from GlobalVariables import global_vars
 from Utilities import latinize
 from Utilities import newlengthName
-from Utilities import ensure_unicode
+from NoMathUtilities import ensure_unicode
 
 def add_latex_line_entete(truc,position=""):
     from Picture import Picture
@@ -84,11 +84,9 @@ class Figure(object):
         # given relatively to the main latex directory, that is
         # relatively to where LaTeX will see it.
 
-        from Utilities import SubdirectoryFilenames
-        self.filename=SubdirectoryFilenames(filename,"tex")
+        from NoMathUtilities import SubdirectoryFilenames
+        self.filename=SubdirectoryFilenames(filename,"pictures_tex")
 
-        #self.fichier = SmallComputations.Fichier(self.filename)
-        
         # This intermediate file will contain the comment of the pspict(s) for the sake of tests.  
         self.comment_filename=self.filename.from_here().replace(".pstricks",".comment")        
 

@@ -99,7 +99,7 @@ def visual_vector(v,pspict=None):
     return a vector at the same base as 'v' but such that
     it will visually appears as 'v'
     """
-    from Utilities import logging
+    from NoMathUtilities import logging
     from Constructors import AffineVector
     if pspict is None:
         logging("Trying to make visual_vector with no pspict ?")

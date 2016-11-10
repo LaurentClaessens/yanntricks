@@ -1,6 +1,5 @@
 # -*- coding: utf8 -*-
 from phystricks import *
-from phystricks.Utilities import logging, testtype
 
 def ASZLoocnIGlRHf():
     pspict,fig = SinglePicture("ASZLoocnIGlRHf")

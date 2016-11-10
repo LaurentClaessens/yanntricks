@@ -1,4 +1,5 @@
 *.pyc
+*.swo
 *.py~
 *.swp
 all-*
@@ -7,6 +8,7 @@ tests/*
 .viminfo
 core
 .kk.log
+.ackrc
 .directory
 sage_line.py
 vieux/*

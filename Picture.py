@@ -23,7 +23,8 @@ from __future__ import unicode_literals
 
 from sage.all import *
 
-from Utilities import PointsNameList,ensure_unicode
+from Utilities import PointsNameList
+from NoMathUtilities import ensure_unicode
 from Separator import SeparatorList
 from GlobalVariables import global_vars
 from ObjectGraph import DrawElement
@@ -59,7 +60,7 @@ class Picture(object):
             marks of points and thinks like that. This is the bounding box that is going to be used for the axes and the grid.
             When a graph object has a method math_bounding_box, this is the one taken into account in the math_BB here.
         """
-        from Utilities import ensure_unicode
+        from NoMathUtilities import ensure_unicode
         self.name = ensure_unicode(name)  # In order to produce filenmane
                                           # for the intermediate files.
 
@@ -68,7 +69,7 @@ class Picture(object):
         # tested when recompiling.
         self.comment=""         
 
-        from Utilities import SubdirectoryFilenames
+        from NoMathUtilities import SubdirectoryFilenames
         self.tikzfilename=SubdirectoryFilenames("tikz"+self.name).from_here()
 
         self.mother=None

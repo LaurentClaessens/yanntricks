@@ -26,7 +26,6 @@ for s in forbidden_symb :
     if s in figure_name:
         raise ValueError("You should not use '{0}' in the name.".format(s))
 
-
 code_base="""# -*- coding: utf8 -*-
 from phystricks import *
 def XXXX():
@@ -81,21 +80,20 @@ def XXXX():
 
 """
 
-def create_file(filename,text):
-    if not os.path.isfile(filename):
-        f=open(filename,"w")
-        f.write(text)
-        f.close()
+def create_file(sfile,text):
+    if not os.path.isfile(sfile.abspath()):
+        with open(sfile.abspath(),"w") as f:
+            f.write(text)
     else :
         print("Le fichier {} existe déjà. Je ne fais rien".format(filename))
 
 code=code_base.replace("XXXX",figure_name)
 
-filename="phystricks%s.py"%figure_name
-
-pstricksfilename="Fig_{}.pstricks".format(figure_name)
-pdffilename="tikzFIGLabelFig"+figure_name+"PICT"+figure_name+".pdf"
-md5filename="tikzFIGLabelFig"+figure_name+"PICT"+figure_name+".md5"
+from NoMathUtilities import SubdirectoryFilenames
+filename=SubdirectoryFilenames("phystricks%s.py"%figure_name,"pictures_src")
+pstricksfilename=SubdirectoryFilenames("Fig_{}.pstricks".format(figure_name),"pictures_tex")
+pdffilename=SubdirectoryFilenames("tikzFIGLabelFig"+figure_name+"PICT"+figure_name+".pdf","pictures_tikz")
+md5filename=SubdirectoryFilenames("tikzFIGLabelFig"+figure_name+"PICT"+figure_name+".md5","pictures_tikz")
 
 
 for f in [filename,pstricksfilename,pdffilename]:
@@ -103,5 +101,5 @@ for f in [filename,pstricksfilename,pdffilename]:
 create_file(md5filename,"")
 
 print("from phystricks{} import {}".format(figure_name,figure_name))
-print("git add {} {} {} {}".format(filename,pstricksfilename,pdffilename,md5filename))
-print("attach('{}');{}();exit()".format(filename,figure_name)   )
+print("git add {} {} {} {}".format(filename.from_here(),pstricksfilename.from_here(),pdffilename.from_here(),md5filename.from_here()))
+print("attach('{}');{}();exit()".format(filename.filename,figure_name)   )

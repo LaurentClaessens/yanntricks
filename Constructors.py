@@ -263,7 +263,7 @@ def Mark(graph=None,dist=None,angle=None,central_point=None,text="",mark_point=N
     - ``pspict`` - the pspict in which the mark has to be computed and drawn.
     """
     import MarkGraph
-    from Utilities import ensure_unicode
+    from NoMathUtilities import ensure_unicode
     text=ensure_unicode(text)
     return MarkGraph.MarkGraph(graph,dist,angle,text,central_point=central_point,mark_point=mark_point,position=position,pspict=pspict)
 

@@ -25,7 +25,7 @@ from sage.all import numerical_approx
 from Parameters import Parameters
 from Parameters import Options
 from Exceptions import ShouldNotHappenException
-from Utilities import logging
+from NoMathUtilities import logging
 
 class AddedObjects(object):
     def __init__(self):
@@ -183,7 +183,8 @@ class ObjectGraph(object):
         - ``angle`` is given in degree.
         """
 
-        from Utilities import ensure_unicode,make_psp_list
+        from NoMathUtilities import ensure_unicode
+        from Utilities import make_psp_list
         text=ensure_unicode(text)
         pspicts=make_psp_list(pspict,pspicts)
 

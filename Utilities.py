@@ -649,17 +649,6 @@ def sublist(l,condition):
         if condition(x):
             yield x
 
-def ensure_unicode(s):
-    if isinstance(s,str):
-        s=s.decode("utf8")
-    elif isinstance(s,unicode):
-        pass
-    else:
-        testtype(s)
-        raise TypeError("You are trying to convert to unicode the \
-                following object "+str(s)+" of type "+str(type(s)))
-    return s
-
 def make_psp_list(pspict,pspicts):
     if isinstance(pspict,list):
         raise
@@ -672,88 +661,3 @@ def make_psp_list(pspict,pspicts):
         raise ShouldNotHappenException("Picture missing. You have to use at least one of 'pspict=...' or 'pspicts=[...]'")
     return a
 
-def testtype(s):
-    print(s,type(s))
-    print("\n")
-    if isinstance(s,str):
-        raise
-def dprint(*args):
-    """
-    This function is for debug purpose. It serves to roughly print stuff
-    on the screen. Then "grep dprint" helps to remove all the garbage.
-    """
-    a=[str(x) for x in list(args)]
-    print(" ".join(a))
-
-def logging(text,pspict=None):
-    from Defaults import LOGGING_FILENAME
-    import codecs
-    text=ensure_unicode(text)
-    if pspict :
-        text="in "+pspict.name+" : "+text
-    print(text)
-    with codecs.open(LOGGING_FILENAME,"a",encoding="utf8") as f:
-        f.write(text+"\n")
-
-class SubdirectoryFilenames(object):
-    """
-    If the file "Directories.py" exists, read the directories in which the 
-    tex files have to be put.
-    return the filename relative to the main latex file directory.
-
-    - `filename` is a string containing the filename with no directory indications.
-    - `position` can be "here", "main" or "tex" (default "here")
-
-        if "here" : the file is in the current directory when the picture is created.
-                    That is the current directory with respecto to Sage
-        if "main" : the file is in the main latex directory
-        if "tex" : the file is un the picture latex directory, that is the
-                    directory in which the file ".pstricks" is put.
-
-    In all cases if the file "Directories.py" is not found, everything will
-    return the unmodified filename.
-
-    """
-    def __init__(self,filename,position="here"):
-        import os.path
-        self.filename=filename
-        self.position=position
-        if os.path.isfile("Directories.py"):
-            from Directories import PICTURES_TEX
-            from Directories import MAIN_TEX
-            if position=="main":
-                ff=os.path.join(MAIN_TEX,filename)
-                self.abs_filename=os.path.abspath(ff)
-            if position=="tex":
-                ff=os.path.join(PICTURES_TEX,filename)
-                self.abs_filename=os.path.abspath(ff)
-            if position=="here":
-                self.abs_filename=os.path.abspath(filename)
-        else :
-            self.abs_filename=os.path.abspath(filename)
-
-    def from_here(self):
-        import os.path
-        if not os.path.isfile("Directories.py"):
-            return self.filename
-
-        from Directories import PICTURES_TEX
-        current="."
-        tex=os.path.relpath(PICTURES_TEX,current)
-        ff=os.path.relpath(self.abs_filename,current)
-        return ff
-    def from_main(self):
-        import os.path
-        if not os.path.isfile("Directories.py"):
-            return self.filename
-
-        from Directories import PICTURES_TEX
-        from Directories import MAIN_TEX
-        current="."
-
-        main=os.path.relpath(MAIN_TEX,current)
-        tex=os.path.relpath(PICTURES_TEX,current)
-        vfile=self.abs_filename
-
-        ff=os.path.relpath(self.abs_filename,main)
-        return os.path.relpath(vfile,main)

@@ -24,7 +24,7 @@ from phystricks.ObjectGraph import ObjectGraph
 from Constructors import *
 from Exceptions import ShouldNotHappenException
 
-from Utilities import logging
+from NoMathUtilities import logging
 
 class MarkGraph(ObjectGraph):
     def __init__(self,graph,dist,angle,text,mark_point=None,central_point=None,position=None,pspict=None):
