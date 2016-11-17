@@ -24,6 +24,7 @@ from phystricks.ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
 from GenericCurve import GenericCurve
+from Decorators import copy_parameters
 import Defaults
 
 class CircleGraph(GenericCurve,ObjectGraph):
@@ -127,6 +128,7 @@ class CircleGraph(GenericCurve,ObjectGraph):
             cy=numerical_approximation(self.center.y)
             self._numerical_equation = (x-cx)**2/Rx**2+(y-cy)**2/Ry**2-1==0
             return self._numerical_equation
+    @copy_parameters
     def parametric_curve(self,a=None,b=None):
         """
         Return the parametric curve associated to the circle.
@@ -139,8 +141,8 @@ class CircleGraph(GenericCurve,ObjectGraph):
             x=var('x')
             if self.visual is True:
                 if self.pspict is None :
-                    print("You are trying to draw something with 'visual==True' when not giving a pspict")
-                    raise ValueError
+                    from Exceptions import MissingPicture 
+                    raise MissingPicture("You are trying to draw something with 'visual==True' when not giving a pspict.")
                 f1 = phyFunction(self.center.x+self.radius*cos(x)/self.pspict.xunit)
                 f2 = phyFunction(self.center.y+self.radius*sin(x)/self.pspict.yunit)
             else :
@@ -154,11 +156,15 @@ class CircleGraph(GenericCurve,ObjectGraph):
                 af=self.angleF
             self._parametric_curve = ParametricCurve(f1,f2,(ai,af))
         curve=self._parametric_curve
-        curve.parameters=self.parameters.copy()
+        # The following is the typical line that is replaced by the decorator
+        # 'copy_parameters'
+        #curve.parameters=self.parameters.copy()         
         if a==None :
             return curve
         else :
             return curve.graph(a,b)
+    def put_arrow(self,*arg,**pw):
+        self.parametric_curve().put_arrow(*arg,**pw)
     def getPoint(self,theta,advised=True,numerical=False):
         """
         Return a point at angle <theta> (degree) on the circle. 

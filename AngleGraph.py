@@ -26,6 +26,9 @@ from phystricks.ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
 from Visual import visual_polar_coordinates, visual_length,visual_vector
+from NoMathUtilities import dprint,testtype
+from Decorators import copy_parameters
+from Exceptions import MissingPicture
 
 class AngleGraph(ObjectGraph):
     """
@@ -68,6 +71,7 @@ class AngleGraph(ObjectGraph):
             aI2=aI1
         aF2=aF1
         return aI2,aF2
+    @copy_parameters
     def circle(self,visual=False,pspict=None):
         visualI,visualF=self.visual_angleIF(pspict)
         return Circle(self.O,self.r,visual=visual,pspict=pspict).graph(visualI,visualF)
@@ -92,6 +96,16 @@ class AngleGraph(ObjectGraph):
             visualI,visualF=self.visual_angleIF(pspict=pspict)
             self._mark_angle = (visualI.degree+visualF.degree)/2
         return self._mark_angle
+    def put_arrow(self,pspict=None):
+        """
+        Add a small arrow at the end of the angle,
+        so one can visualize the sense of the angle ('from A to B')
+        """
+        if pspict is None :
+            raise MissingPicture("The method 'put_arrow' needs a picture as argument. Typical use is 'myobject.put_arrow(pspict=pspict)'")
+        arrow=self.circle(pspict=pspict).get_arrow(self.angleF.degree)
+        arrow.parameters=self.parameters.copy()
+        self.added_objects.append(pspict,arrow)
     def mark_point(self,pspict=None):
         ama=self.advised_mark_angle(pspict)
         return self.circle(visual=True,pspict=pspict).get_point(ama)

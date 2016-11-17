@@ -170,7 +170,7 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
         """
         Add a small arrow at the given positions.
 
-        The arrow is a vector of size (by default 0.01). The set of vectors
+        The arrow is a vector of size (by default) 0.01. The set of vectors
         is stored in `self.record_arrows`. Thus they can be customized
         as any vectors.
 
@@ -191,7 +191,7 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
             except TypeError:
                 ll.append(a)
         for llam in ll:
-            v=self.get_tangent_vector(llam).normalize(0.01)
+            v=self.get_arrow(llam)
             self.record_arrows.append(v)
     def middle_point(self):
         """

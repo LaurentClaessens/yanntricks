@@ -26,6 +26,7 @@ from Parameters import Parameters
 from Parameters import Options
 from Exceptions import ShouldNotHappenException
 from NoMathUtilities import logging
+from NoMathUtilities import dprint,testtype
 
 class AddedObjects(object):
     def __init__(self):
@@ -109,6 +110,21 @@ class ObjectGraph(object):
         from Parameters import Waviness
         self.wavy = True
         self.waviness = Waviness(self,dx,dy)
+    def get_arrow(self,llam):
+        """
+        return a small arrow at position 'llam'.
+
+        This only works if one has a 'get_tangent_vector' method.
+
+        - `llam` could be radian, degree or something else, depending on the 
+            actual object on which you are using this.
+        """
+        try :
+            v = self.get_tangent_vector(llam)
+        except AttributeErrror :
+            print("you are using 'get_arrow' (probably from a 'put_arrow' on your part) on an object that does not support 'get_tangent_vector'")
+        v=v.normalize(0.01)
+        return v
     def get_mark(self,dist,angle=None,text=None,mark_point=None,\
             added_angle=None,position=None,pspict=None):
         """

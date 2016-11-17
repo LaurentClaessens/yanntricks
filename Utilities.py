@@ -660,4 +660,3 @@ def make_psp_list(pspict,pspicts):
     if a==[] :
         raise ShouldNotHappenException("Picture missing. You have to use at least one of 'pspict=...' or 'pspicts=[...]'")
     return a
-
