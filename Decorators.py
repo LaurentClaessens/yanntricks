@@ -20,9 +20,6 @@
 # copyright (c) Laurent Claessens, 2016
 # email: laurent@claessens-donadello.eu
 
-from NoMathUtilities import dprint
-from NoMathUtilities import testtype
-
 def copy_parameters(f):
     """
     Many objects can produce other objects, like a segment has an orthogonal segment

@@ -26,7 +26,6 @@ from Parameters import Parameters
 from Parameters import Options
 from Exceptions import ShouldNotHappenException
 from NoMathUtilities import logging
-from NoMathUtilities import dprint,testtype
 
 class AddedObjects(object):
     def __init__(self):

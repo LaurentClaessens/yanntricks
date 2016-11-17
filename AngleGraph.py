@@ -26,7 +26,7 @@ from phystricks.ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
 from Visual import visual_polar_coordinates, visual_length,visual_vector
-from NoMathUtilities import dprint,testtype
+from NoMathUtilities import logging
 from Decorators import copy_parameters
 from Exceptions import MissingPicture
 
