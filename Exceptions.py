@@ -20,6 +20,15 @@
 # copyright (c) Laurent Claessens, 2016
 # email: laurent@claessens-donadello.eu
 
+class MissingPicture(Exception):
+    """
+    Exception raised when something should not happen (bad use of a method)
+    """
+    def __init__(self,text):
+        self.text=text
+    def __str__(self):
+        return self.text
+
 class ShouldNotHappenException(Exception):
     """
     Exception raised when something should not happen (bad use of a method)
