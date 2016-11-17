@@ -405,7 +405,7 @@ class SegmentGraph(ObjectGraph):
     def divide_in_two(self,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=None):
         pspicts=make_psp_list(pspict,pspicts)
         for psp in pspicts:
-            a=self.get_divide_in_two(n=n,d=d,l=l,angle=angle,pspict=pspict)
+            a=self.get_divide_in_two(n=n,d=d,l=l,angle=angle,pspicts=pspicts)
             self.added_objects.fusion(a)
     def Point(self):
         """
