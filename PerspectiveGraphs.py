@@ -127,9 +127,9 @@ class CuboidGraph(ObjectGraph):
         self.H=self.c2[3]
 
         for P in self.c1:
-            P.parameters.symbol="none"
+            P.parameters.symbol=""
         for P in self.c2:
-            P.parameters.symbol="none"
+            P.parameters.symbol=""
 
         # The edges.
         self.segP=[ Segment( self.c1[i],self.c2[i] ) for i in range(0,len(self.c1))  ]

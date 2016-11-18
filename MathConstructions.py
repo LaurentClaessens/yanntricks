@@ -138,4 +138,4 @@ class Old_Stuff(object):
         for i in range(0,len(Y.diagramme)):
             for j in range(0,len(Y.diagramme[i])):
                 self.TraceRectangle( Rectangle( Point(j,-i),Point(j+1,-i-1) ),"" )
-                self.MarkThePoint( Point(j,-i), 0.5,-45,"none", Y.diagramme[i][j] )
+                self.MarkThePoint( Point(j,-i), 0.5,-45,"", Y.diagramme[i][j] )

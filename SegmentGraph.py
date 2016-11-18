@@ -331,14 +331,14 @@ class SegmentGraph(ObjectGraph):
         v=AffineVector(P,self.F).normalize(size)
         self.added_objects.append(pspict,v)
     def put_measure(self,measure_distance,mark_distance,mark_angle,\
-                            name,position=None,pspict=None,pspicts=None):
+                            text,position=None,pspict=None,pspicts=None):
         pspicts=make_psp_list(pspict,pspicts)
         for psp in pspicts:
             measure=self.get_measure(measure_distance,mark_distance,mark_angle,\
-                    name,position=position,pspict=psp)
+                    text,position=position,pspict=psp)
             self.added_objects.append(psp,measure)
     def get_measure(self,measure_distance,mark_distance, mark_angle=None,\
-                    name=None,position=None,pspict=None,pspicts=None):
+                    text=None,position=None,pspict=None,pspicts=None):
         """
         The difference between 'put_measure' and 'get_measure'
         is that 'get_measure' returns the measure graph while
@@ -357,7 +357,7 @@ class SegmentGraph(ObjectGraph):
             mark_angle=self.angle()+90*degree
         measure=MeasureLength(self,measure_distance)
 
-        measure.put_mark(mark_distance,mark_angle,name,\
+        measure.put_mark(mark_distance,mark_angle,text,\
                 position=position,pspicts=pspicts)
         return measure
     def put_code(self,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=None):

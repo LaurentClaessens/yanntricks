@@ -144,6 +144,7 @@ class ObjectGraph(object):
             angle=None
             logging("When you want a position like N,S,E, or W, the mark\
  angle should not be given.",pspict=pspict)
+            raise
 
         if angle is None and position not in ["N","S","E","W"] :
             try :
