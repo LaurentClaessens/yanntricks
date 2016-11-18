@@ -37,7 +37,6 @@ from FunctionFirst import FunctionFirst
 from FunctionFive import FunctionFive
 from phystricksFunctionFour import FunctionFour
 from FunctionSecond import FunctionSecond
-from phystricksGridOne import GridOne
 from GridThree import GridThree
 from GridTwo import GridTwo
 from MarkOnPoint import MarkOnPoint
@@ -61,6 +60,7 @@ from phystricksQIPRoolQCEnZdx import QIPRoolQCEnZdx
 from phystricksALAYooKKrRTkCG import ALAYooKKrRTkCG
 
 figures_list=[]
+figures_list.append(GridOne)
 figures_list.append(DYJNooLVVFHEfN)
 figures_list.append(OGGDooIvakwNlL)
 figures_list.append(PFCUoorQhitKoJ)

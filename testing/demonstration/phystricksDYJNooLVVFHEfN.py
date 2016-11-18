@@ -22,8 +22,8 @@ def DYJNooLVVFHEfN():
     angle1=AngleAOB(X1,O,A)
     angle2=AngleAOB(B,O,X2)
 
-    angle1.put_mark(0.2,angle1.advised_mark_angle(pspict),"\( \pi/6\)",pspict=pspict)
-    angle2.put_mark(0.2,angle2.advised_mark_angle(pspict),"\( \pi/6\)",pspict=pspict)
+    angle1.put_mark(text="\( \pi/6\)",pspict=pspict)
+    angle2.put_mark(text="\( \pi/6\)",pspict=pspict)
 
     pspict.DrawGraphs(cer,seg1,seg2,A,B,angle1,angle2)
     pspict.axes.no_graduation()
@@ -32,4 +32,3 @@ def DYJNooLVVFHEfN():
     fig.no_figure()
     fig.conclude()
     fig.write_the_file()
-
