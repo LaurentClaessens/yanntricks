@@ -62,8 +62,6 @@ def logging(text,pspict=None):
     with codecs.open(LOGGING_FILENAME,"a",encoding="utf8") as f:
         f.write(text+"\n")
 
-
-
 class SubdirectoryFilenames(object):
     """
     An object of this class represent a file, 

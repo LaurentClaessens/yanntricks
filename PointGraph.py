@@ -442,7 +442,8 @@ class PointGraph(ObjectGraph):
         except KeyError:
             effective_symbol=self.parameters.symbol
         if self.parameters.symbol=='none' :
-            print("You should use '' instead of 'none'")
+            from NoMathUtilities import logging
+            logging("You should use '' instead of 'none'",pspict=pspict)
         if self.parameters.symbol not in ["none",""]:
             s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(numerical=True,pspict=pspict),effective_symbol,self.params(language="tikz",refute=["symbol","dotangle"]),"DOTANGLE")
             if self.parameters.dotangle != None :
