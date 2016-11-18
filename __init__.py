@@ -94,7 +94,7 @@ def put_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=No
     """
     pspicts=make_psp_list(pspict,pspicts)
     for psp in pspicts :
-        added=get_equal_lengths_code(s1,s2,n,d,l,angle,pspict)
+        added=get_equal_lengths_code(s1,s2,n,d,l,angle,pspict=psp)
         c1=added[0]
         c2=added[1]
         s1.added_objects.fusion( c1 )
