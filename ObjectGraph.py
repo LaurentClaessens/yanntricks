@@ -144,7 +144,6 @@ class ObjectGraph(object):
             angle=None
             logging("When you want a position like N,S,E, or W, the mark\
  angle should not be given.",pspict=pspict)
-            raise
 
         if angle is None and position not in ["N","S","E","W"] :
             try :
@@ -209,7 +208,6 @@ class ObjectGraph(object):
 
             if position in ["N","S","E","W"] and angle is not None :
                 logging("When you want a position like N,S,E, or W, the mark angle should not be given.")
-
             self.added_objects.append(psp,mark)
 
         self.mark=mark

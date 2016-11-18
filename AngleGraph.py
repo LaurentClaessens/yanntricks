@@ -338,7 +338,7 @@ class AngleGraph(ObjectGraph):
 
         if dist is not None :
             if dist<v.length :
-                logging("You are giving a distance lower than I computed to be the minimal ({}). You have some risks to have a mark of an angle intersecting the edges of the angle.".format(v.length),pspict=pspict)
+                loggin("The distance you give is {} while I computed the minimal to be {}".format(dist,v.length),pspict=pspict)
             v=v.normalize(dist)
         v=visual_vector(v,pspict=pspict)
         C=mark_point+v
