@@ -187,6 +187,8 @@ class AngleMeasure(object):
         try :
             return AngleMeasure(value_radian=self.radian+other.radian)
         except AttributeError :
+            from NoMathUtilities import logging
+            logging("Adding an 'AngleMeasure' with a number will be deprecated in a near future.")
             if other in ZZ :
                 return AngleMeasure(value_degree=self.degree+other)
             elif "pi" in repr(other) :
