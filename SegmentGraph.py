@@ -330,8 +330,8 @@ class SegmentGraph(ObjectGraph):
         P=self.get_point_proportion(position,advised=False)
         v=AffineVector(P,self.F).normalize(size)
         self.added_objects.append(pspict,v)
-    def put_measure(self,measure_distance,mark_distance,mark_angle,\
-                            text,position=None,pspict=None,pspicts=None):
+    def put_measure(self,measure_distance,mark_distance,mark_angle=None,\
+                            text="",position=None,pspict=None,pspicts=None):
         pspicts=make_psp_list(pspict,pspicts)
         for psp in pspicts:
             measure=self.get_measure(measure_distance,mark_distance,mark_angle,\
