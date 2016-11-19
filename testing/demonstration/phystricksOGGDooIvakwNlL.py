@@ -22,15 +22,15 @@ def OGGDooIvakwNlL():
     c1=AngleAOB(D,C,A,)
     c2=AngleAOB(A,C,B,r=0.3)
 
-    a1.put_mark(0.2,angle=None,text="\( a_1\)",pspict=pspicts[0])
-    a2.put_mark(0.2,angle=None,text="\( a_2\)",pspict=pspicts[0])
-    c1.put_mark(0.2,angle=None,text="\( c_1\)",pspict=pspicts[0])
-    c2.put_mark(0.2,angle=None,text="\( c_2\)",pspict=pspicts[0])
+    a1.put_mark(text="\( a_1\)",pspict=pspicts[0])
+    a2.put_mark(text="\( a_2\)",pspict=pspicts[0])
+    c1.put_mark(text="\( c_1\)",pspict=pspicts[0])
+    c2.put_mark(text="\( c_2\)",pspict=pspicts[0])
 
-    a1.put_mark(0.2,angle=None,text="\( b\)",pspict=pspicts[1])
-    a2.put_mark(0.2,angle=None,text="\( a\)",pspict=pspicts[1])
-    c1.put_mark(0.2,angle=None,text="\( a\)",pspict=pspicts[1])
-    c2.put_mark(0.2,angle=None,text="\( b\)",pspict=pspicts[1])
+    a1.put_mark(text="\( b\)",pspict=pspicts[1])
+    a2.put_mark(text="\( a\)",pspict=pspicts[1])
+    c1.put_mark(text="\( a\)",pspict=pspicts[1])
+    c2.put_mark(text="\( b\)",pspict=pspicts[1])
 
     pspicts[0].DrawGraphs(parall,diag1,a1,a2,c1,c2)
     pspicts[1].DrawGraphs(parall,diag1,a1,a2,c1,c2)

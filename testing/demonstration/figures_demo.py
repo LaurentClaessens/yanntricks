@@ -4,6 +4,7 @@
 import sys
 from phystricks import *
 
+from phystricksWQVZooAhkdlegv import WQVZooAhkdlegv
 from phystricksMBWHooeesXIrsz import MBWHooeesXIrsz
 from phystricksASZLoocnIGlRHf import ASZLoocnIGlRHf
 from phystricksOYBTooNUcJLzDH import OYBTooNUcJLzDH
@@ -60,7 +61,6 @@ from phystricksQIPRoolQCEnZdx import QIPRoolQCEnZdx
 from phystricksALAYooKKrRTkCG import ALAYooKKrRTkCG
 
 figures_list=[]
-figures_list.append(GridOne)
 figures_list.append(DYJNooLVVFHEfN)
 figures_list.append(OGGDooIvakwNlL)
 figures_list.append(PFCUoorQhitKoJ)
@@ -115,8 +115,8 @@ figures_list.append(ASZLoocnIGlRHf)
 figures_list.append(MBWHooeesXIrsz)
 figures_list.append(ALAYooKKrRTkCG)
 figures_list.append(PVRFoobvAzpZTq)
+figures_list.append(WQVZooAhkdlegv)
 """
-figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)

@@ -444,7 +444,6 @@ class PointGraph(ObjectGraph):
         if self.parameters.symbol=='none' :
             from NoMathUtilities import logging
             logging("You should use '' instead of 'none'",pspict=pspict)
-            raise
         if self.parameters.symbol not in ["none",""]:
             s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(numerical=True,pspict=pspict),effective_symbol,self.params(language="tikz",refute=["symbol","dotangle"]),"DOTANGLE")
             if self.parameters.dotangle != None :
@@ -456,11 +455,6 @@ class PointGraph(ObjectGraph):
     def latex_code(self,language=None,pspict=None,with_mark=False):
         l=[]
 
-        # Marks are part of the added objects
-        # September 13, 2016
-        #if self.marque and with_mark:
-        #    for mark in self.marks_list:
-        #        l.append(self.mark.latex_code(language=language,pspict=pspict))
         if language=="pstricks":
             raise DeprecationWarning
         if language=="tikz":

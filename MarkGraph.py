@@ -31,6 +31,7 @@ class MarkGraph(ObjectGraph):
         """
         Internally, the angle is recorded as 'AngleMeasure'.
         """
+
         ObjectGraph.__init__(self,self)
         self._central_point=central_point
         self.mark_point=mark_point
@@ -46,6 +47,7 @@ class MarkGraph(ObjectGraph):
 
         self.dist = dist
         self.text = text
+
         self.position=position
         self.pspict=pspict
 
