@@ -132,7 +132,6 @@ class ObjectGraph(object):
         In the internal representation of the mark, 
         the angle type will be `AngleMeasure`
         """
-
         from AngleGraph import AngleGraph
         from Constructors import Mark
         from MathStructures import AngleMeasure
@@ -145,12 +144,16 @@ class ObjectGraph(object):
             logging("When you want a position like N,S,E, or W, the mark\
  angle should not be given.",pspict=pspict)
 
+
         if angle is None and position not in ["N","S","E","W"] :
             try :
                 angle=self.advised_mark_angle(pspict=pspict)
             except AttributeError :
                 a=self.angle()
                 angle=self.angle().degree+90
+
+        if isinstance(angle,AngleMeasure):
+            angle=angle.degree
 
         # At this point, 'angle' has to be degree,
         # - for the possibility of "added_angle"
