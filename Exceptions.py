@@ -20,7 +20,11 @@
 # copyright (c) Laurent Claessens, 2016
 # email: laurent@claessens-donadello.eu
 
-class MissingPicture(Exception):
+"""
+This file contains the exceptions that can be raised by 'phystricks'.
+"""
+
+class MissingPictureException(Exception):
     """
     Exception raised when something should not happen (bad use of a method)
     """
