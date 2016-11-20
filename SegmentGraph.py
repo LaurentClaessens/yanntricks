@@ -422,31 +422,20 @@ class SegmentGraph(ObjectGraph):
         return P
     def AffineVector(self):
         return AffineVector(self.I,self.F)
-    def get_normal_vector(self,P=None):
+    def get_normal_vector(self,origin=None):
         """
         returns a normalized normal vector at the center of the segment
 
-        - P (optional). If given, the vector will be attached to P.
-
-        OUTPUT:
-        A vector
-
-        EXAMPLES::
-
-            sage: from phystricks import *
-            sage: v= Segment(Point(0,0),Point(2,0)).get_normal_vector()
-            sage: print v
-            <vector I=<Point(1.0,0)> F=<Point(1.0,-1)>>
-            sage: v.length
-            1
+        - `origin` (optional). If given, the vector will 
+            be attached to that point.
         """
         if self.vertical :
             v = Point(-1,0).Vector().fix_origin(self.midpoint())
         else :
             P = Point(self.slope,-1)
             v = P.Vector().normalize().fix_origin(self.midpoint())
-        if P:
-            v=AffineVector(P,P+v)
+        if origin:
+            v=AffineVector(origin,origin+v)
         return v
     def get_tangent_vector(self):
         """
