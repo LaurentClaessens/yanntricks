@@ -141,8 +141,8 @@ class CircleGraph(GenericCurve,ObjectGraph):
             x=var('x')
             if self.visual is True:
                 if self.pspict is None :
-                    from Exceptions import MissingPicture 
-                    raise MissingPicture("You are trying to draw something with 'visual==True' when not giving a pspict.")
+                    from Exceptions import MissingPictureException
+                    raise MissingPictureException("You are trying to draw something with 'visual==True' when not giving a pspict.")
                 f1 = phyFunction(self.center.x+self.radius*cos(x)/self.pspict.xunit)
                 f2 = phyFunction(self.center.y+self.radius*sin(x)/self.pspict.yunit)
             else :

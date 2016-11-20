@@ -21,6 +21,7 @@
 from GlobalVariables import global_vars
 from Utilities import newlengthName
 from NoMathUtilities import logging
+from NoMathUtilities import ensure_unicode
 from NoMathUtilities import SubdirectoryFilenames
 
 class AuxFile(object):
@@ -39,6 +40,11 @@ class AuxFile(object):
         self._latex_line_list=[]
         self.already_used_interId=[]
         self.already_warned_CompileYourLaTeXFile=False
+
+        # Able to retrieve the tex expression from the hash. See 2576-2197
+        # Be careful : this dictionary stores 'unicode' objects as values,
+        # while hashlib wants 'str' and some functions are passing 'str'.
+        self.interId_to_tex_expression = {}     
     def open_latex_code(self):
         a=[]
         code = r"""\ifthenelse{\isundefined{\NWN}}{\newwrite{\NWN}}{}""".replace("NWN",self.newwriteName)
@@ -99,6 +105,9 @@ class AuxFile(object):
             if not global_vars.silent:
                 if not self.already_warned_CompileYourLaTeXFile:
                     logging("Warning: the auxiliary file {} does not contain the id «{}». Compile your LaTeX file.".format(self.interWriteFile.from_main(),Id),pspict=self.picture)
+                    logging(u"Concerned tex expression : "+self.interId_to_tex_expression[Id])
+                    raise
+
                     self.already_warned_CompileYourLaTeXFile=True
             if global_vars.perform_tests :
                 raise PhystricksTestError(justification="No tests file found.",pspict=self)
@@ -137,13 +146,16 @@ class AuxFile(object):
         dimension_name is a valid LaTeX macro that can be applied to a LaTeX expression and that return a number. Like
         widthof, depthof, heightof, totalheightof
         """
-        import hashlib
-        utex_expression=tex_expression.encode("utf8")
-        h=hashlib.new("sha1")
-        h.update(utex_expression)
-        interId=dimension_name+h.hexdigest()
+        from NoMathUtilities import text_to_hexdigest
+        tex_expression=ensure_unicode(tex_expression)
+        hexdigest=text_to_hexdigest(tex_expression)
+
+        interId=dimension_name+hexdigest
+
+        # 2576-2197
+        self.interId_to_tex_expression[interId]=tex_expression
         if interId not in self.already_used_interId :
-            self.add_latex_line(r"\setlength{{\{}}}{{\{}{{{}}}}}%".format(newlengthName(),dimension_name,utex_expression))
+            self.add_latex_line(ur"\setlength{{\{}}}{{\{}{{{}}}}}%".format(newlengthName(),dimension_name,tex_expression))
             value=r"\the\{}".format(newlengthName())
 
             self.add_latex_line(r"\immediate\write\{}{{{}:{}-}}".format(self.newwriteName,interId,value))

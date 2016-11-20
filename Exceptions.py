@@ -75,6 +75,36 @@ class NoMathBoundingBox(Exception):
     def __init__(self,obj,fun):
         self.message = "Object {0} from class {1} has no attribute {2}".format(obj,type(obj),fun)
 
-class PhystricksCheckBBError(Exception):
-    def __init__(self):
-        pass
+class TooLargeBBException(Exception):
+    def __init__(self,obj,faulty,acceptable,got):
+        """
+        Describe the exception raised when a too large bounding box is found.
+        - `obj` : the object that has a too large bounding box
+        - `faulty` : "xmin", "xmax", "ymin" or "ymax" : the coordinate that
+            that was too large.
+        - `acceptable` : the maximal value that the picture 
+             was accepting for that coordinate.
+        - `got` : the computed/found size.
+        """
+        self.obj=obj
+        self.faulty=faulty
+        self.acceptable=acceptable
+        self.got=got
+    def __str__(self):
+        testtype(self.acceptable)
+        testtype(self.obj)
+        a=[]
+        a.append("Problem with the bounding box of "+str(self.obj))
+        try :
+            a.append("The mother of {0} is {1}".format(self.obj,self.obj.mother))
+        except AttributeError :
+            pass
+        a.append("The bound "+self.faulty+" is "+str(self.got)+" while the maximal accepted value is "+str(self.acceptable))
+        a.append("""The easiest way to debug this is to make the picture compile adding something like 
+                        pspict.Mx_acceptable_BB=1000
+                        pspict.mx_acceptable_BB=-1000
+                        pspict.My_acceptable_BB=1000
+                        pspict.my_acceptable_BB=-1000
+        and then see de visu what is the faulty object.
+                    """)
+        return "\n".join(a)

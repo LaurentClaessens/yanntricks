@@ -262,6 +262,15 @@ class ObjectGraph(object):
         return code
     def action_on_pspict(self,pspict):
         pass
+    def conclude(self,pspict):
+        """
+        The `conclude` function allows an object to make its ultimate
+        settings before to be drawn.
+        This is used for objects like axes that have a list of added objects
+        (the graduation bars) that can depend on the other objects in the 
+        picture.
+        """
+        pass
     def _draw_added_objects(self,pspict):
         # position 3598-30738
         for obj in self.added_objects[pspict] :

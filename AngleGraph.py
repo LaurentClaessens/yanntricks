@@ -28,7 +28,7 @@ from Utilities import *
 from Visual import visual_polar_coordinates, visual_length,visual_vector
 from NoMathUtilities import logging
 from Decorators import copy_parameters
-from Exceptions import MissingPicture
+from Exceptions import MissingPictureException
 
 class AngleGraph(ObjectGraph):
     """
@@ -102,7 +102,7 @@ class AngleGraph(ObjectGraph):
         so one can visualize the sense of the angle ('from A to B')
         """
         if pspict is None :
-            raise MissingPicture("The method 'put_arrow' needs a picture as argument. Typical use is 'myobject.put_arrow(pspict=pspict)'")
+            raise MissingPictureException("The method 'put_arrow' needs a picture as argument. Typical use is 'myobject.put_arrow(pspict=pspict)'")
         arrow=self.circle(pspict=pspict).get_arrow(self.angleF.degree)
         arrow.parameters=self.parameters.copy()
         self.added_objects.append(pspict,arrow)

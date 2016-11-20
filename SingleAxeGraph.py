@@ -50,6 +50,10 @@ class SingleAxeGraph(ObjectGraph):
         self.mark=None
         self.mark_angle=degree(base.angle().radian-pi/2)
         self.enlarge_size=0.5
+
+        # The `conclude` method perform the last computations before
+        # to be drawn. The graduation bars are added there.
+        self._already_concluded=False
     
     # SingleAxe.segment cannot be a lazy attribute because 
     # we use it for some projections before to compute the bounding box.
@@ -66,14 +70,6 @@ class SingleAxeGraph(ObjectGraph):
             else :
                 return Segment(self.C-self.base.normalize(1),self.C+self.base.normalize(1))      
 
-                # raising an error here makes impossible to draw pictures with only vertical stuff. As an example, the following 
-                # was crashing :
-
-                #P=Point(0,0)
-                #pspict.DrawGraphs(P)
-                #pspict.DrawDefaultAxes()
-                #pspict.dilatation(1)
-                #fig.conclude()
         # The axes have to cross at (0,0)
         if self.mx>0 :
             self.mx=0
@@ -143,7 +139,7 @@ class SingleAxeGraph(ObjectGraph):
         # we do not know if this is the vertical or horizontal axe,
         # so we cannot make the fit of the drawn objects.
         BB=self.math_bounding_box(pspict)
-        for graph in self.graduation_bars(pspict):
+        for graph in self.added_objects[pspict]:
             BB.append(graph,pspict)
         return BB
     def math_bounding_box(self,pspict):
@@ -155,20 +151,26 @@ class SingleAxeGraph(ObjectGraph):
             bb.addX(P.x)
             bb.addY(P.y)
         return bb
-    def action_on_pspict(self,pspict):
+    def conclude(self,pspict):
         """
-        Return the pstricks code of the axe.
+        From the possibility of drawing default axes, the parameters like
+        the length of the axes are unknown up to the last moment. The axe is 
+        created in the same time as the picture, but the mark bars for example
+        can only be computed after all the other objects.
+        So we need to make some ultimate settings before to be drawn.
+        This function is called by `Picture._DrawGraph`, right before
+        to compute and add the bounding box and to call `action_on_pspict`.
         """
-        sDx=RemoveLastZeros(self.Dx,10)
-        self.add_option("Dx="+sDx)
         if self.mark :
-            pspict.DrawGraphs(self.mark,separator_name="AXES")
+            self.added_objects.append(pspict,self.mark)
         if self.graduation :
             for graph in self.graduation_bars(pspict):
-                pspict.DrawGraphs(graph,separator_name="AXES")
-
+                self.added_objects.append(pspict,graph)
+        self._already_concluded=True
+    def action_on_pspict(self,pspict):
+        sDx=RemoveLastZeros(self.Dx,10)
+        self.add_option("Dx="+sDx)
         v=AffineVector(self.segment(pspict=pspict))
-
         pspict.DrawGraphs(v,separator_name="AXES")
     def __str__(self):
         return "<SingleAxeGraph: C={0} base={1} mx={2} Mx={3}>".format(self.C,self.base,self.mx,self.Mx)

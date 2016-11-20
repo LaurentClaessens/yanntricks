@@ -27,29 +27,61 @@ parts of phystricks.
 So you can safely import from here.
 """
 
+def text_to_hexdigest(text):
+    """
+    Return the sha1 hexdigest of a text.
+
+    The point of this function is to take care about the fact
+    that the hashlib wants 'str', not 'unicode'
+    """
+    import hashlib
+    str_text=ensure_str(text)
+
+    h=hashlib.new("sha1")
+    h.update(str_text)            # This one wants 'str', not 'unicode'
+    return h.hexdigest()
+
+
 def ensure_unicode(s):
+    """
+    Return a 'unicode' object that represents 's'. 
+    No conversion if 's' is already unicode.
+
+    str->unicode (via s.decode("utf8"))
+    unicode->unicide (identity map)
+    """
     if isinstance(s,str):
-        s=s.decode("utf8")
-    elif isinstance(s,unicode):
-        pass
-    else:
-        testtype(s)
-        raise TypeError("You are trying to convert to unicode the \
-                following object "+str(s)+" of type "+str(type(s)))
-    return s
+        return s.decode("utf8")
+    if isinstance(s,unicode):
+        return s
+    testtype(s)
+    raise TypeError("You are trying to convert to unicode the following object "+str(s)+" of type "+str(type(s)))
+
+def ensure_str(s):
+    """
+    Return a 'str' object that represents 's'. 
+    No conversion if 's' is already str.
+
+    unicode->str (via s.encode("utf8"))
+    str->str (identity map)
+    """
+    if isinstance(s,str):
+        return s
+    if isinstance(s,unicode):
+        return s.encode("utf8")
+    testtype(s)
+    raise TypeError("You are trying to convert to unicode the following object "+str(s)+" of type "+str(type(s)))
 
 def testtype(s):
     print(s,type(s))
     print("\n")
-    if isinstance(s,str):
-        raise
 
 def dprint(*args):
     """
     This function is for debug purpose. It serves to roughly print stuff
     on the screen. Then "grep dprint" helps to remove all the garbage.
     """
-    a=[str(x) for x in list(args)]
+    a=[ensure_str(x) for x in list(args)]
     print(" ".join(a))
 
 def logging(text,pspict=None):

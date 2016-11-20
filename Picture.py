@@ -176,6 +176,7 @@ class Picture(object):
                 raise
 
         list_used_separators=[]
+
         # STEP : update the bounding box
         for x in list_to_be_drawn :
             self.BB.append(x.graph,self)
@@ -184,25 +185,6 @@ class Picture(object):
             # This allow to enlarge the BB by hand with something like
             #    pspict.math_BB.ymax+=1
             # placed after DrawGraph
-
-        # STEP : add the axes  
-        #if self.draw_default_axes:
-        if False:
-            self.axes.add_bounding_box(self.math_BB,self)     # Here the axes take into account the content of pspict.
-            graph=self.axes
-            if self.axes.do_enlarge :
-                self.axes.enlarge_a_little(self.axes.enlarge_size,pspict=self)  # This should be the only call to enlarge_a_little
-
-            separator_name=graph.separator_name
-            self.add_latex_line(graph.latex_code(language=language,pspict=self),separator_name)
-            list_used_separators.append(separator_name)
-
-            self.BB.append(self.axes,pspict=self)                   # Here the pspict takes into account the enlarging of the axes
-
-            for single in [self.axes.single_axeX,self.axes.single_axeY]:
-                if single.marque:
-                    self.BB.append(single.mark,self)                     # Here the marks on the axes are taken into account in
-                                                                    # the bounding box of the pspicture.
 
         # STEP : release the bounding box
         self._bounding_box=self.BB      # At this point the bounding box of the pspict is known.
@@ -387,6 +369,7 @@ given right after the creation of the picture.")
         # Augustus 8, 2016
         # See position 3598-30738
 
+        graph.conclude(self)
         self.math_BB.append(graph,self)
         graph._draw_added_objects(self)
         graph.action_on_pspict(pspict=self)

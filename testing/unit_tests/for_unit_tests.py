@@ -30,6 +30,28 @@ def testSegment():
     assert_almost_equal(v.length,1,epsilon=0.001)
     assert_almost_equal(v.F,Point(1/2*sqrt(2) + 1.5,-1/2*sqrt(2) + 1.5),epsilon=0.001)
 
+def testEnsureUnicode():
+    from phystricks.NoMathUtilities import ensure_unicode
+    from phystricks.NoMathUtilities import ensure_str
+
+    u1=u"éà"
+    s1="éà"
+
+    uni_u1=ensure_unicode(u1)
+    str_u1=ensure_str(u1)
+
+    assert_equal(uni_u1,u1)
+    assert_equal(str_u1,s1)
+
+    s2="éàù"
+    double_s2=ensure_str( ensure_unicode(s2)  )
+    assert_equal(double_s2,s2)
+
+    u2=u"éàù"
+    double_u2=ensure_unicode( ensure_str(u2) )
+    assert_equal(double_u2,u2)
+
+
+testEnsureUnicode()
 testFGetMinMaxData()
 testSegment()
-

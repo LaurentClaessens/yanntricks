@@ -477,66 +477,48 @@ def check_too_large(obj,pspict=None):
         Mx=obj.Mx
         My=obj.My
     if pspict:
-        import Exceptions
-        try :
-            # In some circumstances, the comparison
-            # mx<pspict.mx_acceptable_BB
-            # provokes a MemoryError.
-            n_Mx=numerical_approx(Mx)
-            n_mx=numerical_approx(mx)
-            n_My=numerical_approx(My)
-            n_my=numerical_approx(my)
-            if n_mx<pspict.mx_acceptable_BB :
-                print("mx=",mx,"when pspict.mx_acceptable_BB=",pspict.mx_acceptable_BB)
-                raise Exceptions.PhystricksCheckBBError()
-            if n_my<pspict.my_acceptable_BB :
-                print("my=",my,"when pspict.my_acceptable_BB=",pspict.my_acceptable_BB)
-                raise Exceptions.PhystricksCheckBBError()
-            if n_Mx>pspict.Mx_acceptable_BB :
-                print("Mx=",Mx,"when pspict.Mx_acceptable_BB=",pspict.Mx_acceptable_BB)
-                raise Exceptions.PhystricksCheckBBError()
-            if n_My>pspict.My_acceptable_BB:
-                print("My=",My,"when pspict.My_acceptable_BB=",pspict.My_acceptable_BB)
-                raise Exceptions.PhystricksCheckBBError()
-        except Exceptions.PhystricksCheckBBError :
-            print "I don't believe that object {1} has a bounding box as large as {0}".format(bb,obj)
-            try :
-                print "The mother of {0} is {1}".format(obj,obj.mother)
-            except AttributeError :
-                pass
-            print("""The easiest way to debug this is to make the picture compile adding something like 
-                        pspict.Mx_acceptable_BB=1000
-                        pspict.mx_acceptable_BB=-1000
-                        pspict.My_acceptable_BB=1000
-                        pspict.my_acceptable_BB=-1000
-        and then see de visu what is the faulty object.
-                    """)
-            raise ValueError
+        from Exceptions import TooLargeBBException
+        # In some circumstances, the comparison
+        # mx<pspict.mx_acceptable_BB
+        # provokes a MemoryError.
+        n_Mx=numerical_approx(Mx)
+        n_mx=numerical_approx(mx)
+        n_My=numerical_approx(My)
+        n_my=numerical_approx(my)
+        if n_mx<pspict.mx_acceptable_BB :
+            raise TooLargeBBException(obj=obj,faulty="xmin",acceptable=pspict.mx_acceptable_BB,got=n_mx)
+        if n_my<pspict.my_acceptable_BB :
+            raise TooLargeBBException(obj=obj,faulty="ymin",acceptable=pspict.my_acceptable_BB,got=n_my)
+        if n_Mx>pspict.Mx_acceptable_BB :
+            raise TooLargeBBException(obj=obj,faulty="xmax",acceptable=pspict.Mx_acceptable_BB,got=n_Mx)
+        if n_My>pspict.My_acceptable_BB :
+            raise TooLargeBBException(obj=obj,faulty="ymax",acceptable=pspict.My_acceptable_BB,got=n_My)
+
 
 def general_function_get_point(fun,x,advised=True):
-        """
-        Return a point on the graph of the function with the given x, i.e. it return the point (x,f(x)).
+    """
+    Return a point on the graph of the function with the given x, i.e. it return the point (x,f(x)).
 
-        Also set an attribute advised_mark_angle to the point. This angle is the normal exterior to the graph; visually this is usually the best place to put a mark. Typically you use this as
-        P=f.get_point(3)
-        P.mark(radius,P.advised_mark_angle,"$P$")
+    Also set an attribute advised_mark_angle to the point. This angle is the normal exterior to the graph; visually this is usually the best place to put a mark. Typically you use this as
+    P=f.get_point(3)
+    P.mark(radius,P.advised_mark_angle,"$P$")
 
-        NOTE:
-        If you don't plan to put a mark on the point, you are invited
-        to use advised=False in order to speed up the computations.
-        """
-        P = Point(float(x),fun(x))
-        if advised :
-            try :
-                ca = fun.derivative()(x) 
-            except TypeError:    # Sage cannot derivate the function
-                print "I'm not able to compute derivative of {0}. You should pass advised=False".format(fun)
-            else :
-                angle_n=degree(atan(ca)+pi/2)
-                if fun.derivative(2)(x) > 0:
-                    angle_n=angle_n+180
-                P._advised_mark_angle=angle_n
-        return P
+    NOTE:
+    If you don't plan to put a mark on the point, you are invited
+    to use advised=False in order to speed up the computations.
+    """
+    P = Point(float(x),fun(x))
+    if advised :
+        try :
+            ca = fun.derivative()(x) 
+        except TypeError:    # Sage cannot derivate the function
+            print "I'm not able to compute derivative of {0}. You should pass advised=False".format(fun)
+        else :
+            angle_n=degree(atan(ca)+pi/2)
+            if fun.derivative(2)(x) > 0:
+                angle_n=angle_n+180
+            P._advised_mark_angle=angle_n
+    return P
 
 def PointsNameList():
     """
