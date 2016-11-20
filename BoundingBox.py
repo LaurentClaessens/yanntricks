@@ -163,6 +163,8 @@ class BoundingBox_class(object):
         self.AddPoint( axes.getVertex("NE") )
     def latex_code(self,language=None,pspict=None):
         return ""
+    def conclude(self,pspict):
+        pass
     def action_on_pspict(self,pspict=None):
         rect=Rectangle(self.getVertex("SW"),self.getVertex("NE"))
         rect.parameters.color="cyan"

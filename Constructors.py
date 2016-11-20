@@ -308,7 +308,8 @@ def AngleAOB(A,O,B,r=None):
     return AngleGraph(A,O,B,r)
 
 def Angle(A,O,B,r=None):
-    print("Warning : You should use 'AngleAOB' instead of 'Angle'")
+    from NoMathUtilities import logging
+    logging("Warning : You should use 'AngleAOB' instead of 'Angle'")
     return AngleAOB(A,O,B,r=r)
 
 def phyFunction(fun,mx=None,Mx=None):
