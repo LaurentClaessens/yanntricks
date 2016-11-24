@@ -2,51 +2,27 @@
 from phystricks import *
 def NWAEooQBLYYrpS():
     pspict,fig = SinglePicture("NWAEooQBLYYrpS")
-    #pspict.dilatation_X(1)
-    #pspict.dilatation_Y(1)
     pspict.dilatation(1)
 
-    x=var('x')
-    P=Point(0,0)
+    D=Point(0,0)
+    B=Circle(D,6).get_point(25)
+    C=Point(B.x,D.y)
+    A=Point(D.x,B.y)
 
-    pspict.DrawGraphs(P)
-    pspict.DrawDefaultAxes()
+    rect=Polygon(A,B,C,D)
+    rect.put_mark(0.4,pspict=pspict)
+    rect.make_edges_independent()
+
+    ai1=AngleAOB(D,B,C)
+    ai2=AngleAOB(B,D,A)
+    ai1.put_mark(text="?",pspict=pspict)
+    ai2.put_mark(text="?",pspict=pspict)
+
+    diag=Segment(D,B)
+
+    no_symbol(rect.vertices)
+    pspict.comment="The angles are well circular"
+    pspict.DrawGraphs(rect,ai1,ai2,diag)
     fig.no_figure()
     fig.conclude()
     fig.write_the_file()
-
-----------------
-    pspicts,fig = MultiplePictures("NWAEooQBLYYrpS",3)
-    pspicts[0].mother.caption="<+caption1+>"
-    pspicts[1].mother.caption="<+caption2+>"
-    pspicts[2].mother.caption="<+caption3+>"
-
-    for psp in pspicts:
-        psp.dilatation_X(1)
-        psp.dilatation_Y(1)
-
-    <+Définition des objets+>
-
-    for psp in pspicts:
-        psp.DrawDefaultAxes()
-
-    fig.conclude()
-    fig.write_the_file()
-
-------------------------------
-
-    pspicts,figs = IndependentPictures("NWAEooQBLYYrpS",3)
-
-    for psp in pspicts:
-        psp.dilatation(1)
-
-    <+Définition des objets+>
-
-    for psp in pspicts:
-        psp.DrawDefaultAxes()
-
-    for fig in figs:
-        fig.no_figure()
-        fig.conclude()
-        fig.write_the_file()
-
