@@ -69,6 +69,9 @@ def ensure_str(s):
         return s
     if isinstance(s,unicode):
         return s.encode("utf8")
+    else :
+        rep=str(s)
+        return ensure_str(rep)
     testtype(s)
     raise TypeError("You are trying to convert to unicode the following object "+str(s)+" of type "+str(type(s)))
 
