@@ -91,8 +91,6 @@ class TooLargeBBException(Exception):
         self.acceptable=acceptable
         self.got=got
     def __str__(self):
-        testtype(self.acceptable)
-        testtype(self.obj)
         a=[]
         a.append("Problem with the bounding box of "+str(self.obj))
         try :
