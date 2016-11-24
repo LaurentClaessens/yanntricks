@@ -2,7 +2,7 @@
 from phystricks import *
 def NWAEooQBLYYrpS():
     pspict,fig = SinglePicture("NWAEooQBLYYrpS")
-    pspict.dilatation(1)
+    pspict.dilatation(2)
 
     D=Point(0,0)
     B=Circle(D,6).get_point(25)
