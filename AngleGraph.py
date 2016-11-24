@@ -109,56 +109,24 @@ class AngleGraph(ObjectGraph):
     def mark_point(self,pspict=None):
         ama=self.advised_mark_angle(pspict)
         return self.circle(visual=True,pspict=pspict).get_point(ama)
-    def get_mark(self,dist=None,angle=None,text="",mark_point=None,added_angle=None,position=None,pspict=None):
+    def _getOCvector(self,dimx,dimy,pspict=None):
         """
-        The mark on an angle is determined in the following way.
+        Return a vector 
+        O -> central point of the box
+        such that the box of size (dimx,dimy) will not intersect the lines of the angle self.
 
-        A vector 'v' is computed in such a way that placing
-        the center of the mark at
-        self.O+v
-        makes the mark being just  in the angle 
-
-        Then the center of the mark is placed at 
-        self.mark_point+v
-
-        Thus the mark should be ok.
-
-        If you give the optional argument "dist", the vector 'v' is replaced by
-        v.fix_size(dist)
-        In this case you have to fix a correct value of 'dist' by hand.
+          In fact we use this vector to translate from the mark_point (not the center of the angle).
+          Thus we are sure that the mark will in the same time
+          - not intersect the lines
+          - be further than the code.
 
         """
-
-
-        mark_point=self.mark_point(pspict)
-
-        if self.measure.degree>90 or self.measure.degree<-90 : 
-            if dist is None:
-                dist=0.2
-            return mark_point.get_mark(dist=dist,angle=self.advised_mark_angle(pspict),text=text,position=position,pspict=pspict)
-
-        if position != None:
-            print("The mark of an angle should be given without position argument")
-            raise
-
-        # The default can be any value different than zero. It serves to 
-        # avoid a division by zero during the first compilation.
-        dimx,dimy = pspict.get_box_size(text,default_value="3pt")  
-
-        # Now there are a lot of cases depending on the angles of the two lines determining the angle AOB.
-        # We will detail the computations for the case
-        #  0<self.angleA.degree < 90 and 0<self.angleB.degree < 90 
-        # The other cases are the same kind of trigonometry.
-        # I just let you know that if you know 3 angles and one length in a triangle, you know everything : 
-        # just draw the altitude and use Pythagoras along with some trigonometry.
-
-        # The cases are tested in the demo file 'OMPAooMbyOIqeA'
 
         if self.angleA.degree == 0:
             x=dimy/tan(self.measure.radian)
             K=Point(self.O.x+x+dimx/2,self.O.y+dimy/2)
-            v= AffineVector( self.O, K )
-        elif 0<self.angleA.degree < 90 and 0<self.angleB.degree < 90 :
+            return AffineVector( self.O, K )
+        if 0<self.angleA.degree < 90 and 0<self.angleB.degree < 90 :
             # In this case, the mark will be attached
             # - by the upper left to the line OB (let X be that point)
             # - by the lower right to the line OA   (let Y be that point)
@@ -185,19 +153,18 @@ class AngleGraph(ObjectGraph):
             y=l*sin(self.angleB.radian)
 
             # This is the vector O->central_point
-            v= AffineVector( self.O, Point( x+dimx/2,y-dimy/2) )   
-            # In fact we use this vector to translate from the mark_point.
-            # Thus we are sure that the mark will in the same time
-            # - not intersect the lines
-            # - be further than the code.
 
-        elif 0<self.angleA.degree < 90 and ( self.angleB.degree==90 or self.angleB.radian==pi/2  ):
+            return AffineVector( self.O, Point( x+dimx/2,y-dimy/2) )   
+
+        # In each case, the computed vector 'v' is the vector
+        #  O -> center of the box containing the text.
+        if 0<self.angleA.degree < 90 and ( self.angleB.degree==90 or self.angleB.radian==pi/2  ):
             x=0
             y=dimx/tan(self.measure.radian)
             Q=self.O+(0,y)
-            v=AffineVector(self.O,Q+(-dimx/2,dimy/2))
+            return AffineVector(self.O,Q+(-dimx/2,dimy/2))
 
-        elif 0<self.angleA.degree < 90 and 90<self.angleB.degree < 180 :
+        if 0<self.angleA.degree < 90 and 90<self.angleB.degree < 180 :
             h=dimx*sin(self.angleA.radian)
             l=h/sin(self.measure.radian)
             gamma=pi-self.angleB.radian
@@ -205,14 +172,14 @@ class AngleGraph(ObjectGraph):
             y=l*sin(gamma)
 
             Q=self.O+(-x,y)     # lower left angle of the box
-            v = AffineVector(self.O, Q+(dimx/2,dimy/2) )
+            return AffineVector(self.O, Q+(dimx/2,dimy/2) )
 
-        elif (self.angleA.radian==pi/2 or self.angleA.degree==90) and 90<self.angleB.degree<180 :
+        if (self.angleA.radian==pi/2 or self.angleA.degree==90) and 90<self.angleB.degree<180 :
             l=dimx/tan(self.measure.radian)
             Q=self.O+(0,l)
-            v=AffineVector(self.O,Q+(-dimx/2,dimy/2))
+            return AffineVector(self.O,Q+(-dimx/2,dimy/2))
             
-        elif 90<self.angleA.degree < 180 and 90<self.angleB.degree < 180 :
+        if 90<self.angleA.degree < 180 and 90<self.angleB.degree < 180 :
             d=sqrt(dimx**2+dimy**2)
             beta=pi-self.angleB.radian
             alpha=atan(dimy/dimx)
@@ -225,16 +192,16 @@ class AngleGraph(ObjectGraph):
             x=l*cos(tau)
             y=l*sin(tau)
             Q=self.O+(-x,y)
-            v=AffineVector(self.O,Q+(-dimx/2,dimy/2))
+            return AffineVector(self.O,Q+(-dimx/2,dimy/2))
 
-        elif 90<self.angleA.degree < 180 and (self.angleB.degree==180 or self.angleB.radian==pi) :
+        if 90<self.angleA.degree < 180 and (self.angleB.degree==180 or self.angleB.radian==pi) :
             l=dimy/sin(self.measure.radian)
             x=l*cos(self.measure.radian)
             y=dimy
             Q=self.O+(-x,y)
-            v=AffineVector( self.O, Q+(-dimx/2,-dimy/2) )
+            return AffineVector( self.O, Q+(-dimx/2,-dimy/2) )
 
-        elif 90<self.angleA.degree < 180 and 180<self.angleB.degree < 270 :
+        if 90<self.angleA.degree < 180 and 180<self.angleB.degree < 270 :
             alpha=3*pi/2-self.angleB.radian
             h=dimy*sin(alpha)
             l=h/sin(self.measure.radian)
@@ -242,20 +209,21 @@ class AngleGraph(ObjectGraph):
             x=l*sin(gamma)
             y=l*cos(gamma)
             Q=self.O+(-x,y)
-            v=AffineVector(self.O,Q+(-dimx/2,-dimy/2))
+            return AffineVector(self.O,Q+(-dimx/2,-dimy/2))
 
-        elif (self.angleA.degree==180 or self.angleA.radian==pi) and  180<self.angleB.degree < 270:
+        if (self.angleA.degree==180 or self.angleA.radian==pi) and  180<self.angleB.degree < 270:
             alpha=pi/2-self.measure.radian
             x=dimy*tan(alpha)
             Q=self.O+(-x,0)
-            v=AffineVector(self.O,Q+(-dimx/2,-dimy/2))
+            return AffineVector(self.O,Q+(-dimx/2,-dimy/2))
 
-        elif 180<self.angleA.degree < 270 and (self.angleB.degree==270 or self.angleB.radian==3*pi/2) :
+        if 180<self.angleA.degree < 270 and (self.angleB.degree==270 or self.angleB.radian==3*pi/2) :
             y=dimx/tan(self.measure.radian)
             Q=self.O+(0,-y)
-            v=AffineVector(self.O,Q+(-dimx/2,dimy/2)  )
 
-        elif 180<self.angleA.degree < 270 and 270<self.angleB.degree < 360 :
+            return AffineVector(self.O,Q+(-dimx/2,-dimy/2)  )
+
+        if 180<self.angleA.degree < 270 and 270<self.angleB.degree < 360 :
             alpha=self.angleA.radian-pi
             h=dimx*cos(alpha)
             beta=pi/2-self.measure.radian
@@ -264,25 +232,25 @@ class AngleGraph(ObjectGraph):
             x=l*cos(gamma)
             y=l*sin(gamma)
             Q=self.O+(x,-y)
-            v=AffineVector(self.O,Q+(-dimx/2,-dimy/2))
+            return AffineVector(self.O,Q+(-dimx/2,-dimy/2))
 
-        elif 270<self.angleA.degree < 360 and 0<self.angleB.degree<90:
+        if 270<self.angleA.degree < 360 and 0<self.angleB.degree<90:
             alpha=self.angleB.radian
             l=dimy*cos(alpha)
             beta=pi/2-alpha
             x=l*sin(beta)
             y=l*cos(beta)
             Q=self.O+(x,y)
-            v=AffineVector(self.O,Q+(dimx/2,-dimy/2))
+            return AffineVector(self.O,Q+(dimx/2,-dimy/2))
 
-        elif (self.angleA.radian==3*pi/2 or self.angleA.degree==270) and 270<self.angleB.degree<360 :
+        if (self.angleA.radian==3*pi/2 or self.angleA.degree==270) and 270<self.angleB.degree<360 :
             l=dimx/tan(self.measure.radian)
             x=0
             y=l
             Q=self.O+(x,-y)
-            v=AffineVector(self.O,Q+(dimx/2,-dimy/2))
+            return AffineVector(self.O,Q+(dimx/2,-dimy/2))
 
-        elif 180<self.angleA.degree < 270 and 180<self.angleB.degree<270:
+        if 180<self.angleA.degree < 270 and 180<self.angleB.degree<270:
             d=sqrt(dimx**2+dimy**2)
             alpha=atan(dimy/dimx)
             beta=self.angleA.radian-pi
@@ -293,9 +261,9 @@ class AngleGraph(ObjectGraph):
             x=l*sin(sigma)
             y=l*cos(sigma)
             Q=self.O+(-x,-y)
-            v=AffineVector(self.O,Q+(-dimx/2,dimy/2))
+            return AffineVector(self.O,Q+(-dimx/2,dimy/2))
 
-        elif 180<self.angleA.degree < 270 and 270<self.angleB.degree<360:
+        if 180<self.angleA.degree < 270 and 270<self.angleB.degree<360:
             alpha=self.measure.radian-pi
             h=dimx*sin(alpha)
             l=h/sin(self.measure.radian)
@@ -303,9 +271,9 @@ class AngleGraph(ObjectGraph):
             x=l*sin(beta)
             y=l*cos(beta)
             Q=self.O+(x,-y)
-            v=AffineVector( self.O,Q+(-dimx/2,-dimy/2)  )
+            return AffineVector( self.O,Q+(-dimx/2,-dimy/2)  )
 
-        elif 270<self.angleA.degree < 360 and 270<self.angleB.degree<360:
+        if 270<self.angleA.degree < 360 and 270<self.angleB.degree<360:
             alpha=2*pi-self.angleA.radian
             beta=arctan(dimy/dimx)
             sigma=alpha+beta
@@ -316,14 +284,14 @@ class AngleGraph(ObjectGraph):
             x=l*sin(gamma)
             y=l*cos(gamma)
             Q=self.O+(x,-y)
-            v=AffineVector(self.O,Q+(dimx/2,dimy/2))
+            return AffineVector(self.O,Q+(dimx/2,dimy/2))
 
-        elif 270<self.angleA.degree < 360 and (self.angleB.degree==360 or self.angleB.radian==2*pi or self.angleB.radian==0 or self.angleB.degree==0) :
+        if 270<self.angleA.degree < 360 and (self.angleB.degree==360 or self.angleB.radian==2*pi or self.angleB.radian==0 or self.angleB.degree==0) :
             l=dimy/tan(self.measure.radian)
             Q=self.O+(l,0)
-            v=AffineVector(self.O,Q+(dimx/2,-dimy/2))
+            return AffineVector(self.O,Q+(dimx/2,-dimy/2))
 
-        elif 260<self.angleA.degree < 360 and ( self.angleB.degree>360 or 0<self.angleB.degree<90):
+        if 260<self.angleA.degree < 360 and ( self.angleB.degree>360 or 0<self.angleB.degree<90):
             alpha=self.angleA.radian-pi/2
             h=dimy*sin(alpha)
             l=h/sin(self.measure.radian)
@@ -331,15 +299,62 @@ class AngleGraph(ObjectGraph):
             x=l*sin(beta)
             y=l*cos(beta)
             Q=self.O+(x,y)
-            v=AffineVector(self.O,Q+(dimx/2,-dimy/2))
+            return AffineVector(self.O,Q+(dimx/2,-dimy/2))
 
         else :
             raise ValueError("Not yet implemented for angles :",numerical_approx(self.angleA.degree),numerical_approx(self.angleB.degree))
+
+    def get_mark(self,dist=None,angle=None,text="",mark_point=None,added_angle=None,position=None,pspict=None):
+        """
+        The mark on an angle is determined in the following way.
+
+        A vector 'v' is computed in such a way that placing
+        the center of the mark at
+        self.O+v
+        makes the mark being just  in the angle 
+
+        Then the center of the mark is placed at 
+        self.mark_point+v
+
+        Thus the mark should be ok.
+
+        If you give the optional argument "dist", the vector 'v' is replaced by
+        v.fix_size(dist)
+        In this case you have to fix a correct value of 'dist' by hand.
+
+        """
+
+        mark_point=self.mark_point(pspict)
+
+        if self.measure.degree>90 or self.measure.degree<-90 : 
+            if dist is None:
+                dist=0.2
+            return mark_point.get_mark(dist=dist,angle=self.advised_mark_angle(pspict),text=text,position=position,pspict=pspict)
+
+        if position != None:
+            print("The mark of an angle should be given without position argument")
+            raise
+        
+        # The default can be any value different than zero. It serves to 
+        # avoid a division by zero during the first compilation.
+        dimx,dimy = pspict.get_box_size(text,default_value="3pt")  
+
+        # Now there are a lot of cases depending on the angles of the two lines determining the angle AOB.
+        # We will detail the computations for the case
+        #  0<self.angleA.degree < 90 and 0<self.angleB.degree < 90 
+        # The other cases are the same kind of trigonometry.
+        # I just let you know that if you know 3 angles and one length in a triangle, you know everything : 
+        # just draw the altitude and use Pythagoras along with some trigonometry.
+
+        # The cases are tested in the demo file 'OMPAooMbyOIqeA'
+
+        v=self._getOCvector(dimx,dimy,pspict=pspict)
 
         if dist is not None :
             if dist<v.length :
                 logging("The distance you give is {} while I computed the minimal to be {}".format(dist,v.length),pspict=pspict)
             v=v.normalize(dist)
+
         v=visual_vector(v,pspict=pspict)
         C=mark_point+v
         return Mark(self,dist=None,angle=None,text=text,mark_point=None,central_point=C,position=None,pspict=pspict)
