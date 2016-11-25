@@ -28,6 +28,8 @@ from GlobalVariables import global_vars
 from Utilities import latinize
 from Utilities import newlengthName
 from NoMathUtilities import ensure_unicode
+from NoMathUtilities import logging
+
 
 def add_latex_line_entete(truc,position=""):
     from Picture import Picture
@@ -140,7 +142,14 @@ class Figure(object):
             name="sub"+latinize(str(number))
         if pspict==None:
             from Picture import Picture
-            pspict=Picture("FIG"+self.name+"PICT"+name)
+
+            # Simplifying the auxiliary files names and then also the
+            # logging messages.  November 2016.
+            #pspict=Picture("FIG"+self.name+"PICT"+name)
+            #logging("self.name = "+self.name)
+            #logging("name = "+name)
+
+            pspict=Picture(name)
 
         pspict.figure_mother=self
         self._add_pspicture(pspict)

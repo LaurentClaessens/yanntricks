@@ -104,6 +104,7 @@ class AuxFile(object):
         if Id not in self.id_values_dict().keys():
             if not global_vars.silent:
                 if not self.already_warned_CompileYourLaTeXFile:
+                    logging(self.picture.name+"-----")
                     logging("Warning: the auxiliary file {} does not contain the id «{}». Compile your LaTeX file.".format(self.interWriteFile.from_main(),Id),pspict=self.picture)
                     logging(u"Concerned tex expression : "+self.interId_to_tex_expression[Id])
 
