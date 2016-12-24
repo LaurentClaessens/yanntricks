@@ -158,8 +158,15 @@ class AngleMeasure(object):
     def __rmul__(self,coef):
         return self*coef
     def __sub__(self,other):
-        return self+(-other)
-        return AngleMeasure(value_radian=self.radian-other.radian)
+        try :
+            s = AngleMeasure(value_radian=self.radian-other.radian)
+        except AttributeError :
+            from NoMathUtilities import logging,testtype
+            logging("Are you trying to add an 'AngleMesasure' with something else ?")
+            logging("'other's type is "+str(type(other)))
+            raise
+        return s
+
     def __add__(self,other):
         """
         return the sum of two angles.
@@ -188,13 +195,9 @@ class AngleMeasure(object):
             return AngleMeasure(value_radian=self.radian+other.radian)
         except AttributeError :
             from NoMathUtilities import logging
-            logging("Adding an 'AngleMeasure' with a number will be deprecated in a near future.")
-            if other in ZZ :
-                return AngleMeasure(value_degree=self.degree+other)
-            elif "pi" in repr(other) :
-                return AngleMeasure(value_radian=self.radian+other)
-            else :
-                raise TypeError, "I do not know how to add {0} with {1}".format(type(self),type(other))
+            logging("Are you trying to add an 'AngleMeasure' with something else ?")
+            logging("The other's type is "+str(type(other)))
+            raise
     def __neg__(self):
         return AngleMeasure(value_degree=-self.degree)
     def __call__(self):

@@ -25,6 +25,7 @@ from sage.all import *
 from ObjectGraph import ObjectGraph,AddedObjects
 from Constructors import *
 from Utilities import *
+from NoMathUtilities import logging
 
 from PointGraph import PointGraph
 
@@ -33,7 +34,11 @@ class SegmentGraph(ObjectGraph):
         self.I = A
         self.F = B
         if not isinstance(A,PointGraph) or not isinstance(B,PointGraph):
-            raise
+            from NoMathUtilities import testtype
+            logging("Building a segment from something that is not a point. Here are the given objects :")
+            testtype(A)
+            testtype(B)
+            raise TypeError
         ObjectGraph.__init__(self,self)
         self.measure=None
     @lazy_attribute
@@ -43,7 +48,7 @@ class SegmentGraph(ObjectGraph):
     def Dy(self):
         return self.F.y-self.I.y
     @lazy_attribute
-    def slope(self):        # It was before names "coefficient"
+    def slope(self):        # It was before named "coefficient"
         """
         return the angular coefficient of line.
 
