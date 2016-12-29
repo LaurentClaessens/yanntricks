@@ -140,12 +140,14 @@ def AffineVector(A=None,B=None):
 
 def Vector(A,B=None):
     """
-    From the coordinates x,y, return the corresponding vector, i.e. the affine vector from (0,0) to (x,y).
+    return a vector from (0,0) to the given point.
 
-    You can also only give a Point
+    Vector(3,4)
+    Vector(P)  # If 'P' is a point
+    Vector(t)  # if 't' is a tuple of two numbers
     """
     from PointGraph import PointGraph
-    O=Point(0,1)
+    O=Point(0,0)        # Was (0,1) up to December 29, 2016
     if isinstance(A,PointGraph):
         return AffineVector(O,A)
     if isinstance(A,tuple):
