@@ -1,0 +1,17 @@
+
+travail.txt
+phystricks.log
+.pytex.log
+0-*
+Inter_*
+*.aux
+*.auxlock
+Fig_*.pstricks
+pytextools.xml
+*.md5
+*.dpth
+*.log
+*.pdf
+tikzFIG*
+*.swo
+*.swo

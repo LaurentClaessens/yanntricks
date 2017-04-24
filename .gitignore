@@ -15,8 +15,6 @@ vieux/*
 documentation/sphynx/*
 instance.vim
 testing/phystricks*.py
-testing/demonstration/phystricks.log
-testing/demonstration/.pytex.log
 testing/testing_pictures/*.aux
 testing/testing_pictures/*.pstricks
 testing/testing_pictures/*.comment
@@ -38,18 +36,7 @@ testing/testing_pictures/figures_testing.py
 testing/testing_pictures/phystricks*.py
 testing/testing_pictures/Inter_*
 testing/testing_pictures/travail.txt
-testing/demonstration/0-*
-testing/demonstration/Inter_*
-testing/demonstration/*.aux
-testing/demonstration/*.auxlock
-testing/demonstration/Fig_*
-testing/demonstration/pytextools.xml
-testing/demonstration/*.md5
-testing/demonstration/*.pdf
-testing/demonstration/tikzFIG*
-testing/demonstration/*.swo
 testing/testing_pictures/fp081206-28.pdf
-testing/demonstration/travail.txt
 Inter_*
 *.comment
 *.pstricks
@@ -71,7 +58,3 @@ testing/unit_tests/.gitignore
 
 READMEphystricks.html
 
-testing/demonstration/tikzNWAEooQBLYYrpS.dpth
-testing/demonstration/tikzNWAEooQBLYYrpS.log
-testing/demonstration/tikzWQVZooAhkdlegv.dpth
-testing/demonstration/tikzWQVZooAhkdlegv.log
