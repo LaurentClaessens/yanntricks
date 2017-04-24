@@ -139,4 +139,3 @@ class AxesGraph(ObjectGraph):
             pspict.DrawGraphs(self.single_axeX,separator_name="AXES")
         if self.draw_single_axeY :
             pspict.DrawGraphs(self.single_axeY,separator_name="AXES")
-
