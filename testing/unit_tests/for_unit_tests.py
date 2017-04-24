@@ -10,10 +10,6 @@ from Testing import assert_true
 from Testing import assert_equal
 from Testing import assert_almost_equal
 
-"""
-This file contains only doctests with output too long or not sufficiently interesting to be included in the code itself.
-"""
-
 def testFGetMinMaxData():
     x,y=var('x,y')
     F=ImplicitCurve(x**2+y**2==sqrt(2),(x,-5,5),(y,-4,4),plot_points=300)
