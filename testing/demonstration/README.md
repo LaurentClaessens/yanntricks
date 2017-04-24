@@ -25,4 +25,3 @@ The program `pytex` makes the patching for you.
     ```
 * Patch `demo.tex` in order to have the counter `useexternal` equals zero.
 * Launch `pdflatex` on `demo.tex` with `-shell-escape`
-
