@@ -23,7 +23,7 @@
 from sage.all import *
 
 def BoundingBox(P1=None,P2=None,xmin=1000,xmax=-1000,ymin=1000,ymax=-1000,parent=None,mother=None,math=False):
-    from BoundingBox import BoundingBox_class
+    from phystricks.src.BoundingBox import BoundingBox_class
     return BoundingBox_class(P1,P2,xmin,xmax,ymin,ymax,parent,mother,math)
 
 def Point(x,y):
@@ -53,7 +53,7 @@ def Point(x,y):
     Notice that the coordinates of the point have to be numerical in order to be passed to tikz (and then LaTeX) at the end::
 
     """
-    from PointGraph import PointGraph
+    from phystricks.src.PointGraph import PointGraph
     return PointGraph(x,y)
 
 def PolarPoint(r,theta):
@@ -104,7 +104,7 @@ def Segment(A,B=None,vector=None):
     """
     if vector:
         B=A+vector
-    from SegmentGraph import SegmentGraph
+    from phystricks.src.SegmentGraph import SegmentGraph
     return SegmentGraph(A,B)
 
 def PolarSegment(P,r,theta):
@@ -130,9 +130,9 @@ def AffineVector(A=None,B=None):
         sage: print AffineVector(Point(1,1),Point(pi,sqrt(2)))
         <vector I=<Point(1,1)> F=<Point(pi,sqrt(2))>>
     """
-    from AffineVectorGraph import AffineVectorGraph
-    from PointGraph import PointGraph
-    from SegmentGraph import SegmentGraph
+    from phystricks.src.AffineVectorGraph import AffineVectorGraph
+    from phystricks.src.PointGraph import PointGraph
+    from phystricks.src.SegmentGraph import SegmentGraph
     if isinstance(A,PointGraph):
         return AffineVectorGraph(A,B)
     if isinstance(A,SegmentGraph):
@@ -146,7 +146,7 @@ def Vector(A,B=None):
     Vector(P)  # If 'P' is a point
     Vector(t)  # if 't' is a tuple of two numbers
     """
-    from PointGraph import PointGraph
+    from phystricks.src.PointGraph import PointGraph
     O=Point(0,0)        # Was (0,1) up to December 29, 2016
     if isinstance(A,PointGraph):
         return AffineVector(O,A)
@@ -237,7 +237,7 @@ def CircularSector(center,radius,a,b):
     return CustomSurface(l1,l2,l3)
 
 def FractionPieDiagram(center,radius,a,b):
-    from MiscGraph import FractionPieDiagramGraph
+    from phystricks.src.MiscGraph import FractionPieDiagramGraph
     return FractionPieDiagramGraph(center,radius,a,b)
 
 def Mark(graph=None,dist=None,angle=None,central_point=None,text="",mark_point=None,position=None,pspict=None):
@@ -265,7 +265,7 @@ def Mark(graph=None,dist=None,angle=None,central_point=None,text="",mark_point=N
     - ``pspict`` - the pspict in which the mark has to be computed and drawn.
     """
     import MarkGraph
-    from NoMathUtilities import ensure_unicode
+    from phystricks.src.NoMathUtilities import ensure_unicode
     text=ensure_unicode(text)
     return MarkGraph.MarkGraph(graph,dist,angle,text,central_point=central_point,mark_point=mark_point,position=position,pspict=pspict)
 
@@ -306,7 +306,7 @@ def AngleAOB(A,O,B,r=None):
     .. image:: Picture_FIGLabelFigTriangleRectanglePICTTriangleRectangle-for_eps.png
 
     """
-    from AngleGraph import AngleGraph
+    from phystricks.src.AngleGraph import AngleGraph
     return AngleGraph(A,O,B,r)
 
 def Angle(A,O,B,r=None):
@@ -351,7 +351,7 @@ def phyFunction(fun,mx=None,Mx=None):
     .. image:: Picture_FIGLabelFigNonAnalyticOnePICTNonAnalyticOne-for_eps.png
 
     """
-    from phystricks.phyFunctionGraph import phyFunctionGraph
+    from phystricks.src.phyFunctionGraph import phyFunctionGraph
     # The first try is that the given expression is already a phyFunction.
     try:
         return fun.graph(mx,Mx)     
@@ -407,7 +407,7 @@ def ParametricCurve(f1,f2,interval=(None,None)):
     f2=EnsurephyFunction(f2)
     if isinstance(llamI,AngleMeasure):
         raise
-    from ParametricCurveGraph import ParametricCurveGraph
+    from phystricks.src.ParametricCurveGraph import ParametricCurveGraph
     return ParametricCurveGraph(f1,f2,llamI,llamF)
 
 def NonAnalyticPointParametricCurve(f,mx,Mx):
@@ -417,7 +417,7 @@ def NonAnalyticPointParametricCurve(f,mx,Mx):
     - f : a function (in the Python sense) that takes a number as argument and which returns a PointGraph.
     - mx,Mx  : the minimal and maximal values of the parameters.
     """
-    from NonAnalytic import NonAnalyticPointParametricCurveGraph
+    from phystricks.src.NonAnalytic import NonAnalyticPointParametricCurveGraph
     return NonAnalyticPointParametricCurveGraph(f,mx,Mx)
 
 
@@ -529,7 +529,7 @@ def MeasureLength(seg,dist=0.1):
     You are invited to use advised_mark_angle. If not the position of the mark
     could be unpredictable.
     """
-    from MeasureLengthGraph  import MeasureLengthGraph
+    from phystricks.src.MeasureLengthGraph  import MeasureLengthGraph
     return MeasureLengthGraph(seg,dist)
 
 def CustomSurface(*args):
@@ -559,7 +559,7 @@ def CustomSurface(*args):
         a=args[0]
     else :
         a=args
-    from CustomSurfaceGraph import CustomSurfaceGraph
+    from phystricks.src.CustomSurfaceGraph import CustomSurfaceGraph
     return CustomSurfaceGraph(list(a))
 
 def RightAngle(d1,d2,n1=0,n2=1,r=0.3):
@@ -568,7 +568,7 @@ def RightAngle(d1,d2,n1=0,n2=1,r=0.3):
     'r' is the size of the "edge"
     'n1' and 'n2' are 0 ot 1 and are determining which of the 4 angles has to be marked (two lines -> 4 angles)
     """
-    from AngleGraph import RightAngleGraph
+    from phystricks.src.AngleGraph import RightAngleGraph
     return RightAngleGraph(d1,d2,r,n1,n2)
 
 def RightAngleAOB(A,O,B,n1=0,n2=1,r=0.3):
@@ -666,7 +666,7 @@ def Polygon(*args):
     .. literalinclude:: phystricksExPolygone.py
     .. image:: Picture_FIGLabelFigExPolygonePICTExPolygone-for_eps.png
     """
-    from PolygonGraph import PolygonGraph
+    from phystricks.src.PolygonGraph import PolygonGraph
     if len(args)==1:     # In this case, we suppose that this is a list
         # args is a tupe containing the arguments. If you call
         # Polygon([P,Q]) then args[0] is [P,Q]
@@ -699,15 +699,15 @@ def Rectangle(*args,**arg):
         # TODO : I should be able to pass directly the dictionary to BoundingBox
         NW=bb.getVertex("NW")
         SE=bb.getVertex("SE")
-    from RectangleGraph import RectangleGraph
+    from phystricks.src.RectangleGraph import RectangleGraph
     return RectangleGraph(NW,SE)
 
 def Circle3D(op,O,A,B,angleI=0,angleF=2*pi):
-    from PerspectiveGraphs import Circle3DGraph
+    from phystricks.src.PerspectiveGraphs import Circle3DGraph
     return Circle3DGraph(op,O,A,B,angleI,angleF)
 
 def Vector3D(x,y,z):
-    from PerspectiveGraphs import Vector3DGraph
+    from phystricks.src.PerspectiveGraphs import Vector3DGraph
     return Vector3DGraph(x,y,z)
 
 def Cuboid(op,P,a,b,c):
@@ -728,11 +728,11 @@ def Cuboid(op,P,a,b,c):
         3-------------------------2
 
     """
-    from PerspectiveGraphs import CuboidGraph
+    from phystricks.src.PerspectiveGraphs import CuboidGraph
     return CuboidGraph(op,P,a,b,c)
 
 def Grid(bb):
-    from GridGraph import GridGraph
+    from phystricks.src.GridGraph import GridGraph
     return GridGraph(bb)
 
 def Axes(C,bb,pspict=None):
@@ -741,7 +741,7 @@ def Axes(C,bb,pspict=None):
 
     By default they are orthogonal.
     """
-    from AxesGraph import AxesGraph
+    from phystricks.src.AxesGraph import AxesGraph
     return AxesGraph(C,bb,pspict)
 
 def SingleAxe(C,base,mx,Mx,pspict=None):
@@ -776,7 +776,7 @@ def SingleAxe(C,base,mx,Mx,pspict=None):
         sage: from phystricks import *
         sage: axe = SingleAxe(Point(1,1),Vector(0,1),-2,2)
         """
-    from SingleAxeGraph import SingleAxeGraph
+    from phystricks.src.SingleAxeGraph import SingleAxeGraph
     return SingleAxeGraph(C,base,mx,Mx,pspict)
 
 def intervals(curve1,curve2,interval,interval1,interval2):
@@ -896,9 +896,9 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,interval1=None,in
     .. image:: Picture_FIGLabelFigBetweenParametricPICTBetweenParametric-for_eps.png
 
     """
-    from CircleGraph import CircleGraph
-    from SegmentGraph import SegmentGraph
-    from Utilities import EnsureParametricCurve
+    from phystricks.src.CircleGraph import CircleGraph
+    from phystricks.src.SegmentGraph import SegmentGraph
+    from phystricks.src.Utilities import EnsureParametricCurve
     exceptions = [CircleGraph,SegmentGraph]
 
     on=True
@@ -942,7 +942,7 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,interval1=None,in
     except UnboundLocalError :
         pass
 
-    from SurfacesGraph import SurfaceBetweenParametricCurvesGraph
+    from phystricks.src.SurfacesGraph import SurfaceBetweenParametricCurvesGraph
     surf = SurfaceBetweenParametricCurvesGraph(c1,c2,(mx1,mx2),(Mx1,Mx2),reverse1,reverse2)
 
     surf.add_option("fillstyle=vlines,linestyle=none")  
@@ -974,7 +974,7 @@ def SurfaceUnderFunction(f,mx,Mx):
     .. image:: Picture_FIGLabelFigChiSquaresQuantilePICTChiSquaresQuantile-for_eps.png
 
     """
-    from NonAnalytic import NonAnalyticFunctionGraph
+    from phystricks.src.NonAnalytic import NonAnalyticFunctionGraph
     if isinstance(f,NonAnalyticFunctionGraph):
         line1=Segment(Point(mx,0),Point(Mx,0))
         line2=f.parametric_curve(mx,Mx)
@@ -1097,11 +1097,11 @@ def extract_interval_information(curve):
     return None,None
 
 def SudokuGrid(question,length=1):
-    from SudokuGridGraph import SudokuGridGraph
+    from phystricks.src.SudokuGridGraph import SudokuGridGraph
     return SudokuGridGraph(question,length)
 
 def phyMatrix(nlines,ncolumns):
-    from MatrixGraph import MatrixGraph
+    from phystricks.src.MatrixGraph import MatrixGraph
     return MatrixGraph(nlines,ncolumns)
 
 def EllipseOAB(O,A,B):
@@ -1109,24 +1109,24 @@ def EllipseOAB(O,A,B):
     An ellipse of center O and such that OA and OB are the axis 
     (OA and OB are supposed to be orthogonal)
     """
-    from EllipseGraph import EllipseGraph
+    from phystricks.src.EllipseGraph import EllipseGraph
     return EllipseGraph(O,A,B)
 
 def BarDiagram(X,Y):
     if len(X) != len(Y):
         raise ValueError,"X and Y must be of the same size."
-    from BarDiagramGraph import BarDiagramGraph
+    from phystricks.src.BarDiagramGraph import BarDiagramGraph
     return BarDiagramGraph(X,Y)
 
 def Histogram(tuple_box_list,legende=None):
     """
     An histogram is given by a list of tuple '(a,b,n)' where 'a' and 'b' are the extremal values of the box and 'n' is the number of elements in the box.
     """
-    from HistogramGraph import HistogramGraph
+    from phystricks.src.HistogramGraph import HistogramGraph
     return HistogramGraph(tuple_box_list,legende)
 
 def BoxDiagram(values,h,delta_y=0):
-    from BoxDiagramGraph import BoxDiagramGraph
+    from phystricks.src.BoxDiagramGraph import BoxDiagramGraph
     return BoxDiagramGraph(values,h,delta_y)
 
 def Moustache(minimum,Q1,M,Q3,maximum,h,delta_y=0):
@@ -1134,7 +1134,7 @@ def Moustache(minimum,Q1,M,Q3,maximum,h,delta_y=0):
     Q1 and Q3 are first and third quartiles; M is the median.
     h is the size of the box
     """
-    from MoustacheGraph import MoustacheGraph
+    from phystricks.src.MoustacheGraph import MoustacheGraph
     return MoustacheGraph(minimum,Q1,M,Q3,maximum,h,delta_y)
 
-from Utilities import *
+from phystricks.src.Utilities import *

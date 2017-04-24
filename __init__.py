@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2016
+# copyright (c) Laurent Claessens, 2009-2017
 # email: laurent@claessens-donadello.eu
 
 # The documentation is compiled by
@@ -27,12 +27,12 @@ from __future__ import unicode_literals
 
 from sage.all import *
 
-from Constructors import *
-from Utilities import radian
-from Utilities import degree
-from MathStructures import AxesUnit
-from Utilities import Intersection
-from phystricks.ObjectGraph import Options
+from src.Constructors import *
+from src.Utilities import radian
+from src.Utilities import degree
+from src.MathStructures import AxesUnit
+from src.Utilities import Intersection
+from src.ObjectGraph import Options
 
 """
 A collection of tools for building LaTeX pictures with python.
@@ -62,7 +62,7 @@ var=WrapperStr(var)
 import codecs
 import math, sys, os
 
-from phystricks.SmallComputations import *
+from phystricks.src.SmallComputations import *
 
 # TODO : f=phyFunction(x**2+3*x-10), then  g=f/3 does not work.
 # TODO : In figureHYeBZVj, the grid begins at negative numbers. Why ? (see smath available on  https://github.com/LaurentClaessens/smath)
@@ -112,7 +112,7 @@ def GenericFigure(nom,script_filename=None):
     label = "LabelFig"+nom          # The string "LabelFig" is hard-coded in the function main.figure.LaTeX_lines
     filename = "Fig_"+nom+".pstricks"
 
-    from Figure import Figure
+    from src.Figure import Figure
     fig=Figure(caption,label,filename,script_filename)
     fig.figure_mother=fig   # I'm not sure that this line is useful.
     print fig.LaTeX_lines()
@@ -192,11 +192,11 @@ def IndependentPictures(name,n):
     """
     pspicts=[]
     figs=[]
-    from Utilities import latinize
+    from src.Utilities import latinize
     for i in range(0,n):
         # One has to latinize to be in grade of making subfigures :
         # if not one gets things like \newcommand{\CaptionFigFoo1}{blahblah}  which does not work in LaTeX because of the "1"
-        pspict,fig = SinglePicture(name+"oo"+Utilities.latinize(str(i)))
+        pspict,fig = SinglePicture(name+"oo"+latinize(str(i)))
         pspicts.append(pspict)
         figs.append(fig)
     return pspicts,figs
@@ -284,7 +284,7 @@ class ObliqueProjection(object):
 
         `alpha` is given in degree. It is immediately converted in order to have positive number. If you give -45, it will be converted to 315
         """
-        from MathStructures import AngleMeasure
+        from src.MathStructures import AngleMeasure
         self.k=k
         if self.k>=1 :
             print "Are you sure that you want such a scale factor : ",float(self.k)
@@ -450,13 +450,13 @@ def unify_point_name(s):
         if n not in rematch:
             rematch.append(n)
 
-    from PointGraph import PointsNameList
+    from src.PointGraph import PointsNameList
     names=PointGraph.PointsNameList()
     for m in rematch:
         name=names.next()
         s=s.replace("{%s}"%m,"{X%s}"%name).replace("(%s)"%m,"(X%s)"%name)
     return s
 
-import GlobalVariables
-import phystricks.BasicGeometricObjects as BasicGeometricObjects
-import phystricks.main as main
+import src.GlobalVariables
+import src.BasicGeometricObjects as BasicGeometricObjects
+import src.main as main

@@ -22,13 +22,14 @@
 
 from sage.all import pi,sqrt,SR
 
-from phystricks.ObjectGraph import ObjectGraph
-from phystricks.ObjectGraph import Options
-from MathStructures import AxesUnit
-from SmallComputations import RemoveLastZeros
-from Constructors import BoundingBox,Segment,AffineVector
-from Visual import visual_polar
-from Utilities import degree
+from phystricks.src.MathStructures import AxesUnit
+from phystricks.src.SmallComputations import RemoveLastZeros
+from phystricks.src.Constructors import BoundingBox,Segment,AffineVector
+from phystricks.src.Visual import visual_polar
+from phystricks.src.Utilities import degree
+
+from phystricks.src.ObjectGraph import ObjectGraph
+from phystricks.src.ObjectGraph import Options
 
 class SingleAxeGraph(ObjectGraph):
     def __init__(self,C,base,mx,Mx,pspict=None):

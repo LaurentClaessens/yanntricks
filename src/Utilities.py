@@ -21,9 +21,9 @@
 # email: laurent@claessens-donadello.eu
 
 from sage.all import *
-from Constructors import *
-from phystricks.MathStructures import *
-from Exceptions import ShouldNotHappenException
+from phystricks.src.Constructors import *
+from phystricks.src.MathStructures import *
+from phystricks.src.Exceptions import ShouldNotHappenException
 
 
 def is_real(z):

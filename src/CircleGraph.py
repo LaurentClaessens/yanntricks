@@ -17,14 +17,15 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
-from phystricks.ObjectGraph import ObjectGraph
-from Constructors import *
-from Utilities import *
-from GenericCurve import GenericCurve
-from Decorators import copy_parameters
+from phystricks.src.Constructors import *
+from phystricks.src.Utilities import *
+from phystricks.src.GenericCurve import GenericCurve
+from phystricks.src.Decorators import copy_parameters
+from phystricks.src.ObjectGraph import ObjectGraph
+
 import Defaults
 
 class CircleGraph(GenericCurve,ObjectGraph):

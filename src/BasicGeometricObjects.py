@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from __future__ import division
@@ -25,9 +25,9 @@ from __future__ import unicode_literals
 
 from sage.all import *
 from phystricks import *
-from phystricks.Constructors import *
+from phystricks.src.Constructors import *
 
-from phystricks.ObjectGraph import ObjectGraph
+from phystricks.src.ObjectGraph import ObjectGraph
 
 var=WrapperStr(var)
 
@@ -48,8 +48,8 @@ def genericBracketAttributeToLanguage(attr,language):
 def OptionsStyleLigne():
     return ["linecolor","linestyle"]
 
-from phystricks.Parameters import Parameters
-from phystricks.PointGraph import PointGraph
+from phystricks.src.Parameters import Parameters
+from phystricks.src.PointGraph import PointGraph
 
 class GeometricImplicitCurve(object):
     """
@@ -636,5 +636,6 @@ def draw_to_fill(text):
     else :
         answer=t3.replace("plot","plot "+bracket)
     return answer
-import phystricks.main as main
-import phystricks.SmallComputations as SmallComputations
+
+import phystricks.src.main as main
+import phystricks.src.SmallComputations as SmallComputations

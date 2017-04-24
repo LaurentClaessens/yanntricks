@@ -20,9 +20,9 @@
 # copyright (c) Laurent Claessens, 2010-2016
 # email: laurent@claessens-donadello.eu
 
-from phystricks.ObjectGraph import ObjectGraph
-from Constructors import *
-from Utilities import *
+from phystricks.src.ObjectGraph import ObjectGraph
+from phystricks.src.Constructors import *
+from phystricks.src.Utilities import *
 
 class FractionPieDiagramGraph(ObjectGraph):
     def __init__(self,center,radius,a,b):

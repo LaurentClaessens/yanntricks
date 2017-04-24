@@ -17,15 +17,15 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
-from phystricks.ObjectGraph import ObjectGraph
-from Constructors import *
-from Utilities import *
-from MathStructures import AxesUnit
-from phystricks.ObjectGraph import Options
-from SmallComputations import RemoveLastZeros
+from phystricks.src.ObjectGraph import ObjectGraph
+from phystricks.src.Constructors import *
+from phystricks.src.Utilities import *
+from phystricks.src.MathStructures import AxesUnit
+from phystricks.src.ObjectGraph import Options
+from phystricks.src.SmallComputations import RemoveLastZeros
 
 class AxesGraph(ObjectGraph):
     def __init__(self,C,bb,pspict=None):

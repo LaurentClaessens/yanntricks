@@ -22,13 +22,14 @@
 
 from __future__ import division
 
-from phystricks.ObjectGraph import ObjectGraph
-from Constructors import *
-from Utilities import *
-from Visual import visual_polar_coordinates, visual_length,visual_vector
-from NoMathUtilities import logging
-from Decorators import copy_parameters
-from Exceptions import MissingPictureException
+from phystricks.src.Constructors import *
+from phystricks.src.Utilities import *
+from phystricks.src.Visual import visual_polar_coordinates, visual_length,visual_vector
+from phystricks.src.NoMathUtilities import logging
+from phystricks.src.Decorators import copy_parameters
+from phystricks.src.Exceptions import MissingPictureException
+
+from phystricks.src.ObjectGraph import ObjectGraph
 
 class AngleGraph(ObjectGraph):
     """

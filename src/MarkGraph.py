@@ -17,14 +17,14 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright(c) Laurent Claessens, 2010-2016
+# copyright(c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
-from phystricks.ObjectGraph import ObjectGraph
-from Constructors import *
-from Exceptions import ShouldNotHappenException
+from phystricks.src.Constructors import *
+from phystricks.src.Exceptions import ShouldNotHappenException
+from phystricks.src.NoMathUtilities import logging
 
-from NoMathUtilities import logging
+from phystricks.src.ObjectGraph import ObjectGraph
 
 class MarkGraph(ObjectGraph):
     def __init__(self,graph,dist,angle,text,mark_point=None,central_point=None,position=None,pspict=None):
