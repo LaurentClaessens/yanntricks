@@ -16,7 +16,6 @@ def pstricks_files_iterator():
 
 
 for filename in pstricks_files_iterator():
-    print("Working on "+filename)
     with open(filename,'r') as f:
         get_text=f.read()
 
