@@ -18,9 +18,12 @@
 # copyright (c) Laurent Claessens, 2009-2017
 # email: laurent@claessens-donadello.eu
 
-# This is a blank file for the sake of import.
-# http://stackoverflow.com/questions/1260792/python-import-a-file-from-a-subdirectory
+# This file must only contain import statements for the
+# functions needed by the user.
 
+"""
+A collection of tools for building LaTeX pictures with python.
+"""
 
 from __future__ import division
 from __future__ import unicode_literals
@@ -34,4 +37,5 @@ from phystricks.src.main import MultiplePictures
 from phystricks.src.main import IndependentPictures
 
 from phystricks.src.main import no_symbol
+from phystricks.src.Utilities import Distance
 from phystricks.src.Constructors import *

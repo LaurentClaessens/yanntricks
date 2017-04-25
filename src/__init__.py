@@ -19,12 +19,12 @@
 # copyright (c) Laurent Claessens, 2009-2017
 # email: laurent@claessens-donadello.eu
 
-from __future__ import division
-from __future__ import unicode_literals
 
-from phystricks.src.Constructors import *
-import phystricks.src.main
+# This is a blank file for the sake of import.
 
-"""
-A collection of tools for building LaTeX pictures with python.
-"""
+
+# from __future__ import division
+# from __future__ import unicode_literals
+
+# from phystricks.src.Constructors import *
+# import phystricks.src.main
