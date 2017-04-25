@@ -50,7 +50,6 @@ from phystricksQRXCooUmnlhkvh import QRXCooUmnlhkvh
 from phystricksUREIooqNGBXtHg import UREIooqNGBXtHg
 from phystricksQIXEooejrojKjo import QIXEooejrojKjo
 from phystricksDEIToomZFknFmn import DEIToomZFknFmn
-from phystricksQNHAooSYgkWVhJ import QNHAooSYgkWVhJ
 from phystricksUARHooLMWqvyaI import UARHooLMWqvyaI
 from phystricksHELQooLGapRQrr import HELQooLGapRQrr
 from phystricksYJEDoojDtSeKHQ import YJEDoojDtSeKHQ
@@ -108,7 +107,6 @@ figures_list.append(QEFQoomlfmOQTM)
 figures_list.append(OMPAooMbyOIqeA)
 figures_list.append(GGHOookMhIxqIK)
 figures_list.append(CNVAooybLqXmVS)
-figures_list.append(QNHAooSYgkWVhJ)
 figures_list.append(HUBEoofsPjXOQx)
 figures_list.append(BHESoofmkTbbZR)
 figures_list.append(OYBTooNUcJLzDH)
