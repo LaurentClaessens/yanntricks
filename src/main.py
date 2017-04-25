@@ -88,7 +88,7 @@ def GenericFigure(nom,script_filename=None):
     label = "LabelFig"+nom          # The string "LabelFig" is hard-coded in the function main.figure.LaTeX_lines
     filename = "Fig_"+nom+".pstricks"
 
-    from src.Figure import Figure
+    from phystricks.src.Figure import Figure
     fig=Figure(caption,label,filename,script_filename)
     fig.figure_mother=fig   # I'm not sure that this line is useful.
     print fig.LaTeX_lines()
@@ -168,7 +168,7 @@ def IndependentPictures(name,n):
     """
     pspicts=[]
     figs=[]
-    from src.Utilities import latinize
+    from phystricks.src.Utilities import latinize
     for i in range(0,n):
         # One has to latinize to be in grade of making subfigures :
         # if not one gets things like \newcommand{\CaptionFigFoo1}{blahblah}  which does not work in LaTeX because of the "1"
@@ -266,7 +266,7 @@ def unify_point_name(s):
         if n not in rematch:
             rematch.append(n)
 
-    from src.PointGraph import PointsNameList
+    from phystricks.src.PointGraph import PointsNameList
     names=PointGraph.PointsNameList()
     for m in rematch:
         name=names.next()

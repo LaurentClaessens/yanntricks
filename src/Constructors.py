@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright(c) Laurent Claessens, 2010-2016
+# copyright(c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from sage.all import *
@@ -1192,7 +1192,7 @@ class ObliqueProjection(object):
 
         `alpha` is given in degree. It is immediately converted in order to have positive number. If you give -45, it will be converted to 315
         """
-        from src.MathStructures import AngleMeasure
+        from phystricks.src.MathStructures import AngleMeasure
         self.k=k
         if self.k>=1 :
             print "Are you sure that you want such a scale factor : ",float(self.k)

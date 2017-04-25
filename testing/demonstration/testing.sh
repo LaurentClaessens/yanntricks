@@ -4,7 +4,7 @@
 compile_demo ()
 {
 SAGE_PATH=$SAGE_PATH  ./figures_demo.py --all
-#pytex lst_demo.py --no-external --all
+pytex lst_demo.py --no-external --all
 }
 
 
@@ -22,8 +22,8 @@ rm *.pyc >> /dev/null
 # (yes, some pictures need three passes)
 
 compile_demo
-#compile_demo
-#compile_demo
+compile_demo
+compile_demo
 
 # Then compare with the "recall" ones
 ./test_recall.py

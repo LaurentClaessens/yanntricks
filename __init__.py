@@ -28,6 +28,10 @@ from __future__ import unicode_literals
 from sage.all import *
 
 from phystricks.src.main import FigureGenerationSuite
-from phystricks.src.main import SinglePicture
 
+from phystricks.src.main import SinglePicture
+from phystricks.src.main import MultiplePictures
+from phystricks.src.main import IndependentPictures
+
+from phystricks.src.main import no_symbol
 from phystricks.src.Constructors import *
