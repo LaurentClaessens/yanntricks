@@ -1137,4 +1137,165 @@ def Moustache(minimum,Q1,M,Q3,maximum,h,delta_y=0):
     from phystricks.src.MoustacheGraph import MoustacheGraph
     return MoustacheGraph(minimum,Q1,M,Q3,maximum,h,delta_y)
 
+def ImplicitCurve(f,xrange,yrange,plot_points=100):
+    """
+    return the implicit curve given by equation f on the range xrange x yrange
+
+    This is a constructor for the class ImplicitCurveGraph
+    INPUT:
+
+    - ``f`` -- a function of two variables or equation in two variables
+
+    - ``xrange,yrange`` - the range on which we want to compute the implicit curve.
+    
+    OPTIONAL INPUT:
+
+    - ``plot_points`` - (defautl : 100) the number of points that will be calculated in each direction. 
+
+    The resulting bounding box will not be in general xrange x yrange. 
+
+    EXAMPLES:
+
+    We know that the curve x^2+y^2=2 is a circle of radius sqrt(2). Thus even if you ask a range of size 5,  you will only get the bounding box of size sqrt(2).
+
+    EXAMPLES::
+
+    sage: from phystricks import *
+    sage: x,y=var('x,y')
+    sage: f(x,y)=x**2+y**2
+    sage: F=ImplicitCurve(f==2,(x,-5,5),(y,-5,5))
+    sage: print F.bounding_box()
+    <BoundingBox mx=-1.413,Mx=1.413; my=-1.413,My=1.413>
+
+    But the following will be empty::
+
+    sage: G=ImplicitCurve(f==2,(x,-1,1),(y,-1,1))
+    sage: print G.paths
+    []
+
+    If you give very low value of plot_points, you get incorrect results::
+
+    sage: H=ImplicitCurve(f==2,(x,-2,2),(y,-2,2),plot_points=3)
+    sage: print H.bounding_box()
+    <BoundingBox mx=-1.414,Mx=1.414; my=-1.414,My=1.414>
+
+
+    Using Sage's implicit_curve and matplotlib, a list of points "contained" in the curve is created. The bounding_box is calculated from that list. The pstricsk code generated will be an interpolation curve passing trough all these points.
+    """
+    from phystricks.src.BasicGeometricObjects import GeometricImplicitCurve
+    return GeometricImplicitCurve(f).graph(xrange,yrange,plot_points=100)
+
+class ObliqueProjection(object):
+    def __init__(self,alpha,k):
+        """
+        This is the oblique projection of angle `alpha` and scale factor `k`.
+
+        `alpha` is given in degree. It is immediately converted in order to have positive number. If you give -45, it will be converted to 315
+        """
+        from src.MathStructures import AngleMeasure
+        self.k=k
+        if self.k>=1 :
+            print "Are you sure that you want such a scale factor : ",float(self.k)
+        self.alpha=alpha
+        a=AngleMeasure(value_degree=self.alpha).positive()
+        self.alpha=a.degree
+        self.theta=radian(self.alpha)
+        self.kc=self.k*cos(self.theta)
+        self.ks=self.k*sin(self.theta)
+    def point(self,x,y,z):
+        return Point(x+z*self.kc,y+z*self.ks)
+    def cuboid(self,P,a,b,c):
+        """
+        `P` -- a tupe (x,y) that gives the lower left point.
+
+        `a,b,c` the size
+        """
+        return Cuboid(self,P,a,b,c)
+
+def Text(P,text,hide=True):
+
+    """
+    A text.
+
+    INPUT:
+
+    - ``P`` - the point at which the center of the bounding box will lie.
+
+    - ``text`` - the text.
+
+    - ``hide`` - (default=True) When `True`, the background of the text is hidden by
+                    a rectangle. The color and style of that rectangle can be customized,
+                    see :class:`BasicGeometricObjects.TextGraph`
+
+    """
+    return BasicGeometricObjects.TextGraph(P,text,hide=hide)
+
+def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
+    """
+    return a vector field that is drawn on the points given in the list.
+
+    INPUT:
+
+    - ``fx,fy`` - two functions
+
+    OPTIONAL :
+
+    - ``xvalues`` - a tuple `(x,mx,Mx,n)` where `mx` and `Mx` are the min and max values of x and
+                    `n` is the number of values to be used on that interval.
+
+    - ``draw_points`` - a list of points on which the vector field has to be drawn.
+                        If draw_point is given, xvalues and yvalues are not taken into account.
+
+    OUTPUT:
+    the graphe vector field.
+
+    EXAMPLES::
+
+        sage: from phystricks import *
+        sage: x,y=var('x,y')
+        sage: F=VectorField(x*y,cos(x)+y)
+        sage: F.divergence()
+        (x, y) |--> y + 1
+
+
+    If you want an automatic Cartesian grid of points, use xvalues and yvalues::
+
+        sage: F=VectorField(exp(x+y),x**2+y**2,xvalues=(x,-1,1,3),yvalues=(y,-5,5,6))
+        sage: len(F.draw_points)
+        18
+        sage: print F.draw_points[5]
+        <Point(-1.0,5.0)>
+
+    The same can be obtained using the following syntax (see the function GeometricVectorField.graph)::
+
+        sage: F=VectorField(exp(x+y),x**2+y**2).graph(xvalues=(x,-1,1,3),yvalues=(y,-5,5,6))
+        sage: len(F.draw_points)
+        18
+        sage: print F.draw_points[5]
+        <Point(-1.0,5.0)>
+
+    If you want a personal list of points, use draw_points ::
+
+        sage: F=VectorField(exp(x+y),x**2+y**2, draw_points=[Point(1,1),Point(5,-23)] )
+        sage: print F.draw_points[0]
+        <Point(1,1)>
+        sage: print F.draw_points[1]
+        <Point(5,-23)>
+
+    A vector field with automatic management of the points to be drawn:
+
+    .. literalinclude:: phystricksChampVecteursDeux.py
+    .. image:: Picture_FIGLabelFigChampVecteursDeuxPICTChampVecteursDeux-for_eps.png
+
+    A vector field with given points to be drawn: 
+
+    .. literalinclude:: phystricksChampVecteur.py
+    .. image:: Picture_FIGLabelFigChampVecteursPICTChampVecteurs-for_eps.png
+
+
+    """
+    if xvalues is None and yvalues is None and draw_points is None :
+        return BasicGeometricObjects.GeometricVectorField(fx,fy)
+    return BasicGeometricObjects.GeometricVectorField(fx,fy).graph(xvalues,yvalues,draw_points)
+
 from phystricks.src.Utilities import *

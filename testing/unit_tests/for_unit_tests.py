@@ -27,8 +27,8 @@ def testSegment():
     assert_almost_equal(v.F,Point(1/2*sqrt(2) + 1.5,-1/2*sqrt(2) + 1.5),epsilon=0.001)
 
 def testEnsureUnicode():
-    from phystricks.NoMathUtilities import ensure_unicode
-    from phystricks.NoMathUtilities import ensure_str
+    from phystricks.src.NoMathUtilities import ensure_unicode
+    from phystricks.src.NoMathUtilities import ensure_str
 
     u1=u"éà"
     s1="éà"

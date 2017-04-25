@@ -29,6 +29,7 @@ from phystricks.src.Constructors import *
 
 from phystricks.src.ObjectGraph import ObjectGraph
 
+from phystricks.src.WrapperStr import WrapperStr
 var=WrapperStr(var)
 
 def genericBracketAttributeToLanguage(attr,language):
@@ -636,6 +637,3 @@ def draw_to_fill(text):
     else :
         answer=t3.replace("plot","plot "+bracket)
     return answer
-
-import phystricks.src.main as main
-import phystricks.src.SmallComputations as SmallComputations

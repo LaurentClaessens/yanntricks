@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2016
+# copyright (c) Laurent Claessens, 2009-2017
 # email: laurent@claessens-donadello.eu
 
 
@@ -24,6 +24,8 @@ from __future__ import unicode_literals
 
 from sage.all import *
 import sys
+import codecs
+import math, sys, os
 
 import BasicGeometricObjects
 import SmallComputations as SmallComputations
@@ -31,11 +33,245 @@ import SmallComputations as SmallComputations
 from PointGraph import PointsNameList
 from Exceptions import *
 from GlobalVariables import global_vars
+from phystricks.src.SmallComputations import *
 
-from phystricks import WrapperStr
+
+from phystricks.src.WrapperStr import WrapperStr
 var=WrapperStr(var)
 
-from phystricks import *
+
+# TODO : f=phyFunction(x**2+3*x-10), then  g=f/3 does not work.
+# TODO : In figureHYeBZVj, the grid begins at negative numbers. Why ? (see smath available on  https://github.com/LaurentClaessens/smath)
+# TODO : waving functions behaves badly when X and Y dilatations are different. See figureHYeBZVj
+
+def no_symbol(*arg):
+    for l in arg:
+        try:
+            for P in l:
+                no_symbol(P)
+        except TypeError:
+            l.parameters.symbol=""
+
+def get_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=None):
+    from ObjectGraph import AddedObjects
+    added1=AddedObjects()
+    added2=AddedObjects()
+    pspicts=make_psp_list(pspict,pspicts)
+    for psp in pspicts :
+        c1=s1.get_code(n=n,d=d,l=l,pspict=psp)
+        c2=s2.get_code(n=n,d=d,l=l,pspict=psp)
+        added1.append(psp,c1)
+        added2.append(psp,c2)
+    return added1,added2
+
+def put_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=None):
+    """
+    Add the code for equal length between segments s1 and s2
+    """
+    pspicts=make_psp_list(pspict,pspicts)
+    for psp in pspicts :
+        added=get_equal_lengths_code(s1,s2,n,d,l,angle,pspict=psp)
+        c1=added[0]
+        c2=added[1]
+        s1.added_objects.fusion( c1 )
+        s2.added_objects.fusion( c2 )
+
+def GenericFigure(nom,script_filename=None):
+    """
+    This function returns a figure with some default values. 
+    It creates coherent label, file name and prints the lines 
+    to be appended in the LaTeX file to include the figure.
+    """
+    if not script_filename:
+        script_filename=nom
+    caption = "\CaptionFig"+nom     # This is also hard-coded in the function main.figure.LaTeX_lines
+    label = "LabelFig"+nom          # The string "LabelFig" is hard-coded in the function main.figure.LaTeX_lines
+    filename = "Fig_"+nom+".pstricks"
+
+    from src.Figure import Figure
+    fig=Figure(caption,label,filename,script_filename)
+    fig.figure_mother=fig   # I'm not sure that this line is useful.
+    print fig.LaTeX_lines()
+    return fig
+
+def SinglePicture(name,script_filename=None):
+    """ Return the tuple of pspicture and figure that one needs in 90% of the cases. """
+    fig = GenericFigure(name,script_filename)
+    pspict=fig.new_pspicture(name)
+    fig.child_pspictures.append(pspict)
+    return pspict,fig
+
+def MultiplePictures(name,n=None,pspicts=None,script_filename=None):
+    r"""
+    Return a figure with multiple subfigures. 
+
+    INPUT:
+
+    - `name` - the name of the figure.
+
+    - `n` (optional)  - the number of subfigures.
+
+    -  `pspicts` (optional) : a list of pspictures to be appended.
+
+    You can either give `n` or `pspicts`. In the first case, `n` new pspictures are created;
+    in the second case, the given pspictures are attached to the multiple pictures.
+
+    You have to think about naming the subfigures.
+
+    EXAMPLE::
+
+        sage: from phystricks import *
+        sage: pspicts,fig = MultiplePictures("MyName",3)
+        The result is on figure \ref{LabelFigMyName}.
+        \newcommand{\CaptionFigMyName}{<+Type your caption here+>}
+        \input{Fig_MyName.pstricks}
+        See also the subfigure \ref{LabelFigMyNamessLabelSubFigMyName0}
+        See also the subfigure \ref{LabelFigMyNamessLabelSubFigMyName1}
+        See also the subfigure \ref{LabelFigMyNamessLabelSubFigMyName2}
+        sage: pspicts[0].mother.caption="My first subfigure"
+        sage: pspicts[1].mother.caption="My second subfigure"
+        sage: pspicts[2].mother.caption="My third subfigure"
+
+    Notice that a caption is related to a figure or a subfigure, not to a pspicture.
+
+    See also :class:`subfigure`
+    """
+    if not script_filename:
+        script_filename=name
+    fig = GenericFigure(name,script_filename)
+
+
+    if n is not None :
+        pspictures_list=[]
+        for i in range(n):
+            subfigure=fig.new_subfigure("name"+str(i),"LabelSubFig"+name+str(i))
+            picture=subfigure.new_pspicture(name+"pspict"+str(i))
+            picture.figure_mother=fig
+            fig.child_pspictures.append(picture)
+            pspictures_list.append(picture)
+
+    if pspicts is not None :
+        pspictures_list=[]
+        n=len(pspicts)
+        for i,psp in enumerate(pspicts) :
+            subfigure=fig.new_subfigure("name"+str(i),"LabelSubFig"+name+str(i))
+            subfigure.new_pspicture(pspict=psp)
+            psp.figure_mother=fig
+            fig.child_pspictures.append(psp)
+            pspictures_list.append(psp)
+
+    return pspictures_list,fig
+
+def IndependentPictures(name,n):
+    """
+    Return a tuple of a list of 'n' pspictures and 'n' figures.
+    """
+    pspicts=[]
+    figs=[]
+    from src.Utilities import latinize
+    for i in range(0,n):
+        # One has to latinize to be in grade of making subfigures :
+        # if not one gets things like \newcommand{\CaptionFigFoo1}{blahblah}  which does not work in LaTeX because of the "1"
+        pspict,fig = SinglePicture(name+"oo"+latinize(str(i)))
+        pspicts.append(pspict)
+        figs.append(fig)
+    return pspicts,figs
+
+def SubsetFigures(old_pspicts,old_fig,l):
+    r"""
+    Return a subset of a figure with subfigures.
+
+    If you've prepared a figure with 10 subfigure but at the end of the day,
+    you change your mind and decide to remove the subfigure 3 and 8
+    
+    EXAMPLE::
+
+    
+    .. literalinclude:: phystricksSubSetMultiple.py
+
+    .. image:: Picture_FIGLabelFigSubSetMultiplessLabelSubFigSubSetMultiple2PICTSubSetMultiplepspict2-for_eps.png
+    .. image:: Picture_FIGLabelFigSubSetMultiplessLabelSubFigSubSetMultiple3PICTSubSetMultiplepspict3-for_eps.png
+    .. image:: Picture_FIGLabelFigSubSetMultiplessLabelSubFigSubSetMultiple5PICTSubSetMultiplepspict5-for_eps.png
+
+    I'm not sure that it is still possible to use the old fig.
+    """
+    name=old_fig.name
+    script_filename=old_fig.script_filename
+    fig = GenericFigure(name,script_filename)
+    pspict=[]
+    for i in l:
+        subfigure=fig.new_subfigure("name"+str(i),"LabelSubFig"+name+str(i))
+        subfigure._add_pspicture(old_pspicts[i])
+        old_pspicts[i].figure_mother=fig
+        pspict.append(old_pspicts[i])
+    return pspict,fig
+
+def unify_point_name(s):
+    r"""
+    Interpret `s` as the pstricks code of something and return a chain with
+    all the points names changed to "Xaaaa", "Xaaab" etc.
+
+    Practically, it changes the strings like "{abcd}" to "{Xaaaa}".
+
+    When "{abcd}" is found, it also replace the occurences of "(abcd)".
+    This is because the marks of points are given by example as
+    '\\rput(abcd){\\rput(0;0){$-2$}}'
+
+    This serves to build more robust doctests by providing strings in which
+    we are sure that the names of the points are the first in the list.
+
+    INPUT:
+
+    - ``s`` - a string
+
+    OUTPUT:
+    string
+
+    EXAMPLES:
+    
+    In the following example, the points name in the segment do not begin
+    by "aaaa" because of the definition of P, or even because of other doctests executed before.
+    (due to complex implementation, the names of the points are
+    more or less unpredictable and can change)
+
+    ::
+
+        sage: from phystricks import *
+        sage: P=Point(3,4)
+        sage: S = Segment(Point(1,1),Point(2,2))
+
+    However, using the function unify_point_name, the returned string begins with "Xaaaa" ::
+
+    Notice that the presence of "X" is necessary in order to avoid
+    conflicts when one of the points original name is one of the new points name as in the following example ::
+
+        sage: s="{xxxx}{aaaa}{yyyy}"
+        sage: print unify_point_name(s)
+        {Xaaaa}{Xaaab}{Xaaac}
+
+    Without the additional X,
+
+    1. The first "xxxx" would be changed to "aaaa".
+    2. When changing "aaaa" into "aaab", the first one would be changed too.
+
+    """
+    import re
+
+    point_pattern=re.compile("({[a-zA-Z]{4,4}})")
+    match = point_pattern.findall(s)
+
+    rematch=[]
+    for m in match:
+        n=m[1:-1]       # I transform "{abcd}" into "abcd"
+        if n not in rematch:
+            rematch.append(n)
+
+    from src.PointGraph import PointsNameList
+    names=PointGraph.PointsNameList()
+    for m in rematch:
+        name=names.next()
+        s=s.replace("{%s}"%m,"{X%s}"%name).replace("(%s)"%m,"(X%s)"%name)
+    return s
 
 class FigureGenerationSuite(object):
     """

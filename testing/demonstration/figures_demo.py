@@ -128,7 +128,7 @@ figures_list.append(<++>)
 """
 
 def AllFigures():
-    tests=main.FigureGenerationSuite(figures_list,first=0,title=u"demonstration pictures")
+    tests=FigureGenerationSuite(figures_list,first=0,title=u"demonstration pictures")
     tests.generate()
     tests.summary()
 

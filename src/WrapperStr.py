@@ -15,16 +15,16 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-
 # copyright (c) Laurent Claessens, 2009-2017
 # email: laurent@claessens-donadello.eu
 
-from __future__ import division
+
 from __future__ import unicode_literals
 
-from phystricks.src.Constructors import *
-import phystricks.src.main
 
-"""
-A collection of tools for building LaTeX pictures with python.
-"""
+class WrapperStr(object):
+    def __init__(self,fun):
+        self.fun=fun
+    def __call__(self,arg):
+        return self.fun(str(arg))
+
