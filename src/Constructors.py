@@ -1294,8 +1294,9 @@ def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
 
 
     """
+    from phystricks.src.BasicGeometricObjects import GeometricVectorField
     if xvalues is None and yvalues is None and draw_points is None :
-        return BasicGeometricObjects.GeometricVectorField(fx,fy)
-    return BasicGeometricObjects.GeometricVectorField(fx,fy).graph(xvalues,yvalues,draw_points)
+        return GeometricVectorField(fx,fy)
+    return GeometricVectorField(fx,fy).graph(xvalues,yvalues,draw_points)
 
 from phystricks.src.Utilities import *

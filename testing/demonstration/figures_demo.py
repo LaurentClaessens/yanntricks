@@ -61,8 +61,10 @@ from phystricksEXIIooJzzoJeai import EXIIooJzzoJeai
 from phystricksJSYWooQYduLVLS import JSYWooQYduLVLS
 from phystricksQIPRoolQCEnZdx import QIPRoolQCEnZdx
 from phystricksALAYooKKrRTkCG import ALAYooKKrRTkCG
+from phystricksTKXZooLwXzjS import TKXZooLwXzjS
 
 figures_list=[]
+figures_list.append(TKXZooLwXzjS)
 figures_list.append(DYJNooLVVFHEfN)
 figures_list.append(OGGDooIvakwNlL)
 figures_list.append(PFCUoorQhitKoJ)

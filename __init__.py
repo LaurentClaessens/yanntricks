@@ -33,6 +33,7 @@ from sage.all import *
 from phystricks.src.main import FigureGenerationSuite
 
 from phystricks.src.main import SinglePicture
+from phystricks.src.main import GenericFigure
 from phystricks.src.main import MultiplePictures
 from phystricks.src.main import IndependentPictures
 
