@@ -2,6 +2,8 @@
 *.swo
 *.py~
 *.swp
+sources.vim
+tests.vim
 all-*
 tests/*
 *~
