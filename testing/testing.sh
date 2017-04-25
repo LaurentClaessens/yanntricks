@@ -4,8 +4,11 @@
 # This script launches the tests.
 
 
+# We append this version of 'phystricks' to $SAGE_PATH because 
+# we want to test what is here.
+
 BASEDIR=$(pwd)
-SAGE_PATH=$BASEDIR/../..
+SAGE_PATH=$SAGE_PATH:$BASEDIR/../..
 
 demonstration_testing ()
 {
@@ -19,5 +22,5 @@ unit_testing ()
     SAGE_PATH=$SAGE_PATH ./testing.sh
 }
 
-unit_testing
 demonstration_testing
+unit_testing

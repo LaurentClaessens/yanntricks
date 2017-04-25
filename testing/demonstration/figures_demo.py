@@ -6,6 +6,8 @@ import sys
 from phystricks import *
 
 from phystricksNWAEooQBLYYrpS import NWAEooQBLYYrpS
+from phystricksEDEYRhQ import EDEYRhQ
+from phystricksSMXRooCnrlNw import SMXRooCnrlNw
 from phystricksWQVZooAhkdlegv import WQVZooAhkdlegv
 from phystricksMBWHooeesXIrsz import MBWHooeesXIrsz
 from phystricksASZLoocnIGlRHf import ASZLoocnIGlRHf
@@ -63,6 +65,8 @@ from phystricksALAYooKKrRTkCG import ALAYooKKrRTkCG
 from phystricksTKXZooLwXzjS import TKXZooLwXzjS
 
 figures_list=[]
+figures_list.append(SMXRooCnrlNw)
+figures_list.append(EDEYRhQ)
 figures_list.append(TKXZooLwXzjS)
 figures_list.append(DYJNooLVVFHEfN)
 figures_list.append(OGGDooIvakwNlL)
@@ -120,8 +124,6 @@ figures_list.append(AESIooxXxRYQdT)
 figures_list.append(LWVXooPyIlOKNd)
 figures_list.append(FunctionFour)
 """
-figures_list.append(<++>)
-figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)

@@ -54,6 +54,7 @@ def no_symbol(*arg):
 
 def get_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=None):
     from ObjectGraph import AddedObjects
+    from phystricks.src.Utilities import make_psp_list
     added1=AddedObjects()
     added2=AddedObjects()
     pspicts=make_psp_list(pspict,pspicts)
@@ -68,6 +69,7 @@ def put_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=No
     """
     Add the code for equal length between segments s1 and s2
     """
+    from phystricks.src.Utilities import make_psp_list
     pspicts=make_psp_list(pspict,pspicts)
     for psp in pspicts :
         added=get_equal_lengths_code(s1,s2,n,d,l,angle,pspict=psp)
