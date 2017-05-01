@@ -145,8 +145,7 @@ class BoundingBox_class(object):
         if isinstance(graph,list):
             raise KeyError,"%s is a list"%graph
         if not pspict :
-            print "You should provide a pspict in order to add ",graph
-            raise
+            raise MissingPictureException("You should provide a pspict in order to add this object to a bounding box.")
         on=False
         if self.math:
             self.AddBB(graph.math_bounding_box(pspict=pspict))
