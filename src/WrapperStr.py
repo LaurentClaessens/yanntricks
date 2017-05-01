@@ -18,27 +18,13 @@
 # copyright (c) Laurent Claessens, 2009-2017
 # email: laurent@claessens-donadello.eu
 
-# This file must only contain import statements for the
-# functions needed by the user.
 
-"""
-A collection of tools for building LaTeX pictures with python.
-"""
-
-from __future__ import division
 from __future__ import unicode_literals
 
-from sage.all import *
 
-from phystricks.src.main import FigureGenerationSuite
+class WrapperStr(object):
+    def __init__(self,fun):
+        self.fun=fun
+    def __call__(self,arg):
+        return self.fun(str(arg))
 
-from phystricks.src.main import SinglePicture
-from phystricks.src.main import GenericFigure
-from phystricks.src.main import MultiplePictures
-from phystricks.src.main import IndependentPictures
-
-from phystricks.src.main import no_symbol
-from phystricks.src.main import put_equal_lengths_code
-from phystricks.src.Utilities import Distance
-
-from phystricks.src.Constructors import *

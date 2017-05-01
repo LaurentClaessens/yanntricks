@@ -12,9 +12,6 @@ def pstricks_files_iterator():
         if f.endswith(".pstricks"):
             yield f
 
-    
-
-
 for filename in pstricks_files_iterator():
     with open(filename,'r') as f:
         get_text=f.read()

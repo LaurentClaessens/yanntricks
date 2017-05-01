@@ -2,9 +2,12 @@
 # -*- coding: utf8 -*-
 
 import sys
+
 from phystricks import *
 
 from phystricksNWAEooQBLYYrpS import NWAEooQBLYYrpS
+from phystricksEDEYRhQ import EDEYRhQ
+from phystricksSMXRooCnrlNw import SMXRooCnrlNw
 from phystricksWQVZooAhkdlegv import WQVZooAhkdlegv
 from phystricksMBWHooeesXIrsz import MBWHooeesXIrsz
 from phystricksASZLoocnIGlRHf import ASZLoocnIGlRHf
@@ -49,7 +52,6 @@ from phystricksQRXCooUmnlhkvh import QRXCooUmnlhkvh
 from phystricksUREIooqNGBXtHg import UREIooqNGBXtHg
 from phystricksQIXEooejrojKjo import QIXEooejrojKjo
 from phystricksDEIToomZFknFmn import DEIToomZFknFmn
-from phystricksQNHAooSYgkWVhJ import QNHAooSYgkWVhJ
 from phystricksUARHooLMWqvyaI import UARHooLMWqvyaI
 from phystricksHELQooLGapRQrr import HELQooLGapRQrr
 from phystricksYJEDoojDtSeKHQ import YJEDoojDtSeKHQ
@@ -60,8 +62,12 @@ from phystricksEXIIooJzzoJeai import EXIIooJzzoJeai
 from phystricksJSYWooQYduLVLS import JSYWooQYduLVLS
 from phystricksQIPRoolQCEnZdx import QIPRoolQCEnZdx
 from phystricksALAYooKKrRTkCG import ALAYooKKrRTkCG
+from phystricksTKXZooLwXzjS import TKXZooLwXzjS
 
 figures_list=[]
+figures_list.append(SMXRooCnrlNw)
+figures_list.append(EDEYRhQ)
+figures_list.append(TKXZooLwXzjS)
 figures_list.append(DYJNooLVVFHEfN)
 figures_list.append(OGGDooIvakwNlL)
 figures_list.append(PFCUoorQhitKoJ)
@@ -105,7 +111,6 @@ figures_list.append(QEFQoomlfmOQTM)
 figures_list.append(OMPAooMbyOIqeA)
 figures_list.append(GGHOookMhIxqIK)
 figures_list.append(CNVAooybLqXmVS)
-figures_list.append(QNHAooSYgkWVhJ)
 figures_list.append(HUBEoofsPjXOQx)
 figures_list.append(BHESoofmkTbbZR)
 figures_list.append(OYBTooNUcJLzDH)
@@ -122,12 +127,10 @@ figures_list.append(FunctionFour)
 figures_list.append(<++>)
 figures_list.append(<++>)
 figures_list.append(<++>)
-figures_list.append(<++>)
-figures_list.append(<++>)
 """
 
 def AllFigures():
-    tests=main.FigureGenerationSuite(figures_list,first=0,title=u"demonstration pictures")
+    tests=FigureGenerationSuite(figures_list,first=0,title=u"demonstration pictures")
     tests.generate()
     tests.summary()
 

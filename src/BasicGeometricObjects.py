@@ -29,6 +29,7 @@ from phystricks.src.Constructors import *
 
 from phystricks.src.ObjectGraph import ObjectGraph
 
+from phystricks.src.WrapperStr import WrapperStr
 var=WrapperStr(var)
 
 def genericBracketAttributeToLanguage(attr,language):
@@ -189,6 +190,7 @@ class ImplicitCurveGraph(ObjectGraph,GeometricImplicitCurve):
         ymin=min(yy)
         ymax=max(yy)
         if dict:
+            from phystricks.src.SmallComputations import MyMinMax
             return MyMinMax({str('xmin'):xmin, str('xmax'):xmax,str('ymin'):ymin, str('ymax'):ymax},decimals=decimals)
         else:
             return around(xmin,decimals),around(xmax,decimals),around(ymin,decimals),around(ymas,decimals)
@@ -636,6 +638,3 @@ def draw_to_fill(text):
     else :
         answer=t3.replace("plot","plot "+bracket)
     return answer
-
-import phystricks.src.main as main
-import phystricks.src.SmallComputations as SmallComputations
