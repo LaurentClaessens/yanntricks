@@ -41,6 +41,17 @@ def text_to_hexdigest(text):
     h.update(str_text)            # This one wants 'str', not 'unicode'
     return h.hexdigest()
 
+def first_bracket(text):
+    """
+    return the first bracket in the string 'text'  
+    """
+    if "[" not in text:
+        return ""
+    a=text.find("[")
+    b=text[a:].find("]")+1+a
+    bracket=text[a:b]
+    return bracket
+
 
 def ensure_unicode(s):
     """

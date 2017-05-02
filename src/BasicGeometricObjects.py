@@ -604,17 +604,6 @@ def get_paths_from_implicit_plot(p):
         l.append(pp)
     return l
 
-def first_bracket(text):
-    """
-    return the first bracket in the string 'text'  
-    """
-    if "[" not in text:
-        return ""
-    a=text.find("[")
-    b=text[a:].find("]")+1+a
-    bracket=text[a:b]
-    return bracket
-
 def draw_to_fill(text):
     r"""
     The tikz code of objects are of the form

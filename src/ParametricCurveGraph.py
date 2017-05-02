@@ -397,7 +397,7 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
         NOTE:
 
         Cutting to 3 decimals is a way to get more reproducible results. 
-        It turns out the Sage's get_minmax_data produce unpredictable figures.
+        It turns out the Sage's get_minmax_data produce non deterministic numbers.
 
         """
         if deb==None:

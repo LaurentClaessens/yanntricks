@@ -76,7 +76,7 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
         self.cut_ymin=None
         self.cut_ymax=None
         self.pieces=[]      
-        self.parameters.color = "blue"              # Modification with respect to the attribute in ObjectGraph
+        self.parameters.color = "blue"   # Modification with respect to the attribute in ObjectGraph
         self.nul_function=None
 
         self._derivative = None
@@ -391,19 +391,12 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
             self.pieces.append(f)
     def bounding_box(self,pspict=None):
         if self.do_cut_y and len(self.pieces)>0:
-            # In this case, we will in any case look for the bounding boxes of the pieces.
-            # Notice that it can happen that self.do_cut_y=True but that only one piece is found.
+            # In this case, we will in any case look for the bounding boxes
+            # of the pieces.
+            # Notice that it can happen that self.do_cut_y=True but 
+            # that only one piece is found.
             return BoundingBox()
         return self.parametric_curve().bounding_box()
-
-        # Don't use anymore
-        # March 15, 2016
-        #bb = BoundingBox()
-        #bb.addY(self.ymin(self.mx,self.Mx))
-        #bb.addY(self.ymax(self.mx,self.Mx))
-        #bb.addX(self.mx)
-        #bb.addX(self.Mx)
-        #return bb
 
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
