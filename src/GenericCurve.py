@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from __future__ import division
@@ -175,7 +175,7 @@ class GenericCurve(object):
 
         self._representativeParameters = Llam
         return Llam
-    def representativePoints(self):
+    def representative_points(self):
         rp=self.representativeParameters()
         pts = [ self.get_point(x,advised=False) for x in rp ]
 
@@ -186,5 +186,3 @@ class GenericCurve(object):
                 print("There is a not so small imaginary part ... Prepare to crash or something")
             pl.append(Q)
         return pl
-
-

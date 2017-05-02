@@ -251,11 +251,11 @@ class CircleGraph(GenericCurve,ObjectGraph):
         v = PolarPoint(1,theta).origin(self.get_point(theta,advised=False))
         v.arrow_type="vector"
         return v
-    # Here, angleI and angleF are given in degree while parametric_plot uses radian.
     def get_minmax_data(self,angleI,angleF,n=3):
-        deb = radian(angleI)
-        fin = radian(angleF)
-        return MyMinMax(self.parametric_curve().get_minmax_data(deb,fin),n)
+        # Here, angleI and angleF are given in degree while parametric_plot uses radian.
+        start = radian(angleI)
+        end = radian(angleF)
+        return MyMinMax(self.parametric_curve().get_minmax_data(start,end),n)
     def xmax(self,angleI,angleF):
         return self.get_minmax_data(angleI,angleF)['xmax']
     def xmin(self,angleI,angleF):
@@ -337,7 +337,7 @@ class CircleGraph(GenericCurve,ObjectGraph):
         if angleI<270 and angleF>270 :
             bb.addY(self.center.y-self.radius)
         return bb
-    def representativePoints(self):
+    def representative_points(self):
         pp=self.linear_plotpoints
         return self.get_regular_points(mx=degree(self.angleI),Mx=degree(self.angleF),n=pp,advised=False)
     def action_on_pspict(self,pspict):

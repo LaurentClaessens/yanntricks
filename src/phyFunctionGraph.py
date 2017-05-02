@@ -265,12 +265,6 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
     @lazy_attribute
     def curvature(self):
         return self.parametric_curve().curvature()
-    # The function 'representative_points' is now inherited from 'GenericCurve'
-    # March 14, 2016
-    #def representative_points(self):
-    #    dx=self.length()/self.parameters.plotpoints
-    #    return self.get_regular_points(self.mx,self.Mx,dx)
-
     def get_wavy_points(self,mx,Mx,dx,dy):
         curve=self.parametric_curve()
         return curve.get_wavy_points(mx,Mx,dx,dy)
