@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from ObjectGraph import ObjectGraph
@@ -38,7 +38,7 @@ class InterpolationCurveGraph(ObjectGraph):
             self.contex_object=self
         self.mode=mode
         self._minmax_data=None
-    def representativePoints(self):
+    def representative_points(self):
         return self.points_list
     @lazy_attribute
     def get_minmax_data(self):
@@ -59,8 +59,7 @@ class InterpolationCurveGraph(ObjectGraph):
         ymin=min([P.y for P in self.points_list])
         ymax=max([P.y for P in self.points_list])
 
-        from SmallComputations import MyMinMax
-        return MyMinMax({'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax})
+        return {'xmin':xmin, 'xmax':xmax,'ymin':ymin, 'ymax':ymax}
     def xmin(self):
         return self.get_minmax_data['xmin']
     def xmax(self):

@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 """
@@ -373,53 +373,6 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
         Oy=P.y+first.x*coefficient
         center=Point(Ox,Oy)
         return CircleOA(center,P)
-    def get_minmax_data(self,deb,fin,decimals=3):
-        """
-        Return the get_minmax_data from Sage.
-
-        INPUT:
-
-        - ``deb,fin`` - interval on which we are considering the function.
-        - ``decimals`` - (default=3) the number of decimals
-
-        OUTPUT:
-
-        A dictionary
-
-        EXAMPLES::
-
-            sage: from phystricks import *
-            sage: f=1.5*(1+cos(x))
-            sage: cardioid=PolarCurve(f)
-            sage: cardioid.get_minmax_data(0,2*pi)
-            {'xmax': 3.0, 'xmin': -0.375, 'ymax': 1.948, 'ymin': -1.948}
-
-        NOTE:
-
-        Cutting to 3 decimals is a way to get more reproducible results. 
-        It turns out the Sage's get_minmax_data produce unpredictable figures.
-
-        """
-        if deb==None:
-            raise
-        d = MyMinMax(parametric_plot( (self.f1.sage,self.f2.sage), (deb,fin) ).get_minmax_data(),decimals=decimals)
-        # for the curve (x,0), Sage gives a bounding box ymin=-1,ymax=1.
-        # In order to avoid that problem, when the surface under a function
-        # is created, the second curve (the one of y=0) is given
-        # the attribute nul_function to True
-        # See 2252914222
-        if self.f2.nul_function:
-            d["ymin"]=0
-            d["ymax"]=0
-        return d
-    def xmax(self,deb,fin):
-        return self.get_minmax_data(deb,fin)['xmax']
-    def xmin(self,deb,fin):
-        return self.get_minmax_data(deb,fin)['xmin']
-    def ymax(self,deb,fin):
-        return self.get_minmax_data(deb,fin)['ymax']
-    def ymin(self,deb,fin):
-        return self.get_minmax_data(deb,fin)['ymin']
     def get_normal_point(self,x,dy):
         vecteurNormal =  self.get_normal_vector(x)
         return self.get_point(x).translate(self.get_normal_vector.normalize(dy))
@@ -458,12 +411,17 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
         return self.length(mll=mll,Mll=Mll)
     def get_regular_points(self,mll,Mll,dl):
         """
-        Return a list of points regularly spaced (with respect to the arc length) by dl. 
+        Return a list of points regularly spaced (with respect to the arc length)
+        by dl. 
 
-        mll is the inital value of the parameter and Mll is the end value of the parameter.
+        - 'mll' is the initial value of the parameter  
+        - 'Mll' is the end value of the parameter.
 
-        In some applications, you prefer to use ParametricCurve.getRegularLengthParameter. The latter method returns the list of
-        values of the parameter instead of the list of points. This is what you need if you want to draw tangent vectors for example.
+        In some applications, you prefer to use 
+        ParametricCurve.getRegularLengthParameter. 
+        The latter method returns the list of values of the parameter instead
+        of the list of points. This is what you need if you want to draw 
+        tangent vectors for example.
         """
         return [self.get_point(ll) for ll in self.getRegularLengthParameters(mll,Mll,dl)]
     def get_wavy_points(self,mll,Mll,dl,dy,xunit=1,yunit=1):
@@ -545,7 +503,7 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
 
             pspict.DrawGraphs(interpolation)
         else:
-            points_list=self.representativePoints()
+            points_list=self.representative_points()
             curve=InterpolationCurve(points_list)
             curve.parameters=self.parameters.copy()
             curve.mode="trivial"

@@ -1,8 +1,6 @@
 #! /usr/bin/sage -python
 # -*- coding: utf8 -*-
 
-import sys
-
 from phystricks import *
 
 from phystricksNWAEooQBLYYrpS import NWAEooQBLYYrpS
@@ -65,6 +63,8 @@ from phystricksALAYooKKrRTkCG import ALAYooKKrRTkCG
 from phystricksTKXZooLwXzjS import TKXZooLwXzjS
 
 figures_list=[]
+figures_list.append(UARHooLMWqvyaI)
+figures_list.append(EXIIooJzzoJeai)
 figures_list.append(SMXRooCnrlNw)
 figures_list.append(EDEYRhQ)
 figures_list.append(TKXZooLwXzjS)
@@ -90,12 +90,10 @@ figures_list.append(ParametricTwo)
 figures_list.append(TRJEooPRoLnEiG)
 figures_list.append(UREIooqNGBXtHg)
 figures_list.append(DEIToomZFknFmn)
-figures_list.append(UARHooLMWqvyaI)
 figures_list.append(HELQooLGapRQrr)
 figures_list.append(YJEDoojDtSeKHQ)
 figures_list.append(QRJOooKZPUoLlF)
 figures_list.append(RVKFooDxrqYXAX)
-figures_list.append(EXIIooJzzoJeai)
 figures_list.append(PJKBooOhGVPkeR)
 figures_list.append(LVPSoozFTyaeCG)
 figures_list.append(CUZFooGqZLaAEp)

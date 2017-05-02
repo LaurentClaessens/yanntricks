@@ -473,6 +473,7 @@ def MyMinMax(dico_sage,decimals=3):
 
 
     """
+    raise DeprecationWarning # May 2, 2017
     return dict(   [ (str(k),around(numerical_approx(dico_sage[k]),decimals=decimals)) for k in dico_sage.keys()  ]   )
 
 def MultipleLower(x,m):

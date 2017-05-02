@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from sage.all import *
@@ -872,7 +872,7 @@ class SegmentGraph(ObjectGraph):
             return self.bounding_box(pspict)
         else :
             return BoundingBox()
-    def representativePoints(self):
+    def representative_points(self):
         return [self.I,self.F]
     def latex_code(self,language=None,pspict=None):
         if self.parameters.style=="none":

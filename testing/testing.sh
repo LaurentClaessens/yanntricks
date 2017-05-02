@@ -8,7 +8,7 @@
 # we want to test what is here.
 
 BASEDIR=$(pwd)
-SAGE_PATH=$SAGE_PATH:$BASEDIR/../..
+SAGE_PATH=$PYTHONPATH:$BASEDIR/../..
 
 demonstration_testing ()
 {

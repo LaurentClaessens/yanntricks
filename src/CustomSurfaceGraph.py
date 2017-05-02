@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from ObjectGraph import ObjectGraph
@@ -73,9 +73,9 @@ class CustomSurfaceGraph(ObjectGraph):
             l=[]
             for obj in self.graphList :
                 try:
-                    l.extend( [p.coordinates(numerical=True,digits=3,pspict=pspict) for p in obj.representativePoints()] )
+                    l.extend( [p.coordinates(numerical=True,digits=3,pspict=pspict) for p in obj.representative_points()] )
                 except AttributeError :
-                    print("The object "+obj+" seems to have no 'representativePoints' method")
+                    print("The object "+obj+" seems to have no 'representative_points' method")
                     raise
                     obj_code=obj.latex_code(language="tikz",pspict=pspict)
                     l.append( draw_to_fill(obj_code) )

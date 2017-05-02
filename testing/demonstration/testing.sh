@@ -1,6 +1,12 @@
 #!/bin/bash
 # -*- coding: utf8 -*-
 
+# You should not launch directly this script, but let
+# phystricks/testing/testing.sh
+# launch for you.
+# The reason is a manipulation of $SAGE_PATH
+
+
 compile_demo ()
 {
 SAGE_PATH=$SAGE_PATH  ./figures_demo.py --all
@@ -27,4 +33,3 @@ compile_demo
 
 # Then compare with the "recall" ones
 ./test_recall.py
-

@@ -17,8 +17,10 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
+
+from __future__ import division
 
 from sage.all import pi,sqrt,SR
 
@@ -52,7 +54,7 @@ class SingleAxeGraph(ObjectGraph):
         self.mark_angle=degree(base.angle().radian-pi/2)
         self.enlarge_size=0.5
 
-        # The `conclude` method perform the last computations before
+        # The `conclude` method performs the last computations before
         # to be drawn. The graduation bars are added there.
         self._already_concluded=False
     
@@ -85,16 +87,18 @@ class SingleAxeGraph(ObjectGraph):
         self.graduation=False
     def enlarge_a_little(self,l,xunit=None,yunit=None,pspict=None):
         """
-        return the tuple (mx,Mx) that correspond to axes of length `l` more than self
-        (in both directions)
+        return the tuple (mx,Mx) that correspond to axes of length
+        `l` more than self (in both directions)
         """
         if pspict:
             xunit=pspict.xunit
             yunit=pspict.yunit
         seg=self.segment(pspict=pspict)
-        # The aim is to find the multiple of the base vector that has length `l`.
+        # The aim is to find the multiple of the base vector
+        # that has length `l`.
         vx=self.base.F.x
         vy=self.base.F.y
+
         k=l/sqrt(  (vx*xunit)**2+(vy*yunit)**2  )
         mx=self.mx-k
         Mx=self.Mx+k
@@ -174,4 +178,5 @@ class SingleAxeGraph(ObjectGraph):
         v=AffineVector(self.segment(pspict=pspict))
         pspict.DrawGraphs(v,separator_name="AXES")
     def __str__(self):
-        return "<SingleAxeGraph: C={0} base={1} mx={2} Mx={3}>".format(self.C,self.base,self.mx,self.Mx)
+        return "<SingleAxeGraph: C={0} base={1} mx={2} Mx={3}>".format(
+                self.C,self.base,self.mx,self.Mx)
