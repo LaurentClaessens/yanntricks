@@ -337,7 +337,7 @@ class CircleGraph(GenericCurve,ObjectGraph):
         if angleI<270 and angleF>270 :
             bb.addY(self.center.y-self.radius)
         return bb
-    def representativePoints(self):
+    def representative_points(self):
         pp=self.linear_plotpoints
         return self.get_regular_points(mx=degree(self.angleI),Mx=degree(self.angleF),n=pp,advised=False)
     def action_on_pspict(self,pspict):

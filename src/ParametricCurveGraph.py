@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 """
@@ -545,7 +545,7 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
 
             pspict.DrawGraphs(interpolation)
         else:
-            points_list=self.representativePoints()
+            points_list=self.representative_points()
             curve=InterpolationCurve(points_list)
             curve.parameters=self.parameters.copy()
             curve.mode="trivial"
