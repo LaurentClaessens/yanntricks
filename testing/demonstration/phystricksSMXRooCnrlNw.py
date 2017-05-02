@@ -12,16 +12,12 @@ def SMXRooCnrlNw():
     D=Point(A.x,C.y)
 
     rectangle=Polygon(A,B,C,D)
-    rectangle.put_mark(0.2,pspict=pspict)
 
     F=rectangle.edges[1].midpoint()
     E=Point(   -F.y/tan(  35*pi/180  ),F.y  )
 
     prol=Segment(D,E)
     K=Intersection(prol,rectangle.edges[0])[0]
-    K.put_mark(0.2,angle=90,added_angle=0,text="\( K\)",pspict=pspict)
-    F.put_mark(0.2,angle=0,added_angle=0,text="\( F\)",pspict=pspict)
-    E.put_mark(0.2,angle=-45,added_angle=0,text="\( E\)",pspict=pspict)
 
     s1=Segment(A,E)
     s2=Segment(D,E)

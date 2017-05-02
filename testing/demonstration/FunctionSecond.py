@@ -14,6 +14,7 @@ def FunctionSecond():
     pspict.DrawGraphs(F)
     pspict.DrawGraphs(G)
 
+    pspict.axes.no_numbering()
     pspict.DrawDefaultAxes()
 
     fig.no_figure()

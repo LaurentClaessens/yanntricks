@@ -18,6 +18,7 @@ def DEIToomZFknFmn():
     surface.curve2.parameters=surface.curve1.parameters
 
     pspict.DrawGraphs(surface)
+    pspict.axes.no_numbering()
     pspict.DrawDefaultAxes()
     pspict.comment="The surface is filled in red, the curves are blue and the vertical segments are black."
     fig.no_figure()

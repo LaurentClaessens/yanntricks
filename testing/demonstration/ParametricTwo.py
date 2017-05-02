@@ -25,6 +25,7 @@ def ParametricTwo():
         pspict.DrawGraphs(v1,v2)
 
     pspict.DrawGraphs(F1,G1,F2)
+    pspict.axes.no_numbering()
     pspict.DrawDefaultAxes()
 
     fig.no_figure()

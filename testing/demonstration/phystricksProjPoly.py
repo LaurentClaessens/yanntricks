@@ -9,7 +9,6 @@ def ProjPoly():
     pspict.DrawGraphs(F)
 
     pspict.axes.no_numbering()
-
     pspict.DrawDefaultAxes()
     fig.conclude()
     fig.write_the_file()
