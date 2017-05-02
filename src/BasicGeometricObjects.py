@@ -190,10 +190,9 @@ class ImplicitCurveGraph(ObjectGraph,GeometricImplicitCurve):
         ymin=min(yy)
         ymax=max(yy)
         if dict:
-            from phystricks.src.SmallComputations import MyMinMax
-            return MyMinMax({str('xmin'):xmin, str('xmax'):xmax,str('ymin'):ymin, str('ymax'):ymax},decimals=decimals)
+            return {str('xmin'):xmin, str('xmax'):xmax,str('ymin'):ymin, str('ymax'):ymax}
         else:
-            return around(xmin,decimals),around(xmax,decimals),around(ymin,decimals),around(ymas,decimals)
+            return xmin,xmax,ymin,ymax
     def xmin(self):
         return self.get_minmax_data()['xmin']
     def xmax(self):

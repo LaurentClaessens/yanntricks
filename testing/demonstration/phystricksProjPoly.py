@@ -7,6 +7,9 @@ def ProjPoly():
     F=ImplicitCurve(x**2-x-y**2-1==0,(x,-5,5),(y,-5,5))
 
     pspict.DrawGraphs(F)
+
+    pspict.axes.no_numbering()
+
     pspict.DrawDefaultAxes()
     fig.conclude()
     fig.write_the_file()
