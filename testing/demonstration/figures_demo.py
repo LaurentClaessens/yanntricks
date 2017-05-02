@@ -4,6 +4,7 @@
 from phystricks import *
 
 from phystricksNWAEooQBLYYrpS import NWAEooQBLYYrpS
+from phystricksProjPoly import ProjPoly
 from phystricksEDEYRhQ import EDEYRhQ
 from phystricksSMXRooCnrlNw import SMXRooCnrlNw
 from phystricksWQVZooAhkdlegv import WQVZooAhkdlegv
@@ -121,6 +122,7 @@ figures_list.append(NWAEooQBLYYrpS)
 figures_list.append(AESIooxXxRYQdT)
 figures_list.append(LWVXooPyIlOKNd)
 figures_list.append(FunctionFour)
+figures_list.append(ProjPoly)
 """
 figures_list.append(<++>)
 figures_list.append(<++>)
