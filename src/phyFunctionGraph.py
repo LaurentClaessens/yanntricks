@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from __future__ import division
@@ -28,6 +28,8 @@ from Utilities import *
 from SmallComputations import MyMinMax as MyMinMax
 from Exceptions import ShouldNotHappenException
 from GenericCurve import GenericCurve
+
+from NoMathUtilities import dprint
 
 class phyFunctionGraph(GenericCurve,ObjectGraph):
     """
@@ -328,6 +330,7 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
                 ymin=min(ymin,y)
         minmax['ymax']=ymax
         minmax['ymin']=ymin
+        #dprint("phyFunction::get_minmax_data ",minmax['ymax'])
         return minmax
     def xmax(self,deb,fin):
         return self.get_minmax_data(deb,fin)['xmax']
@@ -409,12 +412,6 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
         return self.parametric_curve()
     def action_on_pspict(self,pspict):
         still_have_to_draw=True
-        #if self.marque :
-        #    P = self.mark_point()
-        #    P.parameters.symbol=""
-        #    P.marque = True
-        #    P.mark = self.mark
-        #    pspict.DrawGraphs(P)
         if self.wavy :          
             waviness = self.waviness
             curve=self.parametric_curve()
@@ -501,4 +498,3 @@ def SubstitutionMathTikz(fx):
     for s in listeSubst :
         a = a.replace(s[0],s[1])
     return a
-
