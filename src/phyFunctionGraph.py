@@ -328,6 +328,7 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
                 if y.is_infinity():
                     valid=False
             except AttributeError :
+                raise DeprecationWarning   # I should convert numpy.float64, no ?
                 pass     # When drawing non-analytic function, y is numpy.float64
             if valid :
                 ymax=max(ymax,y)
