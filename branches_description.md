@@ -8,3 +8,7 @@ is non deterministic.
 # minmax
 
 Make less use of the Sage'function `get_minmax_data` which leads to indeterministic results.
+
+# newTests
+
+Add to the test suite the pictures that do not compile in mazhe and smath.
