@@ -4,7 +4,9 @@
 # You should not launch directly this script, but let
 # phystricks/testing/testing.sh
 # launch for you.
-# The reason is a manipulation of $SAGE_PATH
+# The reason is a manipulation of $SAGE_PATH : you want the tests to be launched
+# with the version of phystricks which is present in *this* directory; not the
+# one which is already in your system's $SAGE_PATH.
 
 
 compile_demo ()
@@ -33,3 +35,5 @@ compile_demo 3
 
 # Then compare with the "recall" ones
 ./test_recall.py
+
+echo "Les figures qui ne vont pas doivent aller dans la pictures_list_2"
