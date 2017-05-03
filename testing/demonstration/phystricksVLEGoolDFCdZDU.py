@@ -12,7 +12,6 @@ def VLEGoolDFCdZDU():
 
     trig=Polygon(K,L,M)
     trig.parameters.color="brown"
-    trig.put_mark(0.2,points_names="KLM",pspict=pspict)
 
     rh=RightAngleAOB(L,M,K)
 

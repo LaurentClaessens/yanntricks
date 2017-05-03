@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from __future__ import division
@@ -28,6 +28,8 @@ from Utilities import *
 from SmallComputations import MyMinMax as MyMinMax
 from Exceptions import ShouldNotHappenException
 from GenericCurve import GenericCurve
+
+from NoMathUtilities import dprint
 
 class phyFunctionGraph(GenericCurve,ObjectGraph):
     """
@@ -76,7 +78,7 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
         self.cut_ymin=None
         self.cut_ymax=None
         self.pieces=[]      
-        self.parameters.color = "blue"              # Modification with respect to the attribute in ObjectGraph
+        self.parameters.color = "blue"   # Modification with respect to the attribute in ObjectGraph
         self.nul_function=None
 
         self._derivative = None
@@ -265,12 +267,6 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
     @lazy_attribute
     def curvature(self):
         return self.parametric_curve().curvature()
-    # The function 'representative_points' is now inherited from 'GenericCurve'
-    # March 14, 2016
-    #def representative_points(self):
-    #    dx=self.length()/self.parameters.plotpoints
-    #    return self.get_regular_points(self.mx,self.Mx,dx)
-
     def get_wavy_points(self,mx,Mx,dx,dy):
         curve=self.parametric_curve()
         return curve.get_wavy_points(mx,Mx,dx,dy)
@@ -328,12 +324,14 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
                 if y.is_infinity():
                     valid=False
             except AttributeError :
+                raise DeprecationWarning   # I should convert numpy.float64, no ?
                 pass     # When drawing non-analytic function, y is numpy.float64
             if valid :
                 ymax=max(ymax,y)
                 ymin=min(ymin,y)
         minmax['ymax']=ymax
         minmax['ymin']=ymin
+        #dprint("phyFunction::get_minmax_data ",minmax['ymax'])
         return minmax
     def xmax(self,deb,fin):
         return self.get_minmax_data(deb,fin)['xmax']
@@ -391,19 +389,12 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
             self.pieces.append(f)
     def bounding_box(self,pspict=None):
         if self.do_cut_y and len(self.pieces)>0:
-            # In this case, we will in any case look for the bounding boxes of the pieces.
-            # Notice that it can happen that self.do_cut_y=True but that only one piece is found.
+            # In this case, we will in any case look for the bounding boxes
+            # of the pieces.
+            # Notice that it can happen that self.do_cut_y=True but 
+            # that only one piece is found.
             return BoundingBox()
         return self.parametric_curve().bounding_box()
-
-        # Don't use anymore
-        # March 15, 2016
-        #bb = BoundingBox()
-        #bb.addY(self.ymin(self.mx,self.Mx))
-        #bb.addY(self.ymax(self.mx,self.Mx))
-        #bb.addX(self.mx)
-        #bb.addX(self.Mx)
-        #return bb
 
     def math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
@@ -422,12 +413,6 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
         return self.parametric_curve()
     def action_on_pspict(self,pspict):
         still_have_to_draw=True
-        #if self.marque :
-        #    P = self.mark_point()
-        #    P.parameters.symbol=""
-        #    P.marque = True
-        #    P.mark = self.mark
-        #    pspict.DrawGraphs(P)
         if self.wavy :          
             waviness = self.waviness
             curve=self.parametric_curve()
@@ -514,4 +499,3 @@ def SubstitutionMathTikz(fx):
     for s in listeSubst :
         a = a.replace(s[0],s[1])
     return a
-

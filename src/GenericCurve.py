@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from __future__ import division
@@ -25,6 +25,8 @@ from __future__ import division
 from sage.all import *
 from Utilities import *
 import Defaults
+
+from NoMathUtilities import dprint
 
 class GenericCurve(object):
     def __init__(self,pI,pF):
@@ -175,7 +177,7 @@ class GenericCurve(object):
 
         self._representativeParameters = Llam
         return Llam
-    def representativePoints(self):
+    def representative_points(self):
         rp=self.representativeParameters()
         pts = [ self.get_point(x,advised=False) for x in rp ]
 
@@ -186,5 +188,33 @@ class GenericCurve(object):
                 print("There is a not so small imaginary part ... Prepare to crash or something")
             pl.append(Q)
         return pl
+    
+    def get_minmax_data(self,start=None,end=None):
+        """
+        return the min and max of x and y for the graph of `self`
+        and the parameter between `start` and `end`
 
+        INPUT:
 
+        - ``start,end`` - interval on which we are considering the function.
+
+        OUTPUT:
+
+        A dictionary
+        """
+        x_list = [ P.x for P in self.representative_points()  ]
+        y_list = [ P.y for P in self.representative_points()  ]
+        d={}
+        d['xmin']=min(x_list)
+        d['xmax']=max(x_list)
+        d['ymin']=min(y_list)
+        d['ymax']=max(y_list)
+        return d
+    def xmax(self,deb,fin):
+        return self.get_minmax_data(deb,fin)['xmax']
+    def xmin(self,deb,fin):
+        return self.get_minmax_data(deb,fin)['xmin']
+    def ymax(self,deb,fin):
+        return self.get_minmax_data(deb,fin)['ymax']
+    def ymin(self,deb,fin):
+        return self.get_minmax_data(deb,fin)['ymin']

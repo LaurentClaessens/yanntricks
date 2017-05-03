@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2016
+# copyright (c) Laurent Claessens, 2016-2017
 # email: laurent@claessens-donadello.eu
 
 """
@@ -26,7 +26,7 @@ This file contains the exceptions that can be raised by 'phystricks'.
 
 class MissingPictureException(Exception):
     """
-    Exception raised when something should not happen (bad use of a method)
+    Exception raised when a function needs a non furnished picture argument.
     """
     def __init__(self,text):
         self.text=text
@@ -36,6 +36,16 @@ class MissingPictureException(Exception):
 class ShouldNotHappenException(Exception):
     """
     Exception raised when something should not happen (bad use of a method)
+    """
+    def __init__(self,text):
+        self.text=text
+    def __str__(self):
+        return self.text
+
+class AlreadyEnlargedException(Exception):
+    """
+    Exception raised when the bounding box is already enlarged and when
+    one tries to enlarge it again.
     """
     def __init__(self,text):
         self.text=text

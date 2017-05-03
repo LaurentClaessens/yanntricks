@@ -89,7 +89,7 @@ def create_file(sfile,text):
 
 code=code_base.replace("XXXX",figure_name)
 
-from NoMathUtilities import SubdirectoryFilenames
+from src.NoMathUtilities import SubdirectoryFilenames
 filename=SubdirectoryFilenames("phystricks%s.py"%figure_name,"pictures_src")
 pstricksfilename=SubdirectoryFilenames("Fig_{}.pstricks".format(figure_name),"pictures_tex")
 pdffilename=SubdirectoryFilenames("tikzFIGLabelFig"+figure_name+"PICT"+figure_name+".pdf","pictures_tikz")

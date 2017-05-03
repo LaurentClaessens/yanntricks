@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright(c) Laurent Claessens, 2010-2016
+# copyright(c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from Constructors import *
@@ -145,9 +145,8 @@ class BoundingBox_class(object):
         if isinstance(graph,list):
             raise KeyError,"%s is a list"%graph
         if not pspict :
-            print "You should provide a pspict in order to add ",graph
-            raise
-        on=False
+            raise MissingPictureException("You should provide a pspict in order to add this object to a bounding box.")
+
         if self.math:
             self.AddBB(graph.math_bounding_box(pspict=pspict))
         else :

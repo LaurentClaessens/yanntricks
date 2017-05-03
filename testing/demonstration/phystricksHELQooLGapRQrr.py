@@ -15,6 +15,7 @@ def HELQooLGapRQrr():
     f.parameters.plotpoints=300
 
     pspict.DrawGraphs(f)
+    pspict.axes.no_numbering()
     pspict.DrawDefaultAxes()
     pspict.comment=r"This is the graph of the function $ x\mapsto  \int_{0.1}^x\frac{ \sin(t) }{ t } dt$."
     fig.no_figure()

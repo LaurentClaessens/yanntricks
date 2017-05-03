@@ -20,6 +20,8 @@
 # copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
+from __future__ import division
+
 from phystricks.src.ObjectGraph import ObjectGraph
 from phystricks.src.Constructors import *
 from phystricks.src.Utilities import *
@@ -35,7 +37,9 @@ class AxesGraph(ObjectGraph):
         ObjectGraph.__init__(self,self)
         self.take_math_BB=False
         self.C = C                      
+
         self.BB = bb.copy()
+
         self.pspict=pspict
         self.options = Options()
         self.Dx = 1
@@ -66,13 +70,15 @@ class AxesGraph(ObjectGraph):
         self.do_My_enlarge=True
     def enlarge_a_little(self,l,pspict):
         if self.already_enlarged :
-            raise ValueError,"I'm already enlarged"
+            from Exceptions import AlreadyEnlargedException
+            raise AlreadyEnlargedException("I'm already enlarged")
         self.already_enlarged=True
         mx,Mx=self.single_axeX.enlarge_a_little(l,pspict=pspict)
         if self.do_mx_enlarge:
             self.single_axeX.mx=mx
         if self.do_Mx_enlarge :
             self.single_axeX.Mx=Mx
+
         my,My=self.single_axeY.enlarge_a_little(l,pspict=pspict)
         if self.do_my_enlarge :
             self.single_axeY.mx=my
@@ -81,16 +87,16 @@ class AxesGraph(ObjectGraph):
 
     def add_bounding_box(self,BB,pspict):
         """
-        Modify the mx and Mx of each single axes X and Y in order to fit the given BB.
+        Modify the mx and Mx of each single axes X and Y in order to
+        fit the given BB.
 
-        This is only supposed to work with automatic axes because if assumes that these are
-        vertical and horizontal.
+        This is only supposed to work with automatic axes because
+        if assumes that these are vertical and horizontal.
         """
         axeX=self.single_axeX
         axeY=self.single_axeY
         axeX.mx=min((BB.xmin-axeX.C.x)/axeX.base.F.x,axeX.mx)
         axeX.Mx=max((BB.xmax-axeX.C.x)/axeX.base.F.x,axeX.Mx)
-
         axeY.mx=min((BB.ymin-axeY.C.y)/axeY.base.F.y,axeY.mx)
         axeY.Mx=max((BB.ymax-axeY.C.y)/axeY.base.F.y,axeY.Mx)
     def add_option(self,opt):

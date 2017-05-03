@@ -190,10 +190,9 @@ class ImplicitCurveGraph(ObjectGraph,GeometricImplicitCurve):
         ymin=min(yy)
         ymax=max(yy)
         if dict:
-            from phystricks.src.SmallComputations import MyMinMax
-            return MyMinMax({str('xmin'):xmin, str('xmax'):xmax,str('ymin'):ymin, str('ymax'):ymax},decimals=decimals)
+            return {str('xmin'):xmin, str('xmax'):xmax,str('ymin'):ymin, str('ymax'):ymax}
         else:
-            return around(xmin,decimals),around(xmax,decimals),around(ymin,decimals),around(ymas,decimals)
+            return xmin,xmax,ymin,ymax
     def xmin(self):
         return self.get_minmax_data()['xmin']
     def xmax(self):
@@ -603,17 +602,6 @@ def get_paths_from_implicit_plot(p):
             pp.append(Point(vertice[0],vertice[1]))
         l.append(pp)
     return l
-
-def first_bracket(text):
-    """
-    return the first bracket in the string 'text'  
-    """
-    if "[" not in text:
-        return ""
-    a=text.find("[")
-    b=text[a:].find("]")+1+a
-    bracket=text[a:b]
-    return bracket
 
 def draw_to_fill(text):
     r"""

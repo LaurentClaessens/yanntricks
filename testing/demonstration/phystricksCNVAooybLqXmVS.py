@@ -29,6 +29,8 @@ def CNVAooybLqXmVS():
     
     pspict.single_axeX.Dx=2
     pspict.single_axeY.Dx=2
+
+    pspict.axes.no_numbering()
     pspict.DrawDefaultAxes()
     pspict.comment="The rectangles are hatched and the edges are dotted."
     fig.no_figure()

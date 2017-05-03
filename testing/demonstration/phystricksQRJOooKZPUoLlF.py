@@ -19,6 +19,7 @@ def QRJOooKZPUoLlF():
     surface.curve1.record_arrows[0]=-surface.curve1.record_arrows[0]
 
     pspict.DrawGraphs(surface)
+    pspict.axes.no_numbering()
     pspict.DrawDefaultAxes()
     pspict.comment="lines in green, one arrow in each sense and area hatched in grey."
     fig.no_figure()
