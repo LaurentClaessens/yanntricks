@@ -39,6 +39,7 @@ testing/testing_pictures/phystricks*.py
 testing/testing_pictures/Inter_*
 testing/testing_pictures/travail.txt
 testing/testing_pictures/fp081206-28.pdf
+doc/html/*
 Inter_*
 *.comment
 *.pstricks
