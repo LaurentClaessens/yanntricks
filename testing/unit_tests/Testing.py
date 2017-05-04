@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2016
+# copyright (c) Laurent Claessens, 2016-2017
 # email: laurent@claessens-donadello.eu
 
 # This file contains some functions used for testing purpose.
@@ -33,10 +33,6 @@ def roundingMinMax( d ):
         new[p]=s
     return new
 
-def roundingForTest( obj  ):
-    if isinstance(obj,dict):
-        if "xmax" in obj.keys():
-            return roundingMinMax(obj)
 
 def assert_true(b,failure_message=""):
     """
@@ -89,3 +85,7 @@ def assert_almost_equal(e1,e2,epsilon=None,failure_message=""):
         from Exceptions import FailedAssertException
         raise FailedAssertException(str(e1)+" is not equal to "+str(e2)+" up to "+str(epsilon))
 
+def echo_function(text):
+    print("  "+text)
+def echo_single_test(text):
+    print("    "+text)
