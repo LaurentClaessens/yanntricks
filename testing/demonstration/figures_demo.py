@@ -173,10 +173,6 @@ figures_list_3=[]
 figures_list_3.append(AESIooxXxRYQdT)
 figures_list_3.append(FunctionFour)
 
-print(len(figures_list_1))
-print(len(figures_list_2))
-print(len(figures_list_3))
-
 def AllFigures():
 
     figures_list=figures_list_1
