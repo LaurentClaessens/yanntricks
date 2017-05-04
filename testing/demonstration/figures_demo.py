@@ -170,8 +170,12 @@ figures_list_2.append(OYBTooNUcJLzDH)
 figures_list_2.append(OGGDooIvakwNlL)
 
 figures_list_3=[]
-#figures_list_3.append(AESIooxXxRYQdT)
-#figures_list_3.append(FunctionFour)
+figures_list_3.append(AESIooxXxRYQdT)
+figures_list_3.append(FunctionFour)
+
+print(len(figures_list_1))
+print(len(figures_list_2))
+print(len(figures_list_3))
 
 def AllFigures():
 
@@ -181,7 +185,6 @@ def AllFigures():
     if "--pass-number=3" in sys.argv :
         figures_list=figures_list_3
 
-    print(len(figures_list))
 
     tests=FigureGenerationSuite(figures_list,first=0,title=u"demonstration pictures")
     tests.generate()
