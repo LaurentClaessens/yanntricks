@@ -29,3 +29,7 @@ Make less use of the Sage'function `get_minmax_data` which leads to indeterminis
 # newTests
 
 Add to the test suite the pictures that do not compile in mazhe and smath.
+
+# devel
+
+The development branch.
