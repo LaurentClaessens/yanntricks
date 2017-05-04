@@ -5,7 +5,6 @@ from __future__ import division
 
 from phystricks import *
 
-from Testing import roundingForTest
 from Testing import assert_true
 from Testing import assert_equal
 from Testing import assert_almost_equal
