@@ -133,7 +133,6 @@ figures_list_1.append(<++>)
 figures_list_2=[]
 figures_list_2.append(PJKBooOhGVPkeR)
 figures_list_2.append(TRJEooPRoLnEiG)
-figures_list_2.append(EXIIooJzzoJeai)
 figures_list_2.append(CUZFooGqZLaAEp)
 figures_list_2.append(QHXKooHTpEuXMw)
 figures_list_2.append(YJEDoojDtSeKHQ)
@@ -141,10 +140,7 @@ figures_list_2.append(FunctionFirst)
 figures_list_2.append(exCircleTwo)
 figures_list_2.append(MXKAoozETwoiTe)
 figures_list_2.append(ASZLoocnIGlRHf)
-figures_list_2.append(SMXRooCnrlNw)
-figures_list_2.append(GridThree)
 figures_list_2.append(AESIooxXxRYQdT)
-figures_list_2.append(OGGDooIvakwNlL) 
 figures_list_2.append(GGHOookMhIxqIK)
 figures_list_2.append(PVRFoobvAzpZTq)
 figures_list_2.append(MarkOnPoint)
@@ -155,36 +151,31 @@ figures_list_2.append(DYJNooLVVFHEfN)
 figures_list_2.append(ParametricOne)
 figures_list_2.append(exCircleThree)
 figures_list_2.append(EDEYRhQ)
-figures_list_2.append(CNVAooybLqXmVS)
 figures_list_2.append(UARHooLMWqvyaI)
 figures_list_2.append(FunctionFour)
 figures_list_2.append(ALAYooKKrRTkCG)
 figures_list_2.append(QIXEooejrojKjo)
 figures_list_2.append(OMPAooMbyOIqeA)
 figures_list_2.append(LWVXooPyIlOKNd)
-figures_list_2.append(GridTwo)
 figures_list_2.append(QEFQoomlfmOQTM)
 figures_list_2.append(BHESoofmkTbbZR)
 figures_list_2.append(NWAEooQBLYYrpS)
-figures_list_2.append(ParametricTwo)
 figures_list_2.append(YOWDooyeyOJyml)
 figures_list_2.append(HUBEoofsPjXOQx)
 figures_list_2.append(AxesSecond)
-figures_list_2.append(HELQooLGapRQrr)
-figures_list_2.append(QRJOooKZPUoLlF)
 figures_list_2.append(PFCUoorQhitKoJ)
-figures_list_2.append(DEIToomZFknFmn)
 figures_list_2.append(RVKFooDxrqYXAX)
 figures_list_2.append(FunctionFive)
 figures_list_2.append(OYBTooNUcJLzDH)
-figures_list_2.append(FunctionSecond)
+figures_list_2.append(OGGDooIvakwNlL)
 
 figures_list_3=[]
 figures_list_3.append(AESIooxXxRYQdT)
 figures_list_3.append(FunctionFour)
 
-figures_list_2=[]
-figures_list_3=[]
+print(len(figures_list_1))
+print(len(figures_list_2))
+print(len(figures_list_3))
 
 def AllFigures():
 
@@ -194,7 +185,6 @@ def AllFigures():
     if "--pass-number=3" in sys.argv :
         figures_list=figures_list_3
 
-    print(len(figures_list))
 
     tests=FigureGenerationSuite(figures_list,first=0,title=u"demonstration pictures")
     tests.generate()

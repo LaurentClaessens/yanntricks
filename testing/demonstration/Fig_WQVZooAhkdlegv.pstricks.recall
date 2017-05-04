@@ -51,18 +51,6 @@
 \ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
 \immediate\openout\writeOfphystricks=WQVZooAhkdlegv.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\( A \)}}%
-\immediate\write\writeOfphystricks{totalheightof3084f7330c45acbc2642845f420d9618cf2faaef:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\( A \)}}%
-\immediate\write\writeOfphystricks{widthof3084f7330c45acbc2642845f420d9618cf2faaef:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\( B \)}}%
-\immediate\write\writeOfphystricks{totalheightof477431552f1932be6441c81f832eebd86d898044:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\( B \)}}%
-\immediate\write\writeOfphystricks{widthof477431552f1932be6441c81f832eebd86d898044:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\( O \)}}%
-\immediate\write\writeOfphystricks{totalheightofc479d2bb74a239fc1efbed38313dc70d24eb3d29:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\( O \)}}%
-\immediate\write\writeOfphystricks{widthofc479d2bb74a239fc1efbed38313dc70d24eb3d29:\the\lengthOfDOTfiguresdemoDOTpy-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -74,12 +62,6 @@
 %OTHER STUFF
 %PSTRICKS CODE
 %DEFAULT
-\draw []  (0,0) node [rotate=0] {$\bullet$};
-\draw (-0.3622357685,-0.1696621585) node {\( A \)};
-\draw []  (5.000000000,0) node [rotate=0] {$\bullet$};
-\draw (5.362235768,-0.1696621585) node {\( B \)};
-\draw []  (2.500000000,3.000000000) node [rotate=0] {$\bullet$};
-\draw (2.500000000,3.400000000) node {\( O \)};
 \draw [] (0,0) -- (5.00,0);
 \draw [] (5.00,0) -- (2.50,3.00);
 \draw [] (2.50,3.00) -- (0,0);

@@ -35,5 +35,3 @@ compile_demo 3
 
 # Then compare with the "recall" ones
 ./test_recall.py
-
-echo "Les figures qui ne vont pas doivent aller dans la pictures_list_2"

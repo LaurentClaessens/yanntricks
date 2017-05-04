@@ -51,10 +51,6 @@
 \ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
 \immediate\openout\writeOfphystricks=QRJOooKZPUoLlF.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{$ 1 $}}%
-\immediate\write\writeOfphystricks{totalheightof2f9abdf237016df2db0c349fe50e30dbad8bcb6c:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{$ 1 $}}%
-\immediate\write\writeOfphystricks{widthof2f9abdf237016df2db0c349fe50e30dbad8bcb6c:\the\lengthOfDOTfiguresdemoDOTpy-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -81,9 +77,7 @@
 \draw [,->,>=latex] (1.500000000,0.7500000000) -- (1.521213203,0.7712132034);
 \draw [color=green] (0,0) -- (0,0);
 \draw [color=green] (3.00,3.00) -- (3.00,3.00);
-\draw (3.000000000,-0.3049540000) node {$ 1 $};
 \draw [] (3.00,-0.100) -- (3.00,0.100);
-\draw (-0.2833333333,3.000000000) node {$ 1 $};
 \draw [] (-0.100,3.00) -- (0.100,3.00);
 %OTHER STUFF
 %END PSPICTURE
