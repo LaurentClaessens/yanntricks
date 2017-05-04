@@ -252,6 +252,7 @@ class CircleGraph(GenericCurve,ObjectGraph):
         v.arrow_type="vector"
         return v
     def get_minmax_data(self,angleI,angleF,n=3):
+        raise DeprecationWarning
         # Here, angleI and angleF are given in degree while parametric_plot uses radian.
         start = radian(angleI)
         end = radian(angleF)

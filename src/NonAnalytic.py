@@ -155,6 +155,7 @@ class NonAnalyticFunctionGraph(ObjectGraph):
         """
         return the xmin, xmax, ymin and ymax of the graph.
         """
+        raise DeprecationWarning
         from SmallComputations import MyMinMax
         if self.old_mx!=mx or self.old_Mx!=Mx or not self.minmax_result:
             self.minmax_result = MyMinMax(plot(self.fun,(mx,Mx)).get_minmax_data())

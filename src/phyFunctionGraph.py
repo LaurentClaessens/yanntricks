@@ -25,7 +25,6 @@ from __future__ import division
 from ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
-from SmallComputations import MyMinMax as MyMinMax
 from Exceptions import ShouldNotHappenException
 from GenericCurve import GenericCurve
 

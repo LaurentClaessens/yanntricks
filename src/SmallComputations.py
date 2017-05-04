@@ -450,32 +450,6 @@ def numerical_is_negative(x):
     else :
         return False
 
-def MyMinMax(dico_sage,decimals=3):
-    """
-    return the dictionary with numbers cut to `decimals` digits.
-
-    INPUT:
-
-    - ``dico_sage`` - a dictionary with number values
-
-    - ``decimals`` - (default=3) the number of digits after the unity to keep
-
-    OUTPUT:
-
-    A dictionary. The keys are `str`, not unicode.
-
-    EXAMPLES:
-
-        sage: from phystricks.SmallComputations import *
-        sage: d={'xmin': -0.3456475, 'ymin': -1.94565, 'ymax': 1.7895, 'xmax': 3.0000124}
-        sage: MyMinMax(d,decimals=2)
-        {'xmin': -0.34999999999999998, 'ymin': -1.95, 'ymax': 1.79, 'xmax': 3.0}
-
-
-    """
-    raise DeprecationWarning # May 2, 2017
-    return dict(   [ (str(k),around(numerical_approx(dico_sage[k]),decimals=decimals)) for k in dico_sage.keys()  ]   )
-
 def MultipleLower(x,m):
     """ return the biggest multiple of m which is lower or equal to x"""
     return floor(x/m)*m
