@@ -125,6 +125,25 @@ def testIntersection():
     for t in zip(pts,ans):
         assert_almost_equal( t[0],t[1] )
 
+def testAngleMeasure():
+        echo_function("testAngleMeasure")
+
+        alpha=AngleMeasure(value_degree=360)
+        assert_equal(alpha.__repr__(),"AngleMeasure, degree=360.000000000000,radian=2*pi")
+
+        alpha=AngleMeasure(value_degree=30)
+        assert_equal(cos(a.radian),1/2*sqrt(3))
+
+
+        alpha=AngleMeasure(value_degree=180)
+        beta=AngleMeasure(a)
+        assert_equal(b.degree,180)
+
+        alpha=AngleMeasure(value_degree=-(3.47548077273962e-14)/pi + 360)
+        assert_equal(a.degree,360)
+        assert_equal(a.radian,2*pi)
+
+testAngleMeasure()
 testIntersection()
 testEnsureUnicode()
 testFGetMinMaxData()
