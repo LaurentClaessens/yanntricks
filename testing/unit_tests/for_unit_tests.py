@@ -92,11 +92,16 @@ def testIntersection():
     g=phyFunction(cos(x))
     pts=Intersection(f,g,-2*pi,2*pi,numerical=True)
 
-    assert_almost_equal(pts[0].Point(-5.497787143782138,0.707106781186548))
-    assert_almost_equal(pts[1],Point(-2.3561944901923466,-0.707106781186546))
-    assert_almost_equal(pts[2],Point(0.7853981633974484,0.707106781186548))
-    assert_almost_equal(pts[3],Point(3.926990816987241,-0.707106781186547))
+    # due to the default epsilon in `assert_almost_equal`,
+    # in fact we do not test these points with the whole given precision.
+    ans=[]
+    ans.append(Point(-5.497787143782138,0.707106781186548))
+    ans.append(Point(-2.3561944901923466,-0.707106781186546))
+    ans.append(Point(0.7853981633974484,0.707106781186548))
+    ans.append(Point(3.926990816987241,-0.707106781186547))
     
+    for t in zip(pts,ans):
+        assert_almost_equal( t[0],t[1] )
 
 testIntersection()
 testEnsureUnicode()
