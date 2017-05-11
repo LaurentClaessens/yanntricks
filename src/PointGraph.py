@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from __future__ import division
@@ -393,12 +393,15 @@ class PointGraph(ObjectGraph):
         return the bounding box of the point including its mark
 
         A small box of radius 0.1 (modulo xunit,yunit[1]) is given in any case.
-        You need to provide a pspict in order to compute the size since it can vary from the place in your document you place the figure.
+        You need to provide a pspict in order to compute the size since
+        it can vary from the place in your document you place the figure.
 
-        [1] If you dont't know what is the "bounding box", or if you don't want to fine tune it, you don't care.
+        [1] If you dont't know what is the "bounding box", or if you don't wan
+        t to fine tune it, you don't care.
         """
         if pspict==None:
-            print("You should consider to give a pspict as argument. Otherwise the boundig box of %s could be bad"%str(self))
+            print("You should consider to give a Picture as argument. \
+                    Otherwise the boundig box of %s could be bad"%str(self))
             xunit=1
             yunit=1
         else :
@@ -406,7 +409,8 @@ class PointGraph(ObjectGraph):
             yunit=pspict.yunit
         Xradius=0.1/xunit
         Yradius=0.1/yunit
-        bb = BoundingBox(Point(self.x-Xradius,self.y-Yradius),Point(self.x+Xradius,self.y+Yradius))
+        bb = BoundingBox(Point(self.x-Xradius,self.y-Yradius),
+                            Point(self.x+Xradius,self.y+Yradius))
         for P in self.record_add_to_bb:
             raise # To know who
             bb.AddPoint(P)
@@ -417,18 +421,23 @@ class PointGraph(ObjectGraph):
         """Return a bounding box which include itself and that's it."""
         # Here one cannot use BoundingBox(self.point,self.point) because
         # it creates infinite loop.
-        bb=BoundingBox(xmin=self.point.x,xmax=self.point.x,ymin=self.point.y,ymax=self.point.y)
+        bb=BoundingBox(xmin=self.point.x,xmax=self.point.x,
+                            ymin=self.point.y,ymax=self.point.y)
         return bb
-    def isNumericallyEqual(self,other,epsilon=0.01):
+    def is_almost_equal(self,other,epsilon=0.001):
         # return true if 'self' and 'other' are coordinates difference
         # lower than 'epsilon'
+
         if not isinstance(other,PointGraph):
-            raise TypeError("You are comparing a PointGraph with "+type(other))
+            from NoMathUtilities import logging
+            logging("We are comparing "+type(self)+" with "+type(other)+". We continue, but this is strange.")
+
         if abs(self.x-other.x)>epsilon:
             return False
         if abs(self.y-other.y)>epsilon:
             return False
         return True
+
     def tikz_code(self,pspict=None):
         symbol_dict={}
         symbol_dict[None]="$\\bullet$"
@@ -455,32 +464,10 @@ class PointGraph(ObjectGraph):
     def latex_code(self,language=None,pspict=None,with_mark=False):
         l=[]
 
-        if language=="pstricks":
-            raise DeprecationWarning
         if language=="tikz":
             l.append(self.tikz_code(pspict=pspict))
         return "\n".join(l)
-    def is_almost_equal(self,other,epsilon):
-        """
-        Test if 'self' and 'other' are almost the same point.
 
-        Return 'True' is other is an other point with 'sup distance'
-        from self lower than 'epsilon'
-
-        return False otherwise.
-        """
-        if not isinstance(other,PointGraph):
-            from NoMathUtilities import logging
-            logging("We are comparing "+type(self)+" with "+type(other)+". We continue, but this is strange.")
-        sx=numerical_approx(self.x)
-        ox=numerical_approx(other.x)
-        if abs(sx-ox)>epsilon:
-            return False
-        sy=numerical_approx(self.y)
-        oy=numerical_approx(other.y)
-        if abs(sy-oy)>epsilon:
-            return False
-        return True
     def __eq__(self,other):
         """
         return True if the coordinates of `self` and `other` are the same.

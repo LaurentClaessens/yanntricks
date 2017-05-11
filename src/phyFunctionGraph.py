@@ -319,12 +319,8 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
                 y=self(x)
             except ZeroDivisionError :
                 valid=False
-            try :
-                if y.is_infinity():
-                    valid=False
-            except AttributeError :
-                raise DeprecationWarning   # I should convert numpy.float64, no ?
-                pass     # When drawing non-analytic function, y is numpy.float64
+            if y.is_infinity():
+                valid=False
             if valid :
                 ymax=max(ymax,y)
                 ymin=min(ymin,y)

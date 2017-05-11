@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from __future__ import division
@@ -64,7 +64,10 @@ class HistogramGraph(ObjectGraph):
         self.box_list=[]
         for t in self.tuple_box_list:
             self.box_list.append(HistogramBox(t[0],t[1],t[2],self))
-        self.n=sum( [b.n for b in self.box_list] )
+
+        #self.n=sum( [b.n for b in self.box_list] )
+        self.n=sum( b.n for b in self.box_list )        # New iterator trick http://python3porting.com/improving.html
+
         self.length=12  # Visual length (in centimeter) of the histogram
         self.height=6  # Visual height (in centimeter) of the histogram
         self.d_xmin=min([b.d_xmin for b in self.box_list])       # min and max of the data

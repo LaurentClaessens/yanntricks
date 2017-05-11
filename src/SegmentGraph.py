@@ -419,9 +419,6 @@ class SegmentGraph(ObjectGraph):
         More precisely, if self is the segment A->B, return the point B-A
         """
         return self.F-self.I
-    def center(self,advised=True):
-        raise DeprecationWarning
-        return self.midpoint(advised=advised)
     def midpoint(self,advised=True):
         P = self.get_point_proportion(0.5,advised)
         return P

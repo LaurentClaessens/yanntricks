@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2016
+# copyright (c) Laurent Claessens, 2017
 # email: laurent@claessens-donadello.eu
 
 from sage.all import lazy_attribute,numerical_approx
@@ -189,7 +189,5 @@ class AffineVectorGraph(ObjectGraph):
     def latex_code(self,language=None,pspict=None):
         if self.parameters.style=="none":
             return ""
-        if language=="pstricks":
-            raise DeprecationWarning
         if language=="tikz":
             return self.tikz_code(pspict=pspict)

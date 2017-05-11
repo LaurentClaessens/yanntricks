@@ -1,6 +1,28 @@
 #! /usr/bin/sage -python
 # -*- coding: utf8 -*-
 
+
+###########################################################################
+#   This is part of the module phystricks
+#
+#   phystricks is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   phystricks is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+###########################################################################
+
+# copyright (c) Laurent Claessens, 2016-2017
+# email: laurent@claessens-donadello.eu
+
+
 from __future__ import division
 
 from phystricks import *
@@ -9,6 +31,7 @@ from Testing import assert_true
 from Testing import assert_equal
 from Testing import assert_almost_equal
 from Testing import echo_function
+from Testing import echo_single_test
 
 def testFGetMinMaxData():
     echo_function("testFGetMinMaxData")
@@ -71,8 +94,48 @@ def testVectorConstructor():
     assert_equal(v2.I,O)
     assert_equal(v3.I,O)
 
+def testIntersection():
+    """
+    Test the intersection function
+    """
+    echo_function("testIntersection")
+    
+    x=var('x')
+    fun=phyFunction(x**2-5*x+6)
+    droite=phyFunction(2)
+    pts = Intersection(fun,droite)
 
-testEnsureUnicode()
-testFGetMinMaxData()
+    echo_single_test("Function against horizontal line")
+    assert_equal(pts[0],Point(1,2))
+    assert_equal(pts[1],Point(4,2))
+
+    echo_single_test("Two functions (sine and cosine)")
+    f=phyFunction(sin(x))
+    g=phyFunction(cos(x))
+    pts=Intersection(f,g,-2*pi,2*pi,numerical=True)
+
+    # due to the default epsilon in `assert_almost_equal`,
+    # in fact we do not test these points with the whole given precision.
+    ans=[]
+    ans.append(Point(-5.497787143782138,0.707106781186548))
+    ans.append(Point(-2.3561944901923466,-0.707106781186546))
+    ans.append(Point(0.7853981633974484,0.707106781186548))
+    ans.append(Point(3.926990816987241,-0.707106781186547))
+    
+    for t in zip(pts,ans):
+        assert_almost_equal( t[0],t[1] )
+
+from testAngleMeasure import testAngleMeasure
+print("testAngleMeasure")
+testAngleMeasure()
+
+print("testSegment")
 testSegment()
+print("testIntersection")
+testIntersection()
+print("testEnsureUnicode")
+testEnsureUnicode()
+print("testFGetMinMaxData")
+testFGetMinMaxData()
+print("testVectorConstructor")
 testVectorConstructor()

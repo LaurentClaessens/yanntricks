@@ -692,12 +692,12 @@ def Rectangle(*args,**arg):
     if len(args)==1:
         NW=args[0].NW()
         SE=args[0].SE()
-    if "xmin" in arg.keys() :
+    if "xmin" in arg.iterkeys() :
         bb=BoundingBox(xmin=arg["xmin"],ymin=arg["ymin"],xmax=arg["xmax"],ymax=arg["ymax"])
         # TODO : I should be able to pass directly the dictionary to BoundingBox
         NW=bb.getVertex("NW")
         SE=bb.getVertex("SE")
-    if "mx" in arg.keys() :
+    if "mx" in arg.iterkeys() :
         bb=BoundingBox(xmin=arg["mx"],ymin=arg["my"],xmax=arg["Mx"],ymax=arg["My"])
         # TODO : I should be able to pass directly the dictionary to BoundingBox
         NW=bb.getVertex("NW")

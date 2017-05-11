@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from Constructors import *
@@ -66,13 +66,8 @@ class RectangleGraph(PolygonGraph):
         return RectangleGraph
     def _segment(self,side):
         bare_name = "graph_"+side
-        if not bare_name in self.__dict__.keys():
-            raise # Just to know who on Earth uses that.
+        if not bare_name in self.__dict__.iterkeys():
+            raise DeprecationWarning # May 11, 2017
             line = self.__getattribute__("segment_"+side)()
             self.__dict__[bare_name]=line
         return  self.__dict__[bare_name]
-    def __getattr__(self,attrname):
-        raise # Just to know who on Earth uses that.
-        if "graph_" in attrname:
-            return self._segment(attrname[6])
-        raise AttributeError

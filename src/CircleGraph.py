@@ -251,12 +251,6 @@ class CircleGraph(GenericCurve,ObjectGraph):
         v = PolarPoint(1,theta).origin(self.get_point(theta,advised=False))
         v.arrow_type="vector"
         return v
-    def get_minmax_data(self,angleI,angleF,n=3):
-        raise DeprecationWarning
-        # Here, angleI and angleF are given in degree while parametric_plot uses radian.
-        start = radian(angleI)
-        end = radian(angleF)
-        return MyMinMax(self.parametric_curve().get_minmax_data(start,end),n)
     def xmax(self,angleI,angleF):
         return self.get_minmax_data(angleI,angleF)['xmax']
     def xmin(self,angleI,angleF):

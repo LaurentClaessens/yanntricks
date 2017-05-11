@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 
@@ -35,7 +35,7 @@ class AddedObjects(object):
         if not isinstance(pspict,list):
             pspict=[pspict]
         for psp in pspict:
-            if psp not in self.dico.keys():
+            if psp not in self.dico.iterkeys():
                 self.dico[psp]=[]
             self.dico[psp].append(obj)
     def extend(self,pspict,objs):
@@ -50,7 +50,7 @@ class AddedObjects(object):
         for psp,objs in other.dico.items():
             self.extend(psp,objs)
     def __getitem__(self,pspict):
-        if pspict in self.dico.keys():
+        if pspict in self.dico.iterkeys():
             a = self.dico[pspict]
             a.extend(self.dico[None])
             return a
@@ -237,7 +237,7 @@ class ObjectGraph(object):
         seg.add_option("linewidth=1mm")
         """
         oo=self.parameters.other_options
-        for opt in oo.keys():
+        for opt in oo.iterkeys():
             self.add_option(opt+"="+oo[opt])
         self.parameters.add_to_options(self.options)
     def params(self,language,refute=[]):
@@ -250,7 +250,7 @@ class ObjectGraph(object):
         # 1935811332
         l=[]
         bracket_attributes=self.parameters.bracketAttributesDictionary()
-        for attr in [x for x in bracket_attributes.keys() if x not in refute]:
+        for attr in [x for x in bracket_attributes.iterkeys() if x not in refute]:
             value=bracket_attributes[attr]
             l_attr=genericBracketAttributeToLanguage(attr,language)
             if value != None:

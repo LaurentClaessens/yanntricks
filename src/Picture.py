@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2016
+# copyright (c) Laurent Claessens, 2009-2017
 # email: laurent@claessens-donadello.eu
 
 from __future__ import division
@@ -288,9 +288,6 @@ given right after the creation of the picture.")
             self.BB.AddBB(a.graph.bounding_box(pspict=self))
             self.already_computed_BB.append(a)
         return self.BB
-    def DrawBB(self):
-        raise DeprecationWarning
-        self.DrawBoundingBox(self.BB)
     def DrawBoundingBox(self,obj=None,color="cyan"):
         """Draw the bounding box of an object when it has a method bounding_box
 
@@ -325,7 +322,7 @@ given right after the creation of the picture.")
         re-passed to DrawGraphs.
 
     """
-        if "separator_name" not in arg.keys():
+        if "separator_name" not in arg.iterkeys():
             separator_name="DEFAULT"
         else:
             separator_name=arg["separator_name"]

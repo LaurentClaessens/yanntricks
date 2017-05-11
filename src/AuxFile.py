@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2016
+# copyright (c) Laurent Claessens, 2016-2017
 # email: laurent@claessens-donadello.eu
 
 from GlobalVariables import global_vars
@@ -96,12 +96,12 @@ class AuxFile(object):
             d[key]=value
 
         f=open(self.interWriteFile.from_here(),"w")
-        for k in d.keys():
+        for k in d.iterkeys():
             f.write("%s:%s-\n"%(k,d[k]))
         f.close()
         return d
     def get_Id_value(self,Id,default_value=0):
-        if Id not in self.id_values_dict().keys():
+        if Id not in self.id_values_dict().iterkeys():
             if not global_vars.silent:
                 if not self.already_warned_CompileYourLaTeXFile:
                     logging(self.picture.name+"-----")
