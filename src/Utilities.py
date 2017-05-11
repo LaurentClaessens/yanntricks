@@ -115,13 +115,11 @@ def inner_product(v,w,numerical=True):
         return numerical_approx(s)
     return s
 
-def Intersection(f,g,a=None,b=None,numerical=False,only_real=True):
+def Intersection(f,g,a=None,b=None,numerical=False):
     """
     When f and g are objects with an attribute equation, return the list of points of intersections.
 
     The list of point is sorted by order of `x` coordinates.
-
-    If 'only_real' is True, return only the real solutions.
 
     Only numerical approximations are returned as there are some errors otherwise. As an example the following 
     solving return points that are not even near from the circle x**2+y**2=9

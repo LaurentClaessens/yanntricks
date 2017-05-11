@@ -383,7 +383,7 @@ class RightAngleGraph(ObjectGraph):
         # This happens in RightAngle(  Segment(D,E),Segment(D,F),l=0.2, n1=1,n2=1 ) because the same point 'D' is given
         # for both d1 and d2.
         # We need d1.I, d1.F, d2.I and d2.F to be four distinct points.
-        if self.d1.I.isNumericallyEqual(self.d2.I) or self.d1.I.isNumericallyEqual(self.d2.F) or self.d1.F.isNumericallyEqual(self.d2.I) or self.d1.F.isNumericallyEqual(self.d2.F):
+        if self.d1.I.is_almost_equal(self.d2.I) or self.d1.I.is_almost_equal(self.d2.F) or self.d1.F.is_almost_equal(self.d2.I) or self.d1.F.is_almost_equal(self.d2.F):
             self.d1=d1.dilatation(1.5)
             self.d2=d2.dilatation(1.5)
 
@@ -394,9 +394,9 @@ class RightAngleGraph(ObjectGraph):
 
         # If the intersection point is one of the given points, there will be troubles.
         # For then angle between AB and CD at point I, we need A,B,C,D and I to be five different points. 
-        if self.intersection.isNumericallyEqual(self.d1.I) or self.intersection.isNumericallyEqual(self.d1.F):
+        if self.intersection.is_almost_equal(self.d1.I) or self.intersection.is_almost_equal(self.d1.F):
             self.d1=d1.dilatation(1.5)
-        if self.intersection.isNumericallyEqual(self.d2.I) or self.intersection.isNumericallyEqual(self.d2.F):
+        if self.intersection.is_almost_equal(self.d2.I) or self.intersection.is_almost_equal(self.d2.F):
             self.d2=d2.dilatation(1.5)
 
     def inter_point(self,I,F,n,pspict):

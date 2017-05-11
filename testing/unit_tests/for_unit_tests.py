@@ -9,6 +9,7 @@ from Testing import assert_true
 from Testing import assert_equal
 from Testing import assert_almost_equal
 from Testing import echo_function
+from Testing import echo_single_test
 
 def testFGetMinMaxData():
     echo_function("testFGetMinMaxData")
@@ -71,7 +72,33 @@ def testVectorConstructor():
     assert_equal(v2.I,O)
     assert_equal(v3.I,O)
 
+def testIntersection():
+    """
+    Test the intersection function
+    """
+    echo_function("testIntersection")
+    
+    x=var('x')
+    fun=phyFunction(x**2-5*x+6)
+    droite=phyFunction(2)
+    pts = Intersection(fun,droite)
 
+    echo_single_test("Function against horizontal line")
+    assert_equal(pts[0],Point(1,2))
+    assert_equal(pts[1],Point(4,2))
+
+    echo_single_test("Two functions (sine and cosine)")
+    f=phyFunction(sin(x))
+    g=phyFunction(cos(x))
+    pts=Intersection(f,g,-2*pi,2*pi,numerical=True)
+
+    assert_almost_equal(pts[0].Point(-5.497787143782138,0.707106781186548))
+    assert_almost_equal(pts[1],Point(-2.3561944901923466,-0.707106781186546))
+    assert_almost_equal(pts[2],Point(0.7853981633974484,0.707106781186548))
+    assert_almost_equal(pts[3],Point(3.926990816987241,-0.707106781186547))
+    
+
+testIntersection()
 testEnsureUnicode()
 testFGetMinMaxData()
 testSegment()
