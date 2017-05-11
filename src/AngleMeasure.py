@@ -158,29 +158,10 @@ class AngleMeasure(object):
         return s
 
     def __add__(self,other):
-        """
-        return the sum of two angles.
+        ##
+        # return the sum of two angles.
+        # The return type is `AngleMeasure` 
 
-        EXAMPLES::
-
-            sage: from phystricks.SmallComputations import *
-            sage: a=AngleMeasure(value_degree=45)
-            sage: b=AngleMeasure(value_radian=pi/3)
-            sage: a.degree,a.radian
-            (45, 1/4*pi)
-            sage: b.degree,b.radian
-            (60, 1/3*pi)
-            sage: (a+b).degree,(a+b).radian
-            (105, 7/12*pi)
-
-        If you add with a number, guess if you are speaking of degree or radian ::
-
-            sage: a=AngleMeasure(value_degree=45)
-            sage: (a+pi/2).degree
-            135
-            sage: (a+45).degree
-            90
-        """
         try :
             return AngleMeasure(value_radian=self.radian+other.radian)
         except AttributeError :
