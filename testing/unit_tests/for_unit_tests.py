@@ -125,6 +125,10 @@ def testIntersection():
     for t in zip(pts,ans):
         assert_almost_equal( t[0],t[1] )
 
+from testAngleMark import testAngleMark
+print("testAngleMark")
+testAngleMark()
+
 from testAngleMeasure import testAngleMeasure
 print("testAngleMeasure")
 testAngleMeasure()
