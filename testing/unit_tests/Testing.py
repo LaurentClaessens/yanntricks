@@ -91,3 +91,14 @@ def echo_function(text):
     print("  "+text)
 def echo_single_test(text):
     print("    "+text)
+
+class SilentOutput(object):
+    def __init__(self):
+        import sys
+        self.old_out=sys.stdout
+    def __enter__(self):
+        sys.stdout=self
+    def __exit__(self,t,value,tb):
+        sys.stdout=self.old_out
+    def write(self,s):
+        pass
