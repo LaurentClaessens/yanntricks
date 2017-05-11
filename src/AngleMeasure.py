@@ -151,7 +151,7 @@ class AngleMeasure(object):
         try :
             s = AngleMeasure(value_radian=self.radian-other.radian)
         except AttributeError :
-            from NoMathUtilities import logging,testtype
+            from NoMathUtilities import logging
             logging("Are you trying to add an 'AngleMesasure' with something else ?")
             logging("'other's type is "+str(type(other)))
             raise
@@ -200,6 +200,10 @@ class AngleMeasure(object):
         return NotImplemented
     def __ne__(self,other):
         return not (self==other)
+    def __gt__(self,other):
+        return not self<=other
+    def __ge__(self,other):
+        return not self<other
 
     def __str__(self):
         return "AngleMeasure, degree=%s,radian=%s"%(str(numerical_approx(self.degree)),str(self.radian))

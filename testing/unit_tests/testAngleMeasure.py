@@ -40,7 +40,7 @@ def comparison():
     assert_true(alpha<=alpha)
     assert_true(alpha==alpha)
     assert_false(alpha==beta)
-    assert_false(alpha>=alpha)
+    assert_true(alpha>=alpha)
 
 
 def testAngleMeasure():
