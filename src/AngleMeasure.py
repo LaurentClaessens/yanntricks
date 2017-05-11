@@ -31,11 +31,6 @@ class AngleMeasure(object):
     EXAMPLES::
 
         sage: from phystricks.SmallComputations import *
-        sage: x=AngleMeasure(value_radian=pi/2)
-        sage: x()
-        90
-
-        sage: from phystricks.SmallComputations import *
         sage: x=AngleMeasure(value_degree=360)
         sage: print x
         AngleMeasure, degree=360.000000000000,radian=2*pi
@@ -92,14 +87,18 @@ class AngleMeasure(object):
             value_radian=angle_measure.radian
         else:
 
-            
-            # If the fractional part of the given degree is too small,
-            # we round it.
-            s=numerical_approx(value_degree)
-            k=abs(s).frac()
-            if k<0.000001 :
-                value_degree=s.integer_part()
+            if value_degree is not None:
+                # If the fractional part of the given degree is too small,
+                # we round it.
 
+                # We have to test is 'value_degree' is None because
+                # `numerical_approx(None)` is the complex number 0.00000
+
+                s=numerical_approx(value_degree)
+
+                k=abs(s).frac()
+                if k<0.000001 :
+                    value_degree=s.integer_part()
 
             from Utilities import degree
             from Utilities import radian
