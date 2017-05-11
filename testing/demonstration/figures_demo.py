@@ -66,7 +66,6 @@ from phystricksTKXZooLwXzjS import TKXZooLwXzjS
 
 figures_list_1=[]
 figures_list_1.append(UARHooLMWqvyaI)
-figures_list_1.append(EXIIooJzzoJeai)
 figures_list_1.append(SMXRooCnrlNw)
 figures_list_1.append(EDEYRhQ)
 figures_list_1.append(TKXZooLwXzjS)
@@ -124,6 +123,7 @@ figures_list_1.append(AESIooxXxRYQdT)
 figures_list_1.append(LWVXooPyIlOKNd)
 figures_list_1.append(FunctionFour)
 figures_list_1.append(ProjPoly)
+figures_list_1.append(EXIIooJzzoJeai)
 """
 figures_list_1.append(<++>)
 figures_list_1.append(<++>)
