@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 class Options(object):
@@ -45,20 +45,20 @@ class Options(object):
                     s = op.split("=")
                     self.DicoOptions[s[0]] = s[1]
             except AttributeError :
-                for op in opt.keys():
+                for op in opt.iterkeys():
                     self.DicoOptions[op] = opt[op]
     def remove_option(self,opt):
         del(self.DicoOptions[opt])
     def merge_options(self,opt):
-        for op in opt.DicoOptions.keys():
+        for op in opt.DicoOptions.iterkeys():
             self.add_option({op:opt[op]})
     def extend_options(self,Opt):
-        for opt in Opt.DicoOptions.keys():
+        for opt in Opt.DicoOptions.iterkeys():
             self.add_option(opt+"="+Opt.DicoOptions[opt])
     # Afiter est une liste de noms d'options, et cette méthode retourne une instance de Options qui a juste ces options-là, avec les valeurs de self.
     def sousOptions(self,AFiter):
         O = Options()
-        for op in self.DicoOptions.keys() :
+        for op in self.DicoOptions.iterkeys() :
             if op in AFiter : O.add_option(op+"="+self.DicoOptions[op])
         return O
     def style_ligne(self):
@@ -67,7 +67,7 @@ class Options(object):
         a = []
         if language=="pstricks":
             raise DeprecationWarning,"No more pstricks supported"
-            for op in self.DicoOptions.keys():
+            for op in self.DicoOptions.iterkeys():
                 a.append(op+"="+self.DicoOptions[op])
                 a.append(",")
             del a[-1:]
@@ -242,7 +242,7 @@ class Parameters(object):
         Notice that here `p1.style` is replace while it was not replaced by the function 
         :func:`add_to`.
         """
-        for attr in parameters.__dict__.keys():
+        for attr in parameters.__dict__.iterkeys():
             candidate=self.__getattribute__(attr)
             if candidate is not None :
                 parameters.__dict__[attr]=candidate

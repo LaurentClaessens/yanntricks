@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2016
+# copyright (c) Laurent Claessens, 2009-2017
 # email: laurent@claessens-donadello.eu
 
 from __future__ import division
@@ -325,7 +325,7 @@ given right after the creation of the picture.")
         re-passed to DrawGraphs.
 
     """
-        if "separator_name" not in arg.keys():
+        if "separator_name" not in arg.iterkeys():
             separator_name="DEFAULT"
         else:
             separator_name=arg["separator_name"]
