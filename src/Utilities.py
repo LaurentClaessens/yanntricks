@@ -24,6 +24,7 @@ from sage.all import *
 from phystricks.src.Constructors import *
 from phystricks.src.MathStructures import *
 from phystricks.src.Exceptions import ShouldNotHappenException
+from phystricks.src.Decorators import sort_and_assert_real
 
 
 def is_real(z):
