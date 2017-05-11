@@ -880,8 +880,6 @@ class SegmentGraph(ObjectGraph):
             curve.parameters=self.parameters.copy()
             return curve.latex_code(language=language,pspict=pspict)
         else:
-            if language=="pstricks":
-                raise DeprecationWarning
             if language=="tikz":
                 a=[]
                 c1=self.I.coordinates(numerical=True,digits=3,pspict=pspict)
