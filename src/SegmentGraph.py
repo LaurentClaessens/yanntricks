@@ -29,6 +29,9 @@ from NoMathUtilities import logging
 
 from PointGraph import PointGraph
 
+from Debug import dprint
+from Debug import DebugException
+
 class SegmentGraph(ObjectGraph):
     def __init__(self,A,B):
         self.I = A
@@ -419,9 +422,6 @@ class SegmentGraph(ObjectGraph):
         More precisely, if self is the segment A->B, return the point B-A
         """
         return self.F-self.I
-    def center(self,advised=True):
-        raise DeprecationWarning
-        return self.midpoint(advised=advised)
     def midpoint(self,advised=True):
         P = self.get_point_proportion(0.5,advised)
         return P
@@ -883,16 +883,17 @@ class SegmentGraph(ObjectGraph):
             curve.parameters=self.parameters.copy()
             return curve.latex_code(language=language,pspict=pspict)
         else:
-            if language=="pstricks":
-                raise DeprecationWarning
             if language=="tikz":
                 a=[]
                 c1=self.I.coordinates(numerical=True,digits=3,pspict=pspict)
                 c2=self.F.coordinates(numerical=True,digits=3,pspict=pspict)
                 if 'I' in c1 or "I" in c2 :
-                    print(self.I,self.F)
-                    raise
-                a.append("\draw [{2}] {0} -- {1};".format(c1,c2,self.params(language="tikz")))
+                    from Exception import ImaginaryPartException
+                    raise ImaginaryPartException(
+                        "Probably an imaginary part in "+str(c1)+" or "+str(c2))
+                a.append("\draw [{2}] {0} -- {1};".format(
+                                        c1,c2,self.params(language="tikz")))
+
         return "\n".join(a)
     def tikz_code(self,pspict=None):
         return self.latex_code(language="tikz",pspict=pspict)

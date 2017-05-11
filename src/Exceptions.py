@@ -20,11 +20,19 @@
 # copyright (c) Laurent Claessens, 2016-2017
 # email: laurent@claessens-donadello.eu
 
-"""
-This file contains the exceptions that can be raised by 'phystricks'.
-"""
+##
+# This file contains the exceptions that can be raised by 'phystricks'.
+# 
+# These exceptions should subcalss `PhystricksGenericException` because 
+#I have in mind to catch them all when performing a test suite.
 
-class MissingPictureException(Exception):
+
+class PhystricksGenericException(Exception):
+    def __str__(self):
+        print("Well. Really you should subclass and overrive this")
+        raise
+
+class MissingPictureException(PhystricksGenericException):
     """
     Exception raised when a function needs a non furnished picture argument.
     """
@@ -33,7 +41,7 @@ class MissingPictureException(Exception):
     def __str__(self):
         return self.text
 
-class ShouldNotHappenException(Exception):
+class ShouldNotHappenException(PhystricksGenericException):
     """
     Exception raised when something should not happen (bad use of a method)
     """
@@ -42,7 +50,7 @@ class ShouldNotHappenException(Exception):
     def __str__(self):
         return self.text
 
-class AlreadyEnlargedException(Exception):
+class AlreadyEnlargedException(PhystricksGenericException):
     """
     Exception raised when the bounding box is already enlarged and when
     one tries to enlarge it again.
@@ -52,7 +60,7 @@ class AlreadyEnlargedException(Exception):
     def __str__(self):
         return self.text
 
-class PhystricksTestError(Exception):
+class PhystricksTestError(PhystricksGenericException):
     """
     The exception raised when testing the pspictures.
 
@@ -70,22 +78,22 @@ class PhystricksTestError(Exception):
         self.pspict=pspict
         self.code=code
         if pspict==None:
-            print "Warning : this error is provided without pspict. Maybe something is wrong."
+            print("Warning : this error is provided without pspict. Maybe something is wrong.")
     def __str__(self):
         a=[]
         a.append("Test failed")
         a.append(self.justification)
         return "\n".join(a)
 
-class PhystricksNoError(Exception):
+class PhystricksNoError(PhystricksGenericException):
     def __init__(self,figure):
         self.figure=figure
 
-class NoMathBoundingBox(Exception):
+class NoMathBoundingBox(PhystricksGenericException):
     def __init__(self,obj,fun):
         self.message = "Object {0} from class {1} has no attribute {2}".format(obj,type(obj),fun)
 
-class TooLargeBBException(Exception):
+class TooLargeBBException(PhystricksGenericException):
     def __init__(self,obj,faulty,acceptable,got):
         """
         Describe the exception raised when a too large bounding box is found.
@@ -116,3 +124,7 @@ class TooLargeBBException(Exception):
         and then see de visu what is the faulty object.
                     """)
         return "\n".join(a)
+
+class ImaginaryPartException(PhystricksGenericException):
+    def __init__(self,text):
+        self.message=text

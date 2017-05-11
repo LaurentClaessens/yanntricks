@@ -17,13 +17,14 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from sage.all import *
 from phystricks.src.Constructors import *
 from phystricks.src.MathStructures import *
 from phystricks.src.Exceptions import ShouldNotHappenException
+from phystricks.src.Decorators import sort_and_assert_real
 
 
 def is_real(z):
@@ -115,13 +116,12 @@ def inner_product(v,w,numerical=True):
         return numerical_approx(s)
     return s
 
-def Intersection(f,g,a=None,b=None,numerical=False,only_real=True):
+@sort_and_assert_real
+def Intersection(f,g,a=None,b=None,numerical=False):
     """
     When f and g are objects with an attribute equation, return the list of points of intersections.
 
     The list of point is sorted by order of `x` coordinates.
-
-    If 'only_real' is True, return only the real solutions.
 
     Only numerical approximations are returned as there are some errors otherwise. As an example the following 
     solving return points that are not even near from the circle x**2+y**2=9
@@ -161,10 +161,6 @@ def Intersection(f,g,a=None,b=None,numerical=False,only_real=True):
         k=f-g
         xx=SmallComputations.find_roots_recursive(k.sage,a,b)
         pts=[  Point(x,f(x)) for x in xx ]
-        for P in pts:
-            if "I" in P.coordinates():
-                print("There should not be imaginary part")
-                raise
         return pts
 
     x,y=var('x,y')
@@ -181,12 +177,6 @@ def Intersection(f,g,a=None,b=None,numerical=False,only_real=True):
         ok2,b=test_imaginary_part(b)
         if ok1 and ok2 :
             pts.append(Point(a,b))
-    pts.sort(lambda P,Q:cmp(P.x,Q.x))
-    for P in pts:
-        if "I" in P.coordinates():
-            print("There should not be imaginary part")
-            print(f.equation,g.equation)
-            raise
     return pts
 
 def PointToPolaire(P=None,x=None,y=None,origin=None,numerical=True):

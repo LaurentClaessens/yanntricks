@@ -42,6 +42,12 @@ def assert_true(b,failure_message=""):
         from Exceptions import FailedAssertException
         raise FailedAssertException(failure_message)
 
+def assert_false(b,failure_message=""):
+    """
+    Raise a FailedAssertException if the boolean is True
+    """
+    assert_true(not b,failure_message=failure_message)
+
 def assert_equal(e1,e2,failure_message=""):
     """
     Raise a FailedAssertException if the two expressions 'e1' and 'e2' 
@@ -51,7 +57,7 @@ def assert_equal(e1,e2,failure_message=""):
         from Exceptions import FailedAssertException
         raise FailedAssertException(str(e1)+" is not equal to "+str(e2))
 
-def assert_almost_equal(e1,e2,epsilon=None,failure_message=""):
+def assert_almost_equal(e1,e2,epsilon=0.0001,failure_message=""):
     """
     Raise a FailedAssertException if the two expressions 'e1' and 'e2' 
     are not equal up to 'epsilon'
@@ -68,10 +74,6 @@ def assert_almost_equal(e1,e2,epsilon=None,failure_message=""):
     - fail if the absolute value of the difference
         is larger than `epsilon`
     """
-    if epsilon is None :
-        from phystricks.Exceptions import ShouldNotHappenException 
-        raise ShouldNotHappenException("You have to pass an epsilon when you use 'assert_almost_equal'")
-
     if hasattr(e1,'is_almost_equal'):
         if not e1.is_almost_equal(e2,epsilon):
             from Exceptions import FailedAssertException

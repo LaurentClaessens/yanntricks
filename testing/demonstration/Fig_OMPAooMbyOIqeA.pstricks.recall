@@ -21,13 +21,13 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
 \immediate\openout\writeOfphystricks=AngleTestOne.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{55.0}}%
-\immediate\write\writeOfphystricks{totalheightof90322c17695939e2ff17c03248b8dd88f73d597c:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{55.0}}%
-\immediate\write\writeOfphystricks{widthof90322c17695939e2ff17c03248b8dd88f73d597c:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{55.0}}%
+\immediate\write\writeOfphystricks{totalheightof90322c17695939e2ff17c03248b8dd88f73d597c:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{55.0}}%
+\immediate\write\writeOfphystricks{widthof90322c17695939e2ff17c03248b8dd88f73d597c:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -60,13 +60,13 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
 \immediate\openout\writeOfphystricks=AngleTestTwo.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{880}}%
-\immediate\write\writeOfphystricks{totalheightof0b5e7f0138ad72cf4f28d2ee0b0364e1071af9be:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{880}}%
-\immediate\write\writeOfphystricks{widthof0b5e7f0138ad72cf4f28d2ee0b0364e1071af9be:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{880}}%
+\immediate\write\writeOfphystricks{totalheightof0b5e7f0138ad72cf4f28d2ee0b0364e1071af9be:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{880}}%
+\immediate\write\writeOfphystricks{widthof0b5e7f0138ad72cf4f28d2ee0b0364e1071af9be:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -99,13 +99,13 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
 \immediate\openout\writeOfphystricks=AngleTestThree.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\( 30^o\)}}%
-\immediate\write\writeOfphystricks{totalheightof7c3b7de503b40c42468a0be43507feedd9495f01:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\( 30^o\)}}%
-\immediate\write\writeOfphystricks{widthof7c3b7de503b40c42468a0be43507feedd9495f01:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{\( 30^o\)}}%
+\immediate\write\writeOfphystricks{totalheightof7c3b7de503b40c42468a0be43507feedd9495f01:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{\( 30^o\)}}%
+\immediate\write\writeOfphystricks{widthof7c3b7de503b40c42468a0be43507feedd9495f01:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -138,13 +138,13 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
 \immediate\openout\writeOfphystricks=AngleTest15.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\( mMó\)}}%
-\immediate\write\writeOfphystricks{totalheightof2ca4ec77a458a7f6a4a1d358c5b9387efd114685:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\( mMó\)}}%
-\immediate\write\writeOfphystricks{widthof2ca4ec77a458a7f6a4a1d358c5b9387efd114685:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{\( mMó\)}}%
+\immediate\write\writeOfphystricks{totalheightof2ca4ec77a458a7f6a4a1d358c5b9387efd114685:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{\( mMó\)}}%
+\immediate\write\writeOfphystricks{widthof2ca4ec77a458a7f6a4a1d358c5b9387efd114685:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -177,13 +177,13 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
 \immediate\openout\writeOfphystricks=AngleTestFour.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\( 47\)}}%
-\immediate\write\writeOfphystricks{totalheightof14e63b37d90511b660170f9db774c267bcc96073:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\( 47\)}}%
-\immediate\write\writeOfphystricks{widthof14e63b37d90511b660170f9db774c267bcc96073:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{\( 47\)}}%
+\immediate\write\writeOfphystricks{totalheightof14e63b37d90511b660170f9db774c267bcc96073:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{\( 47\)}}%
+\immediate\write\writeOfphystricks{widthof14e63b37d90511b660170f9db774c267bcc96073:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -197,7 +197,7 @@
 %DEFAULT
 \draw [] (0,0) -- (-1.09,1.68);
 \draw [] (0,0) -- (-1.97,0.347);
-\draw (-1.113991811,0.4744431905) node {\( 47\)};
+\draw (-1.113991811,0.4744431906) node {\( 47\)};
 
 \draw [] (-0.272,0.419)--(-0.276,0.417)--(-0.279,0.415)--(-0.283,0.412)--(-0.286,0.410)--(-0.289,0.408)--(-0.293,0.405)--(-0.296,0.403)--(-0.299,0.400)--(-0.303,0.398)--(-0.306,0.395)--(-0.309,0.393)--(-0.313,0.390)--(-0.316,0.388)--(-0.319,0.385)--(-0.322,0.382)--(-0.325,0.380)--(-0.328,0.377)--(-0.332,0.374)--(-0.335,0.371)--(-0.338,0.369)--(-0.341,0.366)--(-0.344,0.363)--(-0.347,0.360)--(-0.350,0.357)--(-0.353,0.354)--(-0.356,0.351)--(-0.359,0.348)--(-0.361,0.345)--(-0.364,0.342)--(-0.367,0.339)--(-0.370,0.336)--(-0.373,0.333)--(-0.375,0.330)--(-0.378,0.327)--(-0.381,0.324)--(-0.384,0.321)--(-0.386,0.318)--(-0.389,0.314)--(-0.391,0.311)--(-0.394,0.308)--(-0.396,0.305)--(-0.399,0.301)--(-0.401,0.298)--(-0.404,0.295)--(-0.406,0.291)--(-0.409,0.288)--(-0.411,0.285)--(-0.413,0.281)--(-0.416,0.278)--(-0.418,0.274)--(-0.420,0.271)--(-0.423,0.267)--(-0.425,0.264)--(-0.427,0.260)--(-0.429,0.257)--(-0.431,0.253)--(-0.433,0.250)--(-0.435,0.246)--(-0.437,0.242)--(-0.439,0.239)--(-0.441,0.235)--(-0.443,0.231)--(-0.445,0.228)--(-0.447,0.224)--(-0.449,0.220)--(-0.451,0.217)--(-0.452,0.213)--(-0.454,0.209)--(-0.456,0.205)--(-0.458,0.202)--(-0.459,0.198)--(-0.461,0.194)--(-0.462,0.190)--(-0.464,0.186)--(-0.466,0.182)--(-0.467,0.179)--(-0.469,0.175)--(-0.470,0.171)--(-0.471,0.167)--(-0.473,0.163)--(-0.474,0.159)--(-0.475,0.155)--(-0.477,0.151)--(-0.478,0.147)--(-0.479,0.143)--(-0.480,0.139)--(-0.481,0.135)--(-0.482,0.131)--(-0.484,0.127)--(-0.485,0.123)--(-0.486,0.119)--(-0.487,0.115)--(-0.487,0.111)--(-0.488,0.107)--(-0.489,0.103)--(-0.490,0.0990)--(-0.491,0.0950)--(-0.492,0.0909)--(-0.492,0.0868);
 %END PSPICTURE
@@ -216,13 +216,13 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
 \immediate\openout\writeOfphystricks=AngleTestFive.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\( 333\)}}%
-\immediate\write\writeOfphystricks{totalheightofb180e23f05e3963c364f468399bc2bfce1a0c502:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\( 333\)}}%
-\immediate\write\writeOfphystricks{widthofb180e23f05e3963c364f468399bc2bfce1a0c502:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{\( 333\)}}%
+\immediate\write\writeOfphystricks{totalheightofb180e23f05e3963c364f468399bc2bfce1a0c502:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{\( 333\)}}%
+\immediate\write\writeOfphystricks{widthofb180e23f05e3963c364f468399bc2bfce1a0c502:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -255,13 +255,13 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
 \immediate\openout\writeOfphystricks=AngleTestSix.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\( \int_A40mmmm\)}}%
-\immediate\write\writeOfphystricks{totalheightof01534f193719f4fce66e8a62ac3b8d1417c66403:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\( \int_A40mmmm\)}}%
-\immediate\write\writeOfphystricks{widthof01534f193719f4fce66e8a62ac3b8d1417c66403:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{\( \int_A40mmmm\)}}%
+\immediate\write\writeOfphystricks{totalheightof01534f193719f4fce66e8a62ac3b8d1417c66403:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{\( \int_A40mmmm\)}}%
+\immediate\write\writeOfphystricks{widthof01534f193719f4fce66e8a62ac3b8d1417c66403:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -275,7 +275,7 @@
 %DEFAULT
 \draw [] (0,0) -- (-1.88,0.684);
 \draw [] (0,0) -- (-1.46,-1.36);
-\draw (-1.755547869,-0.1845478666) node {\( \int_A40mmmm\)};
+\draw (-1.755547869,-0.1845478665) node {\( \int_A40mmmm\)};
 
 \draw [] (-0.470,0.171)--(-0.472,0.166)--(-0.474,0.161)--(-0.475,0.155)--(-0.477,0.150)--(-0.479,0.145)--(-0.480,0.139)--(-0.482,0.134)--(-0.483,0.129)--(-0.485,0.123)--(-0.486,0.118)--(-0.487,0.112)--(-0.488,0.107)--(-0.490,0.102)--(-0.491,0.0962)--(-0.492,0.0907)--(-0.493,0.0853)--(-0.494,0.0798)--(-0.494,0.0743)--(-0.495,0.0688)--(-0.496,0.0633)--(-0.497,0.0578)--(-0.497,0.0523)--(-0.498,0.0467)--(-0.498,0.0412)--(-0.499,0.0357)--(-0.499,0.0301)--(-0.499,0.0246)--(-0.500,0.0190)--(-0.500,0.0135)--(-0.500,0.00793)--(-0.500,0.00238)--(-0.500,-0.00317)--(-0.500,-0.00873)--(-0.500,-0.0143)--(-0.500,-0.0198)--(-0.499,-0.0254)--(-0.499,-0.0309)--(-0.499,-0.0365)--(-0.498,-0.0420)--(-0.498,-0.0475)--(-0.497,-0.0531)--(-0.497,-0.0586)--(-0.496,-0.0641)--(-0.495,-0.0696)--(-0.494,-0.0751)--(-0.493,-0.0806)--(-0.493,-0.0860)--(-0.492,-0.0915)--(-0.491,-0.0970)--(-0.489,-0.102)--(-0.488,-0.108)--(-0.487,-0.113)--(-0.486,-0.119)--(-0.484,-0.124)--(-0.483,-0.129)--(-0.482,-0.135)--(-0.480,-0.140)--(-0.478,-0.145)--(-0.477,-0.151)--(-0.475,-0.156)--(-0.473,-0.161)--(-0.471,-0.167)--(-0.470,-0.172)--(-0.468,-0.177)--(-0.466,-0.182)--(-0.464,-0.187)--(-0.461,-0.192)--(-0.459,-0.198)--(-0.457,-0.203)--(-0.455,-0.208)--(-0.452,-0.213)--(-0.450,-0.218)--(-0.448,-0.223)--(-0.445,-0.228)--(-0.443,-0.233)--(-0.440,-0.238)--(-0.437,-0.242)--(-0.435,-0.247)--(-0.432,-0.252)--(-0.429,-0.257)--(-0.426,-0.262)--(-0.423,-0.266)--(-0.420,-0.271)--(-0.417,-0.276)--(-0.414,-0.280)--(-0.411,-0.285)--(-0.408,-0.289)--(-0.405,-0.294)--(-0.401,-0.298)--(-0.398,-0.303)--(-0.395,-0.307)--(-0.391,-0.312)--(-0.388,-0.316)--(-0.384,-0.320)--(-0.380,-0.324)--(-0.377,-0.329)--(-0.373,-0.333)--(-0.369,-0.337)--(-0.366,-0.341);
 %END PSPICTURE
@@ -294,13 +294,13 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
 \immediate\openout\writeOfphystricks=AngleTestSeven.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\(who\)}}%
-\immediate\write\writeOfphystricks{totalheightofe15db22c1f7f73dbcc498c7d0530dcaece33589d:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\(who\)}}%
-\immediate\write\writeOfphystricks{widthofe15db22c1f7f73dbcc498c7d0530dcaece33589d:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{\(who\)}}%
+\immediate\write\writeOfphystricks{totalheightofe15db22c1f7f73dbcc498c7d0530dcaece33589d:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{\(who\)}}%
+\immediate\write\writeOfphystricks{widthofe15db22c1f7f73dbcc498c7d0530dcaece33589d:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -333,13 +333,13 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
 \immediate\openout\writeOfphystricks=AngleTestEight.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{$\sigma$}}%
-\immediate\write\writeOfphystricks{totalheightoffa35d9fc104207e09a712110ac81612c5b279a6c:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{$\sigma$}}%
-\immediate\write\writeOfphystricks{widthoffa35d9fc104207e09a712110ac81612c5b279a6c:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{$\sigma$}}%
+\immediate\write\writeOfphystricks{totalheightoffa35d9fc104207e09a712110ac81612c5b279a6c:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{$\sigma$}}%
+\immediate\write\writeOfphystricks{widthoffa35d9fc104207e09a712110ac81612c5b279a6c:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -372,13 +372,13 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
 \immediate\openout\writeOfphystricks=AngleTest16.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{FloO}}%
-\immediate\write\writeOfphystricks{totalheightoff94a8d45e2aeab99ef89c9c0e241d7c19830d119:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{FloO}}%
-\immediate\write\writeOfphystricks{widthoff94a8d45e2aeab99ef89c9c0e241d7c19830d119:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{FloO}}%
+\immediate\write\writeOfphystricks{totalheightoff94a8d45e2aeab99ef89c9c0e241d7c19830d119:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{FloO}}%
+\immediate\write\writeOfphystricks{widthoff94a8d45e2aeab99ef89c9c0e241d7c19830d119:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -411,13 +411,13 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
 \immediate\openout\writeOfphystricks=AngleTestNine.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\(100\)}}%
-\immediate\write\writeOfphystricks{totalheightof9802fab90b9b5fb03d5074c5a4fba3b99f477b55:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\(100\)}}%
-\immediate\write\writeOfphystricks{widthof9802fab90b9b5fb03d5074c5a4fba3b99f477b55:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{\(100\)}}%
+\immediate\write\writeOfphystricks{totalheightof9802fab90b9b5fb03d5074c5a4fba3b99f477b55:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{\(100\)}}%
+\immediate\write\writeOfphystricks{widthof9802fab90b9b5fb03d5074c5a4fba3b99f477b55:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -450,13 +450,13 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
 \immediate\openout\writeOfphystricks=AngleTestEleven.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\(20\)}}%
-\immediate\write\writeOfphystricks{totalheightoff50a99daa1085aab95b46d32ec308bef82de5ed5:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\(20\)}}%
-\immediate\write\writeOfphystricks{widthoff50a99daa1085aab95b46d32ec308bef82de5ed5:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{\(20\)}}%
+\immediate\write\writeOfphystricks{totalheightoff50a99daa1085aab95b46d32ec308bef82de5ed5:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{\(20\)}}%
+\immediate\write\writeOfphystricks{widthoff50a99daa1085aab95b46d32ec308bef82de5ed5:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -489,13 +489,13 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
 \immediate\openout\writeOfphystricks=AngleTest14.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{60}}%
-\immediate\write\writeOfphystricks{totalheightofe6c3dd630428fd54834172b8fd2735fed9416da4:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{60}}%
-\immediate\write\writeOfphystricks{widthofe6c3dd630428fd54834172b8fd2735fed9416da4:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{60}}%
+\immediate\write\writeOfphystricks{totalheightofe6c3dd630428fd54834172b8fd2735fed9416da4:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{60}}%
+\immediate\write\writeOfphystricks{widthofe6c3dd630428fd54834172b8fd2735fed9416da4:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -528,13 +528,13 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
 \immediate\openout\writeOfphystricks=AngleTestTen.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\(60\)}}%
-\immediate\write\writeOfphystricks{totalheightof06d2092adfbdee7ca85a635f3c4a856932756162:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\(60\)}}%
-\immediate\write\writeOfphystricks{widthof06d2092adfbdee7ca85a635f3c4a856932756162:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{\(60\)}}%
+\immediate\write\writeOfphystricks{totalheightof06d2092adfbdee7ca85a635f3c4a856932756162:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{\(60\)}}%
+\immediate\write\writeOfphystricks{widthof06d2092adfbdee7ca85a635f3c4a856932756162:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -567,13 +567,13 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
 \immediate\openout\writeOfphystricks=AngleTestTwelve.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\( 12\)}}%
-\immediate\write\writeOfphystricks{totalheightofe7ede876527c8581635cb353ea0271936fd85a1e:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\( 12\)}}%
-\immediate\write\writeOfphystricks{widthofe7ede876527c8581635cb353ea0271936fd85a1e:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{\( 12\)}}%
+\immediate\write\writeOfphystricks{totalheightofe7ede876527c8581635cb353ea0271936fd85a1e:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{\( 12\)}}%
+\immediate\write\writeOfphystricks{widthofe7ede876527c8581635cb353ea0271936fd85a1e:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -606,13 +606,13 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
 \immediate\openout\writeOfphystricks=AngleTest13.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{ÈÉç}}%
-\immediate\write\writeOfphystricks{totalheightof2980fed2c3e25c64c0972bf50f0ee82b3e72c549:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{ÈÉç}}%
-\immediate\write\writeOfphystricks{widthof2980fed2c3e25c64c0972bf50f0ee82b3e72c549:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{ÈÉç}}%
+\immediate\write\writeOfphystricks{totalheightof2980fed2c3e25c64c0972bf50f0ee82b3e72c549:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{ÈÉç}}%
+\immediate\write\writeOfphystricks{widthof2980fed2c3e25c64c0972bf50f0ee82b3e72c549:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE

@@ -119,8 +119,6 @@ class CustomSurfaceGraph(ObjectGraph):
         If one wants the surface to be filled or hatched, on has to ask explicitly.
         """
         a=[]
-        if language=="pstricks":
-            raise DeprecationWarning
         if language=="tikz":
             a.append(self.tikz_code(pspict))
         if self._draw_edges :

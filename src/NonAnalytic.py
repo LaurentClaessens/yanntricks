@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 
@@ -151,15 +151,6 @@ class NonAnalyticFunctionGraph(ObjectGraph):
         return general_function_get_point(self,x,advised=False)
     def graph(self,mx,Mx):
         return NonAnalyticFunction(self.fun,mx,Mx)
-    def get_minmax_data(self,mx,Mx):
-        """
-        return the xmin, xmax, ymin and ymax of the graph.
-        """
-        raise DeprecationWarning
-        from SmallComputations import MyMinMax
-        if self.old_mx!=mx or self.old_Mx!=Mx or not self.minmax_result:
-            self.minmax_result = MyMinMax(plot(self.fun,(mx,Mx)).get_minmax_data())
-        return self.minmax_result
     def math_bounding_box(self,pspict=None):
         xmin=self.get_minmax_data(self.mx,self.Mx)["xmin"]
         xmax=self.get_minmax_data(self.mx,self.Mx)["xmax"]

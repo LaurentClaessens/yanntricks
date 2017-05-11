@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2016
+# copyright (c) Laurent Claessens, 2009-2017
 # email: laurent@claessens-donadello.eu
 
 import sys
@@ -71,7 +71,7 @@ if "--tests" in sys.argv :
     global_vars.create_formats["pdf"] = False
 if "--no-compilation" in sys.argv:
     global_vars.no_compilation=True
-    for k in [x for x in global_vars.create_formats.keys() if x!="test" ]:
+    for k in [x for x in global_vars.create_formats.iterkeys() if x!="test" ]:
         global_vars.create_formats[k]=False
 if "--documentation" in sys.argv:
     global_vars.create_documentation=True

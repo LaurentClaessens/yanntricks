@@ -37,3 +37,11 @@ The development branch.
 # newTests
 
 Create tests to catch the picture OMPA.
+
+# deprecation
+
+remove the deprecation warnings.
+
+#prepa3
+
+Take into account (some advices)[http://python3porting.com/preparing.html] to prepare a switch to python3.
