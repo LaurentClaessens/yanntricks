@@ -20,11 +20,11 @@ In `figures_demo`, create three lists of figures instead of one.
 Then the script `testing.sh` will launch `figures_demo` three times with 
 a parameter indicating the list to be used.
 The aim is to compile each picture only the right number of time. This should reduce the 
-test time.
+test duration.
 
 # minmax
 
-Make less use of the Sage'function `get_minmax_data` which leads to indeterministic results.
+Make less use of the Sages'function `get_minmax_data` which leads to indeterministic results.
 
 # newTests
 
@@ -33,3 +33,7 @@ Add to the test suite the pictures that do not compile in mazhe and smath.
 # devel
 
 The development branch.
+
+# newTests
+
+Create tests to catch the picture OMPA.
