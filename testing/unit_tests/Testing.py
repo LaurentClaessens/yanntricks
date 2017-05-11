@@ -42,6 +42,12 @@ def assert_true(b,failure_message=""):
         from Exceptions import FailedAssertException
         raise FailedAssertException(failure_message)
 
+def assert_false(b,failure_message=""):
+    """
+    Raise a FailedAssertException if the boolean is True
+    """
+    assert_true(not b,failure_message=failure_message)
+
 def assert_equal(e1,e2,failure_message=""):
     """
     Raise a FailedAssertException if the two expressions 'e1' and 'e2' 

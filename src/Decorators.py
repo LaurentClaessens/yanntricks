@@ -54,7 +54,7 @@ def sort_and_assert_real(f):
     def g(*arg,**kw):
         pts=f(*arg,**kw)
 
-        pts.sort(lambda P,Q:cmp(P.x,Q.x))
+        pts.sort(key=lambda S:S.x)
         for P in pts:
             if "I" in P.coordinates():
                 from Exception import ImaginaryPartException

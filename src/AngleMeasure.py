@@ -177,14 +177,29 @@ class AngleMeasure(object):
     def __div__(self,coef):
         return AngleMeasure(value_radian=self.radian/coef)
 
-    def __cmp__(self,other):
+    def __lt__(self,other):
         if isinstance(other,AngleMeasure):
-            if self.degree > other.degree :
-                return 1
-            if self.degree < other.degree :
-                return -1
-            if self.degree == other.degree :
-                return 0
+            if self.degree<other.degree:
+                return True
+            if self.degree>=other.degree:
+                return False
+        return NotImplemented
+    def __le__(self,other):
+        if self<other:
+            return True
+        if self==other:
+            return True
+        return False
+    def __eq__(self,other):
+        if isinstance(other,AngleMeasure):
+            if self.degree==other.degree:
+                return True
+            if self.radian==other.radian:
+                return True
+            return False
+        return NotImplemented
+    def __ne__(self,other):
+        return not (self==other)
 
     def __str__(self):
         return "AngleMeasure, degree=%s,radian=%s"%(str(numerical_approx(self.degree)),str(self.radian))
