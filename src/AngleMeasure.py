@@ -20,6 +20,7 @@
 # copyright (c) Laurent Claessens, 2010,2011,2013-2017
 # email: laurent@claessens-donadello.eu
 
+from sage.all import numerical_approx
 
 class AngleMeasure(object):
     """
@@ -52,9 +53,12 @@ class AngleMeasure(object):
         sage: b.degree
         180
 
-    If the numerical approximation of an angle in degree is close to an integer to minus than 1e-10, we round it.
-    The reason is that in some case I got as entry such a number : -(3.47548077273962e-14)/pi + 360
-    Then the computation of radian gave 0 and we are left with degree around 359.9999 while the radian was rounded to 0.
+    If the numerical approximation of an angle in degree is close to an integer
+    up to less than 1e-10, we round it.
+    The reason is that in some case I got as entry such a number : 
+    -(3.47548077273962e-14)/pi + 360
+    Then the computation of radian gave 0 and we are left with degree 
+    around 359.9999 while the radian was rounded to 0.
     (June, 2, 2013)
 
         sage: a=AngleMeasure(value_degree=-(3.47548077273962e-14)/pi + 360)
@@ -67,8 +71,11 @@ class AngleMeasure(object):
     # TODO : take into account the following thread:
     # http://ask.sagemath.org/question/332/add-a-personnal-coercion-rule
     def __init__(self,angle_measure=None,value_degree=None,value_radian=None,keep_negative=False):
-        dep_value_degree=value_degree
-        dep_value_radian=value_radian
+
+        from Utilities import PolarCoordinates
+
+        given_value_degree=value_degree
+        given_value_radian=value_radian
 
         for k in [value_degree,value_radian]:
             if isinstance(k,AngleMeasure):
@@ -84,6 +91,16 @@ class AngleMeasure(object):
             value_degree=angle_measure.degree
             value_radian=angle_measure.radian
         else:
+
+            
+            # If the fractional part of the given degree is too small,
+            # we round it.
+            s=numerical_approx(value_degree)
+            k=abs(s).frac()
+            if k<0.000001 :
+                value_degree=s.integer_part()
+
+
             from Utilities import degree
             from Utilities import radian
             if value_degree is not None:
@@ -97,18 +114,15 @@ class AngleMeasure(object):
                     print("This is strange ...")
                     value_degree=value_degree-360
 
-        # From here 'value_degree' and 'value_radian' are fixed and we make some checks.
-        s=numerical_approx(value_degree)
-        k=abs(s).frac()
-        if k<0.00000001 :
-            value_degree=s.integer_part()
+        # From here 'value_degree' and 'value_radian' are fixed and 
+        # we perform some checks.
 
         self.degree=value_degree
         self.radian=value_radian
         if self.degree>359 and self.radian < 0.1:
             print "Problem with an angle : ",self.degree,self.radian
-            print "dep degree",dep_value_degree,numerical_approx(dep_value_degree)
-            print "dep_radian",dep_value_radian,numerical_approx(dep_value_radian)
+            print "dep degree",given_value_degree,numerical_approx(given_value_degree)
+            print "dep_radian",given_value_radian,numerical_approx(given_value_radian)
             print "final degree",numerical_approx(value_degree)
             print "final radian",numerical_approx(value_radian)
             raise ValueError
@@ -117,13 +131,6 @@ class AngleMeasure(object):
     def positive(self):
         """
         If the angle is negative, return the corresponding positive angle.
-
-        EXAMPLES::
-
-            sage: from phystricks.SmallComputations import *
-            sage: a=AngleMeasure(value_degree=-30)
-            sage: a.positive().degree
-            330
         """
         if self.degree >= 0 :
             return self

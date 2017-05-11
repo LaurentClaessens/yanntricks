@@ -132,16 +132,20 @@ def testAngleMeasure():
         assert_equal(alpha.__repr__(),"AngleMeasure, degree=360.000000000000,radian=2*pi")
 
         alpha=AngleMeasure(value_degree=30)
-        assert_equal(cos(a.radian),1/2*sqrt(3))
+        assert_equal(cos(alpha.radian),1/2*sqrt(3))
 
 
         alpha=AngleMeasure(value_degree=180)
-        beta=AngleMeasure(a)
-        assert_equal(b.degree,180)
+        beta=AngleMeasure(alpha)
+        assert_equal(beta.degree,180)
 
         alpha=AngleMeasure(value_degree=-(3.47548077273962e-14)/pi + 360)
-        assert_equal(a.degree,360)
-        assert_equal(a.radian,2*pi)
+        assert_equal(alpha.degree,360)
+        assert_equal(alpha.radian,2*pi)
+
+
+        alpha=AngleMeasure(value_degree=-30)
+        assert_equal(alpha.positive().degree,330)
 
 testAngleMeasure()
 testIntersection()
