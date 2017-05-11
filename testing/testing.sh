@@ -22,5 +22,5 @@ unit_testing ()
     SAGE_PATH=$SAGE_PATH ./testing.sh
 }
 
-unit_testing
+unit_testing &&
 demonstration_testing
