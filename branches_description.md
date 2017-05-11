@@ -33,3 +33,7 @@ Add to the test suite the pictures that do not compile in mazhe and smath.
 # devel
 
 The development branch.
+
+# deprecation
+
+remove the deprecation warnings.
