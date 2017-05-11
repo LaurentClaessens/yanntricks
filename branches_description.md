@@ -33,3 +33,7 @@ Add to the test suite the pictures that do not compile in mazhe and smath.
 # devel
 
 The development branch.
+
+#prepa3
+
+Take into account (some advices)[http://python3porting.com/preparing.html] to prepare a switch to python3.
