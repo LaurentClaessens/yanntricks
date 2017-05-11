@@ -78,7 +78,7 @@ class PhystricksTestError(PhystricksGenericException):
         self.pspict=pspict
         self.code=code
         if pspict==None:
-            print "Warning : this error is provided without pspict. Maybe something is wrong."
+            print("Warning : this error is provided without pspict. Maybe something is wrong.")
     def __str__(self):
         a=[]
         a.append("Test failed")

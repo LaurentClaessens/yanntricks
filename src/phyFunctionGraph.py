@@ -28,8 +28,6 @@ from Utilities import *
 from Exceptions import ShouldNotHappenException
 from GenericCurve import GenericCurve
 
-from NoMathUtilities import dprint
-
 class phyFunctionGraph(GenericCurve,ObjectGraph):
     """
     INPUT:

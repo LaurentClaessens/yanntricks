@@ -26,8 +26,6 @@ from sage.all import *
 from Utilities import *
 import Defaults
 
-from NoMathUtilities import dprint
-
 class GenericCurve(object):
     def __init__(self,pI,pF):
         """

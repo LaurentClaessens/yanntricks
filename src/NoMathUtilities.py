@@ -86,18 +86,6 @@ def ensure_str(s):
     testtype(s)
     raise TypeError("You are trying to convert to unicode the following object "+str(s)+" of type "+str(type(s)))
 
-def testtype(s):
-    print(s,type(s))
-    print("\n")
-
-def dprint(*args):
-    """
-    This function is for debug purpose. It serves to roughly print stuff
-    on the screen. Then "grep dprint" helps to remove all the garbage.
-    """
-    a=[ensure_str(x) for x in list(args)]
-    print(" ".join(a))
-
 def logging(text,pspict=None):
     from Defaults import LOGGING_FILENAME
     import codecs

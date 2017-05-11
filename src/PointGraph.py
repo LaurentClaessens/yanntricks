@@ -30,6 +30,9 @@ from Constructors import *
 from Utilities import *
 from MathStructures import *
 
+from Debug import dprint
+from Debug import DebugException
+
 class PointGraph(ObjectGraph):
     NomPointLibre = PointsNameList()
 
@@ -439,6 +442,10 @@ class PointGraph(ObjectGraph):
         return True
 
     def tikz_code(self,pspict=None):
+
+        if self.x==1.34:
+            raise DebugException("1.34")
+
         symbol_dict={}
         symbol_dict[None]="$\\bullet$"
         symbol_dict["*"]="$\\bullet$"

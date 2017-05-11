@@ -22,8 +22,6 @@
 
 from sage.all import *
 
-from NoMathUtilities import dprint
-
 def BoundingBox(P1=None,P2=None,xmin=1000,xmax=-1000,ymin=1000,ymax=-1000,parent=None,mother=None,math=False):
     from phystricks.src.BoundingBox import BoundingBox_class
     return BoundingBox_class(P1,P2,xmin,xmax,ymin,ymax,parent,mother,math)

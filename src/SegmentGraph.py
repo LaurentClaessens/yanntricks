@@ -29,6 +29,9 @@ from NoMathUtilities import logging
 
 from PointGraph import PointGraph
 
+from Debug import dprint
+from Debug import DebugException
+
 class SegmentGraph(ObjectGraph):
     def __init__(self,A,B):
         self.I = A
@@ -885,9 +888,12 @@ class SegmentGraph(ObjectGraph):
                 c1=self.I.coordinates(numerical=True,digits=3,pspict=pspict)
                 c2=self.F.coordinates(numerical=True,digits=3,pspict=pspict)
                 if 'I' in c1 or "I" in c2 :
-                    print(self.I,self.F)
-                    raise
-                a.append("\draw [{2}] {0} -- {1};".format(c1,c2,self.params(language="tikz")))
+                    from Exception import ImaginaryPartException
+                    raise ImaginaryPartException(
+                        "Probably an imaginary part in "+str(c1)+" or "+str(c2))
+                a.append("\draw [{2}] {0} -- {1};".format(
+                                        c1,c2,self.params(language="tikz")))
+
         return "\n".join(a)
     def tikz_code(self,pspict=None):
         return self.latex_code(language="tikz",pspict=pspict)
