@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from sage.all import *
@@ -42,8 +42,8 @@ class Circle3DGraph(ObjectGraph):
         self.center=Vector3D(O[0],O[1],O[2])
         self.u=Vector3D( A[0]-O[0],A[1]-O[1],A[2]-O[2]  )
         self.v=Vector3D( B[0]-O[0],B[1]-O[1],B[2]-O[2]  )
-        self.radius_u=sqrt( sum([k**2 for k in self.u])  )
-        self.radius_v=sqrt( sum([k**2 for k in self.v])  )
+        self.radius_u=sqrt( sum(k**2 for k in self.u)  )
+        self.radius_v=sqrt( sum(k**2 for k in self.v)  )
         self.parameters.plotpoints=10*max(self.radius_u,self.radius_v)
         self.angleI=angleI
         self.angleF=angleF
