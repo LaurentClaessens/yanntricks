@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2016
+# copyright (c) Laurent Claessens, 2017
 # email: laurent@claessens-donadello.eu
 
 def copy_parameters(f):
@@ -44,4 +44,21 @@ def copy_parameters(f):
         obj=f(*arg,**kw)
         obj.parameters=self.parameters.copy()
         return obj
+    return g
+
+## The function `Intersection` has to return only points with real coordinates
+# and have to sort these points. This leads to code duplication because we create
+# the point list in several different manners (with 'return' between them)
+# depending on the passed parameters.
+def sort_and_assert_real(f):
+    def g(*arg,**kw):
+        pts=f(*arg,**kw)
+
+        pts.sort(lambda P,Q:cmp(P.x,Q.x))
+        for P in pts:
+            if "I" in P.coordinates():
+                from Exception import ImaginaryPartException
+                raise ImaginaryPartException("There seem to be an imaginary part in "+P.coordinates())
+        return pts
+
     return g

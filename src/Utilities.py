@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from sage.all import *
@@ -115,6 +115,7 @@ def inner_product(v,w,numerical=True):
         return numerical_approx(s)
     return s
 
+@sort_and_assert_real
 def Intersection(f,g,a=None,b=None,numerical=False):
     """
     When f and g are objects with an attribute equation, return the list of points of intersections.
@@ -159,10 +160,6 @@ def Intersection(f,g,a=None,b=None,numerical=False):
         k=f-g
         xx=SmallComputations.find_roots_recursive(k.sage,a,b)
         pts=[  Point(x,f(x)) for x in xx ]
-        for P in pts:
-            if "I" in P.coordinates():
-                print("There should not be imaginary part")
-                raise
         return pts
 
     x,y=var('x,y')
@@ -179,12 +176,6 @@ def Intersection(f,g,a=None,b=None,numerical=False):
         ok2,b=test_imaginary_part(b)
         if ok1 and ok2 :
             pts.append(Point(a,b))
-    pts.sort(lambda P,Q:cmp(P.x,Q.x))
-    for P in pts:
-        if "I" in P.coordinates():
-            print("There should not be imaginary part")
-            print(f.equation,g.equation)
-            raise
     return pts
 
 def PointToPolaire(P=None,x=None,y=None,origin=None,numerical=True):
