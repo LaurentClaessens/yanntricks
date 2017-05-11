@@ -400,7 +400,7 @@ class PointGraph(ObjectGraph):
         t to fine tune it, you don't care.
         """
         if pspict==None:
-            print("You should consider to give a Picture as argument. 
+            print("You should consider to give a Picture as argument. \
                     Otherwise the boundig box of %s could be bad"%str(self))
             xunit=1
             yunit=1
