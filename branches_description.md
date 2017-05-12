@@ -58,3 +58,7 @@ if ob in picture.already_computed_bb :
 causes a serie of comparisons `ob==x` for x in picture.already_computed_bb. Sometimes, these comparisons crashes or are difficult.
 
 So each object will keep its own list of bounding boxes.
+
+# debug
+
+Debugging some pictures that do not work anymore since the last change.
