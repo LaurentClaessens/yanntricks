@@ -388,7 +388,7 @@ class PointGraph(ObjectGraph):
         return Point(self.x,self.y)
     def mark_point(self,pspict=None):
         return self
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         """
         return the bounding box of the point including its mark
 
@@ -417,7 +417,7 @@ class PointGraph(ObjectGraph):
         for obj in self.added_objects[pspict]:
             bb.append(obj,pspict)
         return bb
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         ##
         #   Return a bounding box which include itself and that's it.
 
@@ -498,8 +498,6 @@ class PointGraph(ObjectGraph):
         # see also 13756-24006
         if not isinstance(other,PointGraph):
             return NotImplemented
-
-        from Debug import dprint
 
         if self.x == other.x and self.y==other.y :
             return True

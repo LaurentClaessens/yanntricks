@@ -97,12 +97,12 @@ class PolygonGraph(ObjectGraph):
                 P.put_mark(r,a,text,pspict=psp,position="center")
                 self.added_objects.append(psp,P)
 
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         bb=BoundingBox()
         for P in self.points_list:
-            bb.append(P,pspict)
+            bb.append(P,pspict=pspict)
         return bb
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         return self.math_bounding_box(pspict)
     def action_on_pspict(self,pspict):
         """

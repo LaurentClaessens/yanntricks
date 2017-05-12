@@ -38,6 +38,9 @@ class EllipseGraph(ObjectGraph):
         curve.angleI=a
         curve.angleF=b
         return curve
+    def _bounding_box(self,pspict):
+        return BoundingBox()
+
     def action_on_pspict(self,pspict):
         f1=self.A-self.O
         f2=self.B-self.O

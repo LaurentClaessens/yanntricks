@@ -59,6 +59,9 @@ class ObjectGraph(object):
         self.options = Options()
         self.draw_bounding_box=False
 
+        self.already_computed_BB={}
+        self.already_computed_math_BB={}
+
         self.record_add_to_bb=[]         
         self.separator_name="DEFAULT"
         self.in_math_bounding_box=True
@@ -246,18 +249,31 @@ class ObjectGraph(object):
         # position 3598-30738
         for obj in self.added_objects[pspict] :
             pspict.DrawGraphs(obj)
-    def _bounding_box(self,pspict):
-        # The purpose of having a default bounding box is that some objects
-        # are uniquely build from 'action_on_pspict', so that the bounding box 
-        # is not important to know since the building block have theirs.
-        from Constructors import BoundingBox
-        return BoundingBox()
-    def _math_bounding_box(self,pspict):
-        return self.bounding_box(pspict)
-    def bounding_box(self,pspict):
-        return self._bounding_box(pspict)
+        
+    # We could be tempted to furnish here a default 
+    # '_bounding_box(self,pspict)'
+    # Indeed, some are uniquely build from 'action_on_pspict', so that the
+    #bounding box is not important to know since the building block 
+    # have theirs.
+    def bounding_box(self,pspict=None):
+        try:
+            return self.already_computed_BB[pspict]
+        except KeyError :
+            pass
+        bb=self._bounding_box(pspict)
+        self.already_computed_BB[pspict]=bb
+        return bb
     def math_bounding_box(self,pspict):
-        return self._math_bounding_box(pspict)
+        try:
+            return self.already_computed_math_BB[pspict]
+        except KeyError :
+            pass
+        try:
+            bb=self._math_bounding_box(pspict)
+        except AttributeError:
+            bb=self.bounding_box(pspict=pspict)
+        self.already_computed_math_BB[pspict]=bb
+        return bb
     def latex_code(self,pspict,language=None):
         return ""
 

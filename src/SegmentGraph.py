@@ -859,12 +859,12 @@ class SegmentGraph(ObjectGraph):
         If we have a segment, the mark is at center 
         """
         return self.midpoint().copy()
-    def bounding_box(self,pspict):
+    def _bounding_box(self,pspict):
         if self.in_bounding_box:
-            return BoundingBox(self.I,self.F)       # If you change this, maybe you have to adapt math_bounding_box
+            return BoundingBox(self.I,self.F)
         else :
             return BoundingBox()
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         if self.in_math_bounding_box:
             return self.bounding_box(pspict)
         else :

@@ -487,7 +487,7 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
         curve.f2.nul_function=self.f2.nul_function
         
         return curve
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         xmin=self.xmin(self.llamI,self.llamF)
         xmax=self.xmax(self.llamI,self.llamF)
         ymin=self.ymin(self.llamI,self.llamF)

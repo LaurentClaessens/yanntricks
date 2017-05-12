@@ -328,7 +328,8 @@ given right after the creation of the picture.")
         """
 
         if not isinstance(graph,ObjectGraph):
-            raise NotObjectGraphException();
+            from Exceptions import NotObjectGraphException
+            raise NotObjectGraphException(graph);
 
         from phyFunctionGraph import phyFunctionGraph
         if isinstance(graph,phyFunctionGraph):
