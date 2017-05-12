@@ -45,3 +45,7 @@ remove the deprecation warnings.
 #prepa3
 
 Take into account (some advices)[http://python3porting.com/preparing.html] to prepare a switch to python3.
+
+# debug
+
+Debugging some pictures that do not work anymore since the last change.
