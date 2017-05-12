@@ -20,41 +20,12 @@
 # copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
-
 from sage.all import numerical_approx
 from Parameters import Parameters
 from Parameters import Options
 from Exceptions import ShouldNotHappenException
 from NoMathUtilities import logging
-
-class AddedObjects(object):
-    def __init__(self):
-        self.dico={}
-        self.dico[None]=[]          # The None list is the list of objects associated with all the pspicts. See the __getitem__ method.
-    def append(self,pspict,obj):
-        if not isinstance(pspict,list):
-            pspict=[pspict]
-        for psp in pspict:
-            if psp not in self.dico.iterkeys():
-                self.dico[psp]=[]
-            self.dico[psp].append(obj)
-    def extend(self,pspict,objs):
-        for ob in objs :
-            self.append(pspict,ob)
-    def fusion(self,other):
-        """
-        other is an other AddedObjects instance.
-        """
-        if self is other :
-            raise
-        for psp,objs in other.dico.items():
-            self.extend(psp,objs)
-    def __getitem__(self,pspict):
-        if pspict in self.dico.iterkeys():
-            a = self.dico[pspict]
-            a.extend(self.dico[None])
-            return a
-        return self[None]
+from AddedObjects import AddedObjects
 
 class ObjectGraph(object):
     """ 
