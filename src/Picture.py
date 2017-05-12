@@ -106,8 +106,6 @@ class Picture(object):
         self.single_axeY.pspict=self
         self.draw_default_axes=False
 
-        self.already_computed_BB=[]
-
         self.mx_acceptable_BB=-100
         self.my_acceptable_BB=-100
         self.Mx_acceptable_BB=100
@@ -244,22 +242,10 @@ given right after the creation of the picture.")
         """
         Update and return the math bounding box of the picture.
         """
-
-        # See also 13756-24006
-        from Utilities import sublist
-        from Debug import dprint,testtype
-        def condition(s):
-            if not s.take_math_BB:
-                return False
-            if s in self.already_computed_BB :
-                return False
-            return True
-
         math_list=[x.graph for x in self.record_draw_graph]
         math_list.extend(self.record_force_math_bounding_box)
-        for a in sublist(math_list,condition):
+        for a in [ g in math_list if g.take_math_BB ]:
             self.math_BB.AddBB(a.math_bounding_box(pspict=self))
-            self.already_computed_BB.append(a)
         return self.math_BB
     def bounding_box(self,pspict=None):
         """
@@ -269,17 +255,10 @@ given right after the creation of the picture.")
         # function 'DrawDefaultAxes'. But the axes themselves have to be taken
         # into account in the bounding box of the picture.
 
-        # The list 'already_computed_BB' records the objects for which
-        # the bounding box is already computed and taken into account. 
-        # The same object can have different BB in different pictures;
-        # then we have to compute the BB of an object as many times as
-        # the number of pictures that include the object.
         self.BB.append(self.math_bounding_box(),pspict=self)
 
         from Utilities import sublist
         def condition(x):
-            if x in self.already_computed_BB :
-                return False
             if x.take_BB:
                 return True
             if x.take_math_BB:
@@ -287,7 +266,6 @@ given right after the creation of the picture.")
 
         for a in sublist(self.record_draw_graph,condition):
             self.BB.AddBB(a.graph.bounding_box(pspict=self))
-            self.already_computed_BB.append(a)
         return self.BB
     def DrawBoundingBox(self,obj=None,color="cyan"):
         """Draw the bounding box of an object when it has a method bounding_box
@@ -347,6 +325,10 @@ given right after the creation of the picture.")
 
         More precisely, it does not draw the object now, but it add it (and its mark if applicable) to ``self.record_draw_graph`` which is the list of objects to be drawn. Thus it is still possible to modify the object later (even if extremely discouraged).
         """
+
+        if not isinstance(graph,ObjectGraph):
+            raise NotObjectGraphException();
+
         from phyFunctionGraph import phyFunctionGraph
         if isinstance(graph,phyFunctionGraph):
             if graph.mx==None or graph.Mx==None:

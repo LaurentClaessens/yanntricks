@@ -4,7 +4,6 @@
 import sys
 from phystricks import *
 
-from phystricksHYVFooTHaDDQ import HYVFooTHaDDQ
 from phystricksNWAEooQBLYYrpS import NWAEooQBLYYrpS
 from phystricksProjPoly import ProjPoly
 from phystricksEDEYRhQ import EDEYRhQ
@@ -64,12 +63,9 @@ from phystricksJSYWooQYduLVLS import JSYWooQYduLVLS
 from phystricksQIPRoolQCEnZdx import QIPRoolQCEnZdx
 from phystricksALAYooKKrRTkCG import ALAYooKKrRTkCG
 from phystricksTKXZooLwXzjS import TKXZooLwXzjS
-from phystricksENQZooVqRaIv import ENQZooVqRaIv
 
 figures_list_1=[]
 
-figures_list_1.append(ENQZooVqRaIv)
-figures_list_1.append(HYVFooTHaDDQ)
 figures_list_1.append(OMPAooMbyOIqeA)
 figures_list_1.append(FMLCooxHtqRzUz)
 
