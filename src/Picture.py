@@ -28,6 +28,7 @@ from NoMathUtilities import ensure_unicode
 from Separator import SeparatorList
 from GlobalVariables import global_vars
 from ObjectGraph import DrawElement
+from ObjectGraph import ObjectGraph
 from main import PspictureToOtherOutputs
 from Constructors import BoundingBox,Axes,Grid,Point
 from AuxFile import AuxFile
@@ -244,7 +245,7 @@ given right after the creation of the picture.")
         """
         math_list=[x.graph for x in self.record_draw_graph]
         math_list.extend(self.record_force_math_bounding_box)
-        for a in [ g in math_list if g.take_math_BB ]:
+        for a in [ g for g in math_list if g.take_math_BB ]:
             self.math_BB.AddBB(a.math_bounding_box(pspict=self))
         return self.math_BB
     def bounding_box(self,pspict=None):
