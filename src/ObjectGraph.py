@@ -246,14 +246,18 @@ class ObjectGraph(object):
         # position 3598-30738
         for obj in self.added_objects[pspict] :
             pspict.DrawGraphs(obj)
-    def bounding_box(self,pspict):
+    def _bounding_box(self,pspict):
         # The purpose of having a default bounding box is that some objects
         # are uniquely build from 'action_on_pspict', so that the bounding box 
         # is not important to know since the building block have theirs.
         from Constructors import BoundingBox
         return BoundingBox()
-    def math_bounding_box(self,pspict):
+    def _math_bounding_box(self,pspict):
         return self.bounding_box(pspict)
+    def bounding_box(self,pspict):
+        return self._bounding_box(pspict)
+    def math_bounding_box(self,pspict):
+        return self._math_bounding_box(pspict)
     def latex_code(self,pspict,language=None):
         return ""
 
