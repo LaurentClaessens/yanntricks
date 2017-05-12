@@ -94,36 +94,13 @@ def testVectorConstructor():
     assert_equal(v2.I,O)
     assert_equal(v3.I,O)
 
-def testIntersection():
-    """
-    Test the intersection function
-    """
-    echo_function("testIntersection")
-    
-    x=var('x')
-    fun=phyFunction(x**2-5*x+6)
-    droite=phyFunction(2)
-    pts = Intersection(fun,droite)
+from testPointCoordinates import testPointCoordinates
+print("testPointCoordinates")
+testPointCoordinates()
 
-    echo_single_test("Function against horizontal line")
-    assert_equal(pts[0],Point(1,2))
-    assert_equal(pts[1],Point(4,2))
-
-    echo_single_test("Two functions (sine and cosine)")
-    f=phyFunction(sin(x))
-    g=phyFunction(cos(x))
-    pts=Intersection(f,g,-2*pi,2*pi,numerical=True)
-
-    # due to the default epsilon in `assert_almost_equal`,
-    # in fact we do not test these points with the whole given precision.
-    ans=[]
-    ans.append(Point(-5.497787143782138,0.707106781186548))
-    ans.append(Point(-2.3561944901923466,-0.707106781186546))
-    ans.append(Point(0.7853981633974484,0.707106781186548))
-    ans.append(Point(3.926990816987241,-0.707106781186547))
-    
-    for t in zip(pts,ans):
-        assert_almost_equal( t[0],t[1] )
+from testIntersection import testIntersection
+print("testIntersection")
+testIntersection()
 
 from testAngleMark import testAngleMark
 print("testAngleMark")
@@ -135,8 +112,6 @@ testAngleMeasure()
 
 print("testSegment")
 testSegment()
-print("testIntersection")
-testIntersection()
 print("testEnsureUnicode")
 testEnsureUnicode()
 print("testFGetMinMaxData")

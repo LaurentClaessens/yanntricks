@@ -120,7 +120,7 @@ class SegmentGraph(ObjectGraph):
         return the equation of the line under the form
         x + by + c = 0
 
-        Coefficients 'b' and 'c' are numerical approximations. See position : 313628350 in __init__.py
+        Coefficients 'b' and 'c' are numerical approximations. See Utilities.Intersection
 
         EXAMPLES::
 

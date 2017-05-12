@@ -118,37 +118,44 @@ def inner_product(v,w,numerical=True):
 
 @sort_and_assert_real
 def Intersection(f,g,a=None,b=None,numerical=False):
-    """
-    When f and g are objects with an attribute equation, return the list of points of intersections.
+    ##
+    # When f and g are objects with an attribute equation, return the list of points of intersections.
+    #
+    # - The list of point is sorted by order of `x` coordinates.
+    # - Return only real solutions.
+    #
+    # Only numerical approximations are returned as there are some errors
+    # otherwise. As an example the following #solving return points that 
+    # are not even near from the circle \f$ x^2+y^2=9 \f$ :
+    # ```
+    # solve( [ -1/3*sqrt(3)*y + 1/3*sqrt(3)*(-0.19245008972987399*sqrt(3) - 3) + x == 0,x^2 + y^2 - 9 == 0 ],[x,y] )
+    # ```
+    #
+    # ## Examples
+    #
+    # ```
+    #    sage: from phystricks import *
+    #    sage: fun=phyFunction(x**2-5*x+6)
+    #    sage: droite=phyFunction(2)
+    #    sage: pts = Intersection(fun,droite)
+    #    sage: for P in pts:print P
+    #    <Point(1,2)>
+    #    <Point(4,2)>
+    #```
+    #
+    #```
+    #    sage: f=phyFunction(sin(x))
+    #    sage: g=phyFunction(cos(x))
+    #    sage: pts=Intersection(f,g,-2*pi,2*pi,numerical=True)
+    #    sage: for P in pts:print P
+    #    <Point(-5.497787143782138,0.707106781186548)>
+    #    <Point(-2.3561944901923466,-0.707106781186546)>
+    #    <Point(0.7853981633974484,0.707106781186548)>
+    #    <Point(3.926990816987241,-0.707106781186547)>
+    #```
+    #
+    #  If 'numerical' is True, it search for the intersection points of the functions 'f' and 'g' (it only work with functions). In this case an interval is required.
 
-    The list of point is sorted by order of `x` coordinates.
-
-    Only numerical approximations are returned as there are some errors otherwise. As an example the following 
-    solving return points that are not even near from the circle x**2+y**2=9
-    solve(    [   -1/3*sqrt(3)*y + 1/3*sqrt(3)*(-0.19245008972987399*sqrt(3) - 3) + x == 0,x^2 + y^2 - 9 == 0    ],[x,y]   )
-    Position : 313628350
-
-    EXAMPLES::
-
-        sage: from phystricks import *
-        sage: fun=phyFunction(x**2-5*x+6)
-        sage: droite=phyFunction(2)
-        sage: pts = Intersection(fun,droite)
-        sage: for P in pts:print P
-        <Point(1,2)>
-        <Point(4,2)>
-
-        sage: f=phyFunction(sin(x))
-        sage: g=phyFunction(cos(x))
-        sage: pts=Intersection(f,g,-2*pi,2*pi,numerical=True)
-        sage: for P in pts:print P
-        <Point(-5.497787143782138,0.707106781186548)>
-        <Point(-2.3561944901923466,-0.707106781186546)>
-        <Point(0.7853981633974484,0.707106781186548)>
-        <Point(3.926990816987241,-0.707106781186547)>
-
-    If 'numerical' is True, it search for the intersection points of the functions 'f' and 'g' (it only work with functions). In this case an interval is required.
-    """
     from AffineVectorGraph import AffineVectorGraph
 
     if isinstance(f,AffineVectorGraph):

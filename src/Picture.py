@@ -247,6 +247,7 @@ given right after the creation of the picture.")
 
         # See also 13756-24006
         from Utilities import sublist
+        from Debug import dprint,testtype
         def condition(s):
             if not s.take_math_BB:
                 return False
@@ -268,7 +269,7 @@ given right after the creation of the picture.")
         # function 'DrawDefaultAxes'. But the axes themselves have to be taken
         # into account in the bounding box of the picture.
 
-        # The list 'already_computed_BB' recors the objects for which
+        # The list 'already_computed_BB' records the objects for which
         # the bounding box is already computed and taken into account. 
         # The same object can have different BB in different pictures;
         # then we have to compute the BB of an object as many times as
