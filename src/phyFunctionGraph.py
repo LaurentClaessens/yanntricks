@@ -324,7 +324,6 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
                 ymin=min(ymin,y)
         minmax['ymax']=ymax
         minmax['ymin']=ymin
-        #dprint("phyFunction::get_minmax_data ",minmax['ymax'])
         return minmax
     def xmax(self,deb,fin):
         return self.get_minmax_data(deb,fin)['xmax']
