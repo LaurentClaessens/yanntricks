@@ -533,6 +533,7 @@ def PointsNameList():
         sage: x.next()
         u'aaab'
     """
+    raise DeprecationWarning
     # The fact that this function return 4 character strings is hard-coded here 
     #   and that 4 is hard-coded in the function unify_point_name
     import string
