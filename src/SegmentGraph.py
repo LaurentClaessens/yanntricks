@@ -891,29 +891,3 @@ class SegmentGraph(ObjectGraph):
         return "\n".join(a)
     def tikz_code(self,pspict=None):
         return self.latex_code(language="tikz",pspict=pspict)
-
-def get_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=None):
-    from ObjectGraph import AddedObjects
-    from phystricks.src.Utilities import make_psp_list
-    added1=AddedObjects()
-    added2=AddedObjects()
-    pspicts=make_psp_list(pspict,pspicts)
-    for psp in pspicts :
-        c1=s1.get_code(n=n,d=d,l=l,pspict=psp)
-        c2=s2.get_code(n=n,d=d,l=l,pspict=psp)
-        added1.append(psp,c1)
-        added2.append(psp,c2)
-    return added1,added2
-
-def put_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=None):
-    """
-    Add the code for equal length between segments s1 and s2
-    """
-    from phystricks.src.Utilities import make_psp_list
-    pspicts=make_psp_list(pspict,pspicts)
-    for psp in pspicts :
-        added=get_equal_lengths_code(s1,s2,n,d,l,angle,pspict=psp)
-        c1=added[0]
-        c2=added[1]
-        s1.added_objects.fusion( c1 )
-        s2.added_objects.fusion( c2 )

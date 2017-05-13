@@ -97,6 +97,7 @@ class AuxFile(object):
         return d
     def get_Id_value(self,Id,default_value=0):
         if Id not in self.id_values_dict().iterkeys():
+
             if not self.already_warned_CompileYourLaTeXFile:
                 logging(self.picture.name+"-----")
                 logging("Warning: the auxiliary file {} does not contain the id «{}». Compile your LaTeX file.".format(self.interWriteFile.from_main(),Id),pspict=self.picture)

@@ -23,8 +23,6 @@
 # This is a blank file for the sake of import.
 
 
-# from __future__ import division
-# from __future__ import unicode_literals
+from __future__ import division
+from __future__ import unicode_literals
 
-# from phystricks.src.Constructors import *
-# import phystricks.src.main

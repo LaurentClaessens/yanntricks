@@ -33,6 +33,7 @@ from AuxFile import AuxFile
 from BoundingBox import BoundingBox_class
 
 class Picture(object):
+    NomPointLibre = PointsNameList()
     r"""
     Describe a Picture
 
@@ -48,8 +49,6 @@ class Picture(object):
 
     The name of the pspict is used to produce intermediate filesnames, and other names.
     """
-    NomPointLibre = PointsNameList()
-
     def __init__(self,name="CAN_BE_A_PROBLEM_IF_TRY_TO_PRODUCE_EPS_OR_PDF"):
         r"""
 

@@ -31,8 +31,6 @@ from Utilities import *
 from MathStructures import *
 
 class PointGraph(ObjectGraph):
-    NomPointLibre = PointsNameList()
-
     def __init__(self,a,b):
         self.x=SR(a)
         self.y=SR(b)
@@ -40,7 +38,6 @@ class PointGraph(ObjectGraph):
         self.point = self.obj
         self.add_option("PointSymbol=*")
         self._advised_mark_angle=None
-        self.psName=PointGraph.NomPointLibre.next()
         
         ax=abs(numerical_approx(self.x))
         if ax<0.00001 and ax>0 :
