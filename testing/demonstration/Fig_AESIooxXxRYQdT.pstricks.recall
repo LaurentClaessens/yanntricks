@@ -167,14 +167,6 @@
 \immediate\write\writeOfphystricks{totalheightofa9f1e057431407b8ac90612a37eef414c6e94042:\the\lengthOfDOTfiguresdemoDOTpy-}
 \setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{$ 20 $}}%
 \immediate\write\writeOfphystricks{widthofa9f1e057431407b8ac90612a37eef414c6e94042:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{$ 21 $}}%
-\immediate\write\writeOfphystricks{totalheightof2bba3ad20dc92cf2f38254bdaa322e50efb6190a:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{$ 21 $}}%
-\immediate\write\writeOfphystricks{widthof2bba3ad20dc92cf2f38254bdaa322e50efb6190a:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{$ 22 $}}%
-\immediate\write\writeOfphystricks{totalheightof7d718e646ad3f6a9e7a6c0f1ab0c1c599aac77d8:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{$ 22 $}}%
-\immediate\write\writeOfphystricks{widthof7d718e646ad3f6a9e7a6c0f1ab0c1c599aac77d8:\the\lengthOfDOTfiguresdemoDOTpy-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -204,8 +196,6 @@
 \draw [color=gray,style=solid] (14.4,0) -- (14.4,10.0);
 \draw [color=gray,style=solid] (15.2,0) -- (15.2,10.0);
 \draw [color=gray,style=solid] (16.0,0) -- (16.0,10.0);
-\draw [color=gray,style=solid] (16.8,0) -- (16.8,10.0);
-\draw [color=gray,style=solid] (17.6,0) -- (17.6,10.0);
 \draw [color=gray,style=dotted] (0.400,0) -- (0.400,10.0);
 \draw [color=gray,style=dotted] (1.20,0) -- (1.20,10.0);
 \draw [color=gray,style=dotted] (2.00,0) -- (2.00,10.0);
@@ -226,10 +216,8 @@
 \draw [color=gray,style=dotted] (14.0,0) -- (14.0,10.0);
 \draw [color=gray,style=dotted] (14.8,0) -- (14.8,10.0);
 \draw [color=gray,style=dotted] (15.6,0) -- (15.6,10.0);
-\draw [color=gray,style=dotted] (16.4,0) -- (16.4,10.0);
-\draw [color=gray,style=dotted] (17.2,0) -- (17.2,10.0);
 %AXES
-\draw [,->,>=latex] (-0.5000000000,0) -- (18.10000000,0);
+\draw [,->,>=latex] (-0.5000000000,0) -- (16.50000000,0);
 %DEFAULT
 \draw (16.55879717,8.750000000) node {DS 1};
 \draw [] (6.32,8.50) -- (6.32,9.00);
@@ -370,10 +358,6 @@
 \draw [] (15.2,-0.100) -- (15.2,0.100);
 \draw (16.00000000,-0.3049540000) node {$ 20 $};
 \draw [] (16.0,-0.100) -- (16.0,0.100);
-\draw (16.80000000,-0.3049540000) node {$ 21 $};
-\draw [] (16.8,-0.100) -- (16.8,0.100);
-\draw (17.60000000,-0.3049540000) node {$ 22 $};
-\draw [] (17.6,-0.100) -- (17.6,0.100);
 %OTHER STUFF
 %END PSPICTURE
 \end{tikzpicture}

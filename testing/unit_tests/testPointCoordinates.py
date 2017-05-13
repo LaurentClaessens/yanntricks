@@ -43,6 +43,15 @@ def test_equalities():
         b=1
     assert_equal(b,0)
 
+    echo_single_test("overflowError")
+    b=0
+    try :
+        if A==B:
+            pass
+    except OverflowError :
+        b=2
+    assert_equal(b,2)
+
 def test_add_bounding_box():
     echo_function("test_add_bounding_box")
 
