@@ -161,19 +161,19 @@ argument is not good :"+position)
 
         cp = mark_point+visual_center_vector
         return cp
-
-    def bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
+        return BoundingBox()
+    def _bounding_box(self,pspict=None):
         central_point=self.central_point(pspict)
         if not central_point:
             print("No central point. Parent =",self.parent)
             raise
         bb=BoundingBox(central_point,central_point)
         dimx,dimy=pspict.get_box_size(self.text)
-        try :
-            dimx=float(dimx)/pspict.xunit
-            dimy=float(dimy)/pspict.yunit
-        except AttributeError:
-            print "Try to pass a pspicture when computing the bounding box of",type(self)
+            
+        dimx=float(dimx)/pspict.xunit
+        dimy=float(dimy)/pspict.yunit
+
         pt1=Point(central_point.x-dimx/2,central_point.y-dimy/2) 
         pt2=Point(central_point.x+dimx/2,central_point.y+dimy/2)
         bb.add_object(pt1,pspict)

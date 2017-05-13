@@ -379,7 +379,7 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
             Mx=k[1]
             f=self.graph(mx,Mx)
             self.pieces.append(f)
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         if self.do_cut_y and len(self.pieces)>0:
             # In this case, we will in any case look for the bounding boxes
             # of the pieces.
@@ -387,9 +387,6 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
             # that only one piece is found.
             return BoundingBox()
         return self.parametric_curve().bounding_box()
-
-    def math_bounding_box(self,pspict=None):
-        return self.bounding_box(pspict)
     def mark_point(self,pspict=None):
         if not self.pieces:
             return self.get_point(self.Mx)

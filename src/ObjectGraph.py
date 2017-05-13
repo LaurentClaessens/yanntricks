@@ -20,41 +20,12 @@
 # copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
-
 from sage.all import numerical_approx
 from Parameters import Parameters
 from Parameters import Options
 from Exceptions import ShouldNotHappenException
 from NoMathUtilities import logging
-
-class AddedObjects(object):
-    def __init__(self):
-        self.dico={}
-        self.dico[None]=[]          # The None list is the list of objects associated with all the pspicts. See the __getitem__ method.
-    def append(self,pspict,obj):
-        if not isinstance(pspict,list):
-            pspict=[pspict]
-        for psp in pspict:
-            if psp not in self.dico.iterkeys():
-                self.dico[psp]=[]
-            self.dico[psp].append(obj)
-    def extend(self,pspict,objs):
-        for ob in objs :
-            self.append(pspict,ob)
-    def fusion(self,other):
-        """
-        other is an other AddedObjects instance.
-        """
-        if self is other :
-            raise
-        for psp,objs in other.dico.items():
-            self.extend(psp,objs)
-    def __getitem__(self,pspict):
-        if pspict in self.dico.iterkeys():
-            a = self.dico[pspict]
-            a.extend(self.dico[None])
-            return a
-        return self[None]
+from AddedObjects import AddedObjects
 
 class ObjectGraph(object):
     """ 
@@ -87,6 +58,9 @@ class ObjectGraph(object):
         self.waviness = None
         self.options = Options()
         self.draw_bounding_box=False
+
+        self.already_computed_BB={}
+        self.already_computed_math_BB={}
 
         self.record_add_to_bb=[]         
         self.separator_name="DEFAULT"
@@ -275,14 +249,31 @@ class ObjectGraph(object):
         # position 3598-30738
         for obj in self.added_objects[pspict] :
             pspict.DrawGraphs(obj)
-    def bounding_box(self,pspict):
-        # The purpose of having a default bounding box is that some objects
-        # are uniquely build from 'action_on_pspict', so that the bounding box 
-        # is not important to know since the building block have theirs.
-        from Constructors import BoundingBox
-        return BoundingBox()
+        
+    # We could be tempted to furnish here a default 
+    # '_bounding_box(self,pspict)'
+    # Indeed, some are uniquely build from 'action_on_pspict', so that the
+    #bounding box is not important to know since the building block 
+    # have theirs.
+    def bounding_box(self,pspict=None):
+        try:
+            return self.already_computed_BB[pspict]
+        except KeyError :
+            pass
+        bb=self._bounding_box(pspict)
+        self.already_computed_BB[pspict]=bb
+        return bb
     def math_bounding_box(self,pspict):
-        return self.bounding_box(pspict)
+        try:
+            return self.already_computed_math_BB[pspict]
+        except KeyError :
+            pass
+        try:
+            bb=self._math_bounding_box(pspict)
+        except AttributeError:
+            bb=self.bounding_box(pspict=pspict)
+        self.already_computed_math_BB[pspict]=bb
+        return bb
     def latex_code(self,pspict,language=None):
         return ""
 

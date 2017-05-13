@@ -21,8 +21,9 @@
 # email: laurent@claessens-donadello.eu
 
 from Constructors import *
+from ObjectGraph import ObjectGraph
 
-class BoundingBox_class(object):
+class BoundingBox_class(ObjectGraph):
     r"""
     Represent the bounding box of something.
 
@@ -141,10 +142,11 @@ class BoundingBox_class(object):
         self.ymin = numerical_min(self.ymin,bb.ymin)
         self.xmax = numerical_max(self.xmax,bb.xmax)
         self.ymax = numerical_max(self.ymax,bb.ymax)
-    def append(self,graph,pspict=None):
+    def append(self,graph,pspict="ddd"):
         if isinstance(graph,list):
             raise KeyError,"%s is a list"%graph
         if not pspict :
+            from Exceptions import MissingPictureException
             raise MissingPictureException("You should provide a pspict in order to add this object to a bounding box.")
 
         if self.math:

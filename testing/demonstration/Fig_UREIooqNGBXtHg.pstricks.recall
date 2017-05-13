@@ -75,30 +75,26 @@
 \begin{tikzpicture}[xscale=1,yscale=1,inner sep=2.25pt,outer sep=0pt]
 %PSTRICKS CODE
 %GRID
-\draw [color=gray,style=solid] (-1.60,-0.800) -- (-1.60,3.20);
-\draw [color=gray,style=solid] (-0.800,-0.800) -- (-0.800,3.20);
-\draw [color=gray,style=solid] (0,-0.800) -- (0,3.20);
-\draw [color=gray,style=solid] (0.800,-0.800) -- (0.800,3.20);
-\draw [color=gray,style=solid] (1.60,-0.800) -- (1.60,3.20);
-\draw [color=gray,style=solid] (2.40,-0.800) -- (2.40,3.20);
-\draw [color=gray,style=solid] (3.20,-0.800) -- (3.20,3.20);
-\draw [color=gray,style=dotted] (-1.20,-0.800) -- (-1.20,3.20);
-\draw [color=gray,style=dotted] (-0.400,-0.800) -- (-0.400,3.20);
-\draw [color=gray,style=dotted] (0.400,-0.800) -- (0.400,3.20);
-\draw [color=gray,style=dotted] (1.20,-0.800) -- (1.20,3.20);
-\draw [color=gray,style=dotted] (2.00,-0.800) -- (2.00,3.20);
-\draw [color=gray,style=dotted] (2.80,-0.800) -- (2.80,3.20);
-\draw [color=gray,style=dotted] (-1.60,-0.400) -- (3.20,-0.400);
-\draw [color=gray,style=dotted] (-1.60,0.400) -- (3.20,0.400);
-\draw [color=gray,style=dotted] (-1.60,1.20) -- (3.20,1.20);
-\draw [color=gray,style=dotted] (-1.60,2.00) -- (3.20,2.00);
-\draw [color=gray,style=dotted] (-1.60,2.80) -- (3.20,2.80);
-\draw [color=gray,style=solid] (-1.60,-0.800) -- (3.20,-0.800);
-\draw [color=gray,style=solid] (-1.60,0) -- (3.20,0);
-\draw [color=gray,style=solid] (-1.60,0.800) -- (3.20,0.800);
-\draw [color=gray,style=solid] (-1.60,1.60) -- (3.20,1.60);
-\draw [color=gray,style=solid] (-1.60,2.40) -- (3.20,2.40);
-\draw [color=gray,style=solid] (-1.60,3.20) -- (3.20,3.20);
+\draw [color=gray,style=solid] (-0.800,0) -- (-0.800,3.20);
+\draw [color=gray,style=solid] (0,0) -- (0,3.20);
+\draw [color=gray,style=solid] (0.800,0) -- (0.800,3.20);
+\draw [color=gray,style=solid] (1.60,0) -- (1.60,3.20);
+\draw [color=gray,style=solid] (2.40,0) -- (2.40,3.20);
+\draw [color=gray,style=solid] (3.20,0) -- (3.20,3.20);
+\draw [color=gray,style=dotted] (-0.400,0) -- (-0.400,3.20);
+\draw [color=gray,style=dotted] (0.400,0) -- (0.400,3.20);
+\draw [color=gray,style=dotted] (1.20,0) -- (1.20,3.20);
+\draw [color=gray,style=dotted] (2.00,0) -- (2.00,3.20);
+\draw [color=gray,style=dotted] (2.80,0) -- (2.80,3.20);
+\draw [color=gray,style=dotted] (-0.800,0.400) -- (3.20,0.400);
+\draw [color=gray,style=dotted] (-0.800,1.20) -- (3.20,1.20);
+\draw [color=gray,style=dotted] (-0.800,2.00) -- (3.20,2.00);
+\draw [color=gray,style=dotted] (-0.800,2.80) -- (3.20,2.80);
+\draw [color=gray,style=solid] (-0.800,0) -- (3.20,0);
+\draw [color=gray,style=solid] (-0.800,0.800) -- (3.20,0.800);
+\draw [color=gray,style=solid] (-0.800,1.60) -- (3.20,1.60);
+\draw [color=gray,style=solid] (-0.800,2.40) -- (3.20,2.40);
+\draw [color=gray,style=solid] (-0.800,3.20) -- (3.20,3.20);
 %DEFAULT
 \draw []  (0.8000000000,1.600000000) node [rotate=0] {$\bullet$};
 \draw (1.014443052,1.892773938) node {\( A\)};

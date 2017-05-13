@@ -388,7 +388,7 @@ class PointGraph(ObjectGraph):
         return Point(self.x,self.y)
     def mark_point(self,pspict=None):
         return self
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         """
         return the bounding box of the point including its mark
 
@@ -412,34 +412,41 @@ class PointGraph(ObjectGraph):
         bb = BoundingBox(Point(self.x-Xradius,self.y-Yradius),
                             Point(self.x+Xradius,self.y+Yradius))
         for P in self.record_add_to_bb:
-            raise # To know who
+            raise DeprecationWarning
             bb.AddPoint(P)
         for obj in self.added_objects[pspict]:
             bb.append(obj,pspict)
         return bb
-    def math_bounding_box(self,pspict=None):
-        """Return a bounding box which include itself and that's it."""
+    def _math_bounding_box(self,pspict=None):
+        ##
+        #   Return a bounding box which include itself and that's it.
+
         # Here one cannot use BoundingBox(self.point,self.point) because
         # it creates infinite loop.
         bb=BoundingBox(xmin=self.point.x,xmax=self.point.x,
                             ymin=self.point.y,ymax=self.point.y)
         return bb
-    def is_almost_equal(self,other,epsilon=0.001):
-        # return true if 'self' and 'other' are coordinates difference
-        # lower than 'epsilon'
+    def is_almost_equal(self,other,epsilon=0.0001):
+        ## 
+        #   return true if `self` and `other` have coordinates difference
+        #   lower than `epsilon`
+        #
 
         if not isinstance(other,PointGraph):
             from NoMathUtilities import logging
             logging("We are comparing "+type(self)+" with "+type(other)+". We continue, but this is strange.")
 
-        if abs(self.x-other.x)>epsilon:
+        sx=numerical_approx(self.x)
+        sy=numerical_approx(self.y)
+        ox=numerical_approx(other.x)
+        oy=numerical_approx(other.y)
+        if abs(sx-ox)>epsilon:
             return False
-        if abs(self.y-other.y)>epsilon:
+        if abs(sy-oy)>epsilon:
             return False
         return True
 
     def tikz_code(self,pspict=None):
-
         symbol_dict={}
         symbol_dict[None]="$\\bullet$"
         symbol_dict["*"]="$\\bullet$"
@@ -470,38 +477,28 @@ class PointGraph(ObjectGraph):
         return "\n".join(l)
 
     def __eq__(self,other):
-        """
-        return True if the coordinates of `self` and `other` are the same.
-
-        INPUT:
-        
-        - ``other`` - an other point
-
-        OUTPUT:
-
-        boolean
-
-        EXAMPLES:
-
-        The fact to change the properties of a point don't change the equality::
-
-            sage: from phystricks import *
-            sage: a=Point(1,1)
-            sage: b=Point(1,1)
-            sage: b.put_mark(1,1,"$P$")
-            sage: a==b
-            True
-            sage: c=Point(0,0)
-            sage: c==a
-            False
-        """
+        ##
+        #        return True if the coordinates of `self` and `other` are the same.
+        #
+        #     INPUT:
+        #        
+        #        - ``other`` - an other point
+        #
+        #        OUTPUT:
+        #
+        #       boolean
+        #
+        #        This function tests exact equality (even symbolic if one needs). For
+        #        numerical equality (up to some epsilon), use the function 
+        #        `is_almost_equal`
 
         # The type verification is to avoid to get other.x
         # when comparing with an object that is completely different.
         # This happens when checking if the BB is already computed :
         # see also 13756-24006
         if not isinstance(other,PointGraph):
-            return False
+            return NotImplemented
+
         if self.x == other.x and self.y==other.y :
             return True
         return False

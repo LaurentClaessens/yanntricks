@@ -121,9 +121,9 @@ figures_list_1.append(AESIooxXxRYQdT)
 figures_list_1.append(LWVXooPyIlOKNd)
 figures_list_1.append(FunctionFour)
 figures_list_1.append(ProjPoly)
-figures_list_1.append(EXIIooJzzoJeai)
 figures_list_1.append(OMPAooMbyOIqeA)
 figures_list_1.append(FMLCooxHtqRzUz)
+figures_list_1.append(EXIIooJzzoJeai)
 """
 figures_list_1.append(<++>)
 figures_list_1.append(<++>)
@@ -168,6 +168,7 @@ figures_list_2.append(FunctionFive)
 figures_list_2.append(OYBTooNUcJLzDH)
 figures_list_2.append(OGGDooIvakwNlL)
 figures_list_2.append(OMPAooMbyOIqeA)
+
 
 figures_list_3=[]
 figures_list_3.append(AESIooxXxRYQdT)

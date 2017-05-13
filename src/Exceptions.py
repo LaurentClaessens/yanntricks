@@ -41,6 +41,14 @@ class MissingPictureException(PhystricksGenericException):
     def __str__(self):
         return self.text
 
+class NotObjectGraphException(PhystricksGenericException):
+    ## raised when one tries to draw an object which does not subclass
+    #  `ObjectGraph`
+    def __init__(self,ob):
+        self.ob=ob
+    def __str__(self):
+        return "You cannot draw this object of type {} because this is not 'ObjectGraph'".format(type(self.ob))
+
 class ShouldNotHappenException(PhystricksGenericException):
     """
     Exception raised when something should not happen (bad use of a method)

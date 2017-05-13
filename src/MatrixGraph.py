@@ -189,6 +189,9 @@ class MatrixGraph(ObjectGraph):
                 y=y-self.getLine(i).getHeight(pspict)/2
         self._computed_central_points=True
 
+    def _bounding_box(self,pspict=None):
+        return BoundingBox()
+
     # Objects that are intended to be drawn cannot be iterable.  See Position 30282-11562
     #def __iter__(self):
     #    return self.elements.values().__iter__()
@@ -197,11 +200,14 @@ class MatrixGraph(ObjectGraph):
         self.computeCentralPoints(pspict)
 
         # The parenthesis of the matrix will be adapted to the second box. 
-        # Thus we create them as a pmatrix (in the LaTeX sense) that contains a rule of the computed dimensions.
+        # Thus we create them as a pmatrix (in the LaTeX sense)
+        # that contains a rule of the computed dimensions.
         second_box=self.getSecondBox(pspict)
         Vx=second_box.xmax-second_box.xmin
         Vy=second_box.ymax-second_box.ymin
-        matrix_code=r"""\rule{{ {}  }}{{{}}}""".format(str(Vx)+"cm",str(Vy)+"cm")
+        matrix_code=r"""\rule{{ {}  }}{{{}}}""".format(
+                        str(Vx)+"cm",
+                        str(Vy)+"cm")
 
         P=self.getMidPoint(pspict)
         P.parameters.symbol=""

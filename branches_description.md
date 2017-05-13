@@ -45,3 +45,20 @@ remove the deprecation warnings.
 #prepa3
 
 Take into account (some advices)[http://python3porting.com/preparing.html] to prepare a switch to python3.
+
+# remove_al_bb
+
+Remove the attribute 'already_computed_bb' of Picture.
+
+If the picture itself keeps a list of already computed bounging boxes, the test
+```
+if ob in picture.already_computed_bb :
+    pass
+```
+causes a serie of comparisons `ob==x` for x in picture.already_computed_bb. Sometimes, these comparisons crashes or are difficult.
+
+So each object will keep its own list of bounding boxes.
+
+# debug
+
+Debugging some pictures that do not work anymore since the last change.

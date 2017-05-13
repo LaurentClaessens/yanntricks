@@ -151,6 +151,8 @@ class AffineVectorGraph(ObjectGraph):
             logging("This vector is too small to normalize. I return a copy.")
             return self.copy()
         return (l*self).__div__(L)     
+    def _bounding_box(self,pspict):
+        return self.segment.bounding_box(pspict=pspict)
     def __str__(self):
         return "<vector I=%s F=%s>"%(str(self.I),str(self.F))
     def __add__(self,other):
