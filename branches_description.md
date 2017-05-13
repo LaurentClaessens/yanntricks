@@ -62,3 +62,10 @@ So each object will keep its own list of bounding boxes.
 # debug
 
 Debugging some pictures that do not work anymore since the last change.
+
+#remove_bloat
+
+Remove some useless code : 
+- the old "test" functionality that compares files "up to epsilon" in the numbers
+- the class File
+- the references to dvi, eps and so on.
