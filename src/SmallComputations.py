@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010,2011,2013-2015
+# copyright (c) Laurent Claessens, 2010,2011,2013-2015,2017
 # email: laurent@claessens-donadello.eu
 
 """
@@ -26,7 +26,7 @@ by phystricks but that are not geometry.
 """
 
 
-from __future__ import division # Used in MultipleBigger and MultipleLower
+from __future__ import division
 
 from sage.all import *
 import codecs
