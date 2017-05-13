@@ -54,7 +54,7 @@ def numerical_min(x,y,epsilon=None):
 
     return min(nx,ny)
 
-def numerical_max(x,y):
+def numerical_max(x,y,epsilon=None):
 ## Same as `numerical_min` with ad-hoc changes
     nx=numerical_approx(x)
     ny=numerical_approx(y)
