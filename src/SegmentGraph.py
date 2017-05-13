@@ -104,8 +104,9 @@ class SegmentGraph(ObjectGraph):
         return Point(x,self.slope*x+self.independent)
     @lazy_attribute
     def vertical(self):
-        # The condition  'self.I.x == self.F.x' brings sometimes non vertical lines that are in fact vertical (dx=10e-16)
-        if abs( self.I.x-self.F.x )<0.0001:    # epsilon
+        Ix=numerical_approx(self.I.x)
+        Fx=numerical_approx(self.F.x)
+        if abs(Ix-Fx)<0.0001:    # epsilon
             return True
         return False
     @lazy_attribute
@@ -120,7 +121,8 @@ class SegmentGraph(ObjectGraph):
         return the equation of the line under the form
         x + by + c = 0
 
-        Coefficients 'b' and 'c' are numerical approximations. See Utilities.Intersection
+        Coefficients 'b' and 'c' are numerical approximations. 
+        See Utilities.Intersection
 
         EXAMPLES::
 

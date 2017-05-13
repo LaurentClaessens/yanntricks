@@ -64,6 +64,17 @@ def test_add_bounding_box():
     pspict.DrawGraphs(A,B)
     fig.conclude()
 
+def test_vertical():
+    echo_function("test_vertical")
+
+    A=Point(1.50000000000000*cos(0.111111111111111*pi),
+            -1.50000000000000*sin(0.111111111111111*pi))
+    B=Point(3.00000000000000*cos(0.111111111111111*pi),
+            -3.00000000000000*sin(0.111111111111111*pi))
+    seg=Segment(A,B)
+    assert_equal(seg.vertical,False)
+
 def testPointCoordinates():
+    test_vertical()
     test_add_bounding_box()
     test_equalities()
