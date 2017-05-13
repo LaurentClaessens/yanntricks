@@ -31,11 +31,6 @@ from __future__ import division
 from sage.all import *
 import codecs
 
-from Utilities import *
-
-# It seem to me that we don't use that here (March, 03 2016)
-#from phystricks import WrapperStr
-#var=WrapperStr(var)
 
 def MultipleBetween(Dx,mx,Mx,mark_origin=True):
     """
@@ -389,66 +384,6 @@ def around(x,decimals):
     from numpy import around as numpy_around
     a=[x]
     return numpy_around(a,decimals=decimals)[0]
-
-def numerical_min(x,y):
-    """
-    return the min of x and y after having computed a numerical approximation.
-
-    The reason is that Sage cannot always determine the min or the max of
-    expressions like
-        1000, <type 'int'>
-        cos(0.0823552493237255*pi), <type 'sage.symbolic.expression.Expression'>
-    """
-    nx=numerical_approx(x)
-    ny=numerical_approx(y)
-    return min(nx,ny)
-
-def numerical_max(x,y):
-    """
-    return the max of x and y after having computed a numerical approximation.
-
-    For the rationale, see `numerical_min`
-    """
-    nx=numerical_approx(x)
-    ny=numerical_approx(y)
-    return max(nx,ny)
-
-def numerical_isZero(x,epsilon=0.0001):
-    """
-    Try to say if Abs(x)<epsilon.
-
-    It is not always possible because
-    - x could be an expression on which Sage cannot compute abs
-    - the precision on x could be lower than epsilon, so that Sage will complain. In this case we check is x is the smaller possible in its precision and `epsilon` is not used.
-
-        sage: from phystricks.SmallComputations import numerical_isZero
-        sage: numerical_isZero(-pi)
-        False
-    """
-    try :
-        return abs(x) < epsilon
-    except:
-        raise
-
-def numerical_is_negative(x):
-    """
-    try to say if `x` is numerically negative.
-
-    I got difficulties on the following :
-    sage:radian =arctan(1/sin(1.2000000000000002*pi))
-    sage: if radian< 0:
-        print("ok")
-        ....:   
-    results in an OverflowError: Python int too large to convert to C long.
-    """
-    try :
-        return x.is_negative()
-    except AttributeError:
-        pass
-    if numerical_approx(x)<0:
-        return True
-    else :
-        return False
 
 def MultipleLower(x,m):
     """ return the biggest multiple of m which is lower or equal to x"""

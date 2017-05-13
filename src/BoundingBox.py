@@ -136,8 +136,8 @@ class BoundingBox_class(ObjectGraph):
         self.ymin=min(self.ymin,y)
         self.ymax=max(self.ymax,y)
     def AddBB(self,bb):
-        from SmallComputations import numerical_min
-        from SmallComputations import numerical_max
+        from Numerical import numerical_min
+        from Numerical import numerical_max
         self.xmin = numerical_min(self.xmin,bb.xmin)
         self.ymin = numerical_min(self.ymin,bb.ymin)
         self.xmax = numerical_max(self.xmax,bb.xmax)

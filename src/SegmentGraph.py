@@ -104,9 +104,11 @@ class SegmentGraph(ObjectGraph):
         return Point(x,self.slope*x+self.independent)
     @lazy_attribute
     def vertical(self):
+        from Numerical import are_almost_equal
         return are_almost_equal(self.I.x,self.F.x,epsilon=0.0001)
     @lazy_attribute
     def horizontal(self):
+        from Numerical import are_almost_equal
         return are_almost_equal(self.I.y,self.F.y,epsilon=0.0001)
     @lazy_attribute
     def equation(self):

@@ -208,7 +208,7 @@ def PointToPolaire(P=None,x=None,y=None,origin=None,numerical=True):
         sage: print PointToPolaire(x=1,y=1)
         PolarCoordinates, r=sqrt(2),degree=45,radian=1/4*pi
     """
-    from SmallComputations import numerical_is_negative
+    from Numerical import numerical_is_negative
     if origin:
         Ox=origin.x
         Oy=origin.y
