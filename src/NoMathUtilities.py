@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 """
@@ -107,7 +107,6 @@ class SubdirectoryFilenames(object):
     return the unmodified filename.
     """
     def __init__(self,filename,position="here"):
-        raise DeprecationWarning
         """
     - `filename` is a string containing the filenam
         e with no directory indications.
@@ -115,7 +114,7 @@ class SubdirectoryFilenames(object):
 
         if "here" : the file is in the current directory
                 when the picture is created.
-                    That is the current directory with respec to to Sage
+                    That is the current directory with respect to Sage
         if "main" : the file is in the main latex directory
         if "tex" : the file is un the picture latex directory, that is the
                     directory in which the file ".pstricks" is put.
@@ -128,7 +127,8 @@ class SubdirectoryFilenames(object):
 
             # 'importlib' is the solution for python3
             # 'imp' is the solution for python2
-            # This class is imported by python3 from the script 'new_picture.py'
+            # This class is imported by python3 from the script 
+            # 'new_picture.py'
             try :
                 import importlib.util
                 spec = importlib.util.spec_from_file_location("Directories", "Directories.py")
@@ -182,8 +182,6 @@ class SubdirectoryFilenames(object):
         return os.path.relpath(vfile,main)
     def abspath(self):
         return self.abs_filename
-
-
 
 def unify_point_name(s):
     r"""
