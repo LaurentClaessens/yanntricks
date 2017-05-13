@@ -392,8 +392,10 @@ class RightAngleGraph(ObjectGraph):
         self.n2=n2
         self.intersection=Intersection(d1,d2)[0]
 
-        # If the intersection point is one of the given points, there will be troubles.
-        # For then angle between AB and CD at point I, we need A,B,C,D and I to be five different points. 
+        # If the intersection point is one of the given points,
+        # there will be troubles.
+        # For then angle between AB and CD at point I, we need A,B,C,D
+        # and I to be five different points. 
         if self.intersection.is_almost_equal(self.d1.I) or self.intersection.is_almost_equal(self.d1.F):
             self.d1=d1.dilatation(1.5)
         if self.intersection.is_almost_equal(self.d2.I) or self.intersection.is_almost_equal(self.d2.F):

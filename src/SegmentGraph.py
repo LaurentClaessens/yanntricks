@@ -104,23 +104,20 @@ class SegmentGraph(ObjectGraph):
         return Point(x,self.slope*x+self.independent)
     @lazy_attribute
     def vertical(self):
-        # The condition  'self.I.x == self.F.x' brings sometimes non vertical lines that are in fact vertical (dx=10e-16)
-        if abs( self.I.x-self.F.x )<0.0001:    # epsilon
-            return True
-        return False
+        from Numerical import are_almost_equal
+        return are_almost_equal(self.I.x,self.F.x,epsilon=0.0001)
     @lazy_attribute
     def horizontal(self):
-        horiz = False
-        if self.I.y == self.F.y :
-            horiz = True
-        return horiz
+        from Numerical import are_almost_equal
+        return are_almost_equal(self.I.y,self.F.y,epsilon=0.0001)
     @lazy_attribute
     def equation(self):
         """
         return the equation of the line under the form
         x + by + c = 0
 
-        Coefficients 'b' and 'c' are numerical approximations. See Utilities.Intersection
+        Coefficients 'b' and 'c' are numerical approximations. 
+        See Utilities.Intersection
 
         EXAMPLES::
 

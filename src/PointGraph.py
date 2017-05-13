@@ -357,7 +357,7 @@ class PointGraph(ObjectGraph):
 
         If a pspicture is given, we divide by xunit and yunit to normalize.
         """
-        from SmallComputations import numerical_isZero
+        from Numerical import is_almost_zero
         x=self.x
         y=self.y
         if pspict :
@@ -377,9 +377,9 @@ class PointGraph(ObjectGraph):
             x=numerical_approx(x,digits=digits)
             y=numerical_approx(y,digits=digits)
         # Avoid something like "0.125547e-6" (LaTeX will not accept).
-        if numerical_isZero(x,0.001):
+        if is_almost_zero(x,0.001):
             x=0
-        if numerical_isZero(y,0.001):
+        if is_almost_zero(y,0.001):
             y=0
         return str("("+str(x)+","+str(y)+")")
     def graph_object(self):
