@@ -640,3 +640,13 @@ def make_psp_list(pspict,pspicts):
     if a==[] :
         raise ShouldNotHappenException("Picture missing. You have to use at least one of 'pspict=...' or 'pspicts=[...]'")
     return a
+
+
+def no_symbol(*arg):
+    for l in arg:
+        try:
+            for P in l:
+                no_symbol(P)
+        except TypeError:
+            l.parameters.symbol=""
+
