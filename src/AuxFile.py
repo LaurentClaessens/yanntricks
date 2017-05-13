@@ -18,7 +18,6 @@
 # copyright (c) Laurent Claessens, 2016-2017
 # email: laurent@claessens-donadello.eu
 
-from GlobalVariables import global_vars
 from Utilities import newlengthName
 from NoMathUtilities import logging
 from NoMathUtilities import ensure_unicode
@@ -82,10 +81,6 @@ class AuxFile(object):
             if not self.already_warned_CompileYourLaTeXFile:
                 logging("Warning: the auxiliary file %s does not seem to exist. Compile your LaTeX file."%self.interWriteFile.from_main(),pspict=self.picture)
                 self.already_warned_CompileYourLaTeXFile=True
-            if global_vars.perform_tests :
-                raise ValueError,"I cannot say that a test succeed if I cannot determine the bounding box"
-            if global_vars.create_formats["test"] :
-                raise ValueError, "I cannot create a test file when I'm unable to compute the bounding box."
             return d
         idlist = f.read().replace('\n','').replace(' ','').replace('\\par','').split("-")
         f.close()
@@ -102,17 +97,12 @@ class AuxFile(object):
         return d
     def get_Id_value(self,Id,default_value=0):
         if Id not in self.id_values_dict().iterkeys():
-            if not global_vars.silent:
-                if not self.already_warned_CompileYourLaTeXFile:
-                    logging(self.picture.name+"-----")
-                    logging("Warning: the auxiliary file {} does not contain the id «{}». Compile your LaTeX file.".format(self.interWriteFile.from_main(),Id),pspict=self.picture)
-                    logging(u"Concerned tex expression : "+self.interId_to_tex_expression[Id])
+            if not self.already_warned_CompileYourLaTeXFile:
+                logging(self.picture.name+"-----")
+                logging("Warning: the auxiliary file {} does not contain the id «{}». Compile your LaTeX file.".format(self.interWriteFile.from_main(),Id),pspict=self.picture)
+                logging(u"Concerned tex expression : "+self.interId_to_tex_expression[Id])
 
-                    self.already_warned_CompileYourLaTeXFile=True
-            if global_vars.perform_tests :
-                raise PhystricksTestError(justification="No tests file found.",pspict=self)
-            if global_vars.create_formats["test"] :
-                raise ValueError, "I cannot create a test file when I'm unable to compute the bounding box."
+                self.already_warned_CompileYourLaTeXFile=True
             return default_value
         value = self.id_values_dict()[Id]
         return value

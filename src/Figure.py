@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2016
+# copyright (c) Laurent Claessens, 2009-2017
 # email: laurent@claessens-donadello.eu
 
 import os
@@ -24,7 +24,6 @@ from sage.all import numerical_approx
 
 import SmallComputations
 from Separator import Separator, SeparatorList
-from GlobalVariables import global_vars
 from Utilities import latinize
 from Utilities import newlengthName
 from NoMathUtilities import ensure_unicode
@@ -233,15 +232,7 @@ class Figure(object):
                 self.add_latex_line(def_length_tex,"HATCHING_COMMANDS")
                 self.add_latex_line(def_pattern_tex,"HATCHING_COMMANDS")
 
-            if global_vars.perform_tests:
-                TestPspictLaTeXCode(pspict).test()
-                
         self.add_latex_line(self.specific_needs,"SPECIFIC_NEEDS")
-
-        if not global_vars.special_exit() :
-            if self.language=="pstricks":
-                self.add_latex_line("\psset{xunit=1,yunit=1}","BEFORE SUBFIGURES")
-
 
         for f in self.record_subfigure :
             self.add_latex_line("\subfigure["+f.caption+"]{%","SUBFIGURES")
@@ -273,9 +264,8 @@ class Figure(object):
         """
         import codecs
         to_be_written=self.contenu              # self.contenu is created in self.conclude
-        if not global_vars.perform_tests :
-            with codecs.open(self.filename.from_here(),"w",encoding="utf8") as f:
-                f.write(to_be_written)
+        with codecs.open(self.filename.from_here(),"w",encoding="utf8") as f:
+            f.write(to_be_written)
         print "--------------- For your LaTeX file ---------------"
         print(self.LaTeX_lines())
         print "---------------------------------------------------"

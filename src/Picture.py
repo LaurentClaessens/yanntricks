@@ -26,10 +26,8 @@ from sage.all import *
 from Utilities import PointsNameList
 from NoMathUtilities import ensure_unicode
 from Separator import SeparatorList
-from GlobalVariables import global_vars
 from ObjectGraph import DrawElement
 from ObjectGraph import ObjectGraph
-from main import PspictureToOtherOutputs
 from Constructors import BoundingBox,Axes,Grid,Point
 from AuxFile import AuxFile
 from BoundingBox import BoundingBox_class

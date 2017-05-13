@@ -32,9 +32,10 @@ import SmallComputations as SmallComputations
 
 from PointGraph import PointsNameList
 from Exceptions import *
-from GlobalVariables import global_vars
 from phystricks.src.SmallComputations import *
 
+import Separator
+import Figure
 
 from phystricks.src.WrapperStr import WrapperStr
 var=WrapperStr(var)
@@ -257,6 +258,7 @@ def unify_point_name(s):
     2. When changing "aaaa" into "aaab", the first one would be changed too.
 
     """
+    raise DeprecationWarning
     import re
 
     point_pattern=re.compile("({[a-zA-Z]{4,4}})")
@@ -284,9 +286,6 @@ class FigureGenerationSuite(object):
     - ``test_list`` - a list of functions that are supposed to produce pspictures
     
     - ``first`` - the position in `test_list` at which we begin the tests
-
-    If the option `--tests` is given to the script, the attribute `failed_list` contains
-    the list of functions that produced the exception :class:`PhystricksTestError`.
 
     ATTRIBUTES:
 
@@ -329,8 +328,7 @@ class FigureGenerationSuite(object):
                     if e.code==2:
                         self.to_be_recompiled_list.append((self.test_list[i],e.pspict))
             except PhystricksNoError,e:
-                if global_vars.create_documentation:
-                    self.documentation_list.append( (self.test_list[i],e.figure) )
+                pass
     def latex_portion(self,failed_list,lstinputlisting=False):
         from latex_to_be import pseudo_caption
         portion=[]
@@ -357,33 +355,6 @@ class FigureGenerationSuite(object):
                     num=0
         return "\n".join(portion)
 
-    def create_to_be_latex_file(self,failed_list,name="checked"):
-        """
-        This function produce the LaTeX file that serves to continue the tests. 
-        This can be either the figures to be visually checked, either the figures that have to be recompiled.
-        """
-        from latex_to_be import to_be_checked_general_latex
-        general_text=to_be_checked_general_latex
-        text=general_text.replace("XXXXXX",self.latex_portion(failed_list))
-        filename="to_be_{0}.tex".format(name)
-        check_file=open(filename,"w")
-        check_file.write(text)
-        check_file.close()
-        print "The file {0} is created for you".format(filename)
-
-    def create_documentation(self):
-        """
-        This function produce the LaTeX file that serves for documentation. That contains the source code of all pictures together with the result.
-        """
-        from latex_to_be import documentation_skel
-        general_text=documentation_skel
-        text=general_text.replace("EXAMPLES_LIST",self.latex_portion(self.documentation_list,lstinputlisting=True))
-        filename="documentation.tex"
-        check_file=open(filename,"w")
-        check_file.write(text)
-        check_file.close()
-        print "The file {0} is created for you".format(filename)
-
     def function_list_to_figures_list(self,function_list):
         first=",".join([a[0].__name__ for a in function_list])
         return "figures_list=[{0}]".format(first.replace("'"," "))
@@ -393,8 +364,6 @@ class FigureGenerationSuite(object):
         lines to be included in the LaTeX file in order to
         visualize them.
         """
-        if global_vars.create_documentation:
-            self.create_documentation()
         all_tests_passed = True
         if len(self.failed_list) != 0:
             print "The list of function to visually checked :"
@@ -414,143 +383,3 @@ class FigureGenerationSuite(object):
                     print(l)
         else:
             raise PhystricksTestError
-
-class TestPspictLaTeXCode(object):
-    def __init__(self,pspict):
-        self.pspict=pspict
-        self.name=pspict.name
-        self.notice_text="This is a testing file containing the LaTeX code of the figure %s."%(self.name)
-        self.test_file=SmallComputations.Fichier("test_pspict_LaTeX_%s.tmp"%(self.pspict.name))
-    def create_test_file(self):
-        """
-        Write the LaTeX code of `pspict` in a file.
-
-        The purpose is to compare that file with the code actually
-        produced later. This is a way to test changes in phystricks.
-
-        INPUT:
-
-        - ``pspict`` - a pspicture
-
-        If the option `--create-tests` is passed to the program, this function is called
-        on each pspicture when concluding a :class:`figure`.
-        """
-        text=unify_point_name(self.notice_text+self.pspict.contenu_pstricks)
-        self.test_file.write(text,"w")
-    def test_if_test_file_is_present(self):
-        return os.path.isfile(self.test_file.filename)
-    def test(self):
-        print "---"
-        print "Testing pspicture %s ..."%self.name
-        obtained_text=unify_point_name(self.pspict.contenu_pstricks)
-        if not self.test_if_test_file_is_present():
-            print "Seems to lack of test file."
-            raise PhystricksTestError("No tests file found.",obtained_text,"No test file found; I do not know what to do.",pspict=self.pspict)
-        expected_text=unify_point_name("".join(self.test_file.contenu()).replace(self.notice_text,""))
-        boo,justification = string_number_comparison(obtained_text,expected_text)
-        if not boo:
-            raise PhystricksTestError(expected_text,obtained_text,justification,self.pspict)
-        print justification
-        print "Successful test for pspicture %s"%self.name
-        print "---"
-import Separator
-import Figure
-
-class PspictureToOtherOutputs(object):
-    """
-    Contains the informations about the transformation of a pspicture into an eps/pdf file
-    The method to produce the eps file is taken from the documentation of the package pst-eps, and from some fruitful discussions on fctt
-        http://archive.cs.uu.nl/mirror/CTAN/graphics/pstricks/contrib/pst-eps/pst-eps-doc.pdf
-        http://groups.google.fr/group/fr.comp.text.tex/browse_thread/thread/a5c4a67c457c46b8?hl=fr#
-
-    self.file_for_eps is the file in which we will put the LaTeX code needed to create the eps file
-    self.input_code_eps
-    self.input_code_pdf is the code to be input in the file that contains the picture. This is what replaces the pstricks code in the final figure.
-    """
-    def __init__(self,pspict):
-        self.pspict = pspict
-        self.name = self.pspict.name
-        self.file_for_eps = SmallComputations.Fichier("Picture_%s-for_eps.tex"%(self.name))
-        self.file_dvi = SmallComputations.Fichier(self.file_for_eps.chemin.replace(".tex",".dvi"))
-        self.file_bbb_eps = SmallComputations.Fichier(self.file_dvi.chemin.replace(".dvi","_bbb.eps"))       # Bad bounding box
-        self.file_eps = SmallComputations.Fichier(self.file_bbb_eps.chemin.replace("_bbb.eps",".eps"))
-        self.file_pdf = SmallComputations.Fichier(self.file_eps.chemin.replace(".eps",".pdf"))
-        self.file_png = SmallComputations.Fichier(self.file_eps.chemin.replace(".eps",".png"))
-        self.input_code_eps = "\includegraphics{{{}}}%".format(self.file_eps.nom)
-        self.input_code_pdf = "\includegraphics{{{}}}%".format(self.file_pdf.nom)
-        self.input_code_png = "\includegraphics[width=WIDTH]{{{}}}%".format(self.file_png.nom)   # 'WIDHT' will be replaced by the actual boundig box later.
-    def latex_code_for_eps(self):
-        text = """\documentclass{article}
-        \\usepackage{pstricks,pst-eucl,pstricks-add,pst-plot,pst-eps,calc,catchfile}
-        \pagestyle{empty}
-        \\usepackage[utf8]{inputenc}
-        \\usepackage[T1]{fontenc}
-        """     # For some reasons with unicode_literals, not even the raw string can contain \u
-        code=text.split("\n")
-        # Allows to add some lines, like packages or macro definitions required. This is useful when one adds formulas in the picture
-        # that need packages of personal commands.
-        # If the figure has specific_needs, that ones are used.
-        if self.pspict.figure_mother.specific_needs :
-            code.append(self.pspict.mother.specific_needs)
-        else:
-            code.append(self.pspict.specific_needs)
-        code.append(self.pspict.write_and_label_separator_list["WRITE_AND_LABEL"].code())
-        code.append(self.pspict.write_and_label_separator_list["CLOSE_WRITE_AND_LABEL"].code())
-        code.extend(["\\begin{document}\n","\\begin{TeXtoEPS}"])
-        code.append(self.pspict.contenu_pstricks)
-        code.append("\end{TeXtoEPS}\n")
-
-        code.append("\end{document}\n")
-        return "".join(code)
-    def create_test_file(self):
-        TestPspictLaTeXCode(self.pspict).create_test_file()
-    def create_eps_file(self):
-        """ Create an eps file by the chain latex/dvips """
-        file_tex = self.file_for_eps
-        file_tex.write(self.latex_code_for_eps(),"w")
-        commande_e = "latex %s"%self.file_for_eps.chemin
-        print("External :",commande_e)
-        os.system(commande_e)
-        commande_e = "dvips -E %s -o %s -q"%(self.file_dvi.chemin,self.file_bbb_eps.chemin)
-        print("External :",commande_e)
-        os.system(commande_e)
-
-        if Point(0,0) not in self.pspict.bounding_box():
-            commande_e="sage-native-execute epstool --bbox --copy --output {} {}".format(self.file_eps.chemin,self.file_bbb_eps.chemin)
-            print "**** External :",commande_e
-            os.system(commande_e)
-        else :
-            commande_e="cp {} {}".format(self.file_bbb_eps.chemin,self.file_eps.chemin)
-            print "**** External :",commande_e
-            os.system(commande_e)
-    def create_png_file(self):
-        """
-        Creates a png file by the chain latex->eps->png
-
-        The last step is done by convert.
-
-        NOTE :
-
-        It is also possible to use inkscape in order to produce svg but
-        on my computer inkscape crashes on a segmentation fault
-        when launched from a script :(
-        """
-        # TODO: check if inkscape is present. If not use convert.
-        self.create_eps_file()
-        #x_cmsize=100*numerical_approx(self.pspict.xsize*self.pspict.xunit)
-        #y_cmsize=100*numerical_approx(self.pspict.ysize*self.pspict.yunit)
-        x_cmsize=100*self.pspict.visual_xsize()
-        y_cmsize=100*self.pspict.visual_ysize()
-        commande_e = "sage-native-execute convert -density 1000 %s -resize %sx%s %s"%(self.file_eps.chemin,str(x_cmsize),str(y_cmsize),self.file_png.chemin)
-        #commande_e = "inkscape -f %s -e %s -D -d 600"%(self.file_pdf.chemin,self.file_png.chemin)
-        #inkscape -f test.pdf -l test.svg
-        print "*** External :", commande_e
-        os.system(commande_e)
-    def create_pdf_file(self):
-        """ Creates a pdf file by the chain latex/dvips/epstopdf """
-        self.create_eps_file()
-        commande_e = "epstopdf %s --outfile=%s"%(self.file_eps.chemin,self.file_pdf.chemin)
-        print commande_e
-        os.system(commande_e)
-
-import Picture
