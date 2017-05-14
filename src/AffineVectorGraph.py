@@ -154,7 +154,7 @@ class AffineVectorGraph(ObjectGraph):
     def _bounding_box(self,pspict):
         return self.segment.bounding_box(pspict=pspict)
     def __str__(self):
-        return "<vector I=%s F=%s>"%(str(self.I),str(self.F))
+        return "<AffineVector I=%s F=%s>"%(str(self.I),str(self.F))
     def __add__(self,other):
         return AffineVector(self.I,self.F+other)
     def __sub__(self,other):
