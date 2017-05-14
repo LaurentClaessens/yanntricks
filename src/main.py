@@ -55,8 +55,7 @@ def no_symbol(*arg):
 def get_phystricks_version():
     ##
     # \brief return the version of 'phystricks'
-    with open("version.txt",r) as f:
-        version = f.readline()
+    from phystricks.Version import version
     return version
 
 def get_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,
@@ -323,7 +322,7 @@ class FigureGenerationSuite(object):
         print("********************************************")
         print("*  This is the automatic figure generation")
         print("*  for %s"%self.title)
-        print("phystricks version : "+get_phystricks_version())
+        print("* phystricks version : "+get_phystricks_version())
         print("********************************************")
         print("")
         for i in range(self.first,len(self.test_list)):
