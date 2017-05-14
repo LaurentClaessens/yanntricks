@@ -30,6 +30,7 @@ def visual_length(v,l,xunit=None,yunit=None,pspict=None):
     Return a vector in the direction of v that has *visual* length
     l taking xunit and yunit into account.
     """
+    from Numerical import numerical_is_negative
     if pspict:
         xunit=pspict.xunit
         yunit=pspict.yunit
