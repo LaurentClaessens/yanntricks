@@ -485,7 +485,8 @@ class PointGraph(ObjectGraph):
         #
         #       boolean
         #
-        #        This function tests exact equality (even symbolic if one needs). For
+        #        This function tests exact equality 
+        #a       (even symbolic if one needs). For
         #        numerical equality (up to some epsilon), use the function 
         #        `is_almost_equal`
 
@@ -496,9 +497,13 @@ class PointGraph(ObjectGraph):
         if not isinstance(other,PointGraph):
             return NotImplemented
 
-        if self.x == other.x and self.y==other.y :
-            return True
-        return False
+        if self.x != other.x:
+            return False
+        if self.y != other.y:
+            return False
+        return True
+    def __ne__(self,other):
+        return not self==other
     def __add__(self,v):
         """
         Addition of a point with a vector is the parallel translation,

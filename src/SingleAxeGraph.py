@@ -134,7 +134,6 @@ class SingleAxeGraph(ObjectGraph):
 
             a=visual_polar(P,0.1,bar_angle,pspict)
             b=visual_polar(P,0.1,bar_angle+180,pspict)
-
             seg=Segment(a,b)
             bars_list.append(seg)
         return bars_list

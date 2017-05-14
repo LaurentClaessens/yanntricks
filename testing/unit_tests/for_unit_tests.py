@@ -98,6 +98,10 @@ from testPointCoordinates import testPointCoordinates
 print("testPointCoordinates")
 testPointCoordinates()
 
+from testNumericalOperations import testNumericalOperations
+print("testNumericalOperations")
+testNumericalOperations()
+
 from testIntersection import testIntersection
 print("testIntersection")
 testIntersection()

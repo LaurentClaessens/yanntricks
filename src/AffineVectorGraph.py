@@ -154,7 +154,7 @@ class AffineVectorGraph(ObjectGraph):
     def _bounding_box(self,pspict):
         return self.segment.bounding_box(pspict=pspict)
     def __str__(self):
-        return "<AffineVector I=%s F=%s>"%(str(self.I),str(self.F))
+        return "<AffineVectorGraph I=%s F=%s>"%(str(self.I),str(self.F))
     def __add__(self,other):
         return AffineVector(self.I,self.F+other)
     def __sub__(self,other):
@@ -179,6 +179,20 @@ class AffineVectorGraph(ObjectGraph):
         nx=self.I.x-self.Dx
         ny=self.I.y-self.Dy
         return AffineVector(self.I, Point(nx,ny)  )
+    def __eq__(self,other):
+        if self.I != other.I:
+            return False
+        if self.F != other.F:
+            return False
+        return True
+    def is_almost_equal(self,other):
+        if not self.I.is_almost_equal(other.I):
+            return False
+        if not self.F.is_almost_equal(other.F):
+            return False
+        return True
+    def __ne__(self,other):
+        return not self==other
     def mark_point(self,pspict=None):
         return self.F.copy()
     def tikz_code(self,pspict=None):

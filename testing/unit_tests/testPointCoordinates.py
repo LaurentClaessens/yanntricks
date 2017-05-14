@@ -34,23 +34,23 @@ from Testing import SilentOutput
 
 def test_equalities():
     echo_function("test_equalities")
-    A=Point(4.00000000000000*cos(0.111111111111111*pi),0)
-    B=Point(0,0)
+    A=Point(0,0)
+    B=Point(4.00000000000000*cos(0.111111111111111*pi),0)
 
-    echo_single_test("almost_equal")
-    b=0
-    if A.is_almost_equal(B):    # an == here raises an 'OverflowError'
-        b=1
-    assert_equal(b,0)
+    echo_single_test("difficult not 'almost equal'")
+    assert_false(A.is_almost_equal(B))
+    echo_single_test("difficult not 'really equal'")
+    assert_false(A==B)
 
-    echo_single_test("overflowError")
-    b=0
-    try :
-        if A==B:
-            pass
-    except OverflowError :
-        b=2
-    assert_equal(b,2)
+    v=AffineVector(A,B)
+    u=AffineVector(B,A)
+    w=AffineVector(A,-B)
+
+    echo_single_test("difficult not 'almost equal' for affine vector")
+    assert_false(v.is_almost_equal(w))
+
+    echo_single_test("difficult 'almost equal' for affine vector")
+    assert_true(w.is_almost_equal(-v))
 
 def test_add_bounding_box():
     echo_function("test_add_bounding_box")
@@ -75,8 +75,8 @@ def test_vertical_horizontal():
     assert_equal(seg.vertical,False)
     assert_equal(seg.horizontal,False)
 
-def test_is_negative():
-    echo_function("is_negative")
+def test_right_angle():
+    echo_function("test_right_angle")
     with SilentOutput():
         pspict,fig = SinglePicture("HYVFooTHaDDQ")
 
@@ -91,7 +91,7 @@ def test_is_negative():
     pspict.DrawGraphs(rh)
 
 def testPointCoordinates():
-    test_is_negative()
+    test_right_angle()
     test_vertical_horizontal()
     test_add_bounding_box()
     test_equalities()

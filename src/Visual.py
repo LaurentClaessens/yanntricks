@@ -23,8 +23,6 @@
 from sage.all import *
 from Constructors import Vector,Point
 
-from Debug import dprint,testtype
-
 def visual_length(v,l,xunit=None,yunit=None,pspict=None):
     """
     Return a vector in the direction of v that has *visual* length
@@ -54,7 +52,7 @@ def visual_length(v,l,xunit=None,yunit=None,pspict=None):
         #from phystricks import Vector
         #return AffineVector(v.I,v.I+Vector(x,y))
     else:
-        raise DeprecationWarning        # If this one never raises, one cas remove also the "if hasattr"
+        raise DeprecationWarning        # If this one never raises, one can remove also the "if hasattr"
         from phystricks import Vector
         return Vector(x,y)
 
@@ -67,8 +65,10 @@ def visual_polar(P,r,theta,pspict=None):
     xunit=pspict.xunit
     yunit=pspict.yunit
     alpha=pi*theta/180
+
     v=Vector( cos(alpha)/xunit,sin(alpha)/yunit  )
     w=visual_length(v,r,pspict=pspict)
+    
     return P+w
 
 def polar_to_visual_polar(r,theta,pspict=None):
