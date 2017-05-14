@@ -29,8 +29,11 @@ from phystricks.src.Constructors import *
 
 from phystricks.src.ObjectGraph import ObjectGraph
 
-from phystricks.src.WrapperStr import WrapperStr
-var=WrapperStr(var)
+from phystricks.src.Parameters import Parameters
+from phystricks.src.PointGraph import PointGraph
+
+#from phystricks.src.WrapperStr import WrapperStr
+#var=WrapperStr(var)
 
 def genericBracketAttributeToLanguage(attr,language):
     if language=="tikz":
@@ -49,8 +52,6 @@ def genericBracketAttributeToLanguage(attr,language):
 def OptionsStyleLigne():
     return ["linecolor","linestyle"]
 
-from phystricks.src.Parameters import Parameters
-from phystricks.src.PointGraph import PointGraph
 
 class GeometricImplicitCurve(object):
     """
