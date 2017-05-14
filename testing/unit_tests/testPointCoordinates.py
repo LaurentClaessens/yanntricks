@@ -80,13 +80,15 @@ def test_is_negative():
     with SilentOutput():
         pspict,fig = SinglePicture("HYVFooTHaDDQ")
 
-    A=Point(2.96406976477346*cos(-1/9*pi + 1.09432432510594),2.96406976477346*sin(-1/9*pi + 1.09432432510594))
-    B=Point(1.50000000000000*cos(0.111111111111111*pi),-1.50000000000000*sin(0.111111111111111*pi))
-    C=Point(3.00000000000000*cos(0.111111111111111*pi),-3.00000000000000*sin(0.111111111111111*pi))
+    A=Point(2.96406976477346*cos(-1/9*pi + 1.09432432510594),
+            2.96406976477346*sin(-1/9*pi + 1.09432432510594))
+    B=Point(1.50000000000000*cos(0.111111111111111*pi),
+            -1.50000000000000*sin(0.111111111111111*pi))
+    C=Point(3.00000000000000*cos(0.111111111111111*pi),
+            -3.00000000000000*sin(0.111111111111111*pi))
 
     rh=RightAngleAOB(A,B,C)
     pspict.DrawGraphs(rh)
-
 
 def testPointCoordinates():
     test_is_negative()
