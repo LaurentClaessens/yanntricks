@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 """
@@ -114,7 +114,7 @@ class SubdirectoryFilenames(object):
 
         if "here" : the file is in the current directory
                 when the picture is created.
-                    That is the current directory with respec to to Sage
+                    That is the current directory with respect to Sage
         if "main" : the file is in the main latex directory
         if "tex" : the file is un the picture latex directory, that is the
                     directory in which the file ".pstricks" is put.
@@ -127,7 +127,8 @@ class SubdirectoryFilenames(object):
 
             # 'importlib' is the solution for python3
             # 'imp' is the solution for python2
-            # This class is imported by python3 from the script 'new_picture.py'
+            # This class is imported by python3 from the script 
+            # 'new_picture.py'
             try :
                 import importlib.util
                 spec = importlib.util.spec_from_file_location("Directories", "Directories.py")
@@ -181,3 +182,71 @@ class SubdirectoryFilenames(object):
         return os.path.relpath(vfile,main)
     def abspath(self):
         return self.abs_filename
+
+def unify_point_name(s):
+    r"""
+    Interpret `s` as the pstricks code of something and return a chain with
+    all the points names changed to "Xaaaa", "Xaaab" etc.
+
+    Practically, it changes the strings like "{abcd}" to "{Xaaaa}".
+
+    When "{abcd}" is found, it also replace the occurences of "(abcd)".
+    This is because the marks of points are given by example as
+    '\\rput(abcd){\\rput(0;0){$-2$}}'
+
+    This serves to build more robust doctests by providing strings in which
+    we are sure that the names of the points are the first in the list.
+
+    INPUT:
+
+    - ``s`` - a string
+
+    OUTPUT:
+    string
+
+    EXAMPLES:
+    
+    In the following example, the points name in the segment do not begin
+    by "aaaa" because of the definition of P, or even because of other doctests executed before.
+    (due to complex implementation, the names of the points are
+    more or less unpredictable and can change)
+
+    ::
+
+        sage: from phystricks import *
+        sage: P=Point(3,4)
+        sage: S = Segment(Point(1,1),Point(2,2))
+
+    However, using the function unify_point_name, the returned string begins with "Xaaaa" ::
+
+    Notice that the presence of "X" is necessary in order to avoid
+    conflicts when one of the points original name is one of the new points name as in the following example ::
+
+        sage: s="{xxxx}{aaaa}{yyyy}"
+        sage: print unify_point_name(s)
+        {Xaaaa}{Xaaab}{Xaaac}
+
+    Without the additional X,
+
+    1. The first "xxxx" would be changed to "aaaa".
+    2. When changing "aaaa" into "aaab", the first one would be changed too.
+
+    """
+    raise DeprecationWarning
+    import re
+
+    point_pattern=re.compile("({[a-zA-Z]{4,4}})")
+    match = point_pattern.findall(s)
+
+    rematch=[]
+    for m in match:
+        n=m[1:-1]       # I transform "{abcd}" into "abcd"
+        if n not in rematch:
+            rematch.append(n)
+
+    from phystricks.src.PointGraph import PointsNameList
+    names=PointGraph.PointsNameList()
+    for m in rematch:
+        name=names.next()
+        s=s.replace("{%s}"%m,"{X%s}"%name).replace("(%s)"%m,"(X%s)"%name)
+    return s

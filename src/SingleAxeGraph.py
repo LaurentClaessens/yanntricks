@@ -119,7 +119,6 @@ class SingleAxeGraph(ObjectGraph):
                                                   # too much digits.
         for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,self.Dx,self.mark_origin):
             P=(x*self.base).F
-            P.psName="ForTheBar"   
             if self.numbering :
                 # The 0.2 here is hard coded in Histogram, see 71011299
 

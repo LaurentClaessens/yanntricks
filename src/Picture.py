@@ -26,15 +26,14 @@ from sage.all import *
 from Utilities import PointsNameList
 from NoMathUtilities import ensure_unicode
 from Separator import SeparatorList
-from GlobalVariables import global_vars
 from ObjectGraph import DrawElement
 from ObjectGraph import ObjectGraph
-from main import PspictureToOtherOutputs
 from Constructors import BoundingBox,Axes,Grid,Point
 from AuxFile import AuxFile
 from BoundingBox import BoundingBox_class
 
 class Picture(object):
+    NomPointLibre = PointsNameList()
     r"""
     Describe a Picture
 
@@ -50,8 +49,6 @@ class Picture(object):
 
     The name of the pspict is used to produce intermediate filesnames, and other names.
     """
-    NomPointLibre = PointsNameList()
-
     def __init__(self,name="CAN_BE_A_PROBLEM_IF_TRY_TO_PRODUCE_EPS_OR_PDF"):
         r"""
 

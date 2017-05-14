@@ -891,4 +891,3 @@ class SegmentGraph(ObjectGraph):
         return "\n".join(a)
     def tikz_code(self,pspict=None):
         return self.latex_code(language="tikz",pspict=pspict)
-

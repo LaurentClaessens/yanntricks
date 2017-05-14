@@ -71,8 +71,6 @@ class AlreadyEnlargedException(PhystricksGenericException):
 class PhystricksTestError(PhystricksGenericException):
     """
     The exception raised when testing the pspictures.
-
-    See :class:`TestPspictLaTeXCode`.
     """
     def __init__(self,expected_text=None,obtained_text=None,justification=None,pspict=None,code=1):
         """
