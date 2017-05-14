@@ -97,7 +97,4 @@ def numerical_is_negative(x):
         return x.is_negative()
     except AttributeError:
         pass
-    if numerical_approx(x)<0:
-        return True
-    else :
-        return False
+    return numerical_approx(x)<0
