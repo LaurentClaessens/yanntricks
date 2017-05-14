@@ -75,7 +75,21 @@ def test_vertical_horizontal():
     assert_equal(seg.vertical,False)
     assert_equal(seg.horizontal,False)
 
+def test_is_negative():
+    echo_function("is_negative")
+    with SilentOutput():
+        pspict,fig = SinglePicture("HYVFooTHaDDQ")
+
+    A=Point(2.96406976477346*cos(-1/9*pi + 1.09432432510594),2.96406976477346*sin(-1/9*pi + 1.09432432510594))
+    B=Point(1.50000000000000*cos(0.111111111111111*pi),-1.50000000000000*sin(0.111111111111111*pi))
+    C=Point(3.00000000000000*cos(0.111111111111111*pi),-3.00000000000000*sin(0.111111111111111*pi))
+
+    rh=RightAngleAOB(A,B,C)
+    pspict.DrawGraphs(rh)
+
+
 def testPointCoordinates():
+    test_is_negative()
     test_vertical_horizontal()
     test_add_bounding_box()
     test_equalities()
