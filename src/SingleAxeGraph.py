@@ -119,7 +119,6 @@ class SingleAxeGraph(ObjectGraph):
                                                   # too much digits.
         for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,self.Dx,self.mark_origin):
             P=(x*self.base).F
-            P.psName="ForTheBar"   
             if self.numbering :
                 # The 0.2 here is hard coded in Histogram, see 71011299
 
@@ -135,7 +134,6 @@ class SingleAxeGraph(ObjectGraph):
 
             a=visual_polar(P,0.1,bar_angle,pspict)
             b=visual_polar(P,0.1,bar_angle+180,pspict)
-
             seg=Segment(a,b)
             bars_list.append(seg)
         return bars_list

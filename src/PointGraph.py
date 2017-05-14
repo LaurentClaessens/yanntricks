@@ -31,8 +31,6 @@ from Utilities import *
 from MathStructures import *
 
 class PointGraph(ObjectGraph):
-    NomPointLibre = PointsNameList()
-
     def __init__(self,a,b):
         self.x=SR(a)
         self.y=SR(b)
@@ -40,7 +38,6 @@ class PointGraph(ObjectGraph):
         self.point = self.obj
         self.add_option("PointSymbol=*")
         self._advised_mark_angle=None
-        self.psName=PointGraph.NomPointLibre.next()
         
         ax=abs(numerical_approx(self.x))
         if ax<0.00001 and ax>0 :
@@ -488,7 +485,8 @@ class PointGraph(ObjectGraph):
         #
         #       boolean
         #
-        #        This function tests exact equality (even symbolic if one needs). For
+        #        This function tests exact equality 
+        #a       (even symbolic if one needs). For
         #        numerical equality (up to some epsilon), use the function 
         #        `is_almost_equal`
 
@@ -499,9 +497,13 @@ class PointGraph(ObjectGraph):
         if not isinstance(other,PointGraph):
             return NotImplemented
 
-        if self.x == other.x and self.y==other.y :
-            return True
-        return False
+        if self.x != other.x:
+            return False
+        if self.y != other.y:
+            return False
+        return True
+    def __ne__(self,other):
+        return not self==other
     def __add__(self,v):
         """
         Addition of a point with a vector is the parallel translation,

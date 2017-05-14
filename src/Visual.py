@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from sage.all import *
@@ -28,6 +28,7 @@ def visual_length(v,l,xunit=None,yunit=None,pspict=None):
     Return a vector in the direction of v that has *visual* length
     l taking xunit and yunit into account.
     """
+    from Numerical import numerical_is_negative
     if pspict:
         xunit=pspict.xunit
         yunit=pspict.yunit
@@ -36,19 +37,22 @@ def visual_length(v,l,xunit=None,yunit=None,pspict=None):
     if not v.vertical :
         slope=v.slope
         x=l/sqrt(xunit**2+slope**2*yunit**2)
-        if Dx<0:
+
+        if numerical_is_negative(Dx):
             x=-x
         y=slope*x
     else:
         x=0
         y=l/yunit
-        if Dy<0:
+        if numerical_is_negative(Dy):
             y=-l/yunit
     if hasattr(v,"I"):
         from phystricks import AffineVector
-        from phystricks import Vector
-        return AffineVector(v.I,v.I+Vector(x,y))
+        return AffineVector(v.I,v.I+(x,y))
+        #from phystricks import Vector
+        #return AffineVector(v.I,v.I+Vector(x,y))
     else:
+        raise DeprecationWarning        # If this one never raises, one can remove also the "if hasattr"
         from phystricks import Vector
         return Vector(x,y)
 
@@ -61,8 +65,10 @@ def visual_polar(P,r,theta,pspict=None):
     xunit=pspict.xunit
     yunit=pspict.yunit
     alpha=pi*theta/180
+
     v=Vector( cos(alpha)/xunit,sin(alpha)/yunit  )
     w=visual_length(v,r,pspict=pspict)
+    
     return P+w
 
 def polar_to_visual_polar(r,theta,pspict=None):

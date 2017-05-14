@@ -24,6 +24,7 @@ from __future__ import unicode_literals
 
 class WrapperStr(object):
     def __init__(self,fun):
+        raise DeprecationWarning
         self.fun=fun
     def __call__(self,arg):
         return self.fun(str(arg))

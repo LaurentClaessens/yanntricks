@@ -84,7 +84,7 @@ def is_almost_zero(x,epsilon=0.0001):
 
 def numerical_is_negative(x):
     """
-    try to say if `x` is numerically negative.
+    try to say if `x` is a numerical approximation strictly negative.
 
     I got difficulties on the following :
     sage:radian =arctan(1/sin(1.2000000000000002*pi))
@@ -92,12 +92,12 @@ def numerical_is_negative(x):
         print("ok")
         ....:   
     results in an OverflowError: Python int too large to convert to C long.
+
     """
-    try :
-        return x.is_negative()
-    except AttributeError:
-        pass
-    if numerical_approx(x)<0:
-        return True
-    else :
-        return False
+
+    # `x.is_negative()` does not work :
+    #sage: a=-sin(0.5*pi)
+    #sage: a.is_negative()
+    #False
+    #sage: a.is_positive()
+    return numerical_approx(x)<0
