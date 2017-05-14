@@ -52,7 +52,15 @@ def no_symbol(*arg):
         except TypeError:
             l.parameters.symbol=""
 
-def get_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=None):
+def get_phystricks_version():
+    ##
+    # \brief return the version of 'phystricks'
+    with open("version.txt",r) as f:
+        version = f.readline()
+    return version
+
+def get_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,
+                                            pspict=None,pspicts=None):
     from ObjectGraph import AddedObjects
     from phystricks.src.Utilities import make_psp_list
     added1=AddedObjects()
@@ -290,8 +298,9 @@ class FigureGenerationSuite(object):
 
     ATTRIBUTES:
 
-    - ``failed_list`` - a list of tuple `(function,pspict)` where `function` is a 
-                        function that produced a :class:`PhystricksTestError` and
+    - ``failed_list`` - a list of tuple `(function,pspict)` where 
+                        `function` is a function that produced a 
+                        :class:`PhystricksTestError` and
                         pspict is the produced pspicture.
 
     """
@@ -310,12 +319,13 @@ class FigureGenerationSuite(object):
         perform the tests
         """
         Figure.send_noerror = True
-        print ""
-        print "********************************************"
-        print "*  This is the automatic figure generation"
-        print "*  for %s"%self.title
-        print "********************************************"
-        print ""
+        print("")
+        print("********************************************")
+        print("*  This is the automatic figure generation")
+        print("*  for %s"%self.title)
+        print("phystricks version : "+get_phystricks_version())
+        print("********************************************")
+        print("")
         for i in range(self.first,len(self.test_list)):
             print "--------------------------- %s : figure %s/%s (failed: %s) -------------------------------------"%(self.title,str(i+1),str(len(self.test_list)),str(len(self.failed_list)))
             print " ============= %s ============="%str(self.test_list[i])
@@ -552,5 +562,3 @@ class PspictureToOtherOutputs(object):
         commande_e = "epstopdf %s --outfile=%s"%(self.file_eps.chemin,self.file_pdf.chemin)
         print commande_e
         os.system(commande_e)
-
-import Picture
