@@ -77,8 +77,6 @@ class SingleAxeGraph(ObjectGraph):
         # The axes have to cross at (0,0)
         if self.mx>0 :
             self.mx=0
-        if self.Mx > 2:
-            raise
         return Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
     def add_option(self,opt):
         self.options.add_option(opt)
