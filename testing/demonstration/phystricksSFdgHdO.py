@@ -22,8 +22,8 @@ def SFdgHdO():
     pspict.DrawGraphs(A,B,C,D)
 
     pspict.axes.no_graduation()
-    pspict.axes.single_axeX.put_mark(dist=0.3,angle=-45,text="$K_H$",pspict=pspict)
-    pspict.DrawDefaultAxes()
+    pspict.axes.single_axeX.put_mark(dist=0.2,angle=-45,text="$K_H$",pspict=pspict)
 
+    pspict.DrawDefaultAxes()
     fig.conclude()
     fig.write_the_file()

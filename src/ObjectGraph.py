@@ -27,32 +27,16 @@ from Exceptions import ShouldNotHappenException
 from NoMathUtilities import logging
 from AddedObjects import AddedObjects
 
-from Debug import dprint
-
+##
+# This class is supposed to be used to create other "<Foo>Graph"
+# by inheritance. 
+#
+# Objects that are going to be drawn have to derive from `ObjectGraph`.
+# When creating you own class,
+# - do not override `bounding_box` nor `math_bounding_box` 
+# - create the functions `_bounding_box` and eventually `_math_bounding_box`
+# - consider the attributes `take_BB` and `take_math_BB`.
 class ObjectGraph(object):
-    """ 
-    This class is supposed to be used to create other "<Foo>Graph"
-    by inheritance. 
-
-         Marks are drawn as added objects. We keep a link to the
-         mark because some users want to modify by hand some properties 
-         of a mark.
-
-         EXAMPLE :
-
-        Let A,B,C,D,E,F be point.
-
-        poly=Polygon(A,B,C,D,E,F)
-        poly.put_mark(0.3,pspict=pspict)
-            
-        F.mark.angle=180
-        F.mark.pspict=pspict
-        F.mark.position="E"
-
-        This mechanism has one limitation : self.mark only keep the last
-        mark put on the object.
-
-    """
     def __init__(self,obj):
         self.obj = obj
         self.parameters = Parameters(self.obj)
@@ -76,9 +60,6 @@ class ObjectGraph(object):
 
         self.mark=None
 
-        # removed on March 11, 2016
-        #self.add_option("linecolor=black")
-        #self.add_option("linestyle=solid")     # only pstricks
     def draw_edges(self):
         self._draw_edges=True
     def wave(self,dx,dy):     # dx is the wave length and dy is the amplitude
@@ -188,8 +169,6 @@ class ObjectGraph(object):
             if position in ["N","S","E","W"] and angle is not None :
                 logging("When you want a position like N,S,E, or W, the mark angle should not be given.")
             self.added_objects.append(psp,mark)
-
-        dprint(mark)
 
         self.mark=mark
 

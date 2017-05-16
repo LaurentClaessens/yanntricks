@@ -33,8 +33,6 @@ from phystricks.src.Utilities import degree
 from phystricks.src.ObjectGraph import ObjectGraph
 from phystricks.src.ObjectGraph import Options
 
-from Debug import dprint,testtype
-
 class SingleAxeGraph(ObjectGraph):
     def __init__(self,C,base,mx,Mx,pspict=None):
         ObjectGraph.__init__(self,self)
@@ -71,8 +69,6 @@ class SingleAxeGraph(ObjectGraph):
             # causes bounding box to be too large.
             # This is why I return a small segment.
 
-            dprint("ici")
-                
             if projection :
                 return Segment(self.C,self.C+self.base)
             else :
@@ -81,17 +77,12 @@ class SingleAxeGraph(ObjectGraph):
         # The axes have to cross at (0,0)
         if self.mx>0 :
             self.mx=0
-        dprint("Pour la construction du segment :")
-        dprint(self.C)
-        dprint(self.Mx)
-        dprint(self.base)
         if self.Mx > 2:
             raise
         return Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
     def add_option(self,opt):
         self.options.add_option(opt)
     def mark_point(self,pspict=None):
-        dprint("Le mark_point sera",self.segment().F)
         return self.segment().F
     def no_numbering(self):
         self.numbering=False
@@ -141,7 +132,8 @@ class SingleAxeGraph(ObjectGraph):
                 if self.segment().vertical :
                     position="E"
                     mark_angle=None
-                m=P.get_mark(0.2,mark_angle,symbol,pspict=pspict,position=position)
+                m=P.get_mark(0.2,mark_angle,symbol,pspict=pspict,
+                                                    position=position)
                 bars_list.append(m)
 
             a=visual_polar(P,0.1,bar_angle,pspict)
@@ -154,19 +146,16 @@ class SingleAxeGraph(ObjectGraph):
         # we do not know if this is the vertical or horizontal axe,
         # so we cannot make the fit of the drawn objects.
         BB=self.math_bounding_box(pspict)
-        dprint(len(self.added_objects[pspict]))
+
         for graph in self.added_objects[pspict]:
-            dprint("Pour le calcul de la BB j'ajoute :")
-            testtype(graph)
             BB.append(graph,pspict)
-        dprint("Et maintenant la BB est :")
-        dprint(BB)
         return BB
     def _math_bounding_box(self,pspict):
         # The math_bounding box does not take into account the things
         # that are inside the picture (not even if this are default axes)
         bb=BoundingBox()
-        for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,self.Dx,self.mark_origin):
+        for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,
+                                            self.Dx,self.mark_origin):
             P=(x*self.base).F
             bb.addX(P.x)
             bb.addY(P.y)

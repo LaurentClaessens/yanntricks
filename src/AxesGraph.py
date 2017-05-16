@@ -93,12 +93,14 @@ class AxesGraph(ObjectGraph):
         This is only supposed to work with automatic axes because
         if assumes that these are vertical and horizontal.
         """
-        axeX=self.single_axeX
-        axeY=self.single_axeY
-        axeX.mx=min((BB.xmin-axeX.C.x)/axeX.base.F.x,axeX.mx)
-        axeX.Mx=max((BB.xmax-axeX.C.x)/axeX.base.F.x,axeX.Mx)
-        axeY.mx=min((BB.ymin-axeY.C.y)/axeY.base.F.y,axeY.mx)
-        axeY.Mx=max((BB.ymax-axeY.C.y)/axeY.base.F.y,axeY.Mx)
+        if BB.take_math_BB:
+            axeX=self.single_axeX
+            axeY=self.single_axeY
+
+            axeX.mx=min((BB.xmin-axeX.C.x)/axeX.base.F.x,axeX.mx)
+            axeX.Mx=max((BB.xmax-axeX.C.x)/axeX.base.F.x,axeX.Mx)
+            axeY.mx=min((BB.ymin-axeY.C.y)/axeY.base.F.y,axeY.mx)
+            axeY.Mx=max((BB.ymax-axeY.C.y)/axeY.base.F.y,axeY.Mx)
     def add_option(self,opt):
         self.options.add_option(opt)
     def no_graduation(self):
