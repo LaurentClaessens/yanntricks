@@ -1183,7 +1183,7 @@ def ImplicitCurve(f,xrange,yrange,plot_points=100):
 
     Using Sage's implicit_curve and matplotlib, a list of points "contained" in the curve is created. The bounding_box is calculated from that list. The pstricsk code generated will be an interpolation curve passing trough all these points.
     """
-    from phystricks.src.BasicGeometricObjects import GeometricImplicitCurve
+    from phystricks.src.ImplicitCurve import GeometricImplicitCurve
     return GeometricImplicitCurve(f).graph(xrange,yrange,plot_points=100)
 
 class ObliqueProjection(object):
@@ -1196,7 +1196,8 @@ class ObliqueProjection(object):
         from phystricks.src.MathStructures import AngleMeasure
         self.k=k
         if self.k>=1 :
-            print "Are you sure that you want such a scale factor : ",float(self.k)
+            print("Are you sure that you want such a scale factor : ",
+                                                        float(self.k))
         self.alpha=alpha
         a=AngleMeasure(value_degree=self.alpha).positive()
         self.alpha=a.degree

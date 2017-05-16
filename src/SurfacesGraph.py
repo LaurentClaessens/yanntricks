@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from __future__ import division
@@ -58,12 +58,12 @@ class SurfaceBetweenLines(ObjectGraph):
 
         self.Isegment=Segment(self.I1,self.I2)
         self.Fsegment=Segment(self.F1,self.F2)
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         bb=BoundingBox()
         bb.append(self.curve1,pspict)
         bb.append(self.curve2,pspict)
         return bb
-    def math_bounding_box(self,pspict):
+    def _math_bounding_box(self,pspict):
         return self.bounding_box(pspict)
     def latex_code(self,language=None,pspict=None):
         a=[]
@@ -128,14 +128,14 @@ class SurfaceBetweenParametricCurvesGraph(ObjectGraph):
         self.add_option("fillstyle=vlines") 
         self.parameters.color=None       
 
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         if pspict==None:
             raise ValueError, "You have to provide a pspict"
         bb=BoundingBox()
         bb.append(self.curve1,pspict)
         bb.append(self.curve2,pspict)
         return bb
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def action_on_pspict(self,pspict=None):
         c1=self.curve1.graph(self.mx1,self.Mx1)

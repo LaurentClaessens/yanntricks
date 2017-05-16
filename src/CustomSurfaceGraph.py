@@ -38,12 +38,12 @@ class CustomSurfaceGraph(ObjectGraph):
         self.graphList=args
         self.edges=Parameters()
 
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         bb=BoundingBox()
         for obj in self.graphList :
             bb.AddBB(obj.bounding_box(pspict))
         return bb
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         bb=BoundingBox()
         for obj in self.graphList :
             bb.AddBB(obj.math_bounding_box(pspict=pspict))

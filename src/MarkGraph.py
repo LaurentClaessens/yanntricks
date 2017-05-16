@@ -26,13 +26,16 @@ from phystricks.src.NoMathUtilities import logging
 
 from phystricks.src.ObjectGraph import ObjectGraph
 
+        ## The marks are not taken into account in the computation of the
+        # mathematical bounding box. In particular not for the computations
+        # of the axes size.
+        # See also `AxesGraph.add_bounding_box`
 class MarkGraph(ObjectGraph):
     def __init__(self,graph,dist,angle,text,mark_point=None,central_point=None,position=None,pspict=None):
-        """
-        Internally, the angle is recorded as 'AngleMeasure'.
-        """
-
         ObjectGraph.__init__(self,self)
+
+        self.take_math_BB=False 
+                                
         self._central_point=central_point
         self.mark_point=mark_point
         self.graph = graph

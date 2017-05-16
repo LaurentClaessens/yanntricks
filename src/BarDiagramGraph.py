@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from ObjectGraph import ObjectGraph
@@ -57,12 +57,12 @@ class BarDiagramGraph(ObjectGraph):
             pspict.DrawGraphs(l)
         for P in self.numbering_marks(pspict):
             pspict.DrawGraphs(P)
-    def math_bounding_box(self,pspict):
+    def _math_bounding_box(self,pspict):
         bb=BoundingBox()
         for l in self.lines_list:
             bb.append(l,pspict)
         return bb
-    def bounding_box(self,pspict):
+    def _bounding_box(self,pspict):
         bb=self.math_bounding_box(pspict)
         for P in self.numbering_marks(pspict):
             bb.append(P,pspict)

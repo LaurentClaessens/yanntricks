@@ -63,11 +63,12 @@ class SingleAxeGraph(ObjectGraph):
     def segment(self,projection=False,pspict=None):
         if self.mx == 0 and self.Mx == 0 :
             # I think that we only pass here in order either to do 
-            #a projection either to create an initial bounding box.
+            # a projection either to create an initial bounding box.
             # If xunit or yunit are very low, then returning something like
             #   Segment(self.C-self.base.visual_length(1,pspict=pspict),self.C+self.base.visual_length(1,pspict=pspict))      
             # causes bounding box to be too large.
             # This is why I return a small segment.
+
             if projection :
                 return Segment(self.C,self.C+self.base)
             else :
@@ -129,7 +130,8 @@ class SingleAxeGraph(ObjectGraph):
                 if self.segment().vertical :
                     position="E"
                     mark_angle=None
-                m=P.get_mark(0.2,mark_angle,symbol,pspict=pspict,position=position)
+                m=P.get_mark(0.2,mark_angle,symbol,pspict=pspict,
+                                                    position=position)
                 bars_list.append(m)
 
             a=visual_polar(P,0.1,bar_angle,pspict)
@@ -137,19 +139,21 @@ class SingleAxeGraph(ObjectGraph):
             seg=Segment(a,b)
             bars_list.append(seg)
         return bars_list
-    def bounding_box(self,pspict):
+    def _bounding_box(self,pspict):
         # One cannot take into account the small enlarging here because
         # we do not know if this is the vertical or horizontal axe,
         # so we cannot make the fit of the drawn objects.
         BB=self.math_bounding_box(pspict)
+
         for graph in self.added_objects[pspict]:
             BB.append(graph,pspict)
         return BB
-    def math_bounding_box(self,pspict):
+    def _math_bounding_box(self,pspict):
         # The math_bounding box does not take into account the things
         # that are inside the picture (not even if this are default axes)
         bb=BoundingBox()
-        for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,self.Dx,self.mark_origin):
+        for x,symbol in self.axes_unit.place_list(self.mx,self.Mx,
+                                            self.Dx,self.mark_origin):
             P=(x*self.base).F
             bb.addX(P.x)
             bb.addY(P.y)

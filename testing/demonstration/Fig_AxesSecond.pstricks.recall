@@ -91,10 +91,10 @@
 \draw []  (2.800000000,1.904301501) node [rotate=0] {$\bullet$};
 \draw []  (3.200000000,2.375567953) node [rotate=0] {$\bullet$};
 \draw []  (3.600000000,2.942174288) node [rotate=0] {$\bullet$};
-\draw (4.910027569,-0.2838910344) node {\( x\)};
-\draw (4.910027569,-0.2838910344) node {\( x\)};
-\draw (1.133229000,3.708840955) node {\( y=\sinh(x)\)};
-\draw (1.133229000,3.708840955) node {\( y=\sinh(x)\)};
+\draw (4.407386534,-0.2838910344) node {\( x\)};
+\draw (4.407386534,-0.2838910344) node {\( x\)};
+\draw (1.133229000,3.442174288) node {\( y=\sinh(x)\)};
+\draw (1.133229000,3.442174288) node {\( y=\sinh(x)\)};
 %OTHER STUFF
 %END PSPICTURE
 \end{tikzpicture}

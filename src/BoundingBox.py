@@ -142,7 +142,7 @@ class BoundingBox_class(ObjectGraph):
         self.ymin = numerical_min(self.ymin,bb.ymin)
         self.xmax = numerical_max(self.xmax,bb.xmax)
         self.ymax = numerical_max(self.ymax,bb.ymax)
-    def append(self,graph,pspict="ddd"):
+    def append(self,graph,pspict=None):
         if isinstance(graph,list):
             raise KeyError,"%s is a list"%graph
         if not pspict :
@@ -150,8 +150,10 @@ class BoundingBox_class(ObjectGraph):
             raise MissingPictureException("You should provide a pspict in order to add this object to a bounding box.")
 
         if self.math:
+            bb=graph.math_bounding_box(pspict=pspict)
             self.AddBB(graph.math_bounding_box(pspict=pspict))
         else :
+            bb=graph.bounding_box(pspict=pspict)
             self.AddBB(graph.bounding_box(pspict=pspict))
     def add_math_graph(self,graphe,pspict=None):
         try :

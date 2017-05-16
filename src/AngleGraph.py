@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from __future__ import division
@@ -86,9 +86,9 @@ class AngleGraph(ObjectGraph):
         theta is degree or AngleMeasure
         """
         self._mark_angle=AngleMeasure(value_degree=theta)
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         C= self.circle(visual=True,pspict=pspict)
         bb=C.bounding_box(pspict)
         return self.circle(visual=True,pspict=pspict).bounding_box(pspict)
@@ -425,9 +425,9 @@ class RightAngleGraph(ObjectGraph):
         l1.parameters=self.parameters.copy()
         l2.parameters=self.parameters.copy()
         pspict.DrawGraphs(l1,l2)
-    def bounding_box(self,pspict):
+    def _bounding_box(self,pspict):
         return BoundingBox()
-    def math_bounding_box(self,pspict):
+    def _math_bounding_box(self,pspict):
         return BoundingBox()
     def latex_code(self,language=None,pspict=None):
         return ""
