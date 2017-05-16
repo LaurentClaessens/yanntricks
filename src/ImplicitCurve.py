@@ -24,6 +24,101 @@
 from __future__ import division
 from __future__ import unicode_literals
 
+from sage.all import *
+
+from phystricks.src.ObjectGraph import ObjectGraph
+from Constructors import *
+from Parameters import Parameters
+
+
+def get_paths_from_plot(p):
+    """
+    return the paths (in the sense of matplotlib) contained in the plot object p.
+
+    The paths here are paths in the sense of matplotlib; the elements are vertices.
+    Not to be confused with get_paths_from_implicit_plot in which the basic elements
+    are points.
+
+    INPUT:
+    - ``p`` - a plot object
+
+    EXAMPLES:
+    sage: from phystricks import *
+    sage: from phystricks.BasicGeometricObjects import *
+    sage: x,y=var('x,y')
+    sage: F=implicit_plot(x**2+y**2==2,(x,-5,5),(y,-5,5))
+    sage: g=get_paths_from_plot(F)
+    sage: print type(g[0])
+    <class 'matplotlib.path.Path'>
+
+    NOTE:
+    The first version of the function is due to the DSM here:
+    http://ask.sagemath.org/question/359/get_minmax_data-on-implicit_plot
+    """
+    import matplotlib.path
+    m = p.matplotlib()
+    sp = m.get_children()[1]
+    ll=[]
+    for c in sp.get_children():
+        # not sure if I need to test for both or not? don't understand
+        # matplotlib internals well enough to know if every Line2D
+        # will be in some LineCollection and so this is pure duplication (probably)
+        if isinstance(c, matplotlib.lines.Line2D):
+            ll.append(c.get_path())
+        elif isinstance(c, matplotlib.collections.LineCollection):
+            for path in c.get_paths():
+                ll.append(path)
+    return ll
+
+def get_paths_from_implicit_plot(p):
+    """
+    Return a list of list of points from an implicit plot.
+
+    Each list correspond to a path.
+
+    INPUT:
+
+    - ``p`` an implicit plot.
+
+    OUTPUT:
+
+    A list of lists of points. Each list corresponds to a path (see matplotlib), but the components are converted into points in the sens of phystricks (instead of matplotlib's vertices).
+
+    EXAMPLES:
+
+    The length of the list can be quite long::
+
+        sage: from phystricks import *
+        sage: from phystricks.BasicGeometricObjects import *
+        sage: x,y=var('x,y')
+        sage: F=implicit_plot(x**2+y**2==2,(x,-5,5),(y,-5,5))
+        sage: len(get_paths_from_implicit_plot(F)[0])
+        169
+
+    When you have more than one connected component, you see it ::
+
+        sage: F=implicit_plot(x**2-y**2==2,(x,-5,5),(y,-5,5))
+        sage: paths=get_paths_from_implicit_plot(F)
+        sage: len(paths)
+        4
+        sage: type(paths[0][1])
+        <class 'phystricks.BasicGeometricObjects.PointGraph'>
+        sage: print paths[0][3]
+        <Point(4.87405534614323,-4.6644295302013425)>
+        sage: print paths[1][3]
+        <Point(4.87405534614323,-4.6644295302013425)>
+        sage: print paths[2][3]
+        <Point(4.87405534614323,-4.6644295302013425)>
+        sage: print paths[3][3]
+        <Point(4.87405534614323,-4.6644295302013425)>
+    """
+    l=[]
+    for path in get_paths_from_plot(p):
+        pp=[]
+        for vertice in path.vertices:
+            pp.append(Point(vertice[0],vertice[1]))
+        l.append(pp)
+    return l
 
 class GeometricImplicitCurve(object):
     """
@@ -51,7 +146,8 @@ class GeometricImplicitCurve(object):
         if is_SymbolicEquation(f):
             if f.operator() != operator.eq:
                 raise ValueError, "input to implicit plot must be function or equation"
-            self.f = f.lhs() - f.rhs()          # At this point self.f is the expression to be equated to zero.
+            # At this point self.f is the expression to be equated to zero.
+            self.f = f.lhs() - f.rhs()         
     def graph(self,xrange,yrange,plot_points=100):
         """
         Return the graph corresponding to the implicit curve.
