@@ -133,6 +133,7 @@ figures_list_1.append(<++>)
 """
 
 figures_list_2=[]
+figures_list_2.append(SFdgHdO)
 figures_list_2.append(PJKBooOhGVPkeR)
 figures_list_2.append(TRJEooPRoLnEiG)
 figures_list_2.append(CUZFooGqZLaAEp)

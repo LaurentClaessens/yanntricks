@@ -20,9 +20,9 @@ for filename in pstricks_files_iterator():
         with open(filename+".recall",'r') as f:
             recall_text=f.read()
     except FileNotFoundError as err :
-        print(err)
+        print("No recall file for ",filename)
         print("See 'phystricks/testing/README.md' to know how to use 'test_recall.py'")
-        raise
+        recall_text=""
 
     if get_text != recall_text :
         print("Wrong : "+filename)
