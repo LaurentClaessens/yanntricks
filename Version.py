@@ -1,1 +1,1 @@
-version="debug2"
+version="debug"
