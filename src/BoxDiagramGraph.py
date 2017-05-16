@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from ObjectGraph import ObjectGraph
@@ -57,9 +57,9 @@ class BoxDiagramGraph(ObjectGraph):
         pspict.DrawGraphs(h1,h2,s1,box,med,s2,ave)
     def mark_point(self,pspict=None):
         return Point(self.maximum,self.delta_y)
-    def math_bounding_box(self,pspict):
+    def _math_bounding_box(self,pspict):
         return self.bounding_box(pspict)
-    def bounding_box(self,pspict):
+    def _bounding_box(self,pspict):
         bb=BoundingBox()
         bb.addX(self.minimum)
         bb.addX(self.maximum)

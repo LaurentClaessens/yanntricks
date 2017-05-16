@@ -54,7 +54,7 @@ class HistogramBox(ObjectGraph):
         return rect
     def action_on_pspict(self,pspict=None):
         pspict.DrawGraphs(self.rectangle)
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         return self.rectangle.bounding_box(pspict)
 
 class HistogramGraph(ObjectGraph):
@@ -136,10 +136,10 @@ class HistogramGraph(ObjectGraph):
             P.parameters.symbol=""
             pspict.DrawGraphs(P)
             pspict.DrawGraphs(box)
-    def bounding_box(self,pspict):
+    def _bounding_box(self,pspict):
         bb=BoundingBox()
         for b in self.box_list:
             bb.append(b,pspict)
         return bb
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict=pspict)

@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from sage.all import *
@@ -41,11 +41,11 @@ class MeasureLengthGraph(SegmentGraph):
         self.mF=self.mseg.F
     def advised_mark_angle(self,pspict=None):
         return self.delta.angle()
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         return BoundingBox()
         # I return a "empty" bounding box because I don't want to
         # take the measures in consideration when creating the axes.
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         bb=self.mseg.bounding_box(pspict)
         return bb
     def mark_point(self,pspict=None):

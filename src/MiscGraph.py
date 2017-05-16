@@ -48,7 +48,7 @@ class FractionPieDiagramGraph(ObjectGraph):
             cs.parameters.fill.color="lightgray"
             self._circular_sector=cs
         return self._circular_sector
-    def bounding_box(self,pspict):
+    def _bounding_box(self,pspict):
         return self.circle.bounding_box(pspict)
     def action_on_pspict(self,pspict):
         if self.denominator==self.numerator:

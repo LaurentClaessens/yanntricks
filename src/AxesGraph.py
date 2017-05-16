@@ -93,12 +93,14 @@ class AxesGraph(ObjectGraph):
         This is only supposed to work with automatic axes because
         if assumes that these are vertical and horizontal.
         """
-        axeX=self.single_axeX
-        axeY=self.single_axeY
-        axeX.mx=min((BB.xmin-axeX.C.x)/axeX.base.F.x,axeX.mx)
-        axeX.Mx=max((BB.xmax-axeX.C.x)/axeX.base.F.x,axeX.Mx)
-        axeY.mx=min((BB.ymin-axeY.C.y)/axeY.base.F.y,axeY.mx)
-        axeY.Mx=max((BB.ymax-axeY.C.y)/axeY.base.F.y,axeY.Mx)
+        if BB.take_math_BB:
+            axeX=self.single_axeX
+            axeY=self.single_axeY
+
+            axeX.mx=min((BB.xmin-axeX.C.x)/axeX.base.F.x,axeX.mx)
+            axeX.Mx=max((BB.xmax-axeX.C.x)/axeX.base.F.x,axeX.Mx)
+            axeY.mx=min((BB.ymin-axeY.C.y)/axeY.base.F.y,axeY.mx)
+            axeY.Mx=max((BB.ymax-axeY.C.y)/axeY.base.F.y,axeY.Mx)
     def add_option(self,opt):
         self.options.add_option(opt)
     def no_graduation(self):
@@ -107,7 +109,7 @@ class AxesGraph(ObjectGraph):
     def no_numbering(self):
         self.single_axeX.no_numbering()
         self.single_axeY.no_numbering()
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         """
         return the bounding box of the axes.
 
@@ -123,7 +125,7 @@ class AxesGraph(ObjectGraph):
         self.add_bounding_box(BB,pspict)   # Updates the single axes taking the content of pspict into account.
         BB.check_too_large()
         return BB
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         BB=BoundingBox()
         BB.append(self.single_axeX.math_bounding_box(pspict),pspict=pspict)
         BB.append(self.single_axeY.math_bounding_box(pspict),pspict=pspict)

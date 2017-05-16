@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from sage.all import *
@@ -93,9 +93,9 @@ class SudokuGridGraph(ObjectGraph):
                     A.put_mark(0,0,c,pspict=pspict)
                 content.append(A)
         pspict.DrawGraphs(vlines,hlines,content,numbering)
-    def math_bounding_box(self,pspict):
+    def _math_bounding_box(self,pspict):
         return BoundingBox()
-    def bounding_box(self,pspict):
+    def _bounding_box(self,pspict):
         return BoundingBox()
     def latex_code(self,language=None,pspict=None):
         return ""

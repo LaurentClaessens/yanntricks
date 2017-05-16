@@ -5,6 +5,7 @@ import sys
 from phystricks import *
 
 from phystricksCornetGlace import CornetGlace
+from phystricksSFdgHdO import SFdgHdO
 from phystricksNWAEooQBLYYrpS import NWAEooQBLYYrpS
 from phystricksProjPoly import ProjPoly
 from phystricksEDEYRhQ import EDEYRhQ
@@ -126,6 +127,7 @@ figures_list_1.append(OMPAooMbyOIqeA)
 figures_list_1.append(FMLCooxHtqRzUz)
 figures_list_1.append(EXIIooJzzoJeai)
 figures_list_1.append(CornetGlace)
+figures_list_1.append(SFdgHdO)
 """
 figures_list_1.append(<++>)
 figures_list_1.append(<++>)

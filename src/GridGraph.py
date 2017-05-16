@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2016
+# copyright (c) Laurent Claessens, 2009-2017
 # email: laurent@claessens-donadello.eu
 
 from sage.all import *
@@ -81,9 +81,9 @@ class GridGraph(ObjectGraph):
         self.border = Segment(Point(0,1),Point(1,1))
         self.border.parameters.color = "gray"
         self.border.parameters.style = "dotted"
-    def bounding_box(self,pspict=None):     # This method is for the sake of "Special cases aren't special enough to break the rules."
+    def _bounding_box(self,pspict=None):     # This method is for the sake of "Special cases aren't special enough to break the rules."
         return self.BB
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def add_option(self,opt):
         self.options.add_option(opt)
