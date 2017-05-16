@@ -70,11 +70,11 @@ class TextGraph(ObjectGraph):
         self.rectangle.parameters.style="none"
     def mark_point(self,pspict=None):
         return self.P
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         # a text has no math_bounding_box because the axes do not want to fit them.
         #return self.mark.math_bounding_box(pspict)         # June 1, 2015
         return BoundingBox()
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         return self.mark.bounding_box(pspict)
     def latex_code(self,language=None,pspict=None):
         a=[]
@@ -316,9 +316,9 @@ class VectorFieldGraph(ObjectGraph,GeometricVectorField):
         l.sort()
         return l
 
-    def math_bounding_box(self,pspict):
+    def _math_bounding_box(self,pspict):
         return self.bounding_box(pspict)
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         bb = BoundingBox()
         for v in self.draw_vectors:
             bb.append(v,pspict)

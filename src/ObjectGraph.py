@@ -27,6 +27,8 @@ from Exceptions import ShouldNotHappenException
 from NoMathUtilities import logging
 from AddedObjects import AddedObjects
 
+from Debug import dprint
+
 class ObjectGraph(object):
     """ 
     This class is supposed to be used to create other "<Foo>Graph"
@@ -186,6 +188,8 @@ class ObjectGraph(object):
             if position in ["N","S","E","W"] and angle is not None :
                 logging("When you want a position like N,S,E, or W, the mark angle should not be given.")
             self.added_objects.append(psp,mark)
+
+        dprint(mark)
 
         self.mark=mark
 

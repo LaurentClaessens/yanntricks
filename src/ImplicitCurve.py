@@ -174,7 +174,7 @@ class ImplicitCurveGraph(ObjectGraph,GeometricImplicitCurve):
         return self.get_minmax_data()['ymin']
     def ymax(self):
         return self.get_minmax_data()['ymax']
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         """
         Return the bounding box of the implicit curve.
 
@@ -197,7 +197,7 @@ class ImplicitCurveGraph(ObjectGraph,GeometricImplicitCurve):
         """
         bb = BoundingBox( Point(self.xmin(),self.ymin()),Point(self.xmax(),self.ymax())  )
         return bb
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def latex_code(self,language=None,pspict=None):
         """

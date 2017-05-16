@@ -305,9 +305,9 @@ class CircleGraph(GenericCurve,ObjectGraph):
 
         """
         return Circle(self.center,self.radius)
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         if not pspict:
             raise TypeError,"You have to pass a pspict in order to compute the bounding box"
         a=simplify_degree(self.angleI,keep_max=True,number=True)

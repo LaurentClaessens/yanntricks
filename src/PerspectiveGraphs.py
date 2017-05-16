@@ -86,9 +86,9 @@ class Circle3DGraph(ObjectGraph):
         C = Circle3DGraph(self.op,self.O,self.A,self.B,angleI,angleF)
         C.parameters=self.parameters.copy()
         return C
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         return self.curve2d.bounding_box(pspict)
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         return self.curve2d.math_bounding_box(pspict)
     def action_on_pspict(self,pspict):
         if not self.divide:
@@ -155,14 +155,14 @@ class CuboidGraph(ObjectGraph):
         self.H.put_mark(0.2,135,"\( H\)",pspict=pspict)
     def make_opaque(self):
         self.transparent=False
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         bb=BoundingBox()
         for s in self.c1:
             bb.append(s,pspict)
         for s in self.c2:
             bb.append(s,pspict)
         return bb
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def action_on_pspict(self,pspict):
         for P in self.c1:

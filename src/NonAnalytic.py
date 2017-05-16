@@ -60,9 +60,9 @@ class NonAnalyticParametricCurveGraph(ObjectGraph):
         f1=lambda x:self.f1(self.mx+self.Mx-x)
         f2=lambda x:self.f2(self.mx+self.Mx-x)
         return NonAnalyticParametricCurve(f1,f2,self.mx,self.Mx)
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         return self.curve().math_bounding_box(pspict)
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         return self.curve().bounding_box(pspict)
     def latex_code(self,language=None,pspict=None):
         return self.curve().latex_code(language=language,pspict=pspict)
@@ -101,9 +101,9 @@ class NonAnalyticPointParametricCurveGraph(ObjectGraph):
         """
         f1=lambda x:self.f(self.mx+self.Mx-x)
         return NonAnalyticPointParametricCurve(f1,self.mx,self.Mx)
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         return self.curve().math_bounding_box(pspict)
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         return self.curve().bounding_box(pspict)
     def latex_code(self,language=None,pspict=None):
         return self.curve().latex_code(language=language,pspict=pspict)
@@ -151,13 +151,13 @@ class NonAnalyticFunctionGraph(ObjectGraph):
         return general_function_get_point(self,x,advised=False)
     def graph(self,mx,Mx):
         return NonAnalyticFunction(self.fun,mx,Mx)
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         xmin=self.get_minmax_data(self.mx,self.Mx)["xmin"]
         xmax=self.get_minmax_data(self.mx,self.Mx)["xmax"]
         ymin=self.get_minmax_data(self.mx,self.Mx)["ymin"]
         ymax=self.get_minmax_data(self.mx,self.Mx)["ymax"]
         return BoundingBox(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax)
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         return self.math_bounding_box(pspict)
     def latex_code(self,language=None,pspict=None):
         return self.curve(self.drawpoints).latex_code(language=language,pspict=pspict)

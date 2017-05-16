@@ -107,7 +107,7 @@ class AxesGraph(ObjectGraph):
     def no_numbering(self):
         self.single_axeX.no_numbering()
         self.single_axeY.no_numbering()
-    def bounding_box(self,pspict=None):
+    def _bounding_box(self,pspict=None):
         """
         return the bounding box of the axes.
 
@@ -123,7 +123,7 @@ class AxesGraph(ObjectGraph):
         self.add_bounding_box(BB,pspict)   # Updates the single axes taking the content of pspict into account.
         BB.check_too_large()
         return BB
-    def math_bounding_box(self,pspict=None):
+    def _math_bounding_box(self,pspict=None):
         BB=BoundingBox()
         BB.append(self.single_axeX.math_bounding_box(pspict),pspict=pspict)
         BB.append(self.single_axeY.math_bounding_box(pspict),pspict=pspict)

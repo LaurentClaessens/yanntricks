@@ -33,6 +33,8 @@ from phystricks.src.Utilities import degree
 from phystricks.src.ObjectGraph import ObjectGraph
 from phystricks.src.ObjectGraph import Options
 
+from Debug import dprint,testtype
+
 class SingleAxeGraph(ObjectGraph):
     def __init__(self,C,base,mx,Mx,pspict=None):
         ObjectGraph.__init__(self,self)
@@ -63,11 +65,14 @@ class SingleAxeGraph(ObjectGraph):
     def segment(self,projection=False,pspict=None):
         if self.mx == 0 and self.Mx == 0 :
             # I think that we only pass here in order either to do 
-            #a projection either to create an initial bounding box.
+            # a projection either to create an initial bounding box.
             # If xunit or yunit are very low, then returning something like
             #   Segment(self.C-self.base.visual_length(1,pspict=pspict),self.C+self.base.visual_length(1,pspict=pspict))      
             # causes bounding box to be too large.
             # This is why I return a small segment.
+
+            dprint("ici")
+                
             if projection :
                 return Segment(self.C,self.C+self.base)
             else :
@@ -76,10 +81,17 @@ class SingleAxeGraph(ObjectGraph):
         # The axes have to cross at (0,0)
         if self.mx>0 :
             self.mx=0
+        dprint("Pour la construction du segment :")
+        dprint(self.C)
+        dprint(self.Mx)
+        dprint(self.base)
+        if self.Mx > 2:
+            raise
         return Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
     def add_option(self,opt):
         self.options.add_option(opt)
     def mark_point(self,pspict=None):
+        dprint("Le mark_point sera",self.segment().F)
         return self.segment().F
     def no_numbering(self):
         self.numbering=False
@@ -137,15 +149,20 @@ class SingleAxeGraph(ObjectGraph):
             seg=Segment(a,b)
             bars_list.append(seg)
         return bars_list
-    def bounding_box(self,pspict):
+    def _bounding_box(self,pspict):
         # One cannot take into account the small enlarging here because
         # we do not know if this is the vertical or horizontal axe,
         # so we cannot make the fit of the drawn objects.
         BB=self.math_bounding_box(pspict)
+        dprint(len(self.added_objects[pspict]))
         for graph in self.added_objects[pspict]:
+            dprint("Pour le calcul de la BB j'ajoute :")
+            testtype(graph)
             BB.append(graph,pspict)
+        dprint("Et maintenant la BB est :")
+        dprint(BB)
         return BB
-    def math_bounding_box(self,pspict):
+    def _math_bounding_box(self,pspict):
         # The math_bounding box does not take into account the things
         # that are inside the picture (not even if this are default axes)
         bb=BoundingBox()
