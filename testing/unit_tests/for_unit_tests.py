@@ -94,6 +94,11 @@ def testVectorConstructor():
     assert_equal(v2.I,O)
     assert_equal(v3.I,O)
 
+from testParametricCurve import testParametricCurve
+print("testParametricCurve")
+testParametricCurve()
+
+
 from testPointCoordinates import testPointCoordinates
 print("testPointCoordinates")
 testPointCoordinates()
