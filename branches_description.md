@@ -69,3 +69,8 @@ Remove some useless code :
 - the old "test" functionality that compares files "up to epsilon" in the numbers
 - the class File
 - the references to dvi, eps and so on.
+
+# debug2
+
+other debug from the pictures of mazhe.
+
