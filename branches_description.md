@@ -61,7 +61,9 @@ So each object will keep its own list of bounding boxes.
 
 # debug
 
-Debugging some pictures that do not work anymore since the last change.
+- Debugging some pictures that do not work anymore since the last change.
+- Debugging the pictures from mazhe
+- Debugging the pictures from smath
 
 #remove_bloat
 
