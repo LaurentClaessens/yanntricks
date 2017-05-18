@@ -10,7 +10,7 @@ def RJDEoobOibtkfv():
     section=pspict.auxiliary_file.get_counter_value("section",default_value=1)
     page=pspict.auxiliary_file.get_counter_value("page")
     
-    # You compute with is as normal Python float
+    # You compute with it as normal Python float
     xmax=5/section
     pspict.dilatation_X(10/xmax)
 
