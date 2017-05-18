@@ -89,7 +89,8 @@ The LaTeX code inserted in your picture is compiled by LaTeX in the same time as
 
 For more informations you can read the documentation. An look at the real live examples :
 
-* [the documentation](http://laurent.claessens-donadello.eu/pdf/phystricks-doc.pdf)
+* [the user manual](http://laurent.claessens-donadello.eu/pdf/phystricks-doc.pdf)
+* [The documentation](http://laurent.claessens-donadello.eu/phystricks/html/index.html) by Doxygen
 * [the demonstrative document](http://laurent.claessens-donadello.eu/pdf/phystricks-demo.pdf)
 * the pictures in [mazhe](http://laurent.claessens-donadello.eu/pdf/mazhe.pdf), download the sources at [github](https://github.com/LaurentClaessens/mazhe)
 * the pictures in [smath](http://laurent.claessens-donadello.eu/pdf/smath.pdf), download the sources at [github](https://github.com/LaurentClaessens/smath)
