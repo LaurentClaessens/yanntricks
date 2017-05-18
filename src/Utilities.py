@@ -186,6 +186,32 @@ def Intersection(f,g,a=None,b=None,numerical=False):
             pts.append(Point(a,b))
     return pts
 
+## \brief The intersection between the line from the given point and
+# the center of the given box.
+#
+# \arg P : a point
+# \arg box : a box, which means a duck which has attributes 
+#               `xmin`, `xmax`, `ymin`, `ymax`
+#
+# Consider the line from `P` to the center of the box and return the intersection
+# points. 
+#
+# \return a list of `Point`.
+#
+# - The list can contain `0`, `1` or `2` points.
+# - If there are two intersection points (the generic case), they are sorted by
+#   distance from `P`.
+# - If the line is is aligned with an edge (so : infinitely many
+#   intersection points), the two vertices are returned.
+def point_to_box_intersection(P,box):
+    A=Point(xmin,ymin)
+    B=Point(xmax,ymin)
+    C=Point(xmax,ymax)
+    D=Point(xmin,ymax)
+    # n'écrivez pas ça au tableau quand un inspecteur est dans la salle :
+    center=(A+B+C+D)/4
+    line=Segment(P,center)
+
 def PointToPolaire(P=None,x=None,y=None,origin=None,numerical=True):
     """
     Return the polar coordinates of a point.

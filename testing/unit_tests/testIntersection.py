@@ -92,7 +92,16 @@ def lines_and_functions():
     for t in zip(pts,ans):
         assert_almost_equal( t[0],t[1] )
 
+def with_box():
+    echo_function("with_box")
+    P=Point(2,2)
+    box=BoundingBox(xmin=2,ymin=3,xmax=6,ymax,4)
+    for Q in point_to_box_intersection(P,box):
+        print(Q)
+    assert_true(False)
+    
 
 def testIntersection():
+    with_box()
     with_lagrange()
     lines_and_functions()
