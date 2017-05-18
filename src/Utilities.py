@@ -61,13 +61,13 @@ def test_imaginary_part_point(P,epsilon=0.0001):
         on=True
     return on,Point(x,y)
 
-def Distance_sq(P,Q):
+def distance_sq(P,Q):
     """ return the squared distance between P and Q """
     return (P.x-Q.x)**2+(P.y-Q.y)**2
 
-def Distance(P,Q):
+def distance(P,Q):
     """ return the distance between P and Q """
-    return sqrt(Distance_sq(P,Q))
+    return sqrt(distance_sq(P,Q))
 
 def inner_product(v,w,numerical=True):
     """
