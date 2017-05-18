@@ -20,6 +20,8 @@
 # copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
+from __future__ import division
+
 from sage.all import *
 from phystricks.src.Constructors import *
 from phystricks.src.MathStructures import *
@@ -44,7 +46,6 @@ def test_imaginary_part(z,epsilon=0.0001):
     if is_real(k):
         return True,k
     if abs( k.imag_part() )<epsilon:
-        #print("I am removing a (probably fake) imaginary part")
         return True,numerical_approx( z.real_part() )
     print("It seems that an imaginary part is not so small.")
     return False,z
@@ -198,19 +199,48 @@ def Intersection(f,g,a=None,b=None,numerical=False):
 #
 # \return a list of `Point`.
 #
-# - The list can contain `0`, `1` or `2` points.
-# - If there are two intersection points (the generic case), they are sorted by
-#   distance from `P`.
-# - If the line is is aligned with an edge (so : infinitely many
-#   intersection points), the two vertices are returned.
-def point_to_box_intersection(P,box):
-    A=Point(xmin,ymin)
-    B=Point(xmax,ymin)
-    C=Point(xmax,ymax)
-    D=Point(xmin,ymax)
+# - The list always contains exactly 2 points
+# - They are sorted by order of distance to `P`
+def point_to_box_intersection(P,box,pspict=None):
+    from phystricks.src.Utilities import distance_sq
+    A=Point(box.xmin,box.ymin)
+    B=Point(box.xmax,box.ymin)
+    C=Point(box.xmax,box.ymax)
+    D=Point(box.xmin,box.ymax)
     # n'écrivez pas ça au tableau quand un inspecteur est dans la salle :
     center=(A+B+C+D)/4
     line=Segment(P,center)
+
+    edges=[Segment(A,B),Segment(B,C),Segment(C,D),Segment(D,A)]
+    inter=[]
+    for ed in edges:
+        S=Intersection(line,ed)[0]
+
+        # We deal with the case in which the line travers the corner.
+        # In this case, the line passes trough the other one.
+        if S==A:
+            inter=[A,C]
+        if S==B:
+            inter=[B,D]
+        if S==C:
+            inter=[A,C]
+        if S==D:
+            inter=[B,D]
+        elif (S.x-ed.I.x)*(S.x-ed.F.x)<0:
+            inter.append(S)
+
+    if len(inter)==2:
+        inter.sort(key=lambda Q:distance_sq(Q,P))
+    else :
+        print(len(inter))
+        #raise ShouldNotHappenException()
+
+    if pspict:
+        for i,S in enumerate(inter):
+            S.put_mark(0.2,angle=None,added_angle=0,text=str(i),pspict=pspict)
+        pspict.DrawGraphs(inter,line,center,box)
+
+    return inter
 
 def PointToPolaire(P=None,x=None,y=None,origin=None,numerical=True):
     """

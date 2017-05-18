@@ -4,7 +4,11 @@
 import sys
 from phystricks import *
 
+# Note : il faudra enlever la figure BOVA lorsqu'elle sera entièrement
+# passée en tests unitaires.
+
 from phystricksCornetGlace import CornetGlace
+from phystricksECQDooWEpuCM import ECQDooWEpuCM
 from phystricksSFdgHdO import SFdgHdO
 from phystricksNWAEooQBLYYrpS import NWAEooQBLYYrpS
 from phystricksProjPoly import ProjPoly
@@ -128,7 +132,10 @@ figures_list_1.append(FMLCooxHtqRzUz)
 figures_list_1.append(EXIIooJzzoJeai)
 figures_list_1.append(CornetGlace)
 figures_list_1.append(SFdgHdO)
+figures_list_1.append(ECQDooWEpuCM)
 """
+figures_list_1.append(<++>)
+figures_list_1.append(<++>)
 figures_list_1.append(<++>)
 figures_list_1.append(<++>)
 """

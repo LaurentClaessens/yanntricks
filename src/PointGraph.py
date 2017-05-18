@@ -549,6 +549,8 @@ class PointGraph(ObjectGraph):
         return Point(r*self.x,r*self.y)
     def __div__(self,r):
         return Point(self.x/r,self.y/r)
+    def __truediv__(self,r):    # As far as I understood, this is needed for "from __future__ import division"
+        return self.__div__(r)
     def __rmul__(self,r):
         return self.__mul__(r)
     def __str__(self):

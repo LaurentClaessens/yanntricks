@@ -1,1 +1,1 @@
-version="master/master"
+version="debug"

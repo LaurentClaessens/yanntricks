@@ -94,12 +94,29 @@ def lines_and_functions():
 
 def with_box():
     echo_function("with_box")
-    P=Point(2,2)
-    box=BoundingBox(xmin=2,ymin=3,xmax=6,ymax,4)
-    for Q in point_to_box_intersection(P,box):
-        print(Q)
-    assert_true(False)
-    
+    from phystricks.src.Utilities import point_to_box_intersection
+
+    echo_single_test("one box ...")
+    P=Point(1,1)
+    box=BoundingBox(xmin=2,ymin=3,xmax=6,ymax=4)
+    ans=[Point(17/5,3),Point(23/5,4)]
+    for t in zip(ans,point_to_box_intersection(P,box)):
+        assert_equal(t[0],t[1])
+
+    echo_single_test("an other box ...")
+    P=Point(1,1)
+    box=BoundingBox(xmin=1,ymin=3,xmax=4,ymax=4)
+    ans=[Point(11/5,3),Point(14/5,4)]
+    for t in zip(ans,point_to_box_intersection(P,box)):
+        assert_equal(t[0],t[1])
+
+    echo_single_test("an other box (corner) ...")
+    P=Point(0,1)
+    box=BoundingBox(xmin=-1,ymin=-3,xmax=-0.5,ymax=-1)
+    ans=[Point(-0.5,-1),Point(-1,-3)]
+    for t in zip(ans,point_to_box_intersection(P,box)):
+        assert_equal(t[0],t[1])
+
 
 def testIntersection():
     with_box()

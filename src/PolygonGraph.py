@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
 from sage.all import *
@@ -34,7 +34,8 @@ class PolygonGraph(ObjectGraph):
 
     NOTE:
 
-    This class is not intended to be used by the end-user. The latter has to use :func:`Polygon`.
+    This class is not intended to be used by the end-user. 
+    The latter has to use :func:`Polygon`.
     """
     def __init__(self,points_list):
         ObjectGraph.__init__(self,self)
@@ -78,24 +79,19 @@ class PolygonGraph(ObjectGraph):
             import string
             text_list=["\({}\)".format(x) for x in string.ascii_uppercase[0:n]]
         if points_names :
-            text_list=[    "\( {} \)".format(x) for x in points_names   ]
+            text_list=[ "\( {} \)".format(x) for x in points_names ]
         for i,P in enumerate(self.points_list):
             text=text_list[i]
             A=self.points_list[(i-1)%n]
             B=self.points_list[(i+1)%n]
             v1=AffineVector(A,P).fix_origin(P).normalize(1)
             v2=AffineVector(B,P).fix_origin(P).normalize(1)
-            vect=(v1+v2).normalize(dist)
-            Q=P+vect
-            angle=Segment(P,Q).angle()
 
-            for psp in pspicts :
-                polar=polar_to_visual_polar(dist,angle.degree,pspict=psp)
-                r=polar.r
-                a=polar.measure
+            alpha=AngleAOB(v2.F,P,v1.F)
 
-                P.put_mark(r,a,text,pspict=psp,position="center")
-                self.added_objects.append(psp,P)
+            for psp in pspicts:
+                mark=alpha.get_mark(dist,angle=None,text=text,pspict=psp)
+                self.added_objects.append(psp,mark)
 
     def _math_bounding_box(self,pspict=None):
         bb=BoundingBox()

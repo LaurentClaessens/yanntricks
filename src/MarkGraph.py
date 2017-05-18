@@ -31,7 +31,8 @@ from phystricks.src.ObjectGraph import ObjectGraph
         # of the axes size.
         # See also `AxesGraph.add_bounding_box`
 class MarkGraph(ObjectGraph):
-    def __init__(self,graph,dist,angle,text,mark_point=None,central_point=None,position=None,pspict=None):
+    def __init__(self,graph,dist,angle,text,mark_point=None,
+                            central_point=None,position=None,pspict=None):
         ObjectGraph.__init__(self,self)
 
         self.take_math_BB=False 
@@ -65,7 +66,8 @@ class MarkGraph(ObjectGraph):
 
     def central_point(self,pspict=None):
         """
-        Return the central point of the mark, that is the point where the mark arrives.
+        Return the central point of the mark, that is the point where
+        the mark arrives.
 
         The central point of the mark is computed from self.graph.mark_point()
         Thus an object that wants to accept a mark needs a method 
