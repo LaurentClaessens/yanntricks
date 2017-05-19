@@ -23,6 +23,34 @@ from NoMathUtilities import logging
 from NoMathUtilities import ensure_unicode
 from NoMathUtilities import SubdirectoryFilenames
 
+## \brief Creates a name for a counter in LaTeX
+# 
+# Suppose you need to ask for the value of the counter `page`. What you do is
+# ```
+# page=pspict.auxiliary_file.get_counter_value("page")
+# ```
+# What `phystricks` do is to add such a line in the 'pstricks' file :
+# ```
+# \immediate\write\writeOfphystricks{_some_id_:\arabic{page}-}
+# ```
+# where `some_id` is what we furnish here. This is the identifiant which whose
+# we are going to search for the answer in the dedicated `.aux` file.
+#
+# It has to be
+# - different for each thing that we are going to write in the `.aux` file
+# - deterministic because we are getting him back during a second pass of
+#   `phustricks`.
+class CounterId(object):
+    counter={}
+    def __call__(self,counter_name):
+        try:
+            return self.counter[counter_name]
+        except KeyError :
+            pass
+        s="Counter"+counter_name
+        self.counter[counter_name]=s
+        return s
+
 class AuxFile(object):
     """
     The auxiliary file serves to make a 'dialog' between LaTeX and phystricks. 
@@ -100,41 +128,52 @@ class AuxFile(object):
 
             if not self.already_warned_CompileYourLaTeXFile:
                 logging(self.picture.name+"-----")
-                logging("Warning: the auxiliary file {} does not contain the id «{}». Compile your LaTeX file.".format(self.interWriteFile.from_main(),Id),pspict=self.picture)
-                logging(u"Concerned tex expression : "+self.interId_to_tex_expression[Id])
+                logging("Warning: the auxiliary file {} does not contain\
+                        the id «{}». Compile your LaTeX file.".format(
+                            self.interWriteFile.from_main(),Id),pspict=self.picture)
+                try :
+                    logging(u"Concerned tex expression : "+\
+                                self.interId_to_tex_expression[Id])
+                except KeyError:
+                    pass    # when asking for a counter, not a box size.
 
                 self.already_warned_CompileYourLaTeXFile=True
             return default_value
         value = self.id_values_dict()[Id]
         return value
+
+
+    ##   \brief return the value of the (LaTeX) counter <name>
+    #    at this point of the LaTeX file.
+    #
+    # Makes LaTeX write the value of the counter in an auxiliary file,
+    # then reads the value in that file.  (needs several compilations to work)
+    #
+    # \return a float.
+    #
+    #
+    # If you ask for the page with for example
+    # ```page = pspict.get_counter_value("page")```
+    # the given page will be the one at which LaTeX thinks the figure lies. 
+    # Since a figure is a floating object, if you have many of them in a row,
+    # the page number could be incorrect.
     def get_counter_value(self,counter_name,default_value=0):
-        """
-        return the value of the (LaTeX) counter <name> at this point of the LaTeX file
-
-        Makes LaTeX write the value of the counter in an auxiliary file, then reads the value in that file.  (needs several compilations to work)
-
-        RETURN : float
-
-        NOTE :
-
-        If you ask for the page with for example  `page = pspict.get_counter_value("page")` the given page will be the one at which LaTeX thinks the figure is. I recall that a figure is a floating object; if you have 10 of them in a row, the page number could be incorrect.
-        """
-
         # Make LaTeX write the value of the counter in a specific file
-        interCounterId = "counter"+self.name+self.picture.NomPointLibre.next()
-        #self.initialize_counter()
+        interCounterId=CounterId()(counter_name)
         s=r"\arabic{%s}"%counter_name
         self.makeWriteValue(interCounterId,s)
 
         # Read the file and return the value
-        s = self.get_Id_value(interCounterId,default_value)
-        return float(s)
+        ans = self.get_Id_value(interCounterId,default_value)
+        return float(ans)
 
     def get_box_dimension(self,tex_expression,dimension_name,default_value="0pt"):
         """
-        Return the dimension of the LaTeX box corresponding to the LaTeX expression tex_expression.
+        Return the dimension of the LaTeX box corresponding to the LaTeX
+        expression `tex_expression`.
 
-        dimension_name is a valid LaTeX macro that can be applied to a LaTeX expression and that return a number. Like
+        dimension_name is a valid LaTeX macro that can be applied to
+        a LaTeX expression and that return a number. Like
         widthof, depthof, heightof, totalheightof
         """
         from NoMathUtilities import text_to_hexdigest

@@ -94,10 +94,13 @@ def testVectorConstructor():
     assert_equal(v2.I,O)
     assert_equal(v3.I,O)
 
+from testIntersection import testIntersection
+print("testIntersection")
+testIntersection()
+
 from testParametricCurve import testParametricCurve
 print("testParametricCurve")
 testParametricCurve()
-
 
 from testPointCoordinates import testPointCoordinates
 print("testPointCoordinates")
@@ -106,10 +109,6 @@ testPointCoordinates()
 from testNumericalOperations import testNumericalOperations
 print("testNumericalOperations")
 testNumericalOperations()
-
-from testIntersection import testIntersection
-print("testIntersection")
-testIntersection()
 
 from testAngleMark import testAngleMark
 print("testAngleMark")

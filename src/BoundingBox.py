@@ -46,13 +46,13 @@ class BoundingBox_class(ObjectGraph):
 
     If 'math' is True, it always tries to include 'math_bounding_box' instead of 'bounding_box'
     """
-    def __init__(self,P1=None,P2=None,xmin=1000,xmax=-1000,ymin=1000,ymax=-1000,parent=None,mother=None,math=False):
+    def __init__(self,P1=None,P2=None,xmin=1000,xmax=-1000,ymin=1000,ymax=-1000,parent=None,mother=None,is_math=False):
         self.xmin=xmin
         self.xmax=xmax
         self.ymin=ymin
         self.ymax=ymax
         self.mother=mother
-        self.math=math
+        self.is_math=is_=math
         if P1 :
             self.add_math_object(P1,check_too_large=False)
             self.add_math_object(P2,check_too_large=False)
@@ -62,7 +62,7 @@ class BoundingBox_class(ObjectGraph):
     def _draw_added_objects(self,pspict):
         pass
     def add_object(self,obj,pspict=None,fun="bounding_box",check_too_large=True):
-        if self.math:
+        if self.is_math:
             fun="math_bounding_box"
         try :
             bb=obj.__getattribute__(fun)(pspict=pspict)
@@ -148,8 +148,7 @@ class BoundingBox_class(ObjectGraph):
         if not pspict :
             from Exceptions import MissingPictureException
             raise MissingPictureException("You should provide a pspict in order to add this object to a bounding box.")
-
-        if self.math:
+        if self.is_math:
             bb=graph.math_bounding_box(pspict=pspict)
             self.AddBB(graph.math_bounding_box(pspict=pspict))
         else :
@@ -179,7 +178,7 @@ class BoundingBox_class(ObjectGraph):
     def copy(self):
         return BoundingBox(xmin=self.xmin,ymin=self.ymin,xmax=self.xmax,ymax=self.ymax)
     def __str__(self):
-        return "<BoundingBox xmin={0},xmax={1}; ymin={2},ymax={3}>".format(self.xmin,self.xmax,self.ymin,self.ymax)
+        return "<BoundingBox xmin={0},xmax={1},ymin={2},ymax={3}>".format(self.xmin,self.xmax,self.ymin,self.ymax)
     def __eq__(self,other):
         if self.xmin!=other.xmin:
             return False

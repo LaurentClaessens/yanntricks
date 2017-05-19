@@ -20,6 +20,8 @@
 # copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
+from __future__ import division
+
 from sage.all import *
 from phystricks.src.Constructors import *
 from phystricks.src.MathStructures import *
@@ -44,7 +46,6 @@ def test_imaginary_part(z,epsilon=0.0001):
     if is_real(k):
         return True,k
     if abs( k.imag_part() )<epsilon:
-        #print("I am removing a (probably fake) imaginary part")
         return True,numerical_approx( z.real_part() )
     print("It seems that an imaginary part is not so small.")
     return False,z
@@ -61,13 +62,13 @@ def test_imaginary_part_point(P,epsilon=0.0001):
         on=True
     return on,Point(x,y)
 
-def Distance_sq(P,Q):
+def distance_sq(P,Q):
     """ return the squared distance between P and Q """
     return (P.x-Q.x)**2+(P.y-Q.y)**2
 
-def Distance(P,Q):
+def distance(P,Q):
     """ return the distance between P and Q """
-    return sqrt(Distance_sq(P,Q))
+    return sqrt(distance_sq(P,Q))
 
 def inner_product(v,w,numerical=True):
     """
@@ -185,6 +186,63 @@ def Intersection(f,g,a=None,b=None,numerical=False):
         if ok1 and ok2 :
             pts.append(Point(a,b))
     return pts
+
+## \brief The intersection between the line from the given point and
+# the center of the given box.
+#
+# \arg P : a point
+# \arg box : a box, which means a duck which has attributes 
+#               `xmin`, `xmax`, `ymin`, `ymax`
+#
+# Consider the line from `P` to the center of the box and return the intersection
+# points. 
+#
+# \return a list of `Point`.
+#
+# - The list always contains exactly 2 points
+# - They are sorted by order of distance to `P`
+def point_to_box_intersection(P,box,pspict=None):
+    from phystricks.src.Utilities import distance_sq
+    A=Point(box.xmin,box.ymin)
+    B=Point(box.xmax,box.ymin)
+    C=Point(box.xmax,box.ymax)
+    D=Point(box.xmin,box.ymax)
+    # n'écrivez pas ça au tableau quand un inspecteur est dans la salle :
+    center=(A+B+C+D)/4
+    line=Segment(P,center)
+
+    edges=[Segment(A,B),Segment(B,C),Segment(C,D),Segment(D,A)]
+    inter=[]
+    for ed in edges:
+        c=Intersection(line,ed)
+        if len(c)>0:
+            S=c[0]
+
+            # We deal with the case in which the line travers the corner.
+            # In this case, the line passes trough the other one.
+            if S==A:
+                inter=[A,C]
+            if S==B:
+                inter=[B,D]
+            if S==C:
+                inter=[A,C]
+            if S==D:
+                inter=[B,D]
+            # The last two tests are to know if S lies between ed.I and ed.F
+            elif (S.x-ed.I.x)*(S.x-ed.F.x)<0:
+                inter.append(S)
+            elif (S.y-ed.I.y)*(S.y-ed.F.y)<0:
+                inter.append(S)
+
+    if len(inter)==2:
+        inter.sort(key=lambda Q:distance_sq(Q,P))
+
+    if pspict:
+        for i,S in enumerate(inter):
+            S.put_mark(0.2,angle=None,added_angle=0,text=str(i),pspict=pspict)
+        pspict.DrawGraphs(inter,line,center,box)
+
+    return inter
 
 def PointToPolaire(P=None,x=None,y=None,origin=None,numerical=True):
     """
@@ -509,7 +567,8 @@ def general_function_get_point(fun,x,advised=True):
         try :
             ca = fun.derivative()(x) 
         except TypeError:    # Sage cannot derivate the function
-            print "I'm not able to compute derivative of {0}. You should pass advised=False".format(fun)
+            print ("I'm not able to compute derivative of {0}.\
+            You should pass advised=False".format(fun))
         else :
             angle_n=degree(atan(ca)+pi/2)
             if fun.derivative(2)(x) > 0:
@@ -602,22 +661,21 @@ def latinize(word):
             latin = latin+"DOT"
     return latin
 
-import sys
-sysargvzero = sys.argv[0][:]
 def counterName():
     r"""
     This function provides the name of the counter.
     
     This has the same use of newwriteName, for the same reason of limitation.
     """
-    return "counterOf"+latinize(sysargvzero)
+    return "counterOfforphystricks"
+
 def newlengthName():
     r"""
     This function provides the name of the length.
     
     This has the same use of newwriteName, for the same reason of limitation.
     """
-    return "lengthOf"+latinize(sysargvzero)
+    return "lengthOfforphystricks"
 
 def sublist(l,condition):
     """

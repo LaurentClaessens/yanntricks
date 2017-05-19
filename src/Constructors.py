@@ -217,7 +217,7 @@ def CircleOA(O,A):
         sqrt(5)
 
     """
-    radius=Distance(O,A)
+    radius=distance(O,A)
     return Circle(O,radius)
 
 def CircleAB(A,B):

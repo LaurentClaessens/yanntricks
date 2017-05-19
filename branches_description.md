@@ -61,7 +61,9 @@ So each object will keep its own list of bounding boxes.
 
 # debug
 
-Debugging some pictures that do not work anymore since the last change.
+- Debugging some pictures that do not work anymore since the last change.
+- Debugging the pictures from mazhe
+- Debugging the pictures from smath
 
 #remove_bloat
 
@@ -74,3 +76,7 @@ Remove some useless code :
 
 other debug from the pictures of mazhe.
 
+# lengthOf
+
+When compiling from sage (with 'attach') I do not have the same 'lengtOf' name in the latex file as the one obtained when I compile from "figures_<foo>".
+I try to correct that here.

@@ -45,16 +45,16 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfforphystricks}}{\newlength{\lengthOfforphystricks}}{}
 \immediate\openout\writeOfphystricks=QRXCooUmnlhkvh.phystricks.aux%
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfforphystricks}}{\newlength{\lengthOfforphystricks}}{}
 \immediate\openout\writeOfphystricks=QRXCooUmnlhkvh.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\(  e^{\int_{\Omega}\gamma}  \)}}%
-\immediate\write\writeOfphystricks{totalheightofd7bcb9fcaa5db2cc2b9c4a1f16dfc412d82e2d90:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\(  e^{\int_{\Omega}\gamma}  \)}}%
-\immediate\write\writeOfphystricks{widthofd7bcb9fcaa5db2cc2b9c4a1f16dfc412d82e2d90:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfforphystricks}{\totalheightof{\(  e^{\int_{\Omega}\gamma}  \)}}%
+\immediate\write\writeOfphystricks{totalheightofd7bcb9fcaa5db2cc2b9c4a1f16dfc412d82e2d90:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\widthof{\(  e^{\int_{\Omega}\gamma}  \)}}%
+\immediate\write\writeOfphystricks{widthofd7bcb9fcaa5db2cc2b9c4a1f16dfc412d82e2d90:\the\lengthOfforphystricks-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -69,10 +69,10 @@
 \draw []  (1.000000000,3.000000000) node [rotate=0] {$\bullet$};
 \draw (1.869215023,3.470910523) node {\(  e^{\int_{\Omega}\gamma}  \)};
 
-\draw [color=cyan] (1.04,3.90) -- (2.70,3.90);
-\draw [color=cyan] (2.70,3.90) -- (2.70,3.04);
-\draw [color=cyan] (2.70,3.04) -- (1.04,3.04);
-\draw [color=cyan] (1.04,3.04) -- (1.04,3.90);
+\draw [color=cyan] (1.14,3.80) -- (2.60,3.80);
+\draw [color=cyan] (2.60,3.80) -- (2.60,3.14);
+\draw [color=cyan] (2.60,3.14) -- (1.14,3.14);
+\draw [color=cyan] (1.14,3.14) -- (1.14,3.80);
 %END PSPICTURE
 \end{tikzpicture}
 %AFTER PSPICTURE

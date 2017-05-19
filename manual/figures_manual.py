@@ -28,7 +28,7 @@ figures_list.append(<++>)
 """
 
 def AllFigures():
-    tests=main.FigureGenerationSuite(figures_list,first=0,title=u"phystricks's manual")
+    tests=FigureGenerationSuite(figures_list,first=0,title=u"phystricks's manual")
     tests.generate()
     tests.summary()
 

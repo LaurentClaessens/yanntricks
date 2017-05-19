@@ -20,7 +20,9 @@
 # copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
-from sage.all import numerical_approx
+from __future__ import division
+
+from sage.all import *
 from Parameters import Parameters
 from Parameters import Options
 from Exceptions import ShouldNotHappenException
@@ -109,6 +111,10 @@ class ObjectGraph(object):
                 a=self.angle()
                 angle=self.angle().degree+90
 
+        if position=="center_direction":
+            # In this case we assume 'self' is a point
+            angle=angle.degree
+
         if isinstance(angle,AngleMeasure):
             angle=angle.degree
 
@@ -143,20 +149,30 @@ class ObjectGraph(object):
             pspict=[pspict]
         for psp in pspict:
             dimx,dimy = psp.get_box_size(text)
+
         return mark
+
+    ##  \brief put a mark on an object
+    #       
+    #
+    # If you want to put a mark on an object
+    # P.put_mark(0.1,text="foobar",pspict=pspict,position="N")
+    #
+    #        mark_point is a function which returns the position of the mark point.
+    #
+    #        If you give no position (i.e. no "S","N", etc.) the position will
+    #       be automatic regarding the angle.
+    #
+    #        - ``angle`` is given in degree.
+    # set `position` to "center" is dangerous because it puts the center of
+    # the box at given angle and distance. Thus the text can be ill placed, 
+    # especially if the given `dist` is lower than the half of the box size.
+    #
+    # `center_direction` : the mark is placed in such a way that the center is
+    # at given angle, and the box's border at given distance.
     def put_mark(self,dist=None,angle=None,text="",\
             mark_point=None,added_angle=None,position=None,\
             pspict=None,pspicts=None):
-        """
-        If you want to put a mark on an object
-        P.put_mark(0.1,text="foobar",pspict=pspict,position="N")
-
-        mark_point is a function which returns the position of the mark point.
-
-        If you give no position (i.e. no "S","N", etc.) the position will be automatic regarding the angle.
-
-        - ``angle`` is given in degree.
-        """
 
         from NoMathUtilities import ensure_unicode
         from Utilities import make_psp_list
@@ -164,10 +180,12 @@ class ObjectGraph(object):
         pspicts=make_psp_list(pspict,pspicts)
 
         for psp in pspicts:
-            mark=self.get_mark(dist,angle,text,mark_point=mark_point,added_angle=added_angle,position=position,pspict=psp)
+            mark=self.get_mark(dist,angle,text,mark_point=mark_point,
+                        added_angle=added_angle,position=position,pspict=psp)
 
             if position in ["N","S","E","W"] and angle is not None :
-                logging("When you want a position like N,S,E, or W, the mark angle should not be given.")
+                logging( "When you want a position like N,S,E, or W,\
+                        the mark angle should not be given.")
             self.added_objects.append(psp,mark)
 
         self.mark=mark
@@ -180,7 +198,8 @@ class ObjectGraph(object):
         self.options.remove_option(opt)
     def merge_options(self,graph):
         """
-        Take an other object <Foo>Graph and merges the options as explained in the documentation of the class Options. That merge takes into account the attributes "color", "style", wavy
+        Take an other object <Foo>Graph and merges the options as explained in the documentation of the class Options. 
+        That merge takes into account the attributes "color", "style", wavy
         """
         self.parameters = graph.parameters
         self.options.merge_options(graph.options)
@@ -255,6 +274,7 @@ class ObjectGraph(object):
             bb=self._math_bounding_box(pspict)
         except AttributeError:
             bb=self.bounding_box(pspict=pspict)
+        bb.is_math=True
         self.already_computed_math_BB[pspict]=bb
         return bb
     def latex_code(self,pspict,language=None):

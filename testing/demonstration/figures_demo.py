@@ -4,7 +4,9 @@
 import sys
 from phystricks import *
 
+from phystricksRJDEoobOibtkfv import RJDEoobOibtkfv
 from phystricksCornetGlace import CornetGlace
+from phystricksECQDooWEpuCM import ECQDooWEpuCM
 from phystricksSFdgHdO import SFdgHdO
 from phystricksNWAEooQBLYYrpS import NWAEooQBLYYrpS
 from phystricksProjPoly import ProjPoly
@@ -128,12 +130,19 @@ figures_list_1.append(FMLCooxHtqRzUz)
 figures_list_1.append(EXIIooJzzoJeai)
 figures_list_1.append(CornetGlace)
 figures_list_1.append(SFdgHdO)
+figures_list_1.append(ECQDooWEpuCM)
+figures_list_1.append(RJDEoobOibtkfv)
 """
+figures_list_1.append(<++>)
 figures_list_1.append(<++>)
 figures_list_1.append(<++>)
 """
 
 figures_list_2=[]
+figures_list_2.append(RJDEoobOibtkfv)
+figures_list_2.append(ECQDooWEpuCM)
+figures_list_2.append(FMLCooxHtqRzUz)
+figures_list_2.append(MBWHooeesXIrsz)
 figures_list_2.append(SFdgHdO)
 figures_list_2.append(PJKBooOhGVPkeR)
 figures_list_2.append(TRJEooPRoLnEiG)
