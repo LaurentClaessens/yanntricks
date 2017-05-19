@@ -20,16 +20,18 @@
 # copyright(c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
+from __future__ import division
+
 from phystricks.src.Constructors import *
 from phystricks.src.Exceptions import ShouldNotHappenException
 from phystricks.src.NoMathUtilities import logging
 
 from phystricks.src.ObjectGraph import ObjectGraph
 
-        ## The marks are not taken into account in the computation of the
-        # mathematical bounding box. In particular not for the computations
-        # of the axes size.
-        # See also `AxesGraph.add_bounding_box`
+## The marks are not taken into account in the computation of the
+# mathematical bounding box. In particular not for the computations
+# of the axes size.
+# See also `AxesGraph.add_bounding_box`
 class MarkGraph(ObjectGraph):
     def __init__(self,graph,dist,angle,text,mark_point=None,
                             central_point=None,position=None,pspict=None):
@@ -106,7 +108,7 @@ class MarkGraph(ObjectGraph):
                 pspict=[pspict]
 
             for psp in pspict:
-                dimx,dimy = psp.get_box_size(self.text)
+                dimx,dimy = psp.get_box_size(self.text,default_value="30pt")
 
             if position=="center":
                 angle=self.angle.radian
@@ -141,6 +143,39 @@ class MarkGraph(ObjectGraph):
                 center_vector=Vector(self.dist+dimx/2,0)
             elif position=="E":
                 center_vector=Vector(-self.dist-dimx/2,0)
+
+            elif position=="center_direction":
+
+                # The algorithm is :
+# - we put the center of the box randomly on the right line
+#    (this is point Q)
+# - not completely at random : sufficiently far for the box do not include the
+#   mark_point (this is the role of 'r')
+# - the vector 'w' joins 'mark_point' to the box
+# - in an ideal world, the length of 'w' would be 'dist'
+# - it is not because the box was put at random
+# - dist/w.length is the multiplicative factor for 'w'
+# - 
+
+                from Constructors import BoundingBox
+                from Utilities import point_to_box_intersection
+                r=dimx+dimy
+                v=Vector(r*cos(self.angle.radian),r*sin(self.angle.radian))
+                Q=mark_point+v
+                box=BoundingBox(xmin=Q.x-dimx/2,xmax=Q.x+dimx/2,
+                                ymin=Q.y-dimy/2,ymax=Q.y+dimy/2)
+
+                I=point_to_box_intersection(mark_point,box)[0]
+                IQ=AffineVector(I,Q)
+                w=AffineVector(mark_point,I)
+
+                factor=self.dist/w.length
+                # 'new_w' this is the correct intersection between the line
+                # and the box
+                new_w=factor*w  
+
+                center_vector=new_w+IQ
+
             else :
                 raise ShouldNotHappenException(\
                         "Something wrong. I think the 'position'\
@@ -161,8 +196,8 @@ argument is not good :"+position)
         else :
             xunit=pspict.xunit
             yunit=pspict.yunit
-        visual_center_vector=Vector(\
-                center_vector.Dx/xunit,center_vector.Dy/yunit)
+        visual_center_vector=Vector(center_vector.Dx/xunit,
+                                        center_vector.Dy/yunit)
 
         cp = mark_point+visual_center_vector
         return cp

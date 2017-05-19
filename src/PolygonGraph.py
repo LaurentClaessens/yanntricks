@@ -20,6 +20,8 @@
 # copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
+from __future__ import division
+
 from sage.all import *
 
 from ObjectGraph import ObjectGraph
@@ -87,14 +89,18 @@ class PolygonGraph(ObjectGraph):
             v1=AffineVector(A,P).fix_origin(P).normalize(1)
             v2=AffineVector(B,P).fix_origin(P).normalize(1)
 
-            alpha=AngleAOB(v2.F,P,v1.F)
-
+            # 'direction' is a vector based at 'P' that points 
+            # in the direction as external to the angle as possible.
+            # This is the "external" angle bisector
+            direction=v1+v2
+            angle=direction.angle()
             for psp in pspicts:
-                mark=alpha.get_mark(dist,angle=None,text=text,pspict=psp)
-                self.added_objects.append(psp,mark)
-
+                P.put_mark(dist=dist,angle=angle,added_angle=0,text=text,
+                       position="center_direction",pspict=psp)
+                self.added_objects.append(psp,P)
     def _math_bounding_box(self,pspict=None):
         bb=BoundingBox()
+        bb.is_math=True;
         for P in self.points_list:
             bb.append(P,pspict=pspict)
         return bb

@@ -20,7 +20,9 @@
 # copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
-from sage.all import numerical_approx
+from __future__ import division
+
+from sage.all import *
 from Parameters import Parameters
 from Parameters import Options
 from Exceptions import ShouldNotHappenException
@@ -108,6 +110,10 @@ class ObjectGraph(object):
             except AttributeError :
                 a=self.angle()
                 angle=self.angle().degree+90
+
+        if position=="center_direction":
+            # In this case we assume 'self' is a point
+            angle=angle.degree
 
         if isinstance(angle,AngleMeasure):
             angle=angle.degree
@@ -268,6 +274,7 @@ class ObjectGraph(object):
             bb=self._math_bounding_box(pspict)
         except AttributeError:
             bb=self.bounding_box(pspict=pspict)
+        bb.is_math=True
         self.already_computed_math_BB[pspict]=bb
         return bb
     def latex_code(self,pspict,language=None):
