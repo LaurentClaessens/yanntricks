@@ -45,52 +45,52 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfforphystricks}}{\newlength{\lengthOfforphystricks}}{}
 \immediate\openout\writeOfphystricks=EDEYRhQ.phystricks.aux%
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfforphystricks}}{\newlength{\lengthOfforphystricks}}{}
 \immediate\openout\writeOfphystricks=EDEYRhQ.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{Besançon}}%
-\immediate\write\writeOfphystricks{totalheightof6a2f22bdbd8a869076125db179ab32ad72ed37ee:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{Besançon}}%
-\immediate\write\writeOfphystricks{widthof6a2f22bdbd8a869076125db179ab32ad72ed37ee:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{St-Vit}}%
-\immediate\write\writeOfphystricks{totalheightofb3877647545b08c15280507030d6d302be5b9b0e:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{St-Vit}}%
-\immediate\write\writeOfphystricks{widthofb3877647545b08c15280507030d6d302be5b9b0e:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{Dole}}%
-\immediate\write\writeOfphystricks{totalheightof7e41c739c4d1b92b5521fdc6784c1ad4037cc755:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{Dole}}%
-\immediate\write\writeOfphystricks{widthof7e41c739c4d1b92b5521fdc6784c1ad4037cc755:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{Auxonne}}%
-\immediate\write\writeOfphystricks{totalheightofd707d1a071f7c1f6baa23c6b300b0defcee5edc6:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{Auxonne}}%
-\immediate\write\writeOfphystricks{widthofd707d1a071f7c1f6baa23c6b300b0defcee5edc6:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{Genlis}}%
-\immediate\write\writeOfphystricks{totalheightof2d5752e885b1a11b21eb5d92cb00adfa2b8fd4a2:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{Genlis}}%
-\immediate\write\writeOfphystricks{widthof2d5752e885b1a11b21eb5d92cb00adfa2b8fd4a2:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{Dijon}}%
-\immediate\write\writeOfphystricks{totalheightof708dbb2a98c0a3f4479c79417e2256de9b1c02e0:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{Dijon}}%
-\immediate\write\writeOfphystricks{widthof708dbb2a98c0a3f4479c79417e2256de9b1c02e0:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\( 10\)}}%
-\immediate\write\writeOfphystricks{totalheightof52ad1dc31e08f49efaf0362a5f52967b93dc5c51:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\( 10\)}}%
-\immediate\write\writeOfphystricks{widthof52ad1dc31e08f49efaf0362a5f52967b93dc5c51:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\( 15\)}}%
-\immediate\write\writeOfphystricks{totalheightofe0e80a7d0fd9f05c092b628487a464c793a59323:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\( 15\)}}%
-\immediate\write\writeOfphystricks{widthofe0e80a7d0fd9f05c092b628487a464c793a59323:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\( 9\)}}%
-\immediate\write\writeOfphystricks{totalheightof084069f85afdbf49f12750a1da08d467b945e6f4:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\( 9\)}}%
-\immediate\write\writeOfphystricks{widthof084069f85afdbf49f12750a1da08d467b945e6f4:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\( 12\)}}%
-\immediate\write\writeOfphystricks{totalheightofe7ede876527c8581635cb353ea0271936fd85a1e:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\( 12\)}}%
-\immediate\write\writeOfphystricks{widthofe7ede876527c8581635cb353ea0271936fd85a1e:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfforphystricks}{\totalheightof{Besançon}}%
+\immediate\write\writeOfphystricks{totalheightof6a2f22bdbd8a869076125db179ab32ad72ed37ee:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\widthof{Besançon}}%
+\immediate\write\writeOfphystricks{widthof6a2f22bdbd8a869076125db179ab32ad72ed37ee:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\totalheightof{St-Vit}}%
+\immediate\write\writeOfphystricks{totalheightofb3877647545b08c15280507030d6d302be5b9b0e:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\widthof{St-Vit}}%
+\immediate\write\writeOfphystricks{widthofb3877647545b08c15280507030d6d302be5b9b0e:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\totalheightof{Dole}}%
+\immediate\write\writeOfphystricks{totalheightof7e41c739c4d1b92b5521fdc6784c1ad4037cc755:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\widthof{Dole}}%
+\immediate\write\writeOfphystricks{widthof7e41c739c4d1b92b5521fdc6784c1ad4037cc755:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\totalheightof{Auxonne}}%
+\immediate\write\writeOfphystricks{totalheightofd707d1a071f7c1f6baa23c6b300b0defcee5edc6:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\widthof{Auxonne}}%
+\immediate\write\writeOfphystricks{widthofd707d1a071f7c1f6baa23c6b300b0defcee5edc6:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\totalheightof{Genlis}}%
+\immediate\write\writeOfphystricks{totalheightof2d5752e885b1a11b21eb5d92cb00adfa2b8fd4a2:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\widthof{Genlis}}%
+\immediate\write\writeOfphystricks{widthof2d5752e885b1a11b21eb5d92cb00adfa2b8fd4a2:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\totalheightof{Dijon}}%
+\immediate\write\writeOfphystricks{totalheightof708dbb2a98c0a3f4479c79417e2256de9b1c02e0:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\widthof{Dijon}}%
+\immediate\write\writeOfphystricks{widthof708dbb2a98c0a3f4479c79417e2256de9b1c02e0:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\totalheightof{\( 10\)}}%
+\immediate\write\writeOfphystricks{totalheightof52ad1dc31e08f49efaf0362a5f52967b93dc5c51:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\widthof{\( 10\)}}%
+\immediate\write\writeOfphystricks{widthof52ad1dc31e08f49efaf0362a5f52967b93dc5c51:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\totalheightof{\( 15\)}}%
+\immediate\write\writeOfphystricks{totalheightofe0e80a7d0fd9f05c092b628487a464c793a59323:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\widthof{\( 15\)}}%
+\immediate\write\writeOfphystricks{widthofe0e80a7d0fd9f05c092b628487a464c793a59323:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\totalheightof{\( 9\)}}%
+\immediate\write\writeOfphystricks{totalheightof084069f85afdbf49f12750a1da08d467b945e6f4:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\widthof{\( 9\)}}%
+\immediate\write\writeOfphystricks{widthof084069f85afdbf49f12750a1da08d467b945e6f4:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\totalheightof{\( 12\)}}%
+\immediate\write\writeOfphystricks{totalheightofe7ede876527c8581635cb353ea0271936fd85a1e:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\widthof{\( 12\)}}%
+\immediate\write\writeOfphystricks{widthofe7ede876527c8581635cb353ea0271936fd85a1e:\the\lengthOfforphystricks-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE

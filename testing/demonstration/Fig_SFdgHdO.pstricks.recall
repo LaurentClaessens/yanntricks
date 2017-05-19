@@ -48,16 +48,16 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfforphystricks}}{\newlength{\lengthOfforphystricks}}{}
 \immediate\openout\writeOfphystricks=SFdgHdO.phystricks.aux%
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfforphystricks}}{\newlength{\lengthOfforphystricks}}{}
 \immediate\openout\writeOfphystricks=SFdgHdO.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{$K_H$}}%
-\immediate\write\writeOfphystricks{totalheightofd4d95bb0633a38fee6021ad09fc43d068921dfa1:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{$K_H$}}%
-\immediate\write\writeOfphystricks{widthofd4d95bb0633a38fee6021ad09fc43d068921dfa1:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfforphystricks}{\totalheightof{$K_H$}}%
+\immediate\write\writeOfphystricks{totalheightofd4d95bb0633a38fee6021ad09fc43d068921dfa1:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\widthof{$K_H$}}%
+\immediate\write\writeOfphystricks{widthofd4d95bb0633a38fee6021ad09fc43d068921dfa1:\the\lengthOfforphystricks-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE

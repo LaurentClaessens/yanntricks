@@ -45,20 +45,20 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfforphystricks}}{\newlength{\lengthOfforphystricks}}{}
 \immediate\openout\writeOfphystricks=MarkOnPoint.phystricks.aux%
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfforphystricks}}{\newlength{\lengthOfforphystricks}}{}
 \immediate\openout\writeOfphystricks=MarkOnPoint.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{çà}}%
-\immediate\write\writeOfphystricks{totalheightoff2d2097c5516a3189c4fc1ff9300558e6e5d5e6b:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{çà}}%
-\immediate\write\writeOfphystricks{widthoff2d2097c5516a3189c4fc1ff9300558e6e5d5e6b:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{$q$}}%
-\immediate\write\writeOfphystricks{totalheightof0615acc3725de21025457e7d6f7694dab8e2f758:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{$q$}}%
-\immediate\write\writeOfphystricks{widthof0615acc3725de21025457e7d6f7694dab8e2f758:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfforphystricks}{\totalheightof{çà}}%
+\immediate\write\writeOfphystricks{totalheightoff2d2097c5516a3189c4fc1ff9300558e6e5d5e6b:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\widthof{çà}}%
+\immediate\write\writeOfphystricks{widthoff2d2097c5516a3189c4fc1ff9300558e6e5d5e6b:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\totalheightof{$q$}}%
+\immediate\write\writeOfphystricks{totalheightof0615acc3725de21025457e7d6f7694dab8e2f758:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\widthof{$q$}}%
+\immediate\write\writeOfphystricks{widthof0615acc3725de21025457e7d6f7694dab8e2f758:\the\lengthOfforphystricks-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
