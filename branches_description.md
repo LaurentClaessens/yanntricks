@@ -74,3 +74,7 @@ Remove some useless code :
 
 other debug from the pictures of mazhe.
 
+# lengthOf
+
+When compiling from sage (with 'attach') I do not have the same 'lengtOf' name in the latex file as the one obtained when I compile from "figures_<foo>".
+I try to correct that here.
