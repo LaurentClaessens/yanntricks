@@ -59,7 +59,7 @@ def ensure_unicode(s):
     No conversion if 's' is already unicode.
 
     str->unicode (via s.decode("utf8"))
-    unicode->unicide (identity map)
+    unicode->unicode (identity map)
     """
     if isinstance(s,str):
         return s.decode("utf8")
