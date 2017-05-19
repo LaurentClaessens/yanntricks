@@ -214,26 +214,28 @@ def point_to_box_intersection(P,box,pspict=None):
     edges=[Segment(A,B),Segment(B,C),Segment(C,D),Segment(D,A)]
     inter=[]
     for ed in edges:
-        S=Intersection(line,ed)[0]
+        c=Intersection(line,ed)
+        if len(c)>0:
+            S=c[0]
 
-        # We deal with the case in which the line travers the corner.
-        # In this case, the line passes trough the other one.
-        if S==A:
-            inter=[A,C]
-        if S==B:
-            inter=[B,D]
-        if S==C:
-            inter=[A,C]
-        if S==D:
-            inter=[B,D]
-        elif (S.x-ed.I.x)*(S.x-ed.F.x)<0:
-            inter.append(S)
+            # We deal with the case in which the line travers the corner.
+            # In this case, the line passes trough the other one.
+            if S==A:
+                inter=[A,C]
+            if S==B:
+                inter=[B,D]
+            if S==C:
+                inter=[A,C]
+            if S==D:
+                inter=[B,D]
+            # The last two tests are to know if S lies between ed.I and ed.F
+            elif (S.x-ed.I.x)*(S.x-ed.F.x)<0:
+                inter.append(S)
+            elif (S.y-ed.I.y)*(S.y-ed.F.y)<0:
+                inter.append(S)
 
     if len(inter)==2:
         inter.sort(key=lambda Q:distance_sq(Q,P))
-    else :
-        print(len(inter))
-        #raise ShouldNotHappenException()
 
     if pspict:
         for i,S in enumerate(inter):
