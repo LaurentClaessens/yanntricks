@@ -13,10 +13,10 @@ from FunctionThird import FunctionThird
 from phystricksVSJOooJXAwbVEt import VSJOooJXAwbVEt
 
 figures_list=[]
+figures_list.append(RJDEoobOibtkfv)
 figures_list.append(OnePoint)
 figures_list.append(FunctionThird)
 figures_list.append(GKMEooBcNxcWBt)
-figures_list.append(RJDEoobOibtkfv)
 figures_list.append(LARGooSLxQTdPC)
 figures_list.append(PBFCooVlPiRBpt)
 figures_list.append(VSJOooJXAwbVEt)
