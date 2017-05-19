@@ -39,6 +39,6 @@ from phystricks.src.main import IndependentPictures
 
 from phystricks.src.Utilities import no_symbol
 from phystricks.src.Utilities import put_equal_lengths_code
-from phystricks.src.Utilities import Distance
+from phystricks.src.Utilities import distance
 
 from phystricks.src.Constructors import *

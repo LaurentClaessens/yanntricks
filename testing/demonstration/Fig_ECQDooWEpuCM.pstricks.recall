@@ -46,55 +46,43 @@
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
 \ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
-\immediate\openout\writeOfphystricks=FMLCooxHtqRzUz.phystricks.aux%
+\immediate\openout\writeOfphystricks=ECQDooWEpuCM.phystricks.aux%
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
 \ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
-\immediate\openout\writeOfphystricks=FMLCooxHtqRzUz.phystricks.aux%
+\immediate\openout\writeOfphystricks=ECQDooWEpuCM.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\( K \)}}%
-\immediate\write\writeOfphystricks{totalheightof4fed0abce15b30ba69d933c3f15de074040bf815:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\( K \)}}%
-\immediate\write\writeOfphystricks{widthof4fed0abce15b30ba69d933c3f15de074040bf815:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\( L \)}}%
-\immediate\write\writeOfphystricks{totalheightof0461eb4859eebfd70122fea243aeec588cd7b7de:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\( L \)}}%
-\immediate\write\writeOfphystricks{widthof0461eb4859eebfd70122fea243aeec588cd7b7de:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\( M \)}}%
-\immediate\write\writeOfphystricks{totalheightof39e72e2ae7da55d37cda657f6dd345c335b2397f:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\( M \)}}%
-\immediate\write\writeOfphystricks{widthof39e72e2ae7da55d37cda657f6dd345c335b2397f:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{\( N \)}}%
-\immediate\write\writeOfphystricks{totalheightof8c6e38269dac731643417c01b5a446dbdcfeb7ea:\the\lengthOfDOTfiguresdemoDOTpy-}
-\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{\( N \)}}%
-\immediate\write\writeOfphystricks{widthof8c6e38269dac731643417c01b5a446dbdcfeb7ea:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{$KLLL\Omega$}}%
+\immediate\write\writeOfphystricks{totalheightof471573996608f5beb4c577731e0b8c90841c7cb8:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{$KLLL\Omega$}}%
+\immediate\write\writeOfphystricks{widthof471573996608f5beb4c577731e0b8c90841c7cb8:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{$BBB$}}%
+\immediate\write\writeOfphystricks{totalheightof021dba1da04c3f1738fe7f57075582fd77466441:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{$BBB$}}%
+\immediate\write\writeOfphystricks{widthof021dba1da04c3f1738fe7f57075582fd77466441:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{$C$}}%
+\immediate\write\writeOfphystricks{totalheightofc3355896da590fc491a10150a50416687626d7cc:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{$C$}}%
+\immediate\write\writeOfphystricks{widthofc3355896da590fc491a10150a50416687626d7cc:\the\lengthOfDOTfiguresdemoDOTpy-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
 %BEGIN PSPICTURE
-\tikzsetnextfilename{tikzFMLCooxHtqRzUz}
+\tikzsetnextfilename{tikzECQDooWEpuCM}
 \begin{tikzpicture}[xscale=1,yscale=1,inner sep=2.25pt,outer sep=0pt]
 %GRID
 %AXES
 %OTHER STUFF
 %PSTRICKS CODE
 %DEFAULT
-\draw [] (-3.11,2.71) -- (3.11,-2.71);
-\draw [] (-1.69,1.38) -- (-1.49,1.39);
-\draw [] (-1.62,1.31) -- (-1.42,1.33);
-\draw [] (1.42,-1.33) -- (1.62,-1.31);
-\draw [] (1.49,-1.39) -- (1.69,-1.38);
-\draw [] (1.34,0.437) -- (-1.35,-0.437);
-\draw [] (0.718,0.308) -- (0.627,0.129);
-\draw [] (-0.627,-0.129) -- (-0.718,-0.307);
-
-\draw (-3.754278795,3.325748301) node {\( K \)};
-\draw (1.963776802,1.081259222) node {\( L \)};
-\draw (3.754278795,-3.325748300) node {\( M \)};
-\draw (-1.963776802,-1.081259222) node {\( N \)};
-\draw [] (-3.11,2.71) -- (1.34,0.437);
-\draw [] (1.34,0.437) -- (3.11,-2.71);
-\draw [] (3.11,-2.71) -- (-1.35,-0.437);
-\draw [] (-1.35,-0.437) -- (-3.11,2.71);
+\draw []  (0,0) node [rotate=0] {$\bullet$};
+\draw (-0.7982086815,-0.08762114590) node {$KLLL\Omega$};
+\draw []  (4.000000000,-1.000000000) node [rotate=0] {$\bullet$};
+\draw (4.575011866,-1.736461631) node {$BBB$};
+\draw []  (4.000000000,2.000000000) node [rotate=0] {$\bullet$};
+\draw (4.466736328,2.755195242) node {$C$};
+\draw [] (0,0) -- (4.00,-1.00);
+\draw [] (4.00,-1.00) -- (4.00,2.00);
+\draw [] (4.00,2.00) -- (0,0);
 %END PSPICTURE
 \end{tikzpicture}
 %AFTER PSPICTURE

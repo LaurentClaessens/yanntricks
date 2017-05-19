@@ -107,19 +107,23 @@ class AuxFile(object):
             return default_value
         value = self.id_values_dict()[Id]
         return value
+
+
+    ##   \brief return the value of the (LaTeX) counter <name>
+    #    at this point of the LaTeX file.
+    #
+    # Makes LaTeX write the value of the counter in an auxiliary file,
+    # then reads the value in that file.  (needs several compilations to work)
+    #
+    # \return a float.
+    #
+    #
+    # If you ask for the page with for example
+    # ```page = pspict.get_counter_value("page")```
+    # the given page will be the one at which LaTeX thinks the figure lies. 
+    # Since a figure is a floating object, if you have many of them in a row,
+    # the page number could be incorrect.
     def get_counter_value(self,counter_name,default_value=0):
-        """
-        return the value of the (LaTeX) counter <name> at this point of the LaTeX file
-
-        Makes LaTeX write the value of the counter in an auxiliary file, then reads the value in that file.  (needs several compilations to work)
-
-        RETURN : float
-
-        NOTE :
-
-        If you ask for the page with for example  `page = pspict.get_counter_value("page")` the given page will be the one at which LaTeX thinks the figure is. I recall that a figure is a floating object; if you have 10 of them in a row, the page number could be incorrect.
-        """
-
         # Make LaTeX write the value of the counter in a specific file
         interCounterId = "counter"+self.name+self.picture.NomPointLibre.next()
         #self.initialize_counter()
@@ -132,9 +136,11 @@ class AuxFile(object):
 
     def get_box_dimension(self,tex_expression,dimension_name,default_value="0pt"):
         """
-        Return the dimension of the LaTeX box corresponding to the LaTeX expression tex_expression.
+        Return the dimension of the LaTeX box corresponding to the LaTeX
+        expression `tex_expression`.
 
-        dimension_name is a valid LaTeX macro that can be applied to a LaTeX expression and that return a number. Like
+        dimension_name is a valid LaTeX macro that can be applied to
+        a LaTeX expression and that return a number. Like
         widthof, depthof, heightof, totalheightof
         """
         from NoMathUtilities import text_to_hexdigest

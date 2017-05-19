@@ -158,7 +158,7 @@ class SegmentGraph(ObjectGraph):
         """
         return the length of the segment.
         """
-        return Distance(self.I,self.F)
+        return distance(self.I,self.F)
     def advised_mark_angle(self,pspict=None):
         return self.angle()+AngleMeasure(value_degree=90)
     def phyFunction(self):

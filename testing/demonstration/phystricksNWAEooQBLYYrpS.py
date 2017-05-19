@@ -10,7 +10,7 @@ def NWAEooQBLYYrpS():
     A=Point(D.x,B.y)
 
     rect=Polygon(A,B,C,D)
-    rect.put_mark(0.4,pspict=pspict)
+    rect.put_mark(0.2,pspict=pspict)
     rect.make_edges_independent()
 
     ai1=AngleAOB(D,B,C)

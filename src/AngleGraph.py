@@ -340,11 +340,13 @@ class AngleGraph(ObjectGraph):
         # avoid a division by zero during the first compilation.
         dimx,dimy = pspict.get_box_size(text,default_value="3pt")  
 
-        # Now there are a lot of cases depending on the angles of the two lines determining the angle AOB.
+        # Now there are a lot of cases depending on the angles of the
+        # two lines determining the angle AOB.
         # We will detail the computations for the case
         #  0<self.angleA.degree < 90 and 0<self.angleB.degree < 90 
         # The other cases are the same kind of trigonometry.
-        # I just let you know that if you know 3 angles and one length in a triangle, you know everything : 
+        # I just let you know that if you know 3 angles and one length 
+        # in a triangle, you know everything : 
         # just draw the altitude and use Pythagoras along with some trigonometry.
 
         # The cases are tested in the demo file 'OMPAooMbyOIqeA'
@@ -353,7 +355,8 @@ class AngleGraph(ObjectGraph):
 
         if dist is not None :
             if dist<v.length :
-                logging("The distance you give is {} while I computed the minimal to be {}".format(dist,v.length),pspict=pspict)
+                logging("The distance you give is {} while I computed\
+                        the minimal to be {}".format(dist,v.length),pspict=pspict)
             v=v.normalize(dist)
 
         v=visual_vector(v,pspict=pspict)

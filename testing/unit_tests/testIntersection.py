@@ -92,7 +92,57 @@ def lines_and_functions():
     for t in zip(pts,ans):
         assert_almost_equal( t[0],t[1] )
 
+def with_box():
+    # The "demonstration picture" BOVAooIlzgFQpG serves to test
+    # how it works visually.
+    echo_function("with_box")
+    from phystricks.src.Utilities import point_to_box_intersection
+
+    echo_single_test("one box ...")
+    P=Point(1,1)
+    box=BoundingBox(xmin=2,ymin=3,xmax=6,ymax=4)
+    ans=[Point(17/5,3),Point(23/5,4)]
+    for t in zip(ans,point_to_box_intersection(P,box)):
+        assert_equal(t[0],t[1])
+
+    echo_single_test("an other box ...")
+    P=Point(1,1)
+    box=BoundingBox(xmin=1,ymin=3,xmax=4,ymax=4)
+    ans=[Point(11/5,3),Point(14/5,4)]
+    for t in zip(ans,point_to_box_intersection(P,box)):
+        assert_equal(t[0],t[1])
+
+    echo_single_test("an other box ...")
+    P=Point(0,0)
+    box=BoundingBox(xmin=cos(pi + 0.109334472936971) - 0.5,
+            xmax=cos(pi + 0.109334472936971) + 0.5, 
+            ymin=sin(pi + 0.109334472936971) - 0.5,
+            ymax=sin(pi + 0.109334472936971) + 0.5)
+    ans=[Point(11/5,3),Point(14/5,4)]
+
+    ans=[Point(-22625191/45797299,-116397308741499/2146337772042166),\
+            Point(-11397639/7628794,-58636168225371/357531318982996)]
+    for t in zip(ans,point_to_box_intersection(P,box)):
+        assert_equal(t[0],t[1])
+
+    echo_single_test("point->center parallel to a edge")
+    P=Point(0,0)
+    box=BoundingBox(xmin=-2.0719775,xmax=-0.8437425000000001,
+            ymin=-0.1148125,ymax=0.1148125)
+
+    ans=[Point(-337497/400000,0),Point(-828791/400000,0)]
+    for t in zip(ans,point_to_box_intersection(P,box)):
+        assert_equal(t[0],t[1])
+
+    echo_single_test("an other box (corner) ...")
+    P=Point(0,1)
+    box=BoundingBox(xmin=-1,ymin=-3,xmax=-0.5,ymax=-1)
+    ans=[Point(-0.5,-1),Point(-1,-3)]
+    for t in zip(ans,point_to_box_intersection(P,box)):
+        assert_equal(t[0],t[1])
+
 
 def testIntersection():
+    with_box()
     with_lagrange()
     lines_and_functions()
