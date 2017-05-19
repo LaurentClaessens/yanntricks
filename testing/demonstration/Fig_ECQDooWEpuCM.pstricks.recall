@@ -45,24 +45,24 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
+\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
 \immediate\openout\writeOfphystricks=ECQDooWEpuCM.phystricks.aux%
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfhomemokyDOTSagesrcbinsageipython}}{\newlength{\lengthOfhomemokyDOTSagesrcbinsageipython}}{}
+\ifthenelse{\isundefined{\lengthOfDOTfiguresdemoDOTpy}}{\newlength{\lengthOfDOTfiguresdemoDOTpy}}{}
 \immediate\openout\writeOfphystricks=ECQDooWEpuCM.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{$KLLL\Omega$}}%
-\immediate\write\writeOfphystricks{totalheightof471573996608f5beb4c577731e0b8c90841c7cb8:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
-\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{$KLLL\Omega$}}%
-\immediate\write\writeOfphystricks{widthof471573996608f5beb4c577731e0b8c90841c7cb8:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
-\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{$BBB$}}%
-\immediate\write\writeOfphystricks{totalheightof021dba1da04c3f1738fe7f57075582fd77466441:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
-\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{$BBB$}}%
-\immediate\write\writeOfphystricks{widthof021dba1da04c3f1738fe7f57075582fd77466441:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
-\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{$C$}}%
-\immediate\write\writeOfphystricks{totalheightofc3355896da590fc491a10150a50416687626d7cc:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
-\setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\widthof{$C$}}%
-\immediate\write\writeOfphystricks{widthofc3355896da590fc491a10150a50416687626d7cc:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{$KLLL\Omega$}}%
+\immediate\write\writeOfphystricks{totalheightof471573996608f5beb4c577731e0b8c90841c7cb8:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{$KLLL\Omega$}}%
+\immediate\write\writeOfphystricks{widthof471573996608f5beb4c577731e0b8c90841c7cb8:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{$BBB$}}%
+\immediate\write\writeOfphystricks{totalheightof021dba1da04c3f1738fe7f57075582fd77466441:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{$BBB$}}%
+\immediate\write\writeOfphystricks{widthof021dba1da04c3f1738fe7f57075582fd77466441:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfDOTfiguresdemoDOTpy}{\totalheightof{$C$}}%
+\immediate\write\writeOfphystricks{totalheightofc3355896da590fc491a10150a50416687626d7cc:\the\lengthOfDOTfiguresdemoDOTpy-}
+\setlength{\lengthOfDOTfiguresdemoDOTpy}{\widthof{$C$}}%
+\immediate\write\writeOfphystricks{widthofc3355896da590fc491a10150a50416687626d7cc:\the\lengthOfDOTfiguresdemoDOTpy-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
@@ -75,11 +75,11 @@
 %PSTRICKS CODE
 %DEFAULT
 \draw []  (0,0) node [rotate=0] {$\bullet$};
-\draw (-0.9123261815,-0.1001480782) node {$KLLL\Omega$};
+\draw (-0.7982086815,-0.08762114590) node {$KLLL\Omega$};
 \draw []  (4.000000000,-1.000000000) node [rotate=0] {$\bullet$};
-\draw (4.273545117,-1.350350131) node {$BBB$};
+\draw (4.575011866,-1.736461631) node {$BBB$};
 \draw []  (4.000000000,2.000000000) node [rotate=0] {$\bullet$};
-\draw (4.228106298,2.369083742) node {$C$};
+\draw (4.466736328,2.755195242) node {$C$};
 \draw [] (0,0) -- (4.00,-1.00);
 \draw [] (4.00,-1.00) -- (4.00,2.00);
 \draw [] (4.00,2.00) -- (0,0);
