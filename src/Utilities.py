@@ -661,22 +661,21 @@ def latinize(word):
             latin = latin+"DOT"
     return latin
 
-import sys
-sysargvzero = sys.argv[0][:]
 def counterName():
     r"""
     This function provides the name of the counter.
     
     This has the same use of newwriteName, for the same reason of limitation.
     """
-    return "counterOf"+latinize(sysargvzero)
+    return "counterOfforphystricks"
+
 def newlengthName():
     r"""
     This function provides the name of the length.
     
     This has the same use of newwriteName, for the same reason of limitation.
     """
-    return "lengthOf"+latinize(sysargvzero)
+    return "lengthOfforphystricks"
 
 def sublist(l,condition):
     """
