@@ -567,7 +567,8 @@ def general_function_get_point(fun,x,advised=True):
         try :
             ca = fun.derivative()(x) 
         except TypeError:    # Sage cannot derivate the function
-            print "I'm not able to compute derivative of {0}. You should pass advised=False".format(fun)
+            print ("I'm not able to compute derivative of {0}.\
+            You should pass advised=False".format(fun))
         else :
             angle_n=degree(atan(ca)+pi/2)
             if fun.derivative(2)(x) > 0:
