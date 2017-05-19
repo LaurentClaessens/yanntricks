@@ -159,7 +159,6 @@ class AuxFile(object):
     # the page number could be incorrect.
     def get_counter_value(self,counter_name,default_value=0):
         # Make LaTeX write the value of the counter in a specific file
-        #interCounterId = "counter"+self.name+self.picture.NomPointLibre.next()
         interCounterId=CounterId()(counter_name)
         s=r"\arabic{%s}"%counter_name
         self.makeWriteValue(interCounterId,s)

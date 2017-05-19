@@ -4,10 +4,7 @@
 import sys
 from phystricks import *
 
-# Note : il faudra enlever la figure BOVA lorsqu'elle sera entièrement
-# passée en tests unitaires.
-
-phystricksRJDEoobOibtkfv import RJDEoobOibtkfv
+from phystricksRJDEoobOibtkfv import RJDEoobOibtkfv
 from phystricksCornetGlace import CornetGlace
 from phystricksECQDooWEpuCM import ECQDooWEpuCM
 from phystricksSFdgHdO import SFdgHdO
