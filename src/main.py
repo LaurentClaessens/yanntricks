@@ -30,7 +30,6 @@ import math, sys, os
 import BasicGeometricObjects
 import SmallComputations as SmallComputations
 
-from PointGraph import PointsNameList
 from Exceptions import *
 from phystricks.src.SmallComputations import *
 

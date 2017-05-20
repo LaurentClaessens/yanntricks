@@ -23,7 +23,6 @@ from __future__ import unicode_literals
 
 from sage.all import *
 
-from Utilities import PointsNameList
 from NoMathUtilities import ensure_unicode
 from Separator import SeparatorList
 from ObjectGraph import DrawElement
@@ -33,7 +32,6 @@ from AuxFile import AuxFile
 from BoundingBox import BoundingBox_class
 
 class Picture(object):
-    NomPointLibre = PointsNameList()
     r"""
     Describe a Picture
 
@@ -78,7 +76,6 @@ class Picture(object):
 
         # self.interWriteFile is redefined in MultiplePictures
 
-        self.NomPointLibre = PointsNameList()
         self.record_marks=[]
         self.record_bounding_box=[]
         self.record_draw_graph=[]
