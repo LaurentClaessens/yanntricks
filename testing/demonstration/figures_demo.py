@@ -188,7 +188,6 @@ figures_list_3.append(AESIooxXxRYQdT)
 figures_list_3.append(FunctionFour)
 
 def AllFigures():
-
     figures_list=figures_list_1
     if "--pass-number=2" in sys.argv :
         figures_list=figures_list_2
