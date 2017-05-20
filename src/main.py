@@ -37,10 +37,6 @@ from phystricks.src.SmallComputations import *
 import Separator
 import Figure
 
-#from phystricks.src.WrapperStr import WrapperStr
-#var=WrapperStr(var)
-
-
 # TODO : f=phyFunction(x**2+3*x-10), then  g=f/3 does not work.
 # TODO : In figureHYeBZVj, the grid begins at negative numbers. Why ? (see smath available on  https://github.com/LaurentClaessens/smath)
 # TODO : waving functions behaves badly when X and Y dilatations are different. See figureHYeBZVj

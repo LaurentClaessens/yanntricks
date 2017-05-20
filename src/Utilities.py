@@ -576,33 +576,6 @@ def general_function_get_point(fun,x,advised=True):
             P._advised_mark_angle=angle_n
     return P
 
-def PointsNameList():
-    """
-    Furnish a list of points name.
-
-    This is the generator of the sequence of strings 
-    "aaaa", "aaab", ..., "aaaz","aaaA", ..., "aaaZ","aaba" etc.
-
-    EXAMPLES::
-    
-        sage: from phystricks.BasicGeometricObjects import *
-        sage: x=PointsNameList()
-        sage: x.next()
-        u'aaaa'
-        sage: x.next()
-        u'aaab'
-    """
-    raise DeprecationWarning
-    # The fact that this function return 4 character strings is hard-coded here 
-    #   and that 4 is hard-coded in the function unify_point_name
-    import string
-    alphabet=string.ascii_letters
-    for i in alphabet:
-        for j in alphabet:
-            for k in alphabet:
-                for l in alphabet:
-                    yield i+j+k+l
-
 def latinize(word):
     """
     return a "latinized" version of a string.

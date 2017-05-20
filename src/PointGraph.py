@@ -408,9 +408,6 @@ class PointGraph(ObjectGraph):
         Yradius=0.1/yunit
         bb = BoundingBox(Point(self.x-Xradius,self.y-Yradius),
                             Point(self.x+Xradius,self.y+Yradius))
-        for P in self.record_add_to_bb:
-            raise DeprecationWarning
-            bb.AddPoint(P)
         for obj in self.added_objects[pspict]:
             bb.append(obj,pspict)
         return bb

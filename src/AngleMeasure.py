@@ -171,9 +171,6 @@ class AngleMeasure(object):
             raise
     def __neg__(self):
         return AngleMeasure(value_degree=-self.degree)
-    def __call__(self):
-        raise DeprecationWarning
-        return self.degree
     def __div__(self,coef):
         return AngleMeasure(value_radian=self.radian/coef)
 

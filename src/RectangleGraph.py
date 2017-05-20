@@ -66,8 +66,4 @@ class RectangleGraph(PolygonGraph):
         return RectangleGraph
     def _segment(self,side):
         bare_name = "graph_"+side
-        if not bare_name in self.__dict__.iterkeys():
-            raise DeprecationWarning # May 11, 2017
-            line = self.__getattribute__("segment_"+side)()
-            self.__dict__[bare_name]=line
         return  self.__dict__[bare_name]

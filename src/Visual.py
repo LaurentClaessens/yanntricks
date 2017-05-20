@@ -49,12 +49,6 @@ def visual_length(v,l,xunit=None,yunit=None,pspict=None):
     if hasattr(v,"I"):
         from phystricks import AffineVector
         return AffineVector(v.I,v.I+(x,y))
-        #from phystricks import Vector
-        #return AffineVector(v.I,v.I+Vector(x,y))
-    else:
-        raise DeprecationWarning        # If this one never raises, one can remove also the "if hasattr"
-        from phystricks import Vector
-        return Vector(x,y)
 
 def visual_polar(P,r,theta,pspict=None):
     """

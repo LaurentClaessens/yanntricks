@@ -32,9 +32,6 @@ from phystricks.src.ObjectGraph import ObjectGraph
 from phystricks.src.Parameters import Parameters
 from phystricks.src.PointGraph import PointGraph
 
-#from phystricks.src.WrapperStr import WrapperStr
-#var=WrapperStr(var)
-
 def genericBracketAttributeToLanguage(attr,language):
     if language=="tikz":
         if attr=="plotpoints":
