@@ -26,6 +26,8 @@ from ObjectGraph import ObjectGraph
 from Constructors import Segment,AffineVector,Vector,Point
 from NoMathUtilities import logging
 
+from Debug import dprint,testtype
+
 class AffineVectorGraph(ObjectGraph):
     def __init__(self,I,F):
         ObjectGraph.__init__(self,self)
@@ -78,51 +80,44 @@ class AffineVectorGraph(ObjectGraph):
         I=self.I.projection(seg)
         F=self.F.projection(seg)
         return AffineVector(I,F)
-    def decomposition(self,v):
-        """
-        return the decomposition of `self` into a `v`-component and
-        a normal (to v) component.
 
-        INPUT:
+    ##
+    # Return the decomposition of `self` into a `v`-component and
+    # a normal (to v) component.
+    #
+    #        INPUT:
+    #
+    #        - ``v`` - a segment or a vector
+    #
+    #        OUTPUT:
+    #
+    #        A tuple :
+    #        - the first element is the orthogonale component 
+    #        - the second element is the parallel component
+    #
+    #        NOTE:
+    #
+    #        The result does not depend on `v`, but only on the direction of `v`.
+    def decomposition(self,seg):
+        # we make the computations with vectors based at (0,0)
+        # and then translate the answer.
+        s0=self.fix_origin( Point(0,0) )
+        if isinstance(seg,AffineVectorGraph):
+            v=seg.segment()
+        seg0=seg.fix_origin( Point(0,0) )
 
-        - ``v`` - a segment or a vector
+        A=s0.F.projection(seg)
+        paral0=Vector(A)
 
-        OUTPUT:
+        perp0=s0-paral0
 
-        a tuple of vectors that are the decomposition of `self` 
-        into `v` and `v-perp` directions
+        ans_paral=paral0.fix_origin(self.I)
+        ans_perp=perp0.fix_origin(self.I)
 
-        NOTE:
-
-        The result does not depend on `v`, but only on the direction of `v`.
-
-        EXAMPLES::
-
-            sage: from phystricks import *
-            sage: v=Vector(2,3)
-            sage: vx,vy = v.decomposition(Segment(Point(0,0),Point(0,1)))
-            sage: print vx
-            <vector I=<Point(0,0)> F=<Point(0,3)>>
-            sage: print vy
-            <vector I=<Point(0,0)> F=<Point(2,0)>>
-
-        .. literalinclude:: phystricksExDecomposition.py
-        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition0PICTExDecompositionpspict0-for_eps.png
-        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition1PICTExDecompositionpspict1-for_eps.png
-        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition2PICTExDecompositionpspict2-for_eps.png
-        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition3PICTExDecompositionpspict3-for_eps.png
-        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition4PICTExDecompositionpspict4-for_eps.png
-        .. image:: Picture_FIGLabelFigExDecompositionssLabelSubFigExDecomposition5PICTExDecompositionpspict5-for_eps.png
-        """
-        O=Point(0,0)
-
-        # Vector based at O which represents 'self'
-        v0=Vector(self.Dx,self.Dy)      
-
-        A=v0.F.projection(v)
-        v1=Vector(A)
-        v2=v0-v1
-        return v1,v2
+        return ans_perp,ans_paral
+    def inner_product(self,other):
+        from Utilities import inner_product
+        return inner_product(self,other)
     def copy(self):
         return AffineVector(self.I,self.F)
     def translate(self,v):
@@ -156,7 +151,13 @@ class AffineVectorGraph(ObjectGraph):
     def __str__(self):
         return "<AffineVectorGraph I=%s F=%s>"%(str(self.I),str(self.F))
     def __add__(self,other):
-        return AffineVector(self.I,self.F+other)
+        if other.I != self.I :
+            raise OperationNotPermitedException("You can only add vectors\
+                            with same base point.")
+        I=self.I
+        Dx=self.Dx+other.Dx
+        Dy=self.Dy+other.Dy
+        return AffineVector(self.I,self.I.translation( Vector(Dx,Dy) ))
     def __sub__(self,other):
         return self+(-other)
     def __mul__(self,coef):

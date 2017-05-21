@@ -30,6 +30,8 @@ from Constructors import *
 from Utilities import *
 from MathStructures import *
 
+from Debug import testtype,dprint
+
 class PointGraph(ObjectGraph):
     def __init__(self,a,b):
         self.x=SR(a)
@@ -39,12 +41,15 @@ class PointGraph(ObjectGraph):
         self.add_option("PointSymbol=*")
         self._advised_mark_angle=None
         
-        ax=abs(numerical_approx(self.x))
-        if ax<0.00001 and ax>0 :
-            self.x=0
-        ay=abs(numerical_approx(self.y))
-        if ay<0.00001 and ay>0 :
-            self.y=0
+        try :
+            ax=abs(numerical_approx(self.x))
+            if ax<0.00001 and ax>0 :
+                self.x=0
+            ay=abs(numerical_approx(self.y))
+            if ay<0.00001 and ay>0 :
+                self.y=0
+        except TypeError:
+            pass
 
     def advised_mark_angle(self,pspict):
         if self._advised_mark_angle is None :
@@ -66,23 +71,6 @@ class PointGraph(ObjectGraph):
         OUTPUT:
 
         a point.
-
-        EXAMPLES:
-
-        Return a point even if the projections happens
-        to lies outside the segment::
-
-            sage: from phystricks import *
-            sage: s1=Segment( Point(0,0),Point(2,1) )
-            sage: print Point(3,-1).projection(s1)
-            <Point(2,1)>
-            sage: print Point(5,0).projection(s1) 
-            <Point(4,2)>
-
-        You can project on a vector::
-
-            sage: print Point(5,0).projection(Vector(2,1))
-            <Point(4,2)>
         """
         from AffineVectorGraph import AffineVectorGraph
         from SingleAxeGraph import SingleAxeGraph
@@ -198,49 +186,22 @@ class PointGraph(ObjectGraph):
         """
         x,y=var('x,y')
         return line.equation.lhs()(x=self.x,y=self.y)
+
+    ##
+    #    translate `self`.
+    #
+    #        The parameter is 
+    #        - either one vector
+    #        - either two numbers
     def translate(self,a,b=None):
-        """
-        translate `self`.
-
-        EXAMPLES::
-
-        You can translate by a :func:`Vector`::
-
-            sage: from phystricks import *
-            sage: v=Vector(2,1)                        
-            sage: P=Point(-1,-1)
-            sage: print P.translate(v)
-            <Point(1,0)>
-
-        An :func:`AffineVector` is accepted::
-
-            sage: w=AffineVector( Point(1,1),Point(2,3) )
-            sage: print P.translate(w)
-            <Point(0,1)>
-
-        You can also directly provide the coordinates::
-
-            sage: print P.translate(10,-9)
-            <Point(9,-10)>
-
-        Or the :func:`Point` corresponding to the translation vector::
-
-            sage: print P.translate( Point(3,4)  )
-            <Point(2,3)>
-
-        Translation by minus itself produces zero::
-
-            sage: x,y=var('x,y')
-            sage: P=Point(x,y)
-            sage: print P.translate(-P)
-            <Point(0,0)>
-
-        """
+        if isinstance(a,PointGraph):
+            raise OperationNotPermitedException("Cannot add a point\
+                                                        with a point")
         if b==None :
             v=a
         else :
             v=Vector(a,b)
-        return self+v
+        return Point(  self.x+v.Dx,self.y+v.Dy  )
     def origin(self,P):
         """
         Let S be the point self.
@@ -501,20 +462,10 @@ class PointGraph(ObjectGraph):
         return True
     def __ne__(self,other):
         return not self==other
-    def __add__(self,v):
-        """
-        Addition of a point with a vector is the parallel translation,
-        while addition of a point with an other point is simply
-        the addition of coordinates.
 
-        INPUT:
-
-        - ``v`` - a vector or a tuple of size 2
-
-        OUTPUT:
-
-        a new point
-        """
+    ## Translate the point with the vector.
+# The parameter can also be a tuple of size 2.
+    def translation(self,v):
         if isinstance(v,tuple) :
             if len(v)==2:
                 return Point(self.x+v[0],self.y+v[1])
@@ -533,6 +484,15 @@ class PointGraph(ObjectGraph):
                 print(v.Dx)
                 raise TypeError, "You seem to add myself with something which is not a Point neither a Vector. Sorry, but I'm going to crash : {},{}".format(v,type(v))
         return Point(self.x+dx,self.y+dy)
+    ## \brief addition of coordinates
+    def __add__(self,other):
+        if isinstance(other,tuple):
+            Dx=other[0]
+            Dy=other[1]
+        else :
+            Dx=other.x
+            Dy=other.y
+        return Point(  self.x+Dx,self.y+Dy )
     def __sub__(self,v):
         if isinstance(v,tuple):
             if len(v)==2:

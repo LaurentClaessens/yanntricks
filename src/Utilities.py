@@ -75,16 +75,7 @@ def inner_product(v,w,numerical=True):
     Return the inner product of vectors v and w
 
     INPUT:
-    - ``v,w`` - two vectors or points
-
-    OUTPUT:
-    A numerical approximation
-
-    If the vectors are not based at (0,0), make first 
-    the translation and return the inner product.
-
-    If a point is passed, it is considered as the vector
-    from (0,0).
+    - ``v,w`` - two vectors based on the same point.
 
     EXAMPLES::
 
@@ -103,16 +94,12 @@ def inner_product(v,w,numerical=True):
     from PointGraph import PointGraph
     from Constructors import Point
     from AffineVectorGraph import AffineVectorGraph
-    O=Point(0,0)
-    if isinstance(v,PointGraph):
-        a=AffinVector(O,v)
-    if isinstance(w,PointGraph):
-        b=AffinVector(O,w)
-    if isinstance(v,AffineVectorGraph):
-        a=v
-    if isinstance(w,AffineVectorGraph):
-        b=w
-    s = a.Dx*b.Dx+a.Dy*b.Dy
+
+    if v.I != w.I :
+        raise OperationNotPermitedException("I only compute inner products\
+                    of vectors based on the same point.")
+
+    s = v.Dx*w.Dx+v.Dy*w.Dy
     if numerical:
         return numerical_approx(s)
     return s

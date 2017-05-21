@@ -35,9 +35,8 @@ class SegmentGraph(ObjectGraph):
         self.F = B
         if not isinstance(A,PointGraph) or not isinstance(B,PointGraph):
             from NoMathUtilities import testtype
-            logging("Building a segment from something that is not a point. Here are the given objects :")
-            testtype(A)
-            testtype(B)
+            logging("Building a segment from something that is not\
+                                a point. Here are the given objects :")
             raise TypeError
         ObjectGraph.__init__(self,self)
         self.measure=None
@@ -605,8 +604,8 @@ class SegmentGraph(ObjectGraph):
         else:
             P=a
         I=P
-        F=P+self
-        s=Segment(I,P+self)
+        F=P.translate(self.Dx,self.Dy)
+        s=Segment(I,F)
 
         return s
     def inverse(self):
@@ -825,6 +824,9 @@ class SegmentGraph(ObjectGraph):
             sage: print a+b
             <vector I=<Point(0,0)> F=<Point(3,4)>>
         """
+        print("If you want to translate something you should\
+                probably use '.translation' instead.") 
+        raise DeprecationWarning
         from AffineVectorGraph import AffineVectorGraph
         from PointGraph import PointGraph
         if isinstance(other,AffineVectorGraph):
@@ -833,11 +835,13 @@ class SegmentGraph(ObjectGraph):
             return self+Vector(other)
         if isinstance(other,tuple):
             if len(other)!=2:
-                raise TypeError("You can add a SegmentGraph with a tuple of length 2, not "+str(len(other)))
+                raise TypeError("You can add a SegmentGraph with a tuple\
+                        of length 2, not "+str(len(other)))
             return self+Vector(other)
         else:
             raise TypeError,"I do not know how to sum %s with %s"%(self,other)
     def __sub__(self,other):
+        raise
         return self+(-other)
     def __rmul__(self,coef):
         return self*coef

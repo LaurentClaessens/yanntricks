@@ -72,27 +72,9 @@ def testEnsureUnicode():
     double_u2=ensure_unicode( ensure_str(u2) )
     assert_equal(double_u2,u2)
 
-def testVectorConstructor():
-    """
-    Test different ways of building a vector.
-    """
-    echo_function("testVectorConstructor")
-    P=Point(4,2)
-    O=Point(0,0)
-    t=(4,2)
-    v1=Vector(P)
-    v2=Vector(t)
-    v3=Vector(4,2)
-
-    assert_equal(v1.F.x,4)
-    assert_equal(v2.F.x,4)
-    assert_equal(v3.F.x,4)
-    assert_equal(v1.F.y,2)
-    assert_equal(v2.F.y,2)
-    assert_equal(v3.F.y,2)
-    assert_equal(v1.I,O)
-    assert_equal(v2.I,O)
-    assert_equal(v3.I,O)
+from testAffineVector import testAffineVector
+print("testAffineVector")
+testAffineVector()
 
 from testIntersection import testIntersection
 print("testIntersection")
