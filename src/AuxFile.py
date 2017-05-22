@@ -118,10 +118,10 @@ class AuxFile(object):
             value=els.split(':')[1]
             d[key]=value
 
-        f=open(self.interWriteFile.from_here(),"w")
-        for k in d.iterkeys():
-            f.write("%s:%s-\n"%(k,d[k]))
-        f.close()
+        with open(self.interWriteFile.from_here(),"w") as f:
+            for k in d.iterkeys():
+                f.write("%s:%s-\n"%(k,d[k]))
+
         return d
     def get_Id_value(self,Id,default_value=0):
         if Id not in self.id_values_dict().iterkeys():
