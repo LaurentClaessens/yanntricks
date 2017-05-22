@@ -33,5 +33,3 @@ compile_demo 1 &&
 compile_demo 2 &&
 compile_demo 3 
 
-# Then compare with the "recall" ones
-./test_recall.py

@@ -10,21 +10,29 @@
 BASEDIR=$(pwd)
 SAGE_PATH=$PYTHONPATH:$BASEDIR/../..
 
+LOGFILE=$BASEDIR/testing.log
+rm $LOGFILE
+touch $LOGFILE
+
 demonstration_testing ()
 {
     cd $BASEDIR/demonstration
-    SAGE_PATH=$SAGE_PATH ./testing.sh
-}
-
-unit_testing ()
-{
-    cd $BASEDIR/unit_tests
-    SAGE_PATH=$SAGE_PATH ./testing.sh
+    SAGE_PATH=$SAGE_PATH ./testing.sh&&
+    cd $BASEDIR
+    ./test_recall.py $BASEDIR/demonstration >> $LOGFILE
 }
 
 manual_testing ()
 {
     cd $BASEDIR/../manual
+    SAGE_PATH=$SAGE_PATH ./testing.sh&&
+    cd $BASEDIR
+    ./test_recall.py $BASEDIR/../manual >> $LOGFILE
+}
+
+unit_testing ()
+{
+    cd $BASEDIR/unit_tests
     SAGE_PATH=$SAGE_PATH ./testing.sh
 }
 

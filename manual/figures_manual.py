@@ -23,13 +23,13 @@ def append_picture(fun,number):
     if number>=3 :
         figures_list_3.append(fun)
 
-append_picture(RJDEoobOibtkfv,1)
-append_picture(OnePoint,1)
-append_picture(FunctionThird,1)
-append_picture(GKMEooBcNxcWBt,1)
-append_picture(LARGooSLxQTdPC,1)
-append_picture(PBFCooVlPiRBpt,1)
-append_picture(VSJOooJXAwbVEt,1)
+append_picture(RJDEoobOibtkfv,3)
+append_picture(OnePoint,2)
+append_picture(FunctionThird,2)
+append_picture(GKMEooBcNxcWBt,2)
+append_picture(LARGooSLxQTdPC,2)
+append_picture(PBFCooVlPiRBpt,2)
+append_picture(VSJOooJXAwbVEt,2)
 """
 append_picture(<++>,1)
 append_picture(<++>,1)
@@ -38,9 +38,6 @@ append_picture(<++>,1)
 append_picture(<++>,1)
 """
 
-# À enlever après avoir déterminé plus précisément ce qui doit être compilé plusieurs fois
-figures_list_2=figures_list_1
-figures_list_3=figures_list_1
 
 def AllFigures():
     figures_list=figures_list_1

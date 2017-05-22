@@ -28,9 +28,7 @@ rm *.pyc >> /dev/null
 # Compile three times the demo pictures 
 # (yes, some pictures need three passes)
 
-compile_manual 1 &&
-compile_manual 2 &&
-compile_manual 3 
-
-# Then compare with the "recall" ones
-./test_recall.py
+compile_manual 1&&
+compile_manual 2&&
+compile_manual 3&&
+echo "ok for the manual"
