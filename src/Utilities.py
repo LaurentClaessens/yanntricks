@@ -28,6 +28,7 @@ from phystricks.src.MathStructures import *
 from phystricks.src.Exceptions import ShouldNotHappenException
 from phystricks.src.Decorators import sort_and_assert_real
 
+from Debug import dprint
 
 def is_real(z):
     if type(z) in [int,sage.rings.real_mpfr.RealNumber]:
@@ -70,33 +71,25 @@ def distance(P,Q):
     """ return the distance between P and Q """
     return sqrt(distance_sq(P,Q))
 
+##  \brief  Return the inner product of vectors `v` and `w`
+# \param v a vector
+# \param w a vector
+# \param numerical a boolean
+#
+# If `numerical` is true, the computations are done on
+# numerical approximations of the coordinates.
 def inner_product(v,w,numerical=False):
-    """
-    Return the inner product of vectors v and w
-
-    INPUT:
-    - ``v,w`` - two vectors based on the same point.
-
-    EXAMPLES::
-
-    sage: from phystricks import *
-    sage: from phystricks.BasicGeometricObjects import *
-    sage: v=Vector(1,3)
-    sage: w=Vector(-5,7)
-    sage: inner_product(v,w)
-    16
-
-    sage: v=AffineVector(Point(1,1),Point(2,2))
-    sage: w=AffineVector(Point(-2,5),Point(-1,4))
-    sage: inner_product(v,w)
-    0
-    """
     from PointGraph import PointGraph
     from Constructors import Point
     from AffineVectorGraph import AffineVectorGraph
 
-    if v.I != w.I :
-        raise OperationNotPermitedException("I only compute inner products\
+    if numerical :
+        if not v.I.is_almost_equal(w.I):
+            raise OperationNotPermitedException("I only compute inner products\
+                    of vectors based on the same point.")
+    if not numerical :
+        if v.I != w.I :
+            raise OperationNotPermitedException("I only compute inner products\
                     of vectors based on the same point.")
 
     s = v.Dx*w.Dx+v.Dy*w.Dy

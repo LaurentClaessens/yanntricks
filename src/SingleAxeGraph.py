@@ -70,14 +70,15 @@ class SingleAxeGraph(ObjectGraph):
             # This is why I return a small segment.
 
             if projection :
-                return Segment(self.C,self.C+self.base)
+                return Segment(self.C,self.C.translation(self.base))
             else :
-                return Segment(self.C-self.base.normalize(1),self.C+self.base.normalize(1))      
+                return Segment(self.C.translation(-self.base.normalize(1)),self.C.translation(self.base.normalize(1)))
 
         # The axes have to cross at (0,0)
         if self.mx>0 :
             self.mx=0
-        return Segment(self.C+self.mx*self.base,self.C+self.Mx*self.base)
+        return Segment(self.C.translation(self.mx*self.base),
+                    self.C.translation(self.Mx*self.base))
     def add_option(self,opt):
         self.options.add_option(opt)
     def mark_point(self,pspict=None):

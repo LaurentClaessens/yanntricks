@@ -360,7 +360,7 @@ class AngleGraph(ObjectGraph):
             v=v.normalize(dist)
 
         v=visual_vector(v,pspict=pspict)
-        C=mark_point+v
+        C=mark_point.translate(v)
         return Mark(self,dist=None,angle=None,text=text,mark_point=None,central_point=C,position=None,pspict=pspict)
 
     def action_on_pspict(self,pspict):
@@ -409,9 +409,11 @@ class RightAngleGraph(ObjectGraph):
         v=visual_length(v1,l=1,pspict=pspict)
 
         if n==0:
-            P1=I - self.r*v
+            #P1=I - self.r*v
+            P1=I.translation(- self.r*v)
         if n==1:
-            P1=I + self.r*v
+            #P1=I + self.r*v
+            P1=I.translation(self.r*v)
         
         return P1
     def action_on_pspict(self,pspict):

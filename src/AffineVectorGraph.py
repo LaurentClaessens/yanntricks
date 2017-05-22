@@ -121,7 +121,7 @@ class AffineVectorGraph(ObjectGraph):
     def copy(self):
         return AffineVector(self.I,self.F)
     def translate(self,v):
-        return AffineVector(self.I+v,self.F+v)
+        return AffineVector(self.I.translate(v),self.F.translate(v))
     def advised_mark_angle(self,pspict=None):
         return self.segment.advised_mark_angle(pspict)
     def midpoint(self,advised=True):
@@ -150,7 +150,24 @@ class AffineVectorGraph(ObjectGraph):
         return self.segment.bounding_box(pspict=pspict)
     def __str__(self):
         return "<AffineVectorGraph I=%s F=%s>"%(str(self.I),str(self.F))
+
+    ## \brief put the vector `other` on the end of `self`
+    #
+    # This is the usual vector sum, but here we accept two vector that have
+    # not the same initial point.
+    #
+    # \return a vector with same initial point as `self`.
+    def extend(self,other):
+        I=self.I
+        F=self.F.translate(other.Dx,other.Dy)
+        return AffineVector(I,F)
     def __add__(self,other):
+        if isinstance(other,tuple):
+            if len(other)==2:
+                I=self.I
+                Dx=self.Dx+other[0]
+                Dy=self.Dy+other[1]
+                return AffineVector(self.I,self.I.translation( Vector(Dx,Dy) ))
         if other.I != self.I :
             raise OperationNotPermitedException("You can only add vectors\
                             with same base point.")

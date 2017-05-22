@@ -33,6 +33,8 @@ from Utilities import *
 from Exceptions import ShouldNotHappenException
 from GenericCurve import GenericCurve
 
+from Debug import dprint
+
 class ParametricCurveGraph(GenericCurve,ObjectGraph):
     def __init__(self,f1,f2,llamI,llamF):
         """
@@ -292,48 +294,31 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
         # The delicate part is to decide if we want to return N or -N. We select the angle which is on the same side of the curve than the second derivative.  If v is the second derivative, either N or -N has positive inner product with v. We select the one with negative inner product since the second derivative vector is inner.
         second=self.get_second_derivative_vector(llam)
             # If there is an error here, we were returning N before.
-        if inner_product(N,second) >= 0:
+
+        if inner_product(N,second,numerical=True) >= 0:
             v=-N
         else :
             v=N
         return v.fix_origin(anchor)
+
+    ##  \brief  return the second derivative vector normalised to 1.
+    #
+    #        \param llam - the value of the parameter on which we want 
+    #        the second derivative.
+    #
+    #         \param advised - (default=False) If True, 
+    #            the initial point is given with
+    #                an advised_mark_angle.
+    #
+    #        \param normalize - (defautl=True) If True, provides a vector
+    #                            normalized to 1.
+    #                           if False, the norm is not guaranteed
+    # and depends on the parametrization.  
+    #
+    # Note : if the parametrization is not normal,
+    # this is not orthogonal to the tangent.
+    # If you want a normal vector, use `get_normal_vector`.
     def get_second_derivative_vector(self,llam,advised=False,normalize=True):
-        r"""
-        return the second derivative vector normalised to 1.
-
-        INPUT:
-
-        - ``llam`` - the value of the parameter on which we want 
-        the second derivative.
-
-        - ``advised`` - (default=False) If True, the initial point is given with
-                                            an advised_mark_angle.
-
-        - ``normalize`` - (defautl=True) If True, provides a vector
-                            normalized to 1.
-                           if False, the norm is not guaranteed and depends
-                           on the parametrization.  
-        EXAMPLES::
-
-            sage: from phystricks import *
-            sage: F=ParametricCurve(x,x**3)
-
-        Normalizing a null vector produces a warning::
-
-            sage: print F.get_second_derivative_vector(0,normalize=True)
-            <vector I=<Point(0,0)> F=<Point(0,0)>>
-
-        ::
-
-            sage: print F.get_second_derivative_vector(0,normalize=False)
-            <vector I=<Point(0,0)> F=<Point(0,0)>>
-            sage: print F.get_second_derivative_vector(1)
-            <vector I=<Point(1,1)> F=<Point(1,2)>>
-
-        Note : if the parametrization is not normal,
-        this is not orthogonal to the tangent.
-        If you want a normal vector, use self.get_normal_vector
-        """
         initial=self.get_point(llam,advised)
         c=self.get_derivative(llam,2)
         if normalize :
@@ -434,7 +419,7 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
             v=self.get_normal_vector(llam)
             vp=v.F-v.I
             w=Vector(vp.x*yunit/xunit,vp.y*xunit/yunit).fix_visual_size(dy,xunit,yunit)
-            PTs.append( self.get_point(llam)+w*(-1)**i )
+            PTs.append( self.get_point(llam).translation(w*(-1)**i) )
         PTs.append(self.get_point(Mll))
         return PTs
     def rotate(self,theta):

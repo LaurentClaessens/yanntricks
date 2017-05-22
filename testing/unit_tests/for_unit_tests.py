@@ -72,6 +72,10 @@ def testEnsureUnicode():
     double_u2=ensure_unicode( ensure_str(u2) )
     assert_equal(double_u2,u2)
 
+from testOverloading import testOverloading
+print("testOverloading")
+testOverloading()
+
 from testAffineVector import testAffineVector
 print("testAffineVector")
 testAffineVector()
@@ -106,5 +110,7 @@ print("testEnsureUnicode")
 testEnsureUnicode()
 print("testFGetMinMaxData")
 testFGetMinMaxData()
-print("testVectorConstructor")
-testVectorConstructor()
+
+from testAffineVector import testAffineVector
+print("testAffineVector")
+testAffineVector()

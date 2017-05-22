@@ -63,7 +63,7 @@ def visual_polar(P,r,theta,pspict=None):
     v=Vector( cos(alpha)/xunit,sin(alpha)/yunit  )
     w=visual_length(v,r,pspict=pspict)
     
-    return P+w
+    return P.translation(w)
 
 def polar_to_visual_polar(r,theta,pspict=None):
     """

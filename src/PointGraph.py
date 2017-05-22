@@ -30,8 +30,6 @@ from Constructors import *
 from Utilities import *
 from MathStructures import *
 
-from Debug import testtype,dprint
-
 class PointGraph(ObjectGraph):
     def __init__(self,a,b):
         self.x=SR(a)
@@ -396,6 +394,7 @@ class PointGraph(ObjectGraph):
         sy=numerical_approx(self.y)
         ox=numerical_approx(other.x)
         oy=numerical_approx(other.y)
+
         if abs(sx-ox)>epsilon:
             return False
         if abs(sy-oy)>epsilon:
@@ -445,7 +444,7 @@ class PointGraph(ObjectGraph):
         #       boolean
         #
         #        This function tests exact equality 
-        #a       (even symbolic if one needs). For
+        #       (even symbolic if one needs). For
         #        numerical equality (up to some epsilon), use the function 
         #        `is_almost_equal`
 
@@ -500,7 +499,7 @@ class PointGraph(ObjectGraph):
                 return self+(-v[0],-v[1])
             else :
                 raise TypeError, "Cannot sum %s with %s."%(self,v)
-        return self+(-v)
+        return self.translation(-v)
     def __neg__(self):
         return Point(-self.x,-self.y)
     def __mul__(self,r):
