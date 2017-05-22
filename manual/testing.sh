@@ -8,11 +8,10 @@
 # with the version of phystricks which is present in *this* directory; not the
 # one which is already in your system's $SAGE_PATH.
 
-
-compile_demo ()
+compile_manual ()
 {
-SAGE_PATH=$SAGE_PATH  ./figures_demo.py --all --pass-number=$1 &&
-pytex lst_demo.py --no-external --all
+SAGE_PATH=$SAGE_PATH  ./figures_manual.py --all --pass-number=$1 &&
+pytex lst_manual.py --no-external --all
 }
 
 
@@ -29,7 +28,7 @@ rm *.pyc >> /dev/null
 # Compile three times the demo pictures 
 # (yes, some pictures need three passes)
 
-compile_demo 1 &&
-compile_demo 2 &&
-compile_demo 3 
-
+compile_manual 1&&
+compile_manual 2&&
+compile_manual 3&&
+echo "ok for the manual"

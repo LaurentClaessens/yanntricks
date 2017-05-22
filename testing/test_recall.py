@@ -5,14 +5,20 @@
 # This script compares the files "*.pstricks" with the corresponding one 
 # "*.pstricks.recall" and prints a warning if they are not equal.
 
-import os
+# The directory path to be checked is passed as argument.
 
-def pstricks_files_iterator():
+import os
+import sys
+
+directory=sys.argv[1]
+
+def pstricks_files_iterator(directory):
+    os.chdir(directory)
     for f in os.listdir():
         if f.endswith(".pstricks"):
             yield f
 
-for filename in pstricks_files_iterator():
+for filename in pstricks_files_iterator(directory):
     with open(filename,'r') as f:
         get_text=f.read()
 
