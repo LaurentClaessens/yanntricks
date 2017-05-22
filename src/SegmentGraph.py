@@ -29,15 +29,16 @@ from NoMathUtilities import logging
 
 from PointGraph import PointGraph
 
+from Debug import dprint
+
 class SegmentGraph(ObjectGraph):
     def __init__(self,A,B):
         self.I = A
         self.F = B
         if not isinstance(A,PointGraph) or not isinstance(B,PointGraph):
             from NoMathUtilities import testtype
-            logging("Building a segment from something that is not a point. Here are the given objects :")
-            testtype(A)
-            testtype(B)
+            logging("Building a segment from something that is not\
+                                a point. Here are the given objects :")
             raise TypeError
         ObjectGraph.__init__(self,self)
         self.measure=None
@@ -103,11 +104,11 @@ class SegmentGraph(ObjectGraph):
         """
         return Point(x,self.slope*x+self.independent)
     @lazy_attribute
-    def vertical(self):
+    def is_vertical(self):
         from Numerical import are_almost_equal
         return are_almost_equal(self.I.x,self.F.x,epsilon=0.0001)
     @lazy_attribute
-    def horizontal(self):
+    def is_horizontal(self):
         from Numerical import are_almost_equal
         return are_almost_equal(self.I.y,self.F.y,epsilon=0.0001)
     @lazy_attribute
@@ -127,11 +128,11 @@ class SegmentGraph(ObjectGraph):
             sage: Segment(Point(1,0),Point(0,1)).equation
             x + y - 1 == 0
         """
-        if self.vertical :
+        if self.is_vertical :
             self.coefs = [1,0,-self.I.x]
-        if self.horizontal :
+        if self.is_horizontal :
             self.coefs = [0,1,-self.I.y]
-        if not (self.vertical or self.horizontal) :
+        if not (self.is_vertical or self.is_horizontal) :
             self.coefs = [1,-1/self.slope,self.independent/self.slope]
         x,y=var('x,y')
         Ix=numerical_approx(self.I.x)
@@ -162,13 +163,13 @@ class SegmentGraph(ObjectGraph):
     def advised_mark_angle(self,pspict=None):
         return self.angle()+AngleMeasure(value_degree=90)
     def phyFunction(self):
-        if self.horizontal:
+        if self.is_horizontal:
             # The trick to define a constant function is explained here:
             # http://groups.google.fr/group/sage-support/browse_thread/thread/e5e8775dd79459e8?hl=fr?hl=fr
             x=var('x')
             fi = SR(A.y).function(x)
             return phyFunction(fi)
-        if not (self.vertical or self.horizontal) :
+        if not (self.is_vertical or self.is_horizontal) :
             x=var('x')
             return phyFunction( self.slope*x+self.independent )
     def symmetric_by(self,O):
@@ -187,9 +188,9 @@ class SegmentGraph(ObjectGraph):
             xmax=bb.xmax
             ymin=bb.ymin
             ymax=bb.ymax
-        if self.vertical:
+        if self.is_vertical:
             return Segment( Point(self.I.x,ymin),Point(self.I.y,ymax)  )
-        if self.horizontal:
+        if self.is_horizontal:
             return Segment( Point(xmin,self.I.y),Point(xmax,self.I.y)  )
         bxmin=Segment( Point(xmin,-1),Point(xmin,1) )
         bxmax=Segment( Point(xmax,-1),Point(xmax,1) )
@@ -240,10 +241,10 @@ class SegmentGraph(ObjectGraph):
         """
         return the largest segment that fits into the given bounds
         """
-        if self.horizontal:
+        if self.is_horizontal:
             k=self.I.y
             return Segment(  Point(xmin,k),Point(xmax,k)  )
-        if self.vertical:
+        if self.is_vertical:
             k=self.I.x
             return Segment(  Point(x,ymin),Point(x,ymax)  )
 
@@ -301,7 +302,7 @@ class SegmentGraph(ObjectGraph):
         normal = self.get_normal_vector().normalize(dy)
         PI = self.get_regular_points(dx)
         PIs = [self.I]
-        PIs.extend( [  PI[i]+normal*(-1)**i for i in range(1,len(PI))  ] )
+        PIs.extend( [  PI[i].translation(normal*(-1)**i) for i in range(1,len(PI))  ] )
         PIs.append(self.F)
         return PIs
     def get_point_length(self,d,advised=True):
@@ -381,14 +382,14 @@ class SegmentGraph(ObjectGraph):
         positions=[]
         if n%2==1:
             for k in range( int(-(n-1)/2),int((n-1)/2)+1 ):
-                positions.append(center+k*vect)
+                positions.append(center.translation(k*vect))
         if n%2==0:
             import numpy
             for k in numpy.linspace(-n/2+0.5,n/2-0.5,n):
-                positions.append(center+k*vect)
+                positions.append(center.translation(k*vect))
         mini1=self.rotation(angle).fix_visual_size(l)
         for P in positions:
-            mini=mini1+AffineVector(mini1.midpoint(),P)
+            mini=mini1.translation(AffineVector(mini1.midpoint(),P))
             ao.append(mini)
         return ao
     def get_divide_in_two(self,n=1,d=0.1,l=0.1,angle=45\
@@ -428,13 +429,13 @@ class SegmentGraph(ObjectGraph):
         - `origin` (optional). If given, the vector will 
             be attached to that point.
         """
-        if self.vertical :
+        if self.is_vertical :
             v = Point(-1,0).Vector().fix_origin(self.midpoint())
         else :
             P = Point(self.slope,-1)
             v = P.Vector().normalize().fix_origin(self.midpoint())
         if origin:
-            v=AffineVector(origin,origin+v)
+            v=AffineVector(origin,origin.translation(v))
         return v
     def get_tangent_vector(self):
         """
@@ -506,8 +507,8 @@ class SegmentGraph(ObjectGraph):
         """
         normal=self.get_normal_vector()
         M=self.midpoint()
-        P1=M+normal
-        P2=M-normal
+        P1=M.translation(normal)
+        P2=M.translation(-normal)
         seg=Segment(P1,P2)
         if code:
             s1=Segment(self.I,M)
@@ -559,9 +560,42 @@ class SegmentGraph(ObjectGraph):
         return a segment parallel to self passing trough P
         """
         v=self.F-self.I
-        Q=P+v
+        Q=P.translation(v)
         return Segment(P,Q)
 
+    ## \brief Return true is `self` and `other` are orthogonal segments 
+    #
+    # The answer is exact, so you can be surprised if some numerical 
+    # approximations were made before.
+    # 
+    # \see `is_almost_orthogonal`
+    def is_orthogonal(self,other):
+        if self.is_vertical:
+            return other.is_horizontal
+        if self.is_horizontal:
+            return other.is_vertical
+        if self.slope==-1/other.slope:
+            return True
+        return False
+    ## \brief Return true is `self` and `other` are orthogonal segments 
+    #
+    # The answer is based on numerical approximations of the slopes.
+    # If \f$ k \f$ is the slope of `self`, check if the slope of the other
+    # is \f$ -1/k \f$ up to `epsilon`. 
+    # 
+    # \see `is_orthogonal`
+    def is_almost_orthogonal(self,other,epsilon=0.001):
+        if self.is_vertical:
+            return other.is_horizontal
+        if self.is_horizontal:
+            return other.is_vertical
+
+        s_slope=numerical_approx(self.slope)
+        o_slope=numerical_approx(other.slope)
+
+        if abs(s_slope+1/o_slope)<epsilon :
+            return True
+        return False
     def translate(self,vecteur):
         v = Segment(self.I.translate(vecteur),self.F.translate(vecteur))
         return v
@@ -605,8 +639,8 @@ class SegmentGraph(ObjectGraph):
         else:
             P=a
         I=P
-        F=P+self
-        s=Segment(I,P+self)
+        F=P.translate(self.Dx,self.Dy)
+        s=Segment(I,F)
 
         return s
     def inverse(self):
@@ -643,7 +677,7 @@ class SegmentGraph(ObjectGraph):
             yunit=pspict.yunit
         Dx=(self.F.x-self.I.x)*xunit
         Dy=(self.F.y-self.I.y)*yunit
-        if self.vertical:
+        if self.is_vertical:
             return Dy
         else: 
             return sqrt(Dx**2+Dy**2)
@@ -807,6 +841,8 @@ class SegmentGraph(ObjectGraph):
             coef=-coef
         v = Segment(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
         return v
+    def translation(self,v):
+        return Segment(self.I.translation(v),self.F.translation(v))
     def __add__(self,other):
         """
         If the other is a vector, return the translated segment
@@ -825,6 +861,9 @@ class SegmentGraph(ObjectGraph):
             sage: print a+b
             <vector I=<Point(0,0)> F=<Point(3,4)>>
         """
+        print("If you want to translate something you should\
+                probably use '.translation' instead.") 
+        raise DeprecationWarning
         from AffineVectorGraph import AffineVectorGraph
         from PointGraph import PointGraph
         if isinstance(other,AffineVectorGraph):
@@ -833,11 +872,13 @@ class SegmentGraph(ObjectGraph):
             return self+Vector(other)
         if isinstance(other,tuple):
             if len(other)!=2:
-                raise TypeError("You can add a SegmentGraph with a tuple of length 2, not "+str(len(other)))
+                raise TypeError("You can add a SegmentGraph with a tuple\
+                        of length 2, not "+str(len(other)))
             return self+Vector(other)
         else:
             raise TypeError,"I do not know how to sum %s with %s"%(self,other)
     def __sub__(self,other):
+        raise
         return self+(-other)
     def __rmul__(self,coef):
         return self*coef

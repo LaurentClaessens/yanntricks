@@ -34,7 +34,7 @@ def visual_length(v,l,xunit=None,yunit=None,pspict=None):
         yunit=pspict.yunit
     Dx=v.Dx
     Dy=v.Dy
-    if not v.vertical :
+    if not v.is_vertical :
         slope=v.slope
         x=l/sqrt(xunit**2+slope**2*yunit**2)
 
@@ -63,7 +63,7 @@ def visual_polar(P,r,theta,pspict=None):
     v=Vector( cos(alpha)/xunit,sin(alpha)/yunit  )
     w=visual_length(v,r,pspict=pspict)
     
-    return P+w
+    return P.translation(w)
 
 def polar_to_visual_polar(r,theta,pspict=None):
     """

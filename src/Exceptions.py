@@ -58,6 +58,13 @@ class ShouldNotHappenException(PhystricksGenericException):
     def __str__(self):
         return self.text
 
+## Exception raised when you try to perform an arithmetic operation with not compatible operands.
+class OperationNotPermitedException(PhystricksGenericException):
+    def __init__(self,text):
+        self.text=text
+    def __str__(self):
+        return self.text
+
 class AlreadyEnlargedException(PhystricksGenericException):
     """
     Exception raised when the bounding box is already enlarged and when

@@ -161,7 +161,7 @@ class MarkGraph(ObjectGraph):
                 from Utilities import point_to_box_intersection
                 r=dimx+dimy
                 v=Vector(r*cos(self.angle.radian),r*sin(self.angle.radian))
-                Q=mark_point+v
+                Q=mark_point.translation(v)
                 box=BoundingBox(xmin=Q.x-dimx/2,xmax=Q.x+dimx/2,
                                 ymin=Q.y-dimy/2,ymax=Q.y+dimy/2)
 
@@ -174,7 +174,12 @@ class MarkGraph(ObjectGraph):
                 # and the box
                 new_w=factor*w  
 
-                center_vector=new_w+IQ
+                # 'IQ' is the correct vector from the intersection
+                # to the center.
+
+                # So the vector from the mark_point to the center of the box
+                # is obtained putting 'IQ' at the end of 'new_w'
+                center_vector=new_w.extend(IQ)
 
             else :
                 raise ShouldNotHappenException(\
@@ -199,7 +204,7 @@ argument is not good :"+position)
         visual_center_vector=Vector(center_vector.Dx/xunit,
                                         center_vector.Dy/yunit)
 
-        cp = mark_point+visual_center_vector
+        cp = mark_point.translation(visual_center_vector)
         return cp
     def _math_bounding_box(self,pspict=None):
         return BoundingBox()

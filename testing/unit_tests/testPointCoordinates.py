@@ -72,8 +72,8 @@ def test_vertical_horizontal():
     B=Point(3.00000000000000*cos(0.111111111111111*pi),
             -3.00000000000000*sin(0.111111111111111*pi))
     seg=Segment(A,B)
-    assert_equal(seg.vertical,False)
-    assert_equal(seg.horizontal,False)
+    assert_equal(seg.is_vertical,False)
+    assert_equal(seg.is_horizontal,False)
 
 def test_right_angle():
     echo_function("test_right_angle")
