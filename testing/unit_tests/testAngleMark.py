@@ -52,8 +52,6 @@ def create_example(angleI,angleF,text,name,dist=None):
 def testAngleMark():
     echo_function("testAngleMark")
 
-    print("remettre le SilentOutput")
-
     with SilentOutput() :
         angle,pspict = create_example(angleI=160,angleF=223,text="\( \int_A40mmmm\)",name="Six",dist=None)
 

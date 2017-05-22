@@ -45,20 +45,20 @@
 % https://github.com/LaurentClaessens/phystricks
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresmanualDOTpy}}{\newlength{\lengthOfDOTfiguresmanualDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfforphystricks}}{\newlength{\lengthOfforphystricks}}{}
 \immediate\openout\writeOfphystricks=VSJOooJXAwbVEt.phystricks.aux%
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
-\ifthenelse{\isundefined{\lengthOfDOTfiguresmanualDOTpy}}{\newlength{\lengthOfDOTfiguresmanualDOTpy}}{}
+\ifthenelse{\isundefined{\lengthOfforphystricks}}{\newlength{\lengthOfforphystricks}}{}
 \immediate\openout\writeOfphystricks=VSJOooJXAwbVEt.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfDOTfiguresmanualDOTpy}{\totalheightof{$\lim_{s}(F\circ\gamma')$}}%
-\immediate\write\writeOfphystricks{totalheightof2df7fa6dac5de305e6f3465bfca0d5e4430b28e4:\the\lengthOfDOTfiguresmanualDOTpy-}
-\setlength{\lengthOfDOTfiguresmanualDOTpy}{\widthof{$\lim_{s}(F\circ\gamma')$}}%
-\immediate\write\writeOfphystricks{widthof2df7fa6dac5de305e6f3465bfca0d5e4430b28e4:\the\lengthOfDOTfiguresmanualDOTpy-}
-\setlength{\lengthOfDOTfiguresmanualDOTpy}{\totalheightof{$K$}}%
-\immediate\write\writeOfphystricks{totalheightofdfb064112b6c94470339f6571f69d07afc1c024c:\the\lengthOfDOTfiguresmanualDOTpy-}
-\setlength{\lengthOfDOTfiguresmanualDOTpy}{\widthof{$K$}}%
-\immediate\write\writeOfphystricks{widthofdfb064112b6c94470339f6571f69d07afc1c024c:\the\lengthOfDOTfiguresmanualDOTpy-}
+\setlength{\lengthOfforphystricks}{\totalheightof{$\lim_{s}(F\circ\gamma')$}}%
+\immediate\write\writeOfphystricks{totalheightof2df7fa6dac5de305e6f3465bfca0d5e4430b28e4:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\widthof{$\lim_{s}(F\circ\gamma')$}}%
+\immediate\write\writeOfphystricks{widthof2df7fa6dac5de305e6f3465bfca0d5e4430b28e4:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\totalheightof{$K$}}%
+\immediate\write\writeOfphystricks{totalheightofdfb064112b6c94470339f6571f69d07afc1c024c:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\widthof{$K$}}%
+\immediate\write\writeOfphystricks{widthofdfb064112b6c94470339f6571f69d07afc1c024c:\the\lengthOfforphystricks-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE

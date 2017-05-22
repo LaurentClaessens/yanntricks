@@ -22,5 +22,13 @@ unit_testing ()
     SAGE_PATH=$SAGE_PATH ./testing.sh
 }
 
+manual_testing ()
+{
+    cd $BASEDIR/../manual
+    SAGE_PATH=$SAGE_PATH ./testing.sh
+}
+
+
 unit_testing &&
+manual_testing&&
 demonstration_testing
