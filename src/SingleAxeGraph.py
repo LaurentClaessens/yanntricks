@@ -124,10 +124,10 @@ class SingleAxeGraph(ObjectGraph):
                 # The 0.2 here is hard coded in Histogram, see 71011299
 
                 mark_angle=self.mark_angle
-                if self.segment().horizontal :
+                if self.segment().is_horizontal :
                     position="N"
                     mark_angle=None
-                if self.segment().vertical :
+                if self.segment().is_vertical :
                     position="E"
                     mark_angle=None
                 m=P.get_mark(0.2,mark_angle,symbol,pspict=pspict,

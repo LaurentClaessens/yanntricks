@@ -31,6 +31,8 @@ from Testing import assert_almost_equal
 from Testing import echo_function
 from Testing import echo_single_test
 
+from phystricks.src.Debug import dprint
+
 def vector_constructor():
     """
     Test different ways of building a vector.
@@ -67,18 +69,25 @@ def orthogonal_decompostion():
     assert_equal(parall,ans_parall)
     assert_equal(perp,ans_perp)
 
-    echo_single_test("130 degree")
     P=Point(0,2)
     seg = Segment(P,P.get_polar_point(2,-130))
+
+
     Q=seg.get_point_proportion(0.5)
     v=AffineVector( Q, Point(Q.x-1,Q.y) )
-    vx,vy = v.decomposition(seg)
+    perp,paral = v.decomposition(seg)
 
-    assert_equal(vx+vy,v)
+    echo_single_test("130 degree : sum")
+    assert_equal(perp+paral,v)
 
-    assert_true(vx.inner_product(vy)==0)
-    assert_true(vy.inner_product(vx)==0)
-    assert_true(vy.inner_product(seg.affine_vector())==0)
+    echo_single_test("130 degree : orthogonal")
+    assert_true(perp.segment.is_almost_orthogonal(seg,epsilon=0.0001))
+
+    ip=perp.inner_product(paral)
+    echo_single_test("130 degree : inner product 1")
+    assert_equal(perp.inner_product(paral),0)
+    echo_single_test("130 degree : inner product 2")
+    assert_equal(paral.inner_product(perp),0)
 
 def translation():
     echo_function("translation")

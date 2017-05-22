@@ -29,6 +29,8 @@ from NoMathUtilities import logging
 
 from PointGraph import PointGraph
 
+from Debug import dprint
+
 class SegmentGraph(ObjectGraph):
     def __init__(self,A,B):
         self.I = A
@@ -102,11 +104,11 @@ class SegmentGraph(ObjectGraph):
         """
         return Point(x,self.slope*x+self.independent)
     @lazy_attribute
-    def vertical(self):
+    def is_vertical(self):
         from Numerical import are_almost_equal
         return are_almost_equal(self.I.x,self.F.x,epsilon=0.0001)
     @lazy_attribute
-    def horizontal(self):
+    def is_horizontal(self):
         from Numerical import are_almost_equal
         return are_almost_equal(self.I.y,self.F.y,epsilon=0.0001)
     @lazy_attribute
@@ -126,11 +128,11 @@ class SegmentGraph(ObjectGraph):
             sage: Segment(Point(1,0),Point(0,1)).equation
             x + y - 1 == 0
         """
-        if self.vertical :
+        if self.is_vertical :
             self.coefs = [1,0,-self.I.x]
-        if self.horizontal :
+        if self.is_horizontal :
             self.coefs = [0,1,-self.I.y]
-        if not (self.vertical or self.horizontal) :
+        if not (self.is_vertical or self.is_horizontal) :
             self.coefs = [1,-1/self.slope,self.independent/self.slope]
         x,y=var('x,y')
         Ix=numerical_approx(self.I.x)
@@ -161,13 +163,13 @@ class SegmentGraph(ObjectGraph):
     def advised_mark_angle(self,pspict=None):
         return self.angle()+AngleMeasure(value_degree=90)
     def phyFunction(self):
-        if self.horizontal:
+        if self.is_horizontal:
             # The trick to define a constant function is explained here:
             # http://groups.google.fr/group/sage-support/browse_thread/thread/e5e8775dd79459e8?hl=fr?hl=fr
             x=var('x')
             fi = SR(A.y).function(x)
             return phyFunction(fi)
-        if not (self.vertical or self.horizontal) :
+        if not (self.is_vertical or self.is_horizontal) :
             x=var('x')
             return phyFunction( self.slope*x+self.independent )
     def symmetric_by(self,O):
@@ -186,9 +188,9 @@ class SegmentGraph(ObjectGraph):
             xmax=bb.xmax
             ymin=bb.ymin
             ymax=bb.ymax
-        if self.vertical:
+        if self.is_vertical:
             return Segment( Point(self.I.x,ymin),Point(self.I.y,ymax)  )
-        if self.horizontal:
+        if self.is_horizontal:
             return Segment( Point(xmin,self.I.y),Point(xmax,self.I.y)  )
         bxmin=Segment( Point(xmin,-1),Point(xmin,1) )
         bxmax=Segment( Point(xmax,-1),Point(xmax,1) )
@@ -239,10 +241,10 @@ class SegmentGraph(ObjectGraph):
         """
         return the largest segment that fits into the given bounds
         """
-        if self.horizontal:
+        if self.is_horizontal:
             k=self.I.y
             return Segment(  Point(xmin,k),Point(xmax,k)  )
-        if self.vertical:
+        if self.is_vertical:
             k=self.I.x
             return Segment(  Point(x,ymin),Point(x,ymax)  )
 
@@ -427,7 +429,7 @@ class SegmentGraph(ObjectGraph):
         - `origin` (optional). If given, the vector will 
             be attached to that point.
         """
-        if self.vertical :
+        if self.is_vertical :
             v = Point(-1,0).Vector().fix_origin(self.midpoint())
         else :
             P = Point(self.slope,-1)
@@ -561,6 +563,39 @@ class SegmentGraph(ObjectGraph):
         Q=P+v
         return Segment(P,Q)
 
+    ## \brief Return true is `self` and `other` are orthogonal segments 
+    #
+    # The answer is exact, so you can be surprised if some numerical 
+    # approximations were made before.
+    # 
+    # \see `is_almost_orthogonal`
+    def is_orthogonal(self,other):
+        if self.is_vertical:
+            return other.is_horizontal
+        if self.is_horizontal:
+            return other.is_vertical
+        if self.slope==-1/other.slope:
+            return True
+        return False
+    ## \brief Return true is `self` and `other` are orthogonal segments 
+    #
+    # The answer is based on numerical approximations of the slopes.
+    # If \f$ k \f$ is the slope of `self`, check if the slope of the other
+    # is \f$ -1/k \f$ up to `epsilon`. 
+    # 
+    # \see `is_orthogonal`
+    def is_almost_orthogonal(self,other,epsilon=0.001):
+        if self.is_vertical:
+            return other.is_horizontal
+        if self.is_horizontal:
+            return other.is_vertical
+
+        s_slope=numerical_approx(self.slope)
+        o_slope=numerical_approx(other.slope)
+
+        if abs(s_slope+1/o_slope)<epsilon :
+            return True
+        return False
     def translate(self,vecteur):
         v = Segment(self.I.translate(vecteur),self.F.translate(vecteur))
         return v
@@ -642,7 +677,7 @@ class SegmentGraph(ObjectGraph):
             yunit=pspict.yunit
         Dx=(self.F.x-self.I.x)*xunit
         Dy=(self.F.y-self.I.y)*yunit
-        if self.vertical:
+        if self.is_vertical:
             return Dy
         else: 
             return sqrt(Dx**2+Dy**2)

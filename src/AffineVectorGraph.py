@@ -41,11 +41,11 @@ class AffineVectorGraph(ObjectGraph):
     def Dy(self):
         return self.F.y-self.I.y
     @lazy_attribute
-    def horizontal(self):
-        return self.segment.horizontal
+    def is_horizontal(self):
+        return self.segment.is_horizontal
     @lazy_attribute
-    def vertical(self):
-        return self.segment.vertical
+    def is_vertical(self):
+        return self.segment.is_vertical
     @lazy_attribute
     def slope(self):
         return self.segment.slope
@@ -106,7 +106,7 @@ class AffineVectorGraph(ObjectGraph):
             v=seg.segment()
         seg0=seg.fix_origin( Point(0,0) )
 
-        A=s0.F.projection(seg)
+        A=s0.F.projection(seg0)
         paral0=Vector(A)
 
         perp0=s0-paral0

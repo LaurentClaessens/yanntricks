@@ -57,6 +57,7 @@ class PointGraph(ObjectGraph):
         return self._advised_mark_angle
     def numerical_approx(self):
         return Point(numerical_approx(self.x),numerical_approx(self.y))
+
     def projection(self,seg,direction=None,advised=False):
         """
         Return the projection of the point on the given segment.
@@ -79,12 +80,12 @@ class PointGraph(ObjectGraph):
         if isinstance(seg,SingleAxeGraph):
             seg=seg.segment()
         if direction is None:
-            if seg.vertical :
+            if seg.is_vertical :
                 direction=Segment(  self, self+( 1,0  )  )
-            elif seg.horizontal :
+            elif seg.is_horizontal :
                 direction=Segment(self,self+(0,1))
             else :
-                direction=Segment(  self, self+(  1,-1/seg.slope    )  )
+                direction=Segment(  self, self+(  1,-1/seg.slope )  )
 
         P=Intersection(seg,direction)[0]
         if advised :

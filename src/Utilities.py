@@ -70,7 +70,7 @@ def distance(P,Q):
     """ return the distance between P and Q """
     return sqrt(distance_sq(P,Q))
 
-def inner_product(v,w,numerical=True):
+def inner_product(v,w,numerical=False):
     """
     Return the inner product of vectors v and w
 

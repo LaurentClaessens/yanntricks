@@ -34,7 +34,7 @@ def visual_length(v,l,xunit=None,yunit=None,pspict=None):
         yunit=pspict.yunit
     Dx=v.Dx
     Dy=v.Dy
-    if not v.vertical :
+    if not v.is_vertical :
         slope=v.slope
         x=l/sqrt(xunit**2+slope**2*yunit**2)
 
