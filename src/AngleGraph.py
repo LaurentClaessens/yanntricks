@@ -349,7 +349,8 @@ class AngleGraph(ObjectGraph):
         # in a triangle, you know everything : 
         # just draw the altitude and use Pythagoras along with some trigonometry.
 
-        # The cases are tested in the demo file 'OMPAooMbyOIqeA'
+        # The cases are tested in the demo files 
+        # 'OMPAooMbyOIqeA' and 'Refraction'
 
         v=self._getOCvector(dimx,dimy,pspict=pspict)
 
