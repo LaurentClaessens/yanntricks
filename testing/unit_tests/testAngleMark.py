@@ -49,8 +49,8 @@ def create_example(angleI,angleF,text,name,dist=None):
     pspict.DrawGraphs(angle)
     return angle,pspict
 
-def testAngleMark():
-    echo_function("testAngleMark")
+def test_angle_mark():
+    echo_function("test_angle_mark")
 
     with SilentOutput() :
         angle,pspict = create_example(angleI=160,angleF=223,text="\( \int_A40mmmm\)",name="Six",dist=None)
@@ -64,3 +64,10 @@ def testAngleMark():
     ans="\draw (-0.6170939622,-0.1216103571) node {\( \int_A40mmmm\)};"
 
     assert_equal(code,ans)
+
+def test_added_angle():
+    pass
+
+def testAngleMark():
+    test_angle_mark()
+    test_added_angle()

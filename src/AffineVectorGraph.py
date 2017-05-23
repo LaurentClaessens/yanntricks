@@ -27,8 +27,6 @@ from Constructors import Segment,AffineVector,Vector,Point
 from NoMathUtilities import logging
 from Decorators import copy_parameters
 
-from Debug import dprint,testtype
-
 class AffineVectorGraph(ObjectGraph):
     def __init__(self,I,F):
         ObjectGraph.__init__(self,self)

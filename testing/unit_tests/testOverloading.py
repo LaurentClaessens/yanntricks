@@ -31,8 +31,6 @@ from Testing import assert_almost_equal
 from Testing import echo_function
 from Testing import echo_single_test
 
-from phystricks.src.Debug import dprint
-
 def test_decorator():
     echo_function("test_decorator")
     v=AffineVector( Point(1,1),Point(2,2) )

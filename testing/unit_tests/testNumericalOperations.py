@@ -32,8 +32,6 @@ from Testing import echo_function
 from Testing import echo_single_test
 from Testing import SilentOutput
 
-from phystricks.src.Debug import dprint,testtype
-
 def test_visual_length():
     echo_function("test_visual_length")
 

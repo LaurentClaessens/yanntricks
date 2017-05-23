@@ -33,8 +33,6 @@ from Utilities import *
 from Exceptions import ShouldNotHappenException
 from GenericCurve import GenericCurve
 
-from Debug import dprint
-
 class ParametricCurveGraph(GenericCurve,ObjectGraph):
     def __init__(self,f1,f2,llamI,llamF):
         """

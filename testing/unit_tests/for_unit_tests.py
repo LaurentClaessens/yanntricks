@@ -72,6 +72,10 @@ def testEnsureUnicode():
     double_u2=ensure_unicode( ensure_str(u2) )
     assert_equal(double_u2,u2)
 
+from testAngleMark import testAngleMark
+print("testAngleMark")
+testAngleMark()
+
 from testOverloading import testOverloading
 print("testOverloading")
 testOverloading()
@@ -95,10 +99,6 @@ testPointCoordinates()
 from testNumericalOperations import testNumericalOperations
 print("testNumericalOperations")
 testNumericalOperations()
-
-from testAngleMark import testAngleMark
-print("testAngleMark")
-testAngleMark()
 
 from testAngleMeasure import testAngleMeasure
 print("testAngleMeasure")

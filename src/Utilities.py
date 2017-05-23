@@ -28,8 +28,6 @@ from phystricks.src.MathStructures import *
 from phystricks.src.Exceptions import ShouldNotHappenException
 from phystricks.src.Decorators import sort_and_assert_real
 
-from Debug import dprint
-
 def is_real(z):
     if type(z) in [int,sage.rings.real_mpfr.RealNumber]:
         return True

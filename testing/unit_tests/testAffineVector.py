@@ -31,8 +31,6 @@ from Testing import assert_almost_equal
 from Testing import echo_function
 from Testing import echo_single_test
 
-from phystricks.src.Debug import dprint
-
 def vector_constructor():
     """
     Test different ways of building a vector.

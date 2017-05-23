@@ -29,8 +29,6 @@ from NoMathUtilities import logging
 
 from PointGraph import PointGraph
 
-from Debug import dprint
-
 class SegmentGraph(ObjectGraph):
     def __init__(self,A,B):
         self.I = A
