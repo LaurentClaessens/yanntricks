@@ -33,5 +33,21 @@ from Testing import echo_single_test
 
 from phystricks.src.Debug import dprint
 
+def test_decorator():
+    echo_function("test_decorator")
+    v=AffineVector( Point(1,1),Point(2,2) )
+
+    echo_single_test("initial value : None")
+    assert_true(v.parameters.color==None)
+    assert_true(v.parameters.style==None)
+
+    v.parameters.color="foo"
+    v.parameters.style="bar"
+
+    echo_single_test("after fix_origin")
+    w=v.fix_origin(Point(3,4))
+    assert_true(w.parameters.color=="foo")
+    assert_true(w.parameters.style=="bar")
+
 def testOverloading():
-    pass
+    test_decorator()

@@ -22,10 +22,12 @@
 
 def copy_parameters(f):
     """
-    Many objects can produce other objects, like a segment has an orthogonal segment
+    Many objects can produce other objects,
+    like a segment has an orthogonal segment
     or a circle has its parametric curve.
 
-    This decorator make a copy of the parameters of the old object to the new one.
+    This decorator makes a copy of the parameters 
+    of the old object to the new one.
 
     EXAMPLE
 
@@ -36,8 +38,9 @@ def copy_parameters(f):
         # compute the parametric curve 
         return curve
 
-    'circle.parametric_curve(x)' will return a parametric curve with the same 
-    parameters as the initial circle. Like color, dashed, style, etc.
+    'circle.parametric_curve(x)' will return a parametric
+    curve with the same parameters as the initial circle. 
+    Like color, dashed, style, etc.
     """
     def g(*arg,**kw):
         self=arg[0]

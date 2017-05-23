@@ -25,6 +25,7 @@ from sage.all import lazy_attribute,numerical_approx
 from ObjectGraph import ObjectGraph
 from Constructors import Segment,AffineVector,Vector,Point
 from NoMathUtilities import logging
+from Decorators import copy_parameters
 
 from Debug import dprint,testtype
 
@@ -126,6 +127,7 @@ class AffineVectorGraph(ObjectGraph):
         return self.segment.advised_mark_angle(pspict)
     def midpoint(self,advised=True):
         return self.segment.midpoint(advised)
+    @copy_parameters
     def fix_origin(self,P):
         """
         Return the affine vector that is equal to 'self' but attached
