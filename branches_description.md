@@ -84,3 +84,7 @@ I try to correct that here.
 # testing
 
 Add the manual to the tests.
+
+# daily
+
+My small changes here and there.
