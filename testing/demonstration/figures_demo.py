@@ -74,6 +74,12 @@ figures_list_2=[]
 figures_list_3=[]
 
 def append_picture(fun,n):
+    if fun in figures_list_1:
+        print(fun, "is already in list 1")
+    if fun in figures_list_2:
+        print(fun, "is already in list 2")
+    if fun in figures_list_3:
+        print(fun, "is already in list 3")
     figures_list_1.append(fun)
     if n>= 2 : 
         figures_list_2.append(fun)
@@ -81,42 +87,24 @@ def append_picture(fun,n):
         figures_list_3.append(fun)
 
 
-append_picture(UARHooLMWqvyaI,1)
 append_picture(SMXRooCnrlNw,1)
-append_picture(EDEYRhQ,1)
 append_picture(TKXZooLwXzjS,1)
-append_picture(DYJNooLVVFHEfN,1)
-append_picture(QIXEooejrojKjo,1)
 append_picture(exCircle,1)
-append_picture(exCircleThree,1)
 append_picture(OnePoint,1)
 append_picture(FunctionSecond,1)
-append_picture(QIPRoolQCEnZdx,1)
 append_picture(GridThree,1)
 append_picture(GridTwo,1)
-append_picture(MarkOnPoint,1)
-append_picture(ParametricOne,1)
 append_picture(ParametricTwo,1)
-append_picture(UREIooqNGBXtHg,1)
 append_picture(DEIToomZFknFmn,1)
 append_picture(HELQooLGapRQrr,1)
 append_picture(QRJOooKZPUoLlF,1)
 append_picture(LVPSoozFTyaeCG,1)
 append_picture(JSYWooQYduLVLS,1)
-append_picture(YOWDooyeyOJyml,1)
-append_picture(QRXCooUmnlhkvh,1)
 append_picture(VLEGoolDFCdZDU,1)
 append_picture(XBAUooFtMWukKr,1)
 append_picture(OMZOoowEtRUuMi,1)
-append_picture(QEFQoomlfmOQTM,1)
-append_picture(GGHOookMhIxqIK,1)
 append_picture(CNVAooybLqXmVS,1)
-append_picture(BHESoofmkTbbZR,1)
-append_picture(ALAYooKKrRTkCG,1)
-append_picture(PVRFoobvAzpZTq,1)
 append_picture(WQVZooAhkdlegv,1)
-append_picture(NWAEooQBLYYrpS,1)
-append_picture(LWVXooPyIlOKNd,1)
 append_picture(ProjPoly,1)
 append_picture(EXIIooJzzoJeai,1)
 append_picture(CornetGlace,1)
@@ -172,6 +160,7 @@ append_picture(<++>,<++>)
 append_picture(<++>,<++>)
 append_picture(<++>,<++>)
 """
+
 def AllFigures():
     figures_list=figures_list_1
     if "--pass-number=2" in sys.argv :
