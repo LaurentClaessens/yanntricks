@@ -157,13 +157,13 @@ class AngleGraph(ObjectGraph):
 
             return AffineVector( self.O, Point( x+dimx/2,y-dimy/2) )   
 
-        # In each case, the computed vector 'v' is the vector
+        # In each case, the returned vector is the vector
         #  O -> center of the box containing the text.
         if 0<self.angleA.degree < 90 and ( self.angleB.degree==90 or self.angleB.radian==pi/2  ):
-            x=0
+            #x=0
             y=dimx/tan(self.measure.radian)
             Q=self.O+(0,y)
-            return AffineVector(self.O,Q+(-dimx/2,dimy/2))
+            return AffineVector(self.O,Q+(dimx/2,dimy/2))
 
         if 0<self.angleA.degree < 90 and 90<self.angleB.degree < 180 :
             h=dimx*sin(self.angleA.radian)
@@ -361,6 +361,7 @@ class AngleGraph(ObjectGraph):
 
         v=visual_vector(v,pspict=pspict)
         C=mark_point.translate(v)
+
         return Mark(self,dist=None,angle=None,text=text,mark_point=None,central_point=C,position=None,pspict=pspict)
 
     def action_on_pspict(self,pspict):
