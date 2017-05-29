@@ -196,7 +196,7 @@ class PointGraph(ObjectGraph):
         if b==None :
             v=a
         else :
-            v=AffineVectorVector( Point(0,0),Point(a,b) )
+            v=AffineVector( Point(0,0),Point(a,b) )
         return Point(  self.x+v.Dx,self.y+v.Dy  )
     def origin(self,P):
         """

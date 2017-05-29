@@ -414,6 +414,7 @@ class SegmentGraph(ObjectGraph):
 
         More precisely, if self is the segment A->B, return the point B-A
         """
+        raise DeprecationWarning
         return self.F-self.I
     def midpoint(self,advised=True):
         P = self.get_point_proportion(0.5,advised)
@@ -443,7 +444,7 @@ class SegmentGraph(ObjectGraph):
         v=self.AffineVector()
         return v.fix_origin(self.midpoint()).normalize(1)
     def polaires(self):
-        return PointToPolaire(self.Point())
+        return PointToPolaire(self.fix_origin(Point(0,0)).F)
     def angle(self):
         """
         return the angle of the segment.
