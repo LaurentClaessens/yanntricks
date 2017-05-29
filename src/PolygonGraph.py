@@ -81,23 +81,40 @@ class PolygonGraph(ObjectGraph):
             import string
             text_list=["\({}\)".format(x) for x in string.ascii_uppercase[0:n]]
         if points_names :
-            text_list=[ "\( {} \)".format(x) for x in points_names ]
+            # One can do :
+            # polygon.put_mark(0.2,points_names=" B ",pspict=pspict)
+            # where 'polygon' is a triangle.
+            # Giving the string " B ", one ask to have a mark on the second point.
+            # But in thus case the box size is zero and one gets
+           # TypeError: cannot evaluate symbolic expression numerically
+            # on the second pass, because the size of the box being zero, 
+            # the line equations somehow trivializes themselves and Sage 
+            # founds infinitely many intersections.
+            # This is why we do not something like :
+            # text_list=[ "\( {} \)".format(x) for x in points_names ]
+            text_list=[]
+            for x in points_names:
+                if x==" ":
+                    text_list.append(None)
+                else :
+                    text_list.append("\( {} \)".format(x))
         for i,P in enumerate(self.points_list):
             text=text_list[i]
-            A=self.points_list[(i-1)%n]
-            B=self.points_list[(i+1)%n]
-            v1=AffineVector(A,P).fix_origin(P).normalize(1)
-            v2=AffineVector(B,P).fix_origin(P).normalize(1)
+            if text is not None :
+                A=self.points_list[(i-1)%n]
+                B=self.points_list[(i+1)%n]
+                v1=AffineVector(A,P).fix_origin(P).normalize(1)
+                v2=AffineVector(B,P).fix_origin(P).normalize(1)
 
-            # 'direction' is a vector based at 'P' that points 
-            # in the direction as external to the angle as possible.
-            # This is the "external" angle bisector
-            direction=v1+v2
-            angle=direction.angle()
-            for psp in pspicts:
-                P.put_mark(dist=dist,angle=angle,added_angle=0,text=text,
-                       position="center_direction",pspict=psp)
-                self.added_objects.append(psp,P)
+                # 'direction' is a vector based at 'P' that points 
+                # in the direction as external to the angle as possible.
+                # This is the "external" angle bisector
+                direction=v1+v2
+                angle=direction.angle()
+                for psp in pspicts:
+                    P.put_mark(dist=dist,angle=angle,added_angle=0,text=text,
+                           position="center_direction",pspict=psp)
+                    self.added_objects.append(psp,P)
     def _math_bounding_box(self,pspict=None):
         bb=BoundingBox()
         bb.is_math=True;
