@@ -594,8 +594,30 @@ class SegmentGraph(ObjectGraph):
         if abs(s_slope+1/o_slope)<epsilon :
             return True
         return False
-    def translate(self,vecteur):
-        v = Segment(self.I.translate(vecteur),self.F.translate(vecteur))
+
+    ##  \brief translate the segment with the given vector
+    # 
+    # If two arguments are given, we assume that they are the coordinates of
+    # the translation vector.
+    # If only one argument is given, we assume that this is the vector.
+    #
+    # So there are two way to use :
+    #    ```
+    #    segment.tranlate(v)
+    #    ```
+    #    and
+    #    ```
+    #   segment.tranlate(x,y)
+    #    ```
+    # In the first case `v` is a vector and in the second case, `x` and `y` are 
+    # numbers.
+    kkslmdfklm
+    def translate(self,a,b=None):
+        if b is not None :
+            vector=AffineVector(Point(0,0),Point(a,b))
+        else :
+            vector=a
+        v = Segment(self.I.translate(vector),self.F.translate(vector))
         return v
     def fix_origin(self,a,b=None):
         """
