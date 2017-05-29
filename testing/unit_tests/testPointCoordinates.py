@@ -32,8 +32,8 @@ from Testing import echo_function
 from Testing import echo_single_test
 from Testing import SilentOutput
 
-def test_equalities():
-    echo_function("test_equalities")
+def test_non_equalities():
+    echo_function("test_non_equalities")
     A=Point(0,0)
     B=Point(4.00000000000000*cos(0.111111111111111*pi),0)
 
@@ -51,6 +51,27 @@ def test_equalities():
 
     echo_single_test("difficult 'almost equal' for affine vector")
     assert_true(w.is_almost_equal(-v))
+
+def test_equalities():
+    echo_function("test_equalities")
+    a=3.00000000000000*cos(0.111111111111111*pi)
+    b=3.00000000000000*cos(0.111111111111111*pi)
+
+    P=Point(a,0)
+    A=Point(0,0)
+    B=Point(1,1)
+
+    v1=AffineVector(P,A)
+    v2=AffineVector(P,B)
+
+    on=True
+    try :
+        d=v1+v2
+    except OverflowError:
+        on=False
+    assert_false(on)
+
+    
 
 def test_add_bounding_box():
     echo_function("test_add_bounding_box")
@@ -94,4 +115,5 @@ def testPointCoordinates():
     test_right_angle()
     test_vertical_horizontal()
     test_add_bounding_box()
+    test_non_equalities()
     test_equalities()

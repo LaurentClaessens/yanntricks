@@ -433,7 +433,8 @@ class PointGraph(ObjectGraph):
 
     def __eq__(self,other):
         ##
-        #        return True if the coordinates of `self` and `other` are the same.
+        #        return True if the coordinates of `self` and `other`
+        # are the same.
         #
         #     INPUT:
         #        
@@ -464,7 +465,7 @@ class PointGraph(ObjectGraph):
         return not self==other
 
     ## Translate the point with the vector.
-# The parameter can also be a tuple of size 2.
+    # The parameter can also be a tuple of size 2.
     def translation(self,v):
         if isinstance(v,tuple) :
             if len(v)==2:

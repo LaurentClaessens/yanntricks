@@ -27,6 +27,8 @@ from Constructors import Segment,AffineVector,Vector,Point
 from NoMathUtilities import logging
 from Decorators import copy_parameters
 
+from Debug import dprint
+
 class AffineVectorGraph(ObjectGraph):
     def __init__(self,I,F):
         ObjectGraph.__init__(self,self)
@@ -161,6 +163,19 @@ class AffineVectorGraph(ObjectGraph):
         I=self.I
         F=self.F.translate(other.Dx,other.Dy)
         return AffineVector(I,F)
+
+        
+    ## \brief add two vectors based on the same point.
+    # 
+    # The function checks if the vectors `self` and `other` are based
+    # on the same point. Sometimes, it causes strange problems. When 
+    # one of the coordinates has the form
+    # a=3.00000000000000*cos(0.111111111111111*pi)
+    # Checking equalities with that kind of numbers causes 
+    # OverflowError: Python int too large to convert to C long
+    #
+    # If you know that `v1` and `v2` have the same origin and want to sum them
+    # you can also do `v1.extend(v2)`
     def __add__(self,other):
         if isinstance(other,tuple):
             if len(other)==2:

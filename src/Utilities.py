@@ -60,10 +60,19 @@ def test_imaginary_part_point(P,epsilon=0.0001):
     if realx and realy:
         on=True
     return on,Point(x,y)
-
-def distance_sq(P,Q):
-    """ return the squared distance between P and Q """
-    return (P.x-Q.x)**2+(P.y-Q.y)**2
+    
+##return the squared distance between P and Q
+#
+# \param numerical If True, use numerical approximations and return 
+# a numerical approximation.
+def distance_sq(P,Q,numerical=False):
+    if not numerical :
+        return (P.x-Q.x)**2+(P.y-Q.y)**2
+    Px=numerical_approx(P.x)
+    Qx=numerical_approx(Q.x)
+    Qy=numerical_approx(Q.y)
+    Py=numerical_approx(P.y)
+    return (Px-Qx)**2+(Py-Qy)**2
 
 def distance(P,Q):
     """ return the distance between P and Q """
@@ -172,7 +181,8 @@ def Intersection(f,g,a=None,b=None,numerical=False):
 # \arg box : a box, which means a duck which has attributes 
 #               `xmin`, `xmax`, `ymin`, `ymax`
 #
-# Consider the line from `P` to the center of the box and return the intersection
+# Consider the line from `P` to the center of the box
+# and return the intersection
 # points. 
 #
 # \return a list of `Point`.
@@ -207,13 +217,15 @@ def point_to_box_intersection(P,box,pspict=None):
             if S==D:
                 inter=[B,D]
             # The last two tests are to know if S lies between ed.I and ed.F
-            elif (S.x-ed.I.x)*(S.x-ed.F.x)<0:
+            # We use numerical approximations in order to avoid some 
+            # OverflowError: Python int too large to convert to C long
+            elif numerical_approx( (S.x-ed.I.x)*(S.x-ed.F.x) )<0:
                 inter.append(S)
-            elif (S.y-ed.I.y)*(S.y-ed.F.y)<0:
+            elif numerical_approx( (S.y-ed.I.y)*(S.y-ed.F.y) )<0:
                 inter.append(S)
 
     if len(inter)==2:
-        inter.sort(key=lambda Q:distance_sq(Q,P))
+        inter.sort(key=lambda Q:distance_sq(Q,P,numerical=True))
 
     if pspict:
         for i,S in enumerate(inter):

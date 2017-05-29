@@ -39,6 +39,9 @@ def HYVFooTHaDDQ():
     pspicts[1].DrawGraphs(trig,M,CM,rh,cod1,cod2)
 
     trig=Polygon(Ap,Bp,Cpp).rotation(-20)
+    print(Ap)
+    print(Bp)
+    print(Cpp)
     trig.put_mark(0.2,pspicts=pspicts)
     A=trig.vertices[0]
     B=trig.vertices[1]

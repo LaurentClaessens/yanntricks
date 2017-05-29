@@ -68,6 +68,8 @@ class PolygonGraph(ObjectGraph):
     def no_edges(self):
         """
         When X.no_edges() is used, the edges of the polygon will not be drawn.
+
+        The argument `points_name` override `text_list`.
         """
         self.draw_edges=False
     def put_mark(self,dist,text_list=None,points_names=None,\
@@ -80,18 +82,25 @@ class PolygonGraph(ObjectGraph):
         if not text_list and not points_names:
             import string
             text_list=["\({}\)".format(x) for x in string.ascii_uppercase[0:n]]
+        # One can do :
+        # polygon.put_mark(0.2,points_names=" B ",pspict=pspict)
+        # or
+        # polygon.put_mark(0.3,text_list=["","\( F\)","\( E\)"],pspict=pspict)
+        # where 'polygon' is a triangle.
+        # In both cases we have an empty string as mark and then a box 
+        # of size zero.
+        # We thus have to following error 
+        # TypeError: cannot evaluate symbolic expression numerically
+        # on the second pass, because the size of the box being zero, 
+        # the line equations somehow trivializes themselves and Sage 
+        # founds infinitely many intersections.
+        # This is why we do not something like :
+        # text_list=[ "\( {} \)".format(x) for x in points_names ]
+        if text_list:
+            for i in range(len(text_list)):
+                if text_list[i]=="":
+                    text_list[i]=None
         if points_names :
-            # One can do :
-            # polygon.put_mark(0.2,points_names=" B ",pspict=pspict)
-            # where 'polygon' is a triangle.
-            # Giving the string " B ", one ask to have a mark on the second point.
-            # But in thus case the box size is zero and one gets
-           # TypeError: cannot evaluate symbolic expression numerically
-            # on the second pass, because the size of the box being zero, 
-            # the line equations somehow trivializes themselves and Sage 
-            # founds infinitely many intersections.
-            # This is why we do not something like :
-            # text_list=[ "\( {} \)".format(x) for x in points_names ]
             text_list=[]
             for x in points_names:
                 if x==" ":
@@ -109,7 +118,10 @@ class PolygonGraph(ObjectGraph):
                 # 'direction' is a vector based at 'P' that points 
                 # in the direction as external to the angle as possible.
                 # This is the "external" angle bisector
-                direction=v1+v2
+                # Why not `direction=v1+v2` ? Because we are victim 
+                # of the problem described 
+                # in the comment of AffineVectorGraph.__add__
+                direction=v1.extend(v2)
                 angle=direction.angle()
                 for psp in pspicts:
                     P.put_mark(dist=dist,angle=angle,added_angle=0,text=text,
@@ -125,7 +137,8 @@ class PolygonGraph(ObjectGraph):
         return self.math_bounding_box(pspict)
     def action_on_pspict(self,pspict):
         """
-        If self.parameters.color is not None, it will be the color of the edges.
+        If self.parameters.color is not None, it will be
+        the color of the edges.
 
         If one wants to fill or hatch, one has to ask explicitly.
         """

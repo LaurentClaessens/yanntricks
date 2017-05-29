@@ -4,6 +4,7 @@
 import sys
 from phystricks import *
 
+from phystricksJRCJooPHFcKn import JRCJooPHFcKn
 from phystricksKEQLooOrxtCN import KEQLooOrxtCN
 from phystricksRJDEoobOibtkfv import RJDEoobOibtkfv
 from phystricksCornetGlace import CornetGlace
@@ -144,8 +145,12 @@ append_picture(FunctionFive,2)
 append_picture(OYBTooNUcJLzDH,2)
 append_picture(OGGDooIvakwNlL,2)
 append_picture(OMPAooMbyOIqeA,2)
+append_picture(JRCJooPHFcKn,2)
 
 """
+append_picture(<++>,1)
+append_picture(<++>,1)
+append_picture(<++>,1)
 append_picture(<++>,1)
 append_picture(<++>,1)
 append_picture(<++>,1)
