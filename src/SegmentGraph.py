@@ -300,7 +300,7 @@ class SegmentGraph(ObjectGraph):
         normal = self.get_normal_vector().normalize(dy)
         PI = self.get_regular_points(dx)
         PIs = [self.I]
-        PIs.extend( [  PI[i].translation(normal*(-1)**i) for i in range(1,len(PI))  ] )
+        PIs.extend( [  PI[i].translate(normal*(-1)**i) for i in range(1,len(PI))  ] )
         PIs.append(self.F)
         return PIs
     def get_point_length(self,d,advised=True):
@@ -380,14 +380,14 @@ class SegmentGraph(ObjectGraph):
         positions=[]
         if n%2==1:
             for k in range( int(-(n-1)/2),int((n-1)/2)+1 ):
-                positions.append(center.translation(k*vect))
+                positions.append(center.translate(k*vect))
         if n%2==0:
             import numpy
             for k in numpy.linspace(-n/2+0.5,n/2-0.5,n):
-                positions.append(center.translation(k*vect))
+                positions.append(center.translate(k*vect))
         mini1=self.rotation(angle).fix_visual_size(l)
         for P in positions:
-            mini=mini1.translation(AffineVector(mini1.midpoint(),P))
+            mini=mini1.translate(AffineVector(mini1.midpoint(),P))
             ao.append(mini)
         return ao
     def get_divide_in_two(self,n=1,d=0.1,l=0.1,angle=45\
@@ -433,7 +433,7 @@ class SegmentGraph(ObjectGraph):
             P = Point(self.slope,-1)
             v = P.Vector().normalize().fix_origin(self.midpoint())
         if origin:
-            v=AffineVector(origin,origin.translation(v))
+            v=AffineVector(origin,origin.translate(v))
         return v
     def get_tangent_vector(self):
         """
@@ -505,8 +505,8 @@ class SegmentGraph(ObjectGraph):
         """
         normal=self.get_normal_vector()
         M=self.midpoint()
-        P1=M.translation(normal)
-        P2=M.translation(-normal)
+        P1=M.translate(normal)
+        P2=M.translate(-normal)
         seg=Segment(P1,P2)
         if code:
             s1=Segment(self.I,M)
@@ -558,7 +558,7 @@ class SegmentGraph(ObjectGraph):
         return a segment parallel to self passing trough P
         """
         v=self.F-self.I
-        Q=P.translation(v)
+        Q=P.translate(v)
         return Segment(P,Q)
 
     ## \brief Return true is `self` and `other` are orthogonal segments 
@@ -862,7 +862,7 @@ class SegmentGraph(ObjectGraph):
         return v
     def translation(self,v):
         raise DeprecationWarning
-        return Segment(self.I.translation(v),self.F.translation(v))
+        return Segment(self.I.translate(v),self.F.translate(v))
     def __add__(self,other):
         """
         If the other is a vector, return the translated segment
@@ -882,7 +882,7 @@ class SegmentGraph(ObjectGraph):
             <vector I=<Point(0,0)> F=<Point(3,4)>>
         """
         print("If you want to translate something you should\
-                probably use '.translation' instead.") 
+                probably use '.translate' instead.") 
         raise DeprecationWarning
         from AffineVectorGraph import AffineVectorGraph
         from PointGraph import PointGraph

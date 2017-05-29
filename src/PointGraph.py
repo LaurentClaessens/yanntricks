@@ -490,7 +490,7 @@ class PointGraph(ObjectGraph):
                 return self+(-v[0],-v[1])
             else :
                 raise TypeError, "Cannot sum %s with %s."%(self,v)
-        return self.translation(-v)
+        return self.translate(-v)
     def __neg__(self):
         return Point(-self.x,-self.y)
     def __mul__(self,r):

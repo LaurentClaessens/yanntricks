@@ -417,7 +417,7 @@ class ParametricCurveGraph(GenericCurve,ObjectGraph):
             v=self.get_normal_vector(llam)
             vp=v.F-v.I
             w=Vector(vp.x*yunit/xunit,vp.y*xunit/yunit).fix_visual_size(dy,xunit,yunit)
-            PTs.append( self.get_point(llam).translation(w*(-1)**i) )
+            PTs.append( self.get_point(llam).translate(w*(-1)**i) )
         PTs.append(self.get_point(Mll))
         return PTs
     def rotate(self,theta):

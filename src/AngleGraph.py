@@ -410,10 +410,10 @@ class RightAngleGraph(ObjectGraph):
 
         if n==0:
             #P1=I - self.r*v
-            P1=I.translation(- self.r*v)
+            P1=I.translate(- self.r*v)
         if n==1:
             #P1=I + self.r*v
-            P1=I.translation(self.r*v)
+            P1=I.translate(self.r*v)
         
         return P1
     def action_on_pspict(self,pspict):

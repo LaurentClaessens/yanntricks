@@ -182,14 +182,14 @@ class AffineVectorGraph(ObjectGraph):
                 I=self.I
                 Dx=self.Dx+other[0]
                 Dy=self.Dy+other[1]
-                return AffineVector(self.I,self.I.translation( Vector(Dx,Dy) ))
+                return AffineVector(self.I,self.I.translate( Vector(Dx,Dy) ))
         if other.I != self.I :
             raise OperationNotPermitedException("You can only add vectors\
                             with same base point.")
         I=self.I
         Dx=self.Dx+other.Dx
         Dy=self.Dy+other.Dy
-        return AffineVector(self.I,self.I.translation( Vector(Dx,Dy) ))
+        return AffineVector(self.I,self.I.translate( Vector(Dx,Dy) ))
     def __sub__(self,other):
         return self+(-other)
     def __mul__(self,coef):
