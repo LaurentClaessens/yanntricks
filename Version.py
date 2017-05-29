@@ -1,1 +1,1 @@
-version="daily"
+version="debug"
