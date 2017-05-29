@@ -611,7 +611,6 @@ class SegmentGraph(ObjectGraph):
     #    ```
     # In the first case `v` is a vector and in the second case, `x` and `y` are 
     # numbers.
-    kkslmdfklm
     def translate(self,a,b=None):
         if b is not None :
             vector=AffineVector(Point(0,0),Point(a,b))
@@ -862,6 +861,7 @@ class SegmentGraph(ObjectGraph):
         v = Segment(self.I,Point(self.I.x+self.Dx*coef,self.I.y+self.Dy*coef))
         return v
     def translation(self,v):
+        raise DeprecationWarning
         return Segment(self.I.translation(v),self.F.translation(v))
     def __add__(self,other):
         """

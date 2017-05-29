@@ -193,13 +193,10 @@ class PointGraph(ObjectGraph):
     #        - either one vector
     #        - either two numbers
     def translate(self,a,b=None):
-        if isinstance(a,PointGraph):
-            raise OperationNotPermitedException("Cannot add a point\
-                                                        with a point")
         if b==None :
             v=a
         else :
-            v=Vector(a,b)
+            v=AffineVectorVector( Point(0,0),Point(a,b) )
         return Point(  self.x+v.Dx,self.y+v.Dy  )
     def origin(self,P):
         """
@@ -467,11 +464,7 @@ class PointGraph(ObjectGraph):
     ## Translate the point with the vector.
     # The parameter can also be a tuple of size 2.
     def translation(self,v):
-        if isinstance(v,tuple) :
-            if len(v)==2:
-                return Point(self.x+v[0],self.y+v[1])
-            else :
-                raise TypeError, "Cannot sum %s with %s."%(self,v)
+        raise DeprecationWarning
         try :
             dx = v.Dx
             dy = v.Dy
@@ -480,9 +473,6 @@ class PointGraph(ObjectGraph):
                 dx = v.x
                 dy = v.y
             except AttributeError :
-                print("VSWooXmhSzY")
-                print(v.Dx())
-                print(v.Dx)
                 raise TypeError, "You seem to add myself with something which is not a Point neither a Vector. Sorry, but I'm going to crash : {},{}".format(v,type(v))
         return Point(self.x+dx,self.y+dy)
     ## \brief addition of coordinates
