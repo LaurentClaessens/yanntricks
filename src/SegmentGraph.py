@@ -194,8 +194,10 @@ class SegmentGraph(ObjectGraph):
         bxmax=Segment( Point(xmax,-1),Point(xmax,1) )
         bymin=Segment( Point(-1,ymin),Point(1,ymin) )
         bymax=Segment( Point(-1,ymax),Point(1,ymax) )
-        # We compute the intersections of self with the four lines describing the window.
-        # Two of them will be the initial and final point of the searched segment.
+        # We compute the intersections of self with the
+        # four lines describing the window.
+        # Two of them will be the initial and final point 
+        # of the searched segment.
         Ixmin=Intersection(self,bxmin)[0]
         Ixmax=Intersection(self,bxmax)[0]
         Iymin=Intersection(self,bymin)[0]
