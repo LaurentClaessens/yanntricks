@@ -907,6 +907,16 @@ class SegmentGraph(ObjectGraph):
             return self+Vector(other)
         else:
             raise TypeError,"I do not know how to sum %s with %s"%(self,other)
+
+    ## \brief Says if two segments are equal.
+    # 
+    # Two segments are equal when their initial and final points are equal
+    def __eq__(self,other):
+        if self.I != other.I:
+            return False
+        if self.F != other.F:
+            return False
+        return True
     def __sub__(self,other):
         raise
         return self+(-other)
