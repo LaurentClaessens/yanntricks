@@ -604,26 +604,33 @@ class SegmentGraph(ObjectGraph):
     # the translation vector.
     # If only one argument is given, we assume that this is the vector.
     #
-    # So there are two way to use :
+    # So there are three way to use :
+    # * with a vector :
     #    ```
     #    segment.tranlate(v)
     #    ```
-    #    and
+    # * With two numbers :
     #    ```
     #   segment.tranlate(x,y)
     #    ```
-    # In the first case `v` is a vector and in the second case, `x` and `y` are 
-    # numbers.
+    # * With a tuple :
+    #  ```
+    #  v=(1,2)
+    #  segment.translate(v)
+    #  ```
     def translate(self,a,b=None):
         if b is not None :
             vector=AffineVector(Point(0,0),Point(a,b))
-        else :
+        elif isinstance(a,tuple) :
+            vector=AffineVector( Point(0,0),Point(a[0],a[1])  )
+        else:
             vector=a
-        v = Segment(self.I.translate(vector),self.F.translate(vector))
-        return v
+        return Segment(self.I.translate(vector),self.F.translate(vector))
     def fix_origin(self,a,b=None):
         """
-        Return the segment fixed at `P`. This is the translation of `self`  by `P-self`.  In other words, it returns the segment which is parallel to self trough the given point.
+        Return the segment fixed at `P`. This is the translation
+        of `self`  by `P-self`.  In other words, it returns the
+        segment which is parallel to self trough the given point.
 
         Typically it is used in the framework of affine vector..
 

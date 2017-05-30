@@ -475,6 +475,7 @@ class PointGraph(ObjectGraph):
             except AttributeError :
                 raise TypeError, "You seem to add myself with something which is not a Point neither a Vector. Sorry, but I'm going to crash : {},{}".format(v,type(v))
         return Point(self.x+dx,self.y+dy)
+
     ## \brief addition of coordinates
     def __add__(self,other):
         if isinstance(other,tuple):
@@ -484,13 +485,22 @@ class PointGraph(ObjectGraph):
             Dx=other.x
             Dy=other.y
         return Point(  self.x+Dx,self.y+Dy )
-    def __sub__(self,v):
-        if isinstance(v,tuple):
-            if len(v)==2:
-                return self+(-v[0],-v[1])
+    
+## Subtract coordinatewise two points. 
+# 
+# One can pass either a point or two numbers which will be
+# interpreted as the coordinates to be subtracted.
+    def __sub__(self,a):
+        if isinstance(a,tuple):
+            if len(a)==2:
+                Dx=a[0]
+                Dy=a[1]
             else :
                 raise TypeError, "Cannot sum %s with %s."%(self,v)
-        return self.translate(-v)
+        else :
+            Dx=a.x
+            Dy=a.y
+        return Point(  self.x-Dx,self.y-Dy  )
     def __neg__(self):
         return Point(-self.x,-self.y)
     def __mul__(self,r):

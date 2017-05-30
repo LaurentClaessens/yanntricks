@@ -87,7 +87,7 @@ def orthogonal_decompostion():
     echo_single_test("130 degree : inner product 2")
     assert_equal(paral.inner_product(perp),0)
 
-def translation():
+def point_translation():
     echo_function("translation")
     v=Vector(2,1)                        
     P=Point(-1,-1)
@@ -102,6 +102,29 @@ def translation():
     P=Point(x,y)
     assert_equal(P.translate(Vector(-P)),Point(0,0))
 
+def segment_translation():
+    echo_function("segment_translation")
+    segment=Segment( Point(-1,3),Point(pi,0)  )
+
+    # One tuple and 3 ways to describe the same vector.
+    t=(1,7)
+    v1=AffineVector(Point(0,0),Point(1,7))
+    v2=AffineVector(Point(5,6),Point(6,13))
+    v3=Vector(1,7)
+
+    s1=segment.translate(1,7)
+    s2=segment.translate(t)
+    s3=segment.translate(v1)
+    s4=segment.translate(v2)
+    s5=segment.translate(v3)
+
+    ans=Segment( Point(0,10),Point(pi+1,7)   )
+    assert_equal(s1,ans)
+    assert_equal(s2,ans)
+    assert_equal(s3,ans)
+    assert_equal(s4,ans)
+    assert_equal(s5,ans)
+
 def projection():
     echo_function("projection")
     s1=Segment( Point(0,0),Point(2,1) )
@@ -112,5 +135,6 @@ def projection():
 def testAffineVector():
     orthogonal_decompostion()
     projection()
-    translation()
-    vector_constructor()
+    point_translation()
+    segment_translation()
+vector_constructor()
