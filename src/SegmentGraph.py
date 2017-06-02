@@ -560,7 +560,7 @@ class SegmentGraph(ObjectGraph):
         """ 
         return a segment parallel to self passing trough P
         """
-        v=self.F-self.I
+        v=AffineVector(self.I,self.F)
         Q=P.translate(v)
         return Segment(P,Q)
 
