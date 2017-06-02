@@ -43,15 +43,17 @@ def vector_constructor():
     v2=Vector(t)
     v3=Vector(4,2)
 
-    assert_equal(v1.F.x,4)
-    assert_equal(v2.F.x,4)
-    assert_equal(v3.F.x,4)
-    assert_equal(v1.F.y,2)
-    assert_equal(v2.F.y,2)
-    assert_equal(v3.F.y,2)
     assert_equal(v1.I,O)
     assert_equal(v2.I,O)
     assert_equal(v3.I,O)
+
+    assert_equal(v1.F.x,4)
+    assert_equal(v2.F.x,4)
+    assert_equal(v3.F.x,4)
+
+    assert_equal(v1.F.y,2)
+    assert_equal(v2.F.y,2)
+    assert_equal(v3.F.y,2)
 
 def orthogonal_decompostion():
     echo_function("orthogonal_decomposition")

@@ -33,16 +33,20 @@ from Testing import echo_single_test
 from Testing import SilentOutput
 
 def test_constructors():
+
+    echo_single_test("Usual constructor")
     seg=Segment(  Point(0,0),Point(2,10) )
     assert_equal(seg.I,Point(0,0))
     assert_equal(seg.F,Point(2,10))
 
-    seg2=Segment(  Point(-3,4),vector=Vector(1,2) )
+    echo_single_test("Construct with a vector")
+    seg=Segment(  Point(-3,4),vector=Vector(1,2) )
     assert_equal(seg.I,Point(-3,4))
     assert_equal(seg.F,Point(-2,6))
 
+    echo_single_test("Construct with an affine vector")
     v=AffineVector(  Point(1,2),Point(-2,5) )
-    seg3=Segment(  Point(-3,4),vector=v )
+    seg=Segment(  Point(-3,4),vector=v )
     assert_equal(seg.I,Point(-3,4))
     assert_equal(seg.F,Point(-6,7))
 
