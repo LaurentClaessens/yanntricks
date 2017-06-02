@@ -184,6 +184,7 @@ class AffineVectorGraph(ObjectGraph):
                 Dy=self.Dy+other[1]
                 return AffineVector(self.I,self.I.translate( Vector(Dx,Dy) ))
         if other.I != self.I :
+            from Exceptions import OperationNotPermitedException
             raise OperationNotPermitedException("You can only add vectors\
                             with same base point.")
         I=self.I
