@@ -114,9 +114,11 @@ class AngleGraph(ObjectGraph):
         """
         Return a vector 
         O -> central point of the box
-        such that the box of size (dimx,dimy) will not intersect the lines of the angle self.
+        such that the box of size (dimx,dimy) will not intersect the lines
+        of the angle self.
 
-          In fact we use this vector to translate from the mark_point (not the center of the angle).
+          In fact we use this vector to translate from the mark_point 
+          (not the center of the angle).
           Thus we are sure that the mark will in the same time
           - not intersect the lines
           - be further than the code.
@@ -160,10 +162,9 @@ class AngleGraph(ObjectGraph):
         # In each case, the computed vector 'v' is the vector
         #  O -> center of the box containing the text.
         if 0<self.angleA.degree < 90 and ( self.angleB.degree==90 or self.angleB.radian==pi/2  ):
-            x=0
             y=dimx/tan(self.measure.radian)
             Q=self.O+(0,y)
-            return AffineVector(self.O,Q+(-dimx/2,dimy/2))
+            return AffineVector(self.O,Q+(dimx/2,dimy/2))
 
         if 0<self.angleA.degree < 90 and 90<self.angleB.degree < 180 :
             h=dimx*sin(self.angleA.radian)
