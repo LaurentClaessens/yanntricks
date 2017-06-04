@@ -147,15 +147,14 @@ class MarkGraph(ObjectGraph):
             elif position=="center_direction":
 
                 # The algorithm is :
-# - we put the center of the box randomly on the right line
-#    (this is point Q)
-# - not completely at random : sufficiently far for the box do not include the
-#   mark_point (this is the role of 'r')
-# - the vector 'w' joins 'mark_point' to the box
-# - in an ideal world, the length of 'w' would be 'dist'
-# - it is not because the box was put at random
-# - dist/w.length is the multiplicative factor for 'w'
-# - 
+                # - we put the center of the box randomly on the right line
+                #    (this is point Q)
+                # - not completely at random : sufficiently far for the
+                # box do not include the mark_point (this is the role of 'r')
+                # - the vector 'w' joins 'mark_point' to the box
+                # - in an ideal world, the length of 'w' would be 'dist'
+                # - it is not because the box was put at random
+                # - dist/w.length is the multiplicative factor for 'w'
 
                 from Constructors import BoundingBox
                 from Utilities import point_to_box_intersection

@@ -95,8 +95,18 @@ class AngleGraph(ObjectGraph):
     def advised_mark_angle(self,pspict):
         if self._mark_angle is None :
             visualI,visualF=self.visual_angleIF(pspict=pspict)
-            self._mark_angle = (visualI.degree+visualF.degree)/2
+            degree = (visualI.degree+visualF.degree)/2
+            self._mark_angle = AngleMeasure(value_degree=degree)
+        
         return self._mark_angle
+    def visual_mediator(self,pspict):
+        """
+        return a mediator vector based at self.O
+        - the norm is not guaranteed.
+        """
+        aa=self.advised_mark_angle(pspict)
+        F=self.O+(  cos(pi*aa/180),sin(pi*aa/180)  )
+        return AffineVector(self.O,F)
     def put_arrow(self,pspict=None):
         """
         Add a small arrow at the end of the angle,
@@ -303,8 +313,8 @@ class AngleGraph(ObjectGraph):
             Q=self.O+(x,y)
             return AffineVector(self.O,Q+(dimx/2,-dimy/2))
 
-        else :
-            raise ValueError("Not yet implemented for angles :",numerical_approx(self.angleA.degree),numerical_approx(self.angleB.degree))
+
+        raise ValueError("Not yet implemented for angles :",numerical_approx(self.angleA.degree),numerical_approx(self.angleB.degree))
 
     def get_mark(self,dist=None,angle=None,text="",mark_point=None,added_angle=None,position=None,pspict=None):
         """
@@ -331,7 +341,7 @@ class AngleGraph(ObjectGraph):
         if self.measure.degree>90 or self.measure.degree<-90 : 
             if dist is None:
                 dist=0.2
-            return mark_point.get_mark(dist=dist,angle=self.advised_mark_angle(pspict),text=text,position=position,pspict=pspict)
+            return mark_point.get_mark(dist=dist,angle=self.advised_mark_angle(pspict),text=text,position="center_direction",pspict=pspict)
 
         if position != None:
             print("The mark of an angle should be given without position argument")

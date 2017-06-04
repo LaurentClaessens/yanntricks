@@ -11,7 +11,6 @@ def UOEOooLxhpSC():
     D=A+(0,-cot)
 
     carre=Polygon(A,B,C,D)
-    carre.put_mark(0.2,pspict=pspict)
 
     dig2=Segment(B,D)
     d2=AngleAOB(B,D,A)
