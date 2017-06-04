@@ -99,13 +99,13 @@ class AngleGraph(ObjectGraph):
             self._mark_angle = AngleMeasure(value_degree=degree)
         
         return self._mark_angle
-    def visual_mediator(self,pspict):
+    def visual_bisector(self,pspict):
         """
         return a mediator vector based at self.O
         - the norm is not guaranteed.
         """
         aa=self.advised_mark_angle(pspict)
-        F=self.O+(  cos(pi*aa/180),sin(pi*aa/180)  )
+        F=self.O+(  cos(aa.radian),sin(aa.radian)  )
         return AffineVector(self.O,F)
     def put_arrow(self,pspict=None):
         """
@@ -371,8 +371,18 @@ class AngleGraph(ObjectGraph):
                         the minimal to be {}".format(dist,v.length),pspict=pspict)
             v=v.normalize(dist)
 
-        v=visual_vector(v,pspict=pspict)
-        C=mark_point.translate(v)
+
+        vv=visual_vector(v,pspict=pspict)
+        vv.parameters.color="green"
+
+        vb=self.visual_bisector(pspict)
+        vv.parameters.color="yellow"
+
+        pspict.DrawGraphs(v)
+        pspict.DrawGraphs(vv)
+        pspict.DrawGraphs(vb)
+
+        C=mark_point.translate(vv)
         return Mark(self,dist=None,angle=None,text=text,mark_point=None,central_point=C,position=None,pspict=pspict)
 
     def action_on_pspict(self,pspict):

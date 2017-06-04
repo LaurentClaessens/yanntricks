@@ -4,6 +4,7 @@
 import sys
 from phystricks import *
 
+from phystricksHRIVooBXxZES import HRIVooBXxZES
 from phystricksFBTCooBKTryQ import FBTCooBKTryQ
 from phystricksUOEOooLxhpSC import UOEOooLxhpSC
 from phystricksJRCJooPHFcKn import JRCJooPHFcKn
@@ -151,8 +152,8 @@ append_picture(JRCJooPHFcKn,2)
 
 append_picture(UOEOooLxhpSC,2)
 append_picture(FBTCooBKTryQ,2)
+append_picture(HRIVooBXxZES,2)
 """
-append_picture(<++>,1)
 append_picture(<++>,1)
 append_picture(<++>,1)
 append_picture(<++>,1)
