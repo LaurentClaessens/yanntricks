@@ -316,7 +316,7 @@ class AngleGraph(ObjectGraph):
 
         raise ValueError("Not yet implemented for angles :",numerical_approx(self.angleA.degree),numerical_approx(self.angleB.degree))
 
-    def get_mark(self,dist=None,angle=None,text="",mark_point=None,added_angle=None,position=None,pspict=None):
+    def get_mark(self,dist=None,angle=None,text=None,mark_point=None,added_angle=None,position=None,pspict=None):
         """
         The mark on an angle is determined in the following way.
 
@@ -333,8 +333,9 @@ class AngleGraph(ObjectGraph):
         If you give the optional argument "dist", the vector 'v' is replaced by
         v.fix_size(dist)
         In this case you have to fix a correct value of 'dist' by hand.
-
         """
+        if text=="" or text is None:
+            logging("This is very strange to require a mark with an empty text. Maybe you'll get a crash on the second pass.")
 
         mark_point=self.mark_point(pspict)
 
