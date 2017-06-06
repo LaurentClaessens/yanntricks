@@ -5,9 +5,9 @@ def HRIVooBXxZES():
     pspict.dilatation_X(7)
     pspict.dilatation_Y(2)
 
-    A=Point(0,0)
+    A=Point(1,2)
     B=A+(-1,-2)
-    C=A+(1,-2)
+    C=A+(2,-2)
 
     trig=Polygon(A,B,C)
 

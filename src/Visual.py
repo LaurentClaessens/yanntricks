@@ -20,6 +20,8 @@
 # copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
+from __future__ import division
+
 from sage.all import *
 from Constructors import Vector,Point
 
@@ -77,6 +79,8 @@ def visual_polar_coordinates(P,pspict=None):
     """
     return the visual polar coordinates of 'P'
     """
+    if pspict is None :
+        return P.polar_coordinates()
     if isinstance(pspict,list):
         xu=pspict[0].xunit
         yu=pspict[0].xunit
@@ -94,18 +98,41 @@ def visual_polar_coordinates(P,pspict=None):
     Q=Point(xunit*P.x,yunit*P.y)
     return Q.polar_coordinates()
 
-def visual_vector(v,pspict=None):
-    """
-    return a vector at the same base as 'v' but such that
-    it will visually appears as 'v'
-    """
+## return a vector at the same base as 'v' but such that
+#    it will visually appears as 'v'
+def visual_vector(v,pspict=None,xunit=None,yunit=None):
     from NoMathUtilities import logging
     from Constructors import AffineVector
-    if pspict is None:
+    if pspict is None and (xunit is None or yunit is None):
         logging("Trying to make visual_vector with no pspict ?")
+        raise DeprecationWarning
         return v
-    xunit=pspict.xunit
-    yunit=pspict.yunit
+    if pspict:
+        xunit=pspict.xunit
+        yunit=pspict.yunit
     I=v.I
     F=I+(v.Dx/xunit,v.Dy/yunit)
     return AffineVector(I,F)
+
+## return the coordinates where
+# the point `P` will be.
+def inverse_visual_point(P,pspict):
+    return Point( P.x*pspict.xunit,P.y*pspict.yunit  )
+
+## return the coordinates where
+# a point has to be placed to arrive at `P` after taking
+# into account the dilatations.
+def visual_point(P,pspict):
+    return Point( P.x/pspict.xunit,P.y/pspict.yunit  )
+
+## \brief returns the 'visual' self
+# We compute a new triple of points `A'O'B'` :
+# where A',B' and C' are the points where the angle will be after
+# the dilatations.
+def inverse_visual_angle(angle,pspict):
+    from Constructors import AngleAOB
+    Ap=inverse_visual_point(angle.A,pspict)
+    Op=inverse_visual_point(angle.O,pspict)
+    Bp=inverse_visual_point(angle.B,pspict)
+    return AngleAOB(Ap,Op,Bp)
+

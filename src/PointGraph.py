@@ -298,7 +298,9 @@ class PointGraph(ObjectGraph):
         """
         Return the coordinates of the point as a string.
 
-        When one coordinate if very small (lower than 0.0001), it is rounded to zero in order to avoid string like "0.2335e-6" in the pstricks code.
+        When one coordinate if very small (lower than 0.0001), it
+        is rounded to zero in order to avoid string like "0.2335e-6"
+        in the pstricks code.
 
         EXAMPLE::
 

@@ -290,6 +290,7 @@ def AngleAOB(A,O,B,r=None):
     return AngleGraph(A,O,B,r)
 
 def Angle(A,O,B,r=None):
+    raise DeprecationWarning
     from NoMathUtilities import logging
     logging("Warning : You should use 'AngleAOB' instead of 'Angle'")
     return AngleAOB(A,O,B,r=r)

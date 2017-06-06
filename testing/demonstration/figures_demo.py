@@ -1,10 +1,12 @@
 #! /usr/bin/sage -python
 # -*- coding: utf8 -*-
+XWWHooIkLOwZ
 
 import sys
 from phystricks import *
 
 from phystricksHRIVooBXxZES import HRIVooBXxZES
+from phystricksXWWHooIkLOwZ import XWWHooIkLOwZ
 from phystricksFBTCooBKTryQ import FBTCooBKTryQ
 from phystricksUOEOooLxhpSC import UOEOooLxhpSC
 from phystricksJRCJooPHFcKn import JRCJooPHFcKn
@@ -153,7 +155,10 @@ append_picture(JRCJooPHFcKn,2)
 append_picture(UOEOooLxhpSC,2)
 append_picture(FBTCooBKTryQ,2)
 append_picture(HRIVooBXxZES,2)
+append_picture(XWWHooIkLOwZ,2)
 """
+append_picture(<++>,1)
+append_picture(<++>,1)
 append_picture(<++>,1)
 append_picture(<++>,1)
 append_picture(<++>,1)

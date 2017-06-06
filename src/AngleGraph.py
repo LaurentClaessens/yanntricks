@@ -24,7 +24,13 @@ from __future__ import division
 
 from phystricks.src.Constructors import *
 from phystricks.src.Utilities import *
-from phystricks.src.Visual import visual_polar_coordinates, visual_length,visual_vector
+
+from phystricks.src.Visual import visual_polar_coordinates
+from phystricks.src.Visual import visual_length
+from phystricks.src.Visual import visual_vector
+from phystricks.src.Visual import inverse_visual_angle
+
+
 from phystricks.src.NoMathUtilities import logging
 from phystricks.src.Decorators import copy_parameters
 from phystricks.src.Exceptions import MissingPictureException
@@ -99,13 +105,10 @@ class AngleGraph(ObjectGraph):
             self._mark_angle = AngleMeasure(value_degree=degree)
         
         return self._mark_angle
-    def visual_bisector(self,pspict):
-        """
-        return a mediator vector based at self.O
-        - the norm is not guaranteed.
-        """
+
+    def bisector(self,pspict):
         aa=self.advised_mark_angle(pspict)
-        F=self.O+(  cos(aa.radian),sin(aa.radian)  )
+        F=self.O+( cos(aa.radian),sin(aa.radian) )
         return AffineVector(self.O,F)
     def put_arrow(self,pspict=None):
         """
@@ -132,7 +135,6 @@ class AngleGraph(ObjectGraph):
           Thus we are sure that the mark will in the same time
           - not intersect the lines
           - be further than the code.
-
         """
 
         if self.angleA.degree == 0:
@@ -148,9 +150,12 @@ class AngleGraph(ObjectGraph):
             # We consider the altitude 'h' of OXY from X.
             # Let 'sigma' be the angle made by the diagonal of the box.
             # beta = self.angleA + sigma
-            # Using Pythagoras'theorem and some trigonometry, we can determine all the lengths and angles.
-            # The one we are interested in is OX. Trigonometry then provides the coordinates of X. 
-            # Then the center of the mark's box is easy to compute as a translation by (dimx/2 , -dimy/2)
+            # Using Pythagoras'theorem and some trigonometry,
+            # we can determine all the lengths and angles.
+            # The one we are interested in is OX. Trigonometry then 
+            # provides the coordinates of X. 
+            # Then the center of the mark's box is easy to compute 
+            # as a translation by (dimx/2 , -dimy/2)
 
             d=sqrt(dimx**2+dimy**2)     # diagonal of the box
             sigma = arctan(dimy/dimx)
@@ -235,17 +240,6 @@ class AngleGraph(ObjectGraph):
 
             return AffineVector(self.O,Q+(-dimx/2,-dimy/2)  )
 
-        if 180<self.angleA.degree < 270 and 270<self.angleB.degree < 360 :
-            alpha=self.angleA.radian-pi
-            h=dimx*cos(alpha)
-            beta=pi/2-self.measure.radian
-            l=h/cos(beta)
-            gamma=2*pi-self.angleB.radian
-            x=l*cos(gamma)
-            y=l*sin(gamma)
-            Q=self.O+(x,-y)
-            return AffineVector(self.O,Q+(-dimx/2,-dimy/2))
-
         if 270<self.angleA.degree < 360 and 0<self.angleB.degree<90:
             alpha=self.angleB.radian
             l=dimy*cos(alpha)
@@ -276,14 +270,12 @@ class AngleGraph(ObjectGraph):
             return AffineVector(self.O,Q+(-dimx/2,dimy/2))
 
         if 180<self.angleA.degree < 270 and 270<self.angleB.degree<360:
-            alpha=self.measure.radian-pi
-            h=dimx*sin(alpha)
-            l=h/sin(self.measure.radian)
-            beta=self.angleA.radian-3*pi/2
-            x=l*sin(beta)
-            y=l*cos(beta)
-            Q=self.O+(x,-y)
-            return AffineVector( self.O,Q+(-dimx/2,-dimy/2)  )
+            alpha=pi/2-(self.angleA.radian-pi)
+            beta=self.measure.radian-alpha
+            h=dimx/(tan(alpha)+tan(beta))
+            d1=h*tan(alpha)
+            Q=self.O+(-d1,-h)
+            return AffineVector( self.O,Q+(dimx/2,-dimy/2)  )
 
         if 270<self.angleA.degree < 360 and 270<self.angleB.degree<360:
             alpha=2*pi-self.angleA.radian
@@ -316,33 +308,55 @@ class AngleGraph(ObjectGraph):
 
         raise ValueError("Not yet implemented for angles :",numerical_approx(self.angleA.degree),numerical_approx(self.angleB.degree))
 
-    def get_mark(self,dist=None,angle=None,text=None,mark_point=None,added_angle=None,position=None,pspict=None):
-        """
-        The mark on an angle is determined in the following way.
-
-        A vector 'v' is computed in such a way that placing
-        the center of the mark at
-        self.O+v
-        makes the mark being just  in the angle 
-
-        Then the center of the mark is placed at 
-        self.mark_point+v
-
-        Thus the mark should be ok.
-
-        If you give the optional argument "dist", the vector 'v' is replaced by
-        v.fix_size(dist)
-        In this case you have to fix a correct value of 'dist' by hand.
-        """
+    ## The mark on an angle is determined in the following way.
+    #
+    #        A vector 'v' is computed in such a way that placing
+    #        the center of the mark at
+    #        self.O+v
+    #        makes the mark being just  in the angle 
+    #
+    #        Then the center of the mark is placed at 
+    #        self.mark_point+v
+    #
+    #        Thus the mark should be ok.
+    #
+    #        If you give the optional argument "dist", the vector 'v' is replaced by
+    #        v.fix_size(dist)
+    #        In this case you have to fix a correct value of 'dist' by hand.
+    #
+    #        \param visual_work if True, we first make all the computation on
+    #        the angle as it will be drawn (xunit,yunit) and the bring the result
+    #        back.
+    #        If false, we make as there are no dilatations issues.
+    #        The point
+    def get_mark(self,dist=None,angle=None,text=None,mark_point=None,added_angle=None,position=None,pspict=None,visual_work=True):
         if text=="" or text is None:
             logging("This is very strange to require a mark with an empty text. Maybe you'll get a crash on the second pass.")
 
-        mark_point=self.mark_point(pspict)
+        if visual_work :
+            from Visual import visual_point
+            v_angle=inverse_visual_angle(self,pspict)
 
-        if self.measure.degree>90 or self.measure.degree<-90 : 
-            if dist is None:
-                dist=0.2
-            return mark_point.get_mark(dist=dist,angle=self.advised_mark_angle(pspict),text=text,position="center_direction",pspict=pspict)
+            old_xunit=pspict.xunit
+            old_yunit=pspict.yunit
+            pspict.xunit=1
+            pspict.yunit=1
+            mark=v_angle.get_mark(dist=dist,angle=angle,text=text,
+                        mark_point=mark_point,added_angle=added_angle,
+                        position=position,
+                        pspict=pspict,
+                        visual_work=False)
+            pspict.xunit=old_xunit
+            pspict.yunit=old_yunit
+            cp=visual_point(mark.central_point(),pspict)
+            return Mark(self,dist=None,angle=None,text=text,
+                        mark_point=None,
+                        central_point=cp,
+                        position=None,
+                        pspict=pspict)
+
+
+        mark_point=self.mark_point(pspict)
 
         if position != None:
             print("The mark of an angle should be given without position argument")
@@ -359,31 +373,27 @@ class AngleGraph(ObjectGraph):
         # The other cases are the same kind of trigonometry.
         # I just let you know that if you know 3 angles and one length 
         # in a triangle, you know everything : 
-        # just draw the altitude and use Pythagoras along with some trigonometry.
+        # just draw the altitude and use Pythagoras along with some
+        # trigonometry.
 
         # The cases are tested in the demo file 'OMPAooMbyOIqeA'
+
 
         v=self._getOCvector(dimx,dimy,pspict=pspict)
 
         if dist is not None :
             if dist<v.length :
                 logging("The distance you give is {} while I computed\
-                        the minimal to be {}".format(dist,v.length),pspict=pspict)
+                        the minimal to be {}".format(dist,v.length),
+                        pspict=pspict)
             v=v.normalize(dist)
 
-
-        vv=visual_vector(v,pspict=pspict)
-        vv.parameters.color="green"
-
-        vb=self.visual_bisector(pspict)
-        vv.parameters.color="yellow"
-
-        pspict.DrawGraphs(v)
-        pspict.DrawGraphs(vv)
-        pspict.DrawGraphs(vb)
-
-        C=mark_point.translate(vv)
-        return Mark(self,dist=None,angle=None,text=text,mark_point=None,central_point=C,position=None,pspict=pspict)
+        C=mark_point.translate(v)
+        return Mark(self,dist=None,angle=None,text=text,
+                        mark_point=None,
+                        central_point=C,
+                        position=None,
+                        pspict=pspict)
 
     def action_on_pspict(self,pspict):
         circle=self.circle(visual=True,pspict=pspict)
