@@ -1,10 +1,10 @@
 #! /usr/bin/sage -python
 # -*- coding: utf8 -*-
-XWWHooIkLOwZ
 
 import sys
 from phystricks import *
 
+from phystricksCWKJooppMsZXjw import CWKJooppMsZXjw
 from phystricksHRIVooBXxZES import HRIVooBXxZES
 from phystricksXWWHooIkLOwZ import XWWHooIkLOwZ
 from phystricksFBTCooBKTryQ import FBTCooBKTryQ
@@ -156,8 +156,8 @@ append_picture(UOEOooLxhpSC,2)
 append_picture(FBTCooBKTryQ,2)
 append_picture(HRIVooBXxZES,2)
 append_picture(XWWHooIkLOwZ,2)
+append_picture(CWKJooppMsZXjw,2)
 """
-append_picture(<++>,1)
 append_picture(<++>,1)
 append_picture(<++>,1)
 append_picture(<++>,1)
