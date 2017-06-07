@@ -4,7 +4,11 @@
 import sys
 from phystricks import *
 
+from phystricksAMDUooZZUOqa import AMDUooZZUOqa
 from phystricksCWKJooppMsZXjw import CWKJooppMsZXjw
+from phystricksCercleTrigono import CercleTrigono
+from phystricksRefraction import Refraction
+from phystricksTgCercleTrigono import TgCercleTrigono
 from phystricksHRIVooBXxZES import HRIVooBXxZES
 from phystricksXWWHooIkLOwZ import XWWHooIkLOwZ
 from phystricksFBTCooBKTryQ import FBTCooBKTryQ
@@ -157,6 +161,11 @@ append_picture(FBTCooBKTryQ,2)
 append_picture(HRIVooBXxZES,2)
 append_picture(XWWHooIkLOwZ,2)
 append_picture(CWKJooppMsZXjw,2)
+
+append_picture(AMDUooZZUOqa,2)
+append_picture(CercleTrigono,2)
+append_picture(Refraction,2)
+append_picture(TgCercleTrigono,2)
 """
 append_picture(<++>,1)
 append_picture(<++>,1)
