@@ -214,6 +214,7 @@ class AngleGraph(ObjectGraph):
             Q=self.O+(-x,y)
             return AffineVector( self.O, Q+(-dimx/2,-dimy/2) )
 
+
         if 90<self.angleA.degree < 180 and 180<self.angleB.degree < 270 :
             alpha=3*pi/2-self.angleB.radian
             h=dimy*sin(alpha)
@@ -308,11 +309,11 @@ class AngleGraph(ObjectGraph):
             Q=self.O
             return AffineVector(self.O,Q+(dimx/2,dimy/2))
 
-        if self.angleA.degree == 0 or self.angleA.radian== 0  and 90 <= self.angleB.degree <= 180 :
+        if (self.angleA.degree == 0 or self.angleA.radian== 0)  and 90 <= self.angleB.degree <= 180 :
             Q=self.O
             return AffineVector(self.O,Q+(dimx/2,dimy/2))
 
-        if self.angleA.degree == 180 or self.angleA.radian== pi  and 270 <= self.angleB.degree <= 360 :
+        if (self.angleA.degree == 180 or self.angleA.radian== pi)  and 270 <= self.angleB.degree <= 360 :
             Q=self.O
             return AffineVector(self.O,Q+(-dimx/2,-dimy/2))
 
@@ -397,7 +398,6 @@ class AngleGraph(ObjectGraph):
         # trigonometry.
 
         # The cases are tested in the demo file 'OMPAooMbyOIqeA'
-
 
         v=self._getOCvector(dimx,dimy,pspict=pspict)
 
