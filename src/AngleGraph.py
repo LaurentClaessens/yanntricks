@@ -37,6 +37,8 @@ from phystricks.src.Exceptions import MissingPictureException
 
 from phystricks.src.ObjectGraph import ObjectGraph
 
+from Debug import dprint
+
 class AngleGraph(ObjectGraph):
     """
     self.mark_angle is the angle at which self.mark_point will be placed. By default it is at the middle. 
@@ -236,7 +238,8 @@ class AngleGraph(ObjectGraph):
             Q=self.O+(-x,0)
             return AffineVector(self.O,Q+(-dimx/2,-dimy/2))
 
-        if 180<self.angleA.degree < 270 and (self.angleB.degree==270 or self.angleB.radian==3*pi/2) :
+        if 180<self.angleA.degree < 270 and \
+                    (self.angleB.degree==270 or self.angleB.radian==3*pi/2) :
             y=dimx/tan(self.measure.radian)
             Q=self.O+(0,-y)
             return AffineVector(self.O,Q+(-dimx/2,-dimy/2)  )
@@ -250,7 +253,8 @@ class AngleGraph(ObjectGraph):
             Q=self.O+(x,y)
             return AffineVector(self.O,Q+(dimx/2,-dimy/2))
 
-        if (self.angleA.radian==3*pi/2 or self.angleA.degree==270) and 270<self.angleB.degree<360 :
+        if (self.angleA.radian==3*pi/2 or self.angleA.degree==270) and \
+                                            270<self.angleB.degree<360 :
             l=dimx/tan(self.measure.radian)
             x=0
             y=l
@@ -263,7 +267,8 @@ class AngleGraph(ObjectGraph):
             beta=self.angleA.radian-pi
             gamma=alpha+beta
             h=d*sin(gamma)
-            l=h/cos(self.measure.radian)
+
+            l=h/sin(self.measure.radian)
             sigma=3*pi/2-self.angleB.radian
             x=l*sin(sigma)
             y=l*cos(sigma)
