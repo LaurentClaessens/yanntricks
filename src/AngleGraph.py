@@ -137,10 +137,6 @@ class AngleGraph(ObjectGraph):
           - be further than the code.
         """
 
-        if self.angleA.degree == 0:
-            x=dimy/tan(self.measure.radian)
-            K=Point(self.O.x+x+dimx/2,self.O.y+dimy/2)
-            return AffineVector( self.O, K )
         if 0<self.angleA.degree < 90 and 0<self.angleB.degree < 90 :
             # In this case, the mark will be attached
             # - by the upper left to the line OB (let X be that point)
@@ -237,7 +233,6 @@ class AngleGraph(ObjectGraph):
         if 180<self.angleA.degree < 270 and (self.angleB.degree==270 or self.angleB.radian==3*pi/2) :
             y=dimx/tan(self.measure.radian)
             Q=self.O+(0,-y)
-
             return AffineVector(self.O,Q+(-dimx/2,-dimy/2)  )
 
         if 270<self.angleA.degree < 360 and 0<self.angleB.degree<90:
@@ -313,7 +308,18 @@ class AngleGraph(ObjectGraph):
             Q=self.O
             return AffineVector(self.O,Q+(dimx/2,dimy/2))
 
+        if self.angleA.degree == 0 or self.angleA.radian== 0  and 90 <= self.angleB.degree <= 180 :
+            Q=self.O
+            return AffineVector(self.O,Q+(dimx/2,dimy/2))
 
+        if self.angleA.degree == 180 or self.angleA.radian== pi  and 270 <= self.angleB.degree <= 360 :
+            Q=self.O
+            return AffineVector(self.O,Q+(-dimx/2,-dimy/2))
+
+        if self.angleA.degree == 0 or self.angleA.radian==0  :
+            x=dimy/tan(self.measure.radian)
+            K=self.O+(x+dimx/2,dimy/2)
+            return AffineVector( self.O, K )
 
 
         raise ValueError("Not yet implemented for angles :",numerical_approx(self.angleA.degree),numerical_approx(self.angleB.degree))
