@@ -4,6 +4,7 @@
 import sys
 from phystricks import *
 
+from phystricksVRQCooOchjJA import VRQCooOchjJA
 from phystricksQEPZooNndwiS import QEPZooNndwiS
 from phystricksVAAYooXndWQq import VAAYooXndWQq
 from phystricksAMDUooZZUOqa import AMDUooZZUOqa
@@ -170,7 +171,12 @@ append_picture(Refraction,2)
 append_picture(TgCercleTrigono,2)
 append_picture(VAAYooXndWQq,2)
 append_picture(QEPZooNndwiS,2)
+append_picture(VRQCooOchjJA,2)
 """
+append_picture(<++>,1)
+append_picture(<++>,1)
+append_picture(<++>,1)
+append_picture(<++>,1)
 append_picture(<++>,1)
 append_picture(<++>,1)
 """

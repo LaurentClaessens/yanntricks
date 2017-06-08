@@ -316,6 +316,10 @@ class AngleGraph(ObjectGraph):
             Q=self.O
             return AffineVector(self.O,Q+(-dimx/2,-dimy/2))
 
+        if 0 <= self.angleA.degree <= 90 and 180 <= self.angleB.degree <= 270 :
+            Q=self.O
+            return AffineVector(self.O,Q+(-dimx/2,dimy/2))
+
         if self.angleA.degree == 0 or self.angleA.radian==0  :
             x=dimy/tan(self.measure.radian)
             K=self.O+(x+dimx/2,dimy/2)
