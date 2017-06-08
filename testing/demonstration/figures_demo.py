@@ -4,6 +4,7 @@
 import sys
 from phystricks import *
 
+from phystricksVAAYooXndWQq import VAAYooXndWQq
 from phystricksAMDUooZZUOqa import AMDUooZZUOqa
 from phystricksCWKJooppMsZXjw import CWKJooppMsZXjw
 from phystricksCercleTrigono import CercleTrigono

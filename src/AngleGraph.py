@@ -309,6 +309,12 @@ class AngleGraph(ObjectGraph):
             Q=self.O+(dimx/2,-dimy/2)
             return AffineVector(self.O,Q)
 
+        if 270 <= self.angleA.degree <= 360 and 90<=self.angleB.degree<=180 :
+            Q=self.O
+            return AffineVector(self.O,Q+(dimx/2,dimy/2))
+
+
+
 
         raise ValueError("Not yet implemented for angles :",numerical_approx(self.angleA.degree),numerical_approx(self.angleB.degree))
 
