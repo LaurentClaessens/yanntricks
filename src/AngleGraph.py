@@ -172,7 +172,7 @@ class AngleGraph(ObjectGraph):
 
             return AffineVector( self.O, Point( x+dimx/2,y-dimy/2) )   
 
-        # In each case, the computed vector 'v' is the vector
+        # In each case, the returned vector is the vector
         #  O -> center of the box containing the text.
         if 0<self.angleA.degree < 90 and ( self.angleB.degree==90 or self.angleB.radian==pi/2  ):
             y=dimx/tan(self.measure.radian)
@@ -407,7 +407,8 @@ class AngleGraph(ObjectGraph):
         # just draw the altitude and use Pythagoras along with some
         # trigonometry.
 
-        # The cases are tested in the demo file 'OMPAooMbyOIqeA'
+        # The cases are tested in the demo files 
+        # 'OMPAooMbyOIqeA' and 'Refraction'
 
         v=self._getOCvector(dimx,dimy,pspict=pspict)
 
@@ -424,6 +425,7 @@ class AngleGraph(ObjectGraph):
                         central_point=C,
                         position=None,
                         pspict=pspict)
+
 
     def action_on_pspict(self,pspict):
         circle=self.circle(visual=True,pspict=pspict)
