@@ -4,6 +4,7 @@
 import sys
 from phystricks import *
 
+from phystricksQWEHooSRqSdw import QWEHooSRqSdw
 from phystricksVNJWooDeKdcy import VNJWooDeKdcy
 from phystricksHUGKooTkDsOg import HUGKooTkDsOg
 from phystricksBQFUooTuMfnj import BQFUooTuMfnj
@@ -96,7 +97,20 @@ def append_picture(fun,number):
     if number>=3 :
         figures_list_3.append(fun)
 
-figures_list_1=[]
+def append_picture(fun,n):
+    if fun in figures_list_1:
+        print(fun, "is already in list 1")
+    if fun in figures_list_2:
+        print(fun, "is already in list 2")
+    if fun in figures_list_3:
+        print(fun, "is already in list 3")
+    figures_list_1.append(fun)
+    if n>= 2 : 
+        figures_list_2.append(fun)
+    if n>= 3 : 
+        figures_list_3.append(fun)
+
+
 append_picture(SMXRooCnrlNw,1)
 append_picture(TKXZooLwXzjS,1)
 append_picture(exCircle,1)
@@ -178,14 +192,20 @@ append_picture(VRQCooOchjJA,2)
 append_picture(BQFUooTuMfnj,2)
 append_picture(HUGKooTkDsOg,2)
 append_picture(VNJWooDeKdcy,2)
+
+append_picture(AESIooxXxRYQdT,3)
+append_picture(FunctionFour,3)
+append_picture(QWEHooSRqSdw,2)
 """
+append_picture(<++>,1)
+append_picture(<++>,1)
+append_picture(<++>,1)
+append_picture(<++>,1)
 append_picture(<++>,1)
 append_picture(<++>,1)
 append_picture(<++>,1)
 """
 
-append_picture(AESIooxXxRYQdT,3)
-append_picture(FunctionFour,3)
 
 def AllFigures():
     figures_list=figures_list_1

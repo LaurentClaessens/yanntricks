@@ -34,7 +34,7 @@ class SegmentGraph(ObjectGraph):
         self.I = A
         self.F = B
         if not isinstance(A,PointGraph) or not isinstance(B,PointGraph):
-            from NoMathUtilities import testtype
+            from Debug import testtype
             logging("Building a segment from something that is not\
                                 a point. Here are the given objects :")
             raise TypeError

@@ -37,8 +37,6 @@ from phystricks.src.Exceptions import MissingPictureException
 
 from phystricks.src.ObjectGraph import ObjectGraph
 
-from Debug import dprint
-
 class AngleGraph(ObjectGraph):
     """
     self.mark_angle is the angle at which self.mark_point will be placed. By default it is at the middle. 
@@ -172,7 +170,7 @@ class AngleGraph(ObjectGraph):
 
             return AffineVector( self.O, Point( x+dimx/2,y-dimy/2) )   
 
-        # In each case, the computed vector 'v' is the vector
+        # In each case, the returned vector is the vector
         #  O -> center of the box containing the text.
         if 0<self.angleA.degree < 90 and ( self.angleB.degree==90 or self.angleB.radian==pi/2  ):
             y=dimx/tan(self.measure.radian)
@@ -199,19 +197,13 @@ class AngleGraph(ObjectGraph):
             d=sqrt(dimx**2+dimy**2)
             beta=pi-self.angleB.radian
             alpha=atan(dimy/dimx)
-
-
             gamma=alpha+beta
             sigma=pi-self.measure.radian-gamma
-
             h=d*sin(sigma)
             l=h/sin(self.measure.radian)
-
             x=l*cos(beta)
             y=l*sin(beta)
-
             Q=self.O+(-x,y)
-
             return AffineVector(self.O, Q+(dimx/2,dimy/2) )
 
         if 90<self.angleA.degree < 180 and (self.angleB.degree==180 or self.angleB.radian==pi) :
@@ -407,7 +399,8 @@ class AngleGraph(ObjectGraph):
         # just draw the altitude and use Pythagoras along with some
         # trigonometry.
 
-        # The cases are tested in the demo file 'OMPAooMbyOIqeA'
+        # The cases are tested in the demo files 
+        # 'OMPAooMbyOIqeA' and 'Refraction'
 
         v=self._getOCvector(dimx,dimy,pspict=pspict)
 
@@ -424,6 +417,7 @@ class AngleGraph(ObjectGraph):
                         central_point=C,
                         position=None,
                         pspict=pspict)
+
 
     def action_on_pspict(self,pspict):
         circle=self.circle(visual=True,pspict=pspict)

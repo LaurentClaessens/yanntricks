@@ -179,7 +179,7 @@ class InterpolationCurveGraph(ObjectGraph):
         if language=="pstricks":
             raise DeprecationWarning
         if language=="tikz":
-            return self.tikz_code(pspict)
+            return self.tikz_code(pspict)+" %FOOO"
     def __str__(self):
         """
         Return a string representation
