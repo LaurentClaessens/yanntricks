@@ -134,5 +134,5 @@ def inverse_visual_angle(angle,pspict):
     Ap=inverse_visual_point(angle.A,pspict)
     Op=inverse_visual_point(angle.O,pspict)
     Bp=inverse_visual_point(angle.B,pspict)
-    return AngleAOB(Ap,Op,Bp)
+    return AngleAOB(Ap,Op,Bp,r=angle.r)
 

@@ -4,6 +4,7 @@
 import sys
 from phystricks import *
 
+from phystricksQWEHooSRqSdw import QWEHooSRqSdw
 from phystricksVNJWooDeKdcy import VNJWooDeKdcy
 from phystricksHUGKooTkDsOg import HUGKooTkDsOg
 from phystricksBQFUooTuMfnj import BQFUooTuMfnj
@@ -89,7 +90,6 @@ figures_list_1=[]
 figures_list_2=[]
 figures_list_3=[]
 
-<<<<<<< HEAD
 def append_picture(fun,number):
     figures_list_1.append(fun)
     if number>=2 :
@@ -97,8 +97,6 @@ def append_picture(fun,number):
     if number>=3 :
         figures_list_3.append(fun)
 
-figures_list_1=[]
-=======
 def append_picture(fun,n):
     if fun in figures_list_1:
         print(fun, "is already in list 1")
@@ -113,7 +111,6 @@ def append_picture(fun,n):
         figures_list_3.append(fun)
 
 
->>>>>>> 3d5862b035ec1a486a1cd78c2d776a68feb46039
 append_picture(SMXRooCnrlNw,1)
 append_picture(TKXZooLwXzjS,1)
 append_picture(exCircle,1)
@@ -121,10 +118,7 @@ append_picture(OnePoint,1)
 append_picture(FunctionSecond,1)
 append_picture(GridThree,1)
 append_picture(GridTwo,1)
-<<<<<<< HEAD
 append_picture(ParametricOne,1)
-=======
->>>>>>> 3d5862b035ec1a486a1cd78c2d776a68feb46039
 append_picture(ParametricTwo,1)
 append_picture(DEIToomZFknFmn,1)
 append_picture(HELQooLGapRQrr,1)
@@ -141,10 +135,7 @@ append_picture(EXIIooJzzoJeai,1)
 append_picture(CornetGlace,1)
 
 append_picture(RJDEoobOibtkfv,2)
-<<<<<<< HEAD
 append_picture(KEQLooOrxtCN,2)
-=======
->>>>>>> 3d5862b035ec1a486a1cd78c2d776a68feb46039
 append_picture(ECQDooWEpuCM,2)
 append_picture(FMLCooxHtqRzUz,2)
 append_picture(MBWHooeesXIrsz,2)
@@ -165,10 +156,6 @@ append_picture(UREIooqNGBXtHg,2)
 append_picture(QIPRoolQCEnZdx,2)
 append_picture(QRXCooUmnlhkvh,2)
 append_picture(DYJNooLVVFHEfN,2)
-<<<<<<< HEAD
-=======
-append_picture(ParametricOne,2)
->>>>>>> 3d5862b035ec1a486a1cd78c2d776a68feb46039
 append_picture(exCircleThree,2)
 append_picture(EDEYRhQ,2)
 append_picture(UARHooLMWqvyaI,2)
@@ -187,7 +174,6 @@ append_picture(FunctionFive,2)
 append_picture(OYBTooNUcJLzDH,2)
 append_picture(OGGDooIvakwNlL,2)
 append_picture(OMPAooMbyOIqeA,2)
-<<<<<<< HEAD
 append_picture(JRCJooPHFcKn,2)
 
 append_picture(UOEOooLxhpSC,2)
@@ -209,7 +195,13 @@ append_picture(VNJWooDeKdcy,2)
 
 append_picture(AESIooxXxRYQdT,3)
 append_picture(FunctionFour,3)
+append_picture(QWEHooSRqSdw,2)
 """
+append_picture(<++>,1)
+append_picture(<++>,1)
+append_picture(<++>,1)
+append_picture(<++>,1)
+append_picture(<++>,1)
 append_picture(<++>,1)
 append_picture(<++>,1)
 """

@@ -19,6 +19,7 @@ demonstration_testing ()
     cd $BASEDIR/demonstration
     SAGE_PATH=$SAGE_PATH ./testing.sh&&
     cd $BASEDIR
+    echo BASEDIR est : $BASEDIR
     ./test_recall.py $BASEDIR/demonstration >> $LOGFILE
 }
 
