@@ -181,7 +181,6 @@ append_picture(VNJWooDeKdcy,2)
 """
 append_picture(<++>,1)
 append_picture(<++>,1)
-append_picture(<++>,1)
 """
 
 append_picture(AESIooxXxRYQdT,3)
