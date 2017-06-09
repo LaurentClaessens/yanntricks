@@ -40,3 +40,7 @@ unit_testing ()
 unit_testing &&
 manual_testing&&
 demonstration_testing
+
+echo "---- Results : "
+cat $LOGFILE
+echo "---------- "
