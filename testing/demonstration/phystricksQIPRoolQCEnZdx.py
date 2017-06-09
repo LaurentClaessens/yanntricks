@@ -12,7 +12,7 @@ def QIPRoolQCEnZdx():
     trig.parameters.color="blue"
 
     angA=AngleAOB(C,A,B,r=0.3)
-    angA.put_mark(0.1,None,"\SI{110}{\degree}",pspict=pspict)
+    angA.put_mark(0.4,None,"\SI{110}{\degree}",pspict=pspict)
 
     pspict.comment="The angle at A has a mark 110 degree."
     pspict.DrawGraphs(angA,trig)
