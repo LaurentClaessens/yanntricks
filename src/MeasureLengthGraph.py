@@ -59,4 +59,5 @@ class MeasureLengthGraph(SegmentGraph):
         vF.parameters=self.parameters.copy()
         a.append(vI.latex_code(language=language,pspict=pspict))
         a.append(vF.latex_code(language=language,pspict=pspict))
+        a.append("%FOOO")
         return "\n".join(a)
