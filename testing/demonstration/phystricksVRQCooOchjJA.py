@@ -11,9 +11,8 @@ def VRQCooOchjJA():
     s1=Segment(O,A)
     s2=Segment(O,B)
 
-    #ang=AngleAOB(s1.F,I,sec.I,r=0.3)
     ang=AngleAOB(A,O,B,r=0.3)
-    ang.put_mark(0.2,None,"\SI{140}{\degree}",pspict=pspict)
+    ang.put_mark(0.35,None,"\SI{140}{\degree}",pspict=pspict)
 
     pspict.DrawGraphs(s1,s2,ang)
     fig.no_figure()
