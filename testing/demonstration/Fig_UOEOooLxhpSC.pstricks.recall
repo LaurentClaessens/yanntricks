@@ -51,22 +51,6 @@
 \ifthenelse{\isundefined{\lengthOfforphystricks}}{\newlength{\lengthOfforphystricks}}{}
 \immediate\openout\writeOfphystricks=UOEOooLxhpSC.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfforphystricks}{\totalheightof{\(A\)}}%
-\immediate\write\writeOfphystricks{totalheightoffbc82d5aaf523234dba8466eceff5c138eca8289:\the\lengthOfforphystricks-}
-\setlength{\lengthOfforphystricks}{\widthof{\(A\)}}%
-\immediate\write\writeOfphystricks{widthoffbc82d5aaf523234dba8466eceff5c138eca8289:\the\lengthOfforphystricks-}
-\setlength{\lengthOfforphystricks}{\totalheightof{\(B\)}}%
-\immediate\write\writeOfphystricks{totalheightof4876997787ba7ab27b815acf1dfca699c4a19937:\the\lengthOfforphystricks-}
-\setlength{\lengthOfforphystricks}{\widthof{\(B\)}}%
-\immediate\write\writeOfphystricks{widthof4876997787ba7ab27b815acf1dfca699c4a19937:\the\lengthOfforphystricks-}
-\setlength{\lengthOfforphystricks}{\totalheightof{\(C\)}}%
-\immediate\write\writeOfphystricks{totalheightof515decf2b119fecd7bde51255641053be11ea0b0:\the\lengthOfforphystricks-}
-\setlength{\lengthOfforphystricks}{\widthof{\(C\)}}%
-\immediate\write\writeOfphystricks{widthof515decf2b119fecd7bde51255641053be11ea0b0:\the\lengthOfforphystricks-}
-\setlength{\lengthOfforphystricks}{\totalheightof{\(D\)}}%
-\immediate\write\writeOfphystricks{totalheightof96dfe6c2f3954cac694693137d4a23a318660bbf:\the\lengthOfforphystricks-}
-\setlength{\lengthOfforphystricks}{\widthof{\(D\)}}%
-\immediate\write\writeOfphystricks{widthof96dfe6c2f3954cac694693137d4a23a318660bbf:\the\lengthOfforphystricks-}
 \setlength{\lengthOfforphystricks}{\totalheightof{\( d_2\)}}%
 \immediate\write\writeOfphystricks{totalheightof0ed5099ee4cb627c40e414142a039597927c67e9:\the\lengthOfforphystricks-}
 \setlength{\lengthOfforphystricks}{\widthof{\( d_2\)}}%
@@ -82,14 +66,6 @@
 %OTHER STUFF
 %PSTRICKS CODE
 %DEFAULT
-\draw []  (0,0) node [rotate=0] {$\bullet$};
-\draw (-0.2553098562,0.2553098562) node {\(A\)};
-\draw []  (3.000000000,0) node [rotate=0] {$\bullet$};
-\draw (3.255309856,0.2553098562) node {\(B\)};
-\draw []  (3.000000000,-3.000000000) node [rotate=0] {$\bullet$};
-\draw (3.255309856,-3.255309856) node {\(C\)};
-\draw []  (0,-3.000000000) node [rotate=0] {$\bullet$};
-\draw (-0.2553098562,-3.255309856) node {\(D\)};
 \draw [] (0,0) -- (3.00,0);
 \draw [] (3.00,0) -- (3.00,-3.00);
 \draw [] (3.00,-3.00) -- (0,-3.00);
