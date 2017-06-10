@@ -139,8 +139,8 @@ class AngleGraph(ObjectGraph):
           - be further than the code.
         """
 
-        dprint(numerical_approx(self.angleA.degree))
-        dprint(numerical_approx(self.angleB.degree))
+        #dprint(numerical_approx(self.angleA.degree))
+        #dprint(numerical_approx(self.angleB.degree))
 
         if 0<self.angleA.degree < 90 and 0<self.angleB.degree < 90 :
             # In this case, the mark will be attached

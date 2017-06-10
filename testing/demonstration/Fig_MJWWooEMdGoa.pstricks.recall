@@ -46,10 +46,10 @@
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
 \ifthenelse{\isundefined{\lengthOfforphystricks}}{\newlength{\lengthOfforphystricks}}{}
-\immediate\openout\writeOfphystricks=FBTCooBKTryQ.phystricks.aux%
+\immediate\openout\writeOfphystricks=MJWWooEMdGoa.phystricks.aux%
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
 \ifthenelse{\isundefined{\lengthOfforphystricks}}{\newlength{\lengthOfforphystricks}}{}
-\immediate\openout\writeOfphystricks=FBTCooBKTryQ.phystricks.aux%
+\immediate\openout\writeOfphystricks=MJWWooEMdGoa.phystricks.aux%
 %WRITE_AND_LABEL
 \setlength{\lengthOfforphystricks}{\totalheightof{\( 24\)}}%
 \immediate\write\writeOfphystricks{totalheightof60aa1b7c4e0e1443080aa9edd44db42ba5db47f0:\the\lengthOfforphystricks-}
@@ -63,7 +63,7 @@
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
 %BEGIN PSPICTURE
-\tikzsetnextfilename{tikzFBTCooBKTryQ}
+\tikzsetnextfilename{tikzMJWWooEMdGoa}
 \begin{tikzpicture}[xscale=1,yscale=1,inner sep=2.25pt,outer sep=0pt]
 %GRID
 %AXES
