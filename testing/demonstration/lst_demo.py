@@ -14,7 +14,7 @@ myRequest.ok_filenames_list=["e_pictures"]
 myRequest.ok_filenames_list.extend(["1_demo"])
 myRequest.ok_filenames_list.extend(["2_demo"])
 myRequest.ok_filenames_list.extend(["3_demo"])
-myRequest.ok_filenames_list.extend(["<++>"])
+myRequest.ok_filenames_list.extend(["0_demo"])
 myRequest.ok_filenames_list.extend(["<++>"])
 
 
