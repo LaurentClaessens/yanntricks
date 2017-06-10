@@ -37,8 +37,6 @@ from phystricks.src.Exceptions import MissingPictureException
 
 from phystricks.src.ObjectGraph import ObjectGraph
 
-from Debug import dprint
-
 class AngleGraph(ObjectGraph):
     """
     self.mark_angle is the angle at which self.mark_point will be placed. By default it is at the middle. 
@@ -138,9 +136,6 @@ class AngleGraph(ObjectGraph):
           - not intersect the lines
           - be further than the code.
         """
-
-        dprint(numerical_approx(self.angleA.degree))
-        dprint(numerical_approx(self.angleB.degree))
 
         if 0<self.angleA.degree < 90 and 0<self.angleB.degree < 90 :
             # In this case, the mark will be attached
@@ -273,7 +268,6 @@ class AngleGraph(ObjectGraph):
             return AffineVector(self.O,Q+(-dimx/2,dimy/2))
 
         if 180<self.angleA.degree < 270 and 270<self.angleB.degree<360:
-            dprint("ici")
             alpha=pi/2-(self.angleA.radian-pi)
             beta=self.measure.radian-alpha
             h=dimx/(tan(alpha)+tan(beta))
