@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 from phystricks import *
-def FBTCooBKTryQ():
-    pspict,fig = SinglePicture("FBTCooBKTryQ")
+def MJWWooEMdGoa():
+    pspict,fig = SinglePicture("MJWWooEMdGoa")
     pspict.dilatation_X(1)
     pspict.dilatation_Y(1)
 
@@ -16,8 +16,8 @@ def FBTCooBKTryQ():
     a1=AngleAOB(P,O,A)
     a2=AngleAOB(C,O,P,r=0.3)
 
-    a1.put_mark(text="\( 24\)",pspict=pspict)
-    a2.put_mark(text="\( 130 \)",pspict=pspict)
+    a1.put_mark(0.35,None,"\( 24\)",pspict=pspict)
+    a2.put_mark(0.35,None,"\( 130 \)",pspict=pspict)
 
     no_symbol(A,O,C)
 

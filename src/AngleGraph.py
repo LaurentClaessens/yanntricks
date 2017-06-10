@@ -139,8 +139,8 @@ class AngleGraph(ObjectGraph):
           - be further than the code.
         """
 
-        #dprint(numerical_approx(self.angleA.degree))
-        #dprint(numerical_approx(self.angleB.degree))
+        dprint(numerical_approx(self.angleA.degree))
+        dprint(numerical_approx(self.angleB.degree))
 
         if 0<self.angleA.degree < 90 and 0<self.angleB.degree < 90 :
             # In this case, the mark will be attached
@@ -430,8 +430,8 @@ class AngleGraph(ObjectGraph):
         # Thus we impose a minimal distance between the
         # arc circle and the mark.
         if dist is None :
-            if v.length<0.2:
-                v=v.normalize(0.2)
+            if v.length<0.3:
+                v=v.normalize(0.3)
 
         C=mark_point.translate(v)
         return Mark(self,dist=None,angle=None,text=text,
