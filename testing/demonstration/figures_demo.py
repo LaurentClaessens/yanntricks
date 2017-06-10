@@ -4,6 +4,8 @@
 import sys
 from phystricks import *
 
+from phystricksAEUYooWXYBuI import AEUYooWXYBuI
+from phystricksTBAGooZgekGa import TBAGooZgekGa
 from phystricksQWEHooSRqSdw import QWEHooSRqSdw
 from phystricksVNJWooDeKdcy import VNJWooDeKdcy
 from phystricksHUGKooTkDsOg import HUGKooTkDsOg

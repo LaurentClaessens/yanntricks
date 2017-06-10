@@ -37,6 +37,8 @@ from phystricks.src.Exceptions import MissingPictureException
 
 from phystricks.src.ObjectGraph import ObjectGraph
 
+from Debug import dprint
+
 class AngleGraph(ObjectGraph):
     """
     self.mark_angle is the angle at which self.mark_point will be placed. By default it is at the middle. 
@@ -136,6 +138,9 @@ class AngleGraph(ObjectGraph):
           - not intersect the lines
           - be further than the code.
         """
+
+        dprint(numerical_approx(self.angleA.degree))
+        dprint(numerical_approx(self.angleB.degree))
 
         if 0<self.angleA.degree < 90 and 0<self.angleB.degree < 90 :
             # In this case, the mark will be attached
@@ -268,11 +273,13 @@ class AngleGraph(ObjectGraph):
             return AffineVector(self.O,Q+(-dimx/2,dimy/2))
 
         if 180<self.angleA.degree < 270 and 270<self.angleB.degree<360:
+            dprint("ici")
             alpha=pi/2-(self.angleA.radian-pi)
             beta=self.measure.radian-alpha
             h=dimx/(tan(alpha)+tan(beta))
             d1=h*tan(alpha)
             Q=self.O+(-d1,-h)
+
             return AffineVector( self.O,Q+(dimx/2,-dimy/2)  )
 
         if 270<self.angleA.degree < 360 and 270<self.angleB.degree<360:
@@ -404,12 +411,24 @@ class AngleGraph(ObjectGraph):
 
         v=self._getOCvector(dimx,dimy,pspict=pspict)
 
+        # If 'dist' is given, it overrides the computations of the
+        # length of 'v'
         if dist is not None :
             if dist<v.length :
                 logging("The distance you give is {} while I computed\
                         the minimal to be {}".format(dist,v.length),
                         pspict=pspict)
             v=v.normalize(dist)
+
+        # We impose a minimum for the v's length.
+        # If the 'text' is small and the angle is large, its box is really 
+        # close to the angle'edge. Thus the text will be very close to the arc 
+        # circle and the # result is bad.
+        # Thus we impose a minimal distance between the
+        # arc circle and the mark.
+        if dist is None :
+            if v.length<0.2:
+                v=v.normalize(0.2)
 
         C=mark_point.translate(v)
         return Mark(self,dist=None,angle=None,text=text,
