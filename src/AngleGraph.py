@@ -37,6 +37,8 @@ from phystricks.src.Exceptions import MissingPictureException
 
 from phystricks.src.ObjectGraph import ObjectGraph
 
+from Debug import dprint
+
 class AngleGraph(ObjectGraph):
     """
     self.mark_angle is the angle at which self.mark_point will be placed. By default it is at the middle. 
@@ -136,6 +138,9 @@ class AngleGraph(ObjectGraph):
           - not intersect the lines
           - be further than the code.
         """
+
+        #dprint(numerical_approx(self.angleA.degree))
+        #dprint(numerical_approx(self.angleB.degree))
 
         if 0<self.angleA.degree < 90 and 0<self.angleB.degree < 90 :
             # In this case, the mark will be attached
@@ -304,24 +309,28 @@ class AngleGraph(ObjectGraph):
             Q=self.O+(x,y)
             return AffineVector(self.O,Q+(dimx/2,-dimy/2))
 
+        # For the next few ones, the box touch the angles' vertex.
+        # Thus we add a (0.1,0.1). If not, the mark touches the
+        # arc circle.
+
         if 180 < self.angleA.degree < 270 and self.angleB.degree==0:
-            Q=self.O+(dimx/2,-dimy/2)
-            return AffineVector(self.O,Q)
+            Q=self.O+(0.1,-0.1)
+            return AffineVector(self.O,Q+(dimx/2,-dimy/2))
 
         if 270 <= self.angleA.degree <= 360 and 90<=self.angleB.degree<=180 :
             Q=self.O+(0.1,0.1)
             return AffineVector(self.O,Q+(dimx/2,dimy/2))
 
         if (self.angleA.degree == 0 or self.angleA.radian== 0)  and 90 <= self.angleB.degree <= 180 :
-            Q=self.O
+            Q=self.O+(0.1,0.1)
             return AffineVector(self.O,Q+(dimx/2,dimy/2))
 
         if (self.angleA.degree == 180 or self.angleA.radian== pi)  and 270 <= self.angleB.degree <= 360 :
-            Q=self.O
+            Q=self.O+(-0.1,-0.1)
             return AffineVector(self.O,Q+(-dimx/2,-dimy/2))
 
         if 0 <= self.angleA.degree <= 90 and 180 <= self.angleB.degree <= 270 :
-            Q=self.O
+            Q=self.O+(-0.1,0.1)
             return AffineVector(self.O,Q+(-dimx/2,dimy/2))
 
         if self.angleA.degree == 0 or self.angleA.radian==0  :
@@ -416,8 +425,8 @@ class AngleGraph(ObjectGraph):
 
         # We impose a minimum for the v's length.
         # If the 'text' is small and the angle is large, its box is really 
-        # close to the angle'edge. Thus the text will be very close to the arc 
-        # circle and the # result is bad.
+        # close to the angles'vertex. Thus the text will be very close to 
+        # the arc circle and the result is bad.
         # Thus we impose a minimal distance between the
         # arc circle and the mark.
         if dist is None :
