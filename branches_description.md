@@ -92,3 +92,7 @@ My small changes here and there.
 # matrix
 
 Add a couple of functionalities to 'phyMatrix'
+
+# parameters
+
+Put the parameters class (Option, hatch, fill, etc) in their own subdirectory of 'src'
