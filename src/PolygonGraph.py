@@ -28,8 +28,6 @@ from ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import make_psp_list
 
-from Debug import dprint
-
 ##  \brief the graph of a polygon
 #
 # In order to change the parameters of the polygon (line style, color, ...)
@@ -146,7 +144,6 @@ class PolygonGraph(ObjectGraph):
         """
         If one wants to fill or hatch, one has to ask explicitly.
         """
-        dprint("act hatched",self._hatched)
         if self._filled:
             custom=CustomSurface(self.edges)
             custom.parameters.filled()
