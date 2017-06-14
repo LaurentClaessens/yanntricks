@@ -11,7 +11,7 @@ def WWPPooTSxdXI():
 
     s=Segment(Point(0,0),Point(1,1))
     s.parameters.style="dashed"
-    trig.parameters.style="dashed"
+    trig.edges_parameters.style="dashed"
 
     pspict.DrawGraphs(trig,s)
     fig.no_figure()
