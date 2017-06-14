@@ -169,7 +169,7 @@ class BoundingBox_class(ObjectGraph):
         pass
     def action_on_pspict(self,pspict=None):
         rect=Rectangle(self.getVertex("SW"),self.getVertex("NE"))
-        rect.parameters.color="cyan"
+        rect.edges_parameters.color="cyan"
         pspict.DrawGraphs(rect)
     def bounding_box(self,pspict=None):
         return self
