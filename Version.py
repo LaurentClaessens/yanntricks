@@ -1,1 +1,1 @@
-version="debug"
+version="matrix"
