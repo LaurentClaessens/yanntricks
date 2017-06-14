@@ -100,6 +100,11 @@ class FillParameters(object):
             opt.add_option("fillcolor=%s"%str(self.color))
         if self.style :
             opt.add_option("fillstyle=%s"%str(self.style))
+    def copy(self):
+        cop=FillParameters()
+        cop.color=self.color
+        cop.style=self.style
+        return cop
 
 class HatchParameters(object):
     """Same as FillParameters, but when one speaks about hatching"""
@@ -117,6 +122,14 @@ class HatchParameters(object):
             opt.add_option("fillstyle=vlines")
         if self.color :
             opt.add_option("hatchcolor=%s"%str(self.color))
+    def copy(self):
+        cop=HatchParameters()
+        cop.color=self.color
+        cop.angle=self.angle
+        cop._crossed=self._crossed
+        return cop
+
+
 
 class Parameters(object):
     def __init__(self,graph=None):

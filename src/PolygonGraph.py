@@ -28,17 +28,19 @@ from ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import make_psp_list
 
+from Debug import dprint
+
+##  \brief the graph of a polygon
+#
+# In order to change the parameters of the polygon (line style, color, ...)
+# you have to change
+# * `poly.edges_parameters` for the parameters of the edge.
+# * `poly.hatch_parameters` for the hatching parameters
+# * `poly.fill_parameters` for the filling parameters
+# In particular, the edge color, the hatch color and the filling color are
+# independent. Yes, you can hatch and fill; in this case, the hatch is *over* 
+# the filling.
 class PolygonGraph(ObjectGraph):
-    """
-    INPUT:
-
-    - ``args`` - a tuple of points.
-
-    NOTE:
-
-    This class is not intended to be used by the end-user. 
-    The latter has to use :func:`Polygon`.
-    """
     def __init__(self,points_list):
         ObjectGraph.__init__(self,self)
         self.edges=[]
@@ -50,6 +52,18 @@ class PolygonGraph(ObjectGraph):
             self.edges.append(segment)
         self.draw_edges=True
         self.independent_edge=False
+        self.parameters=None
+
+        from Parameters import Parameters, HatchParameters, FillParameters
+        self.edges_parameters=Parameters(self)
+        self.hatch_parameters=HatchParameters()
+        self.fill_parameters=FillParameters()
+        self._hatched=False
+        self._filled=False
+    def hatched(self):
+        self._hatched=True
+    def filled(self):
+        self._filled=True
     def rotation(self,angle):
         pts=[  P.rotation(angle) for P in self.points_list  ]
         return Polygon(pts)
@@ -130,21 +144,21 @@ class PolygonGraph(ObjectGraph):
         return self.math_bounding_box(pspict)
     def action_on_pspict(self,pspict):
         """
-        If self.parameters.color is not None, it will be
-        the color of the edges.
-
         If one wants to fill or hatch, one has to ask explicitly.
         """
-        if self.parameters._hatched or self.parameters._filled :
+        dprint("act hatched",self._hatched)
+        if self._filled:
             custom=CustomSurface(self.edges)
-            custom.parameters=self.parameters.copy()
+            custom.parameters.filled()
+            custom.parameters.fill=self.fill_parameters.copy()
             pspict.DrawGraphs(custom)
-        if self.parameters.color!=None:
-            self.draw_edges=True
-            for edge in self.edges:
-                edge.parameters.color=self.parameters.color
+        if self._hatched:
+            custom=CustomSurface(self.edges)
+            custom.parameters.hatched()
+            custom.parameters.hatch=self.hatch_parameters.copy()
+            pspict.DrawGraphs(custom)
         if self.draw_edges:
             for edge in self.edges:
                 if not self.independent_edge :
-                    edge.parameters=self.parameters.copy()
+                    edge.parameters=self.edges_parameters.copy()
                 pspict.DrawGraphs(edge)
