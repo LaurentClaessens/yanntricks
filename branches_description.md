@@ -88,3 +88,7 @@ Add the manual to the tests.
 # daily
 
 My small changes here and there.
+
+# matrix
+
+Add a couple of functionalities to 'phyMatrix'
