@@ -17,7 +17,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2016
+# copyright (c) Laurent Claessens, 2016-2017
 # email: laurent@claessens-donadello.eu
 
 from __future__ import division
@@ -191,10 +191,6 @@ class MatrixGraph(ObjectGraph):
 
     def _bounding_box(self,pspict=None):
         return BoundingBox()
-
-    # Objects that are intended to be drawn cannot be iterable.  See Position 30282-11562
-    #def __iter__(self):
-    #    return self.elements.values().__iter__()
 
     def action_on_pspict(self,pspict):
         self.computeCentralPoints(pspict)
