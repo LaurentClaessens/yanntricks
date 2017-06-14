@@ -20,7 +20,7 @@ def CNVAooybLqXmVS():
     R.parameters.hatched()
     R.parameters.hatch.color="red"
     for rect in [R,R1,R2,R3]:
-        rect.edge_model.parameters.style="dotted"
+        rect.parameters.style="dotted"
     R1.parameters=R.parameters.copy()
     R2.parameters=R.parameters.copy()
     R3.parameters=R.parameters.copy()

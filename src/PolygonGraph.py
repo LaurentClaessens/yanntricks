@@ -45,11 +45,6 @@ class PolygonGraph(ObjectGraph):
         self.vertices=points_list
         self.points_list=self.vertices
 
-        # edge_model is a dummy segment that serve to model the 
-        # parameters of the edges.
-        # In other words, by default the edges of the polygon will have the
-        # parameters of self.edge_model
-        self.edge_model=Segment(Point(0,0),Point(1,1))
         for i in range(0,len(self.points_list)):
             segment=Segment(self.points_list[i],self.points_list[(i+1)%len(self.points_list)])
             self.edges.append(segment)
@@ -62,8 +57,6 @@ class PolygonGraph(ObjectGraph):
         """
         make the edges customisation independent the one to the other.
         """
-        for s in self.edges :
-            s.parameters=self.edge_model.parameters.copy()
         self.independent_edge=True
     def no_edges(self):
         """
@@ -153,7 +146,5 @@ class PolygonGraph(ObjectGraph):
         if self.draw_edges:
             for edge in self.edges:
                 if not self.independent_edge :
-                    edge.parameters=self.edge_model.parameters.copy()
-                    if self.parameters.color!=None:
-                        edge.parameters.color=self.parameters.color
+                    edge.parameters=self.parameters.copy()
                 pspict.DrawGraphs(edge)
