@@ -222,9 +222,9 @@ class MatrixGraph(ObjectGraph):
         \phantom{
         \begin{matrix}
         MATRIX_CODE
-        \end{MATRIX_ENV}
+        \end{matrix}
         }
-        \end{pmatrix}$
+        \end{MATRIX_ENV}$
         """.replace("MATRIX_CODE",matrix_code).replace("MATRIX_ENV",self.matrix_environment)
         P.put_mark(0,angle=0,text=fake_matrix,pspict=pspict,position="center")
         pspict.DrawGraphs(P)
