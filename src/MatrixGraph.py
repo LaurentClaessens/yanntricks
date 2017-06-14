@@ -42,6 +42,7 @@ class MatrixElement(object):
         self.column=column
         self.matrix=matrix
         self.central_point=None
+
     def getColumn(self):
         return self.matrix.getColumn(self.column)
     def getLine(self):
@@ -122,6 +123,7 @@ class MatrixGraph(ObjectGraph):
         self.elements={}
         self._lines={}
         self._columns={}
+        self.matrix_environment="pmatrix"
         for i in range(1,nlines+1):
             for j in range(1,ncolumns+1):
                 self.elements[i,j]=MatrixElement(line=i,column=j)
@@ -137,6 +139,14 @@ class MatrixGraph(ObjectGraph):
             for i in range(1,nlines+1):
                 self.getColumn(j).elements[i]=self.getElement(i,j)
 
+    ## \brief set the (LaTeX) environment of the matrix
+    #
+    # \param m_env (string) the name of the desired environment.
+    # 
+    # This will typically be `pmatrix` (default), `vmatrix` 
+    # or something like that.
+    def set_matrix_environment(self,m_env):
+        self.matrix_environment=m_env
     def getElement(self,i,j):
         return self.elements[i,j]
     def getElements(self):
@@ -208,14 +218,14 @@ class MatrixGraph(ObjectGraph):
         P=self.getMidPoint(pspict)
         P.parameters.symbol=""
         fake_matrix=r"""$
-        \begin{pmatrix}
+        \begin{MATRIX_ENV}
         \phantom{
         \begin{matrix}
         MATRIX_CODE
-        \end{matrix}
+        \end{MATRIX_ENV}
         }
         \end{pmatrix}$
-        """.replace("MATRIX_CODE",matrix_code)
+        """.replace("MATRIX_CODE",matrix_code).replace("MATRIX_ENV",self.matrix_environment)
         P.put_mark(0,angle=0,text=fake_matrix,pspict=pspict,position="center")
         pspict.DrawGraphs(P)
 
@@ -225,5 +235,3 @@ class MatrixGraph(ObjectGraph):
                 P.put_mark(0,angle=0,text=self.elements[i,j].text,pspict=pspict,position="center")
                 P.parameters.symbol=""
                 pspict.DrawGraphs(P)
-
-
