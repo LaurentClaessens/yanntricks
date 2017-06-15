@@ -19,16 +19,6 @@ def XOLBooGcrjiwoU():
 
     g=phyFunction(f(x)-exp(x)).graph(-10,10)
 
-    a=10
-    na=numerical_approx(a)
-
-    def foo(x):
-        return f(x)-exp(x)
-    print(numerical_approx(f(na)))
-    print(numerical_approx(exp(na)))
-    print(numerical_approx(f(na)-exp(na),prec=30))
-
-
     pspict.DrawGraphs(g)
     pspict.axes.single_axeX.Dx=2
     pspict.axes.single_axeY.Dx=0.005
