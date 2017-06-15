@@ -24,7 +24,6 @@
     ParametricCurveGraph describe a parametric curve of which we know an analytic expression of the components.
 """
 
-
 from __future__ import division
 
 from ObjectGraph import ObjectGraph
@@ -32,6 +31,8 @@ from Constructors import *
 from Utilities import *
 from Exceptions import ShouldNotHappenException
 from GenericCurve import GenericCurve
+
+from Debug import dprint
 
 class ParametricCurveGraph(GenericCurve,ObjectGraph):
     def __init__(self,f1,f2,llamI,llamF):
