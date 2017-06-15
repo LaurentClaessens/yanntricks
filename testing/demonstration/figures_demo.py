@@ -202,8 +202,8 @@ append_picture(AEUYooWXYBuI,2)
 append_picture(TBAGooZgekGa,2)
 append_picture(AAPMooHEcnzW,2)
 append_picture(MJWWooEMdGoa,2)
+append_picture(XOLBooGcrjiwoU,2)
 """
-append_picture(<++>,1)
 append_picture(<++>,1)
 """
 
