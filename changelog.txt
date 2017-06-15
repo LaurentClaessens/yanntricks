@@ -1,5 +1,30 @@
 # phystricks changelog
 
+## Point coordinates precision, June 15, 2017
+
+### Problem
+
+I found too many cancellation errors here and there in the code. This leads to 
+non-deterministic final '.pstricks' file : there is some variation like on the
+12th decimal of the coordinates of some points.
+
+The last one I found is in `AngleMeasure.measure :`
+```
+return AngleMeasure(value_degree=self.angleF.degree-self.angleI.degree)
+```
+
+In the picture FBTC the difference is
+`206.565051177078- 341.565051177078` which leads to problems.
+
+
+### Solution (partial)
+
+Make write only 5 digits in the coordinates of the central point of a mark.
+    
+### Side effect
+
+Many `.recall` files to be redone.
+
 
 ## Polygon parameters, June 15, 2017
 
