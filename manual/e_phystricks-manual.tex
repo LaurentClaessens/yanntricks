@@ -71,6 +71,14 @@
   %% FIXME title !
 }
 
+\newcounter{numtho}
+\newlength{\EnvSpace}
+\setlength{\EnvSpace}{9pt}      % C'est la distance que je veux mettre avant et après les théorèmes, remarques, \ldots
+\newenvironment{example}[1][]%
+{\vspace{\EnvSpace}\refstepcounter{numtho}\noindent{\bf Exemple \thenumtho}%
+\ifthenelse{\equal{#1}{}}{}{(#1)}%
+\newline}%
+{\phantom{a}\hfill $\triangle$\vspace{\EnvSpace}}
 
 
 \usepackage{textcomp}
