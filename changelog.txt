@@ -1,0 +1,26 @@
+# phystricks changelog
+
+# June 15, 2017
+
+## Problem
+
+The test picture `XOLB` had a non-deterministic behaviour. This was probably
+due to a cancelation error: we were substracting two numbers of order of
+magnitude 22000 with a differences like 0.01. The 12th decimal was
+non-deterministic (change when restarting Sage).
+
+This was impacting the computation of the bounding box of the function and
+then the axes.
+
+## Solution.
+
+When computing the X and Y coordinates of the representative points of a
+curve, we consider a numerical approximation with `prec=30` in order to get
+less digits than the correct ones.
+
+See `GenericCurve.get_minmax_data`.
+
+See the question here :
+https://ask.sagemath.org/question/37946/undeterministic-numerical-approximation/
+
+

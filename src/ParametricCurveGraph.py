@@ -24,7 +24,6 @@
     ParametricCurveGraph describe a parametric curve of which we know an analytic expression of the components.
 """
 
-
 from __future__ import division
 
 from ObjectGraph import ObjectGraph
