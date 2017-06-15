@@ -280,7 +280,6 @@ class AngleGraph(ObjectGraph):
             Q=self.O+(-d1,-h)
 
             return AffineVector( self.O,Q+(dimx/2,-dimy/2)  )
-
         if 270<self.angleA.degree < 360 and 270<self.angleB.degree<360:
             alpha=2*pi-self.angleA.radian
             beta=arctan(dimy/dimx)
@@ -434,6 +433,7 @@ class AngleGraph(ObjectGraph):
                 v=v.normalize(0.3)
 
         C=mark_point.translate(v)
+    
         return Mark(self,dist=None,angle=None,text=text,
                         mark_point=None,
                         central_point=C,

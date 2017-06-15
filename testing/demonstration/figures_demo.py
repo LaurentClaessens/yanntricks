@@ -27,7 +27,6 @@ from phystricksXWWHooIkLOwZ import XWWHooIkLOwZ
 from phystricksFBTCooBKTryQ import FBTCooBKTryQ
 from phystricksUOEOooLxhpSC import UOEOooLxhpSC
 from phystricksJRCJooPHFcKn import JRCJooPHFcKn
-from phystricksRJDEoobOibtkfv import RJDEoobOibtkfv
 from phystricksCornetGlace import CornetGlace
 from phystricksECQDooWEpuCM import ECQDooWEpuCM
 from phystricksSFdgHdO import SFdgHdO
@@ -138,7 +137,6 @@ append_picture(WQVZooAhkdlegv,1)
 append_picture(ProjPoly,1)
 append_picture(EXIIooJzzoJeai,1)
 append_picture(CornetGlace,2)
-append_picture(RJDEoobOibtkfv,3)
 append_picture(ECQDooWEpuCM,2)
 append_picture(FMLCooxHtqRzUz,2)
 append_picture(MBWHooeesXIrsz,2)

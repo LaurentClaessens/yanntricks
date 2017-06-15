@@ -263,6 +263,7 @@ By the way you should note the method \info{getRegularLengthParameters} that ret
 
 returns a list of parameters such that the arc length between two points is \( 2\).
 
+
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 \section{Perspective}
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -298,6 +299,24 @@ You should use the utility \info{new\_picture.py} to generate the skeleton of yo
 One can always put a mark on an object; the position is by default automatically determined. The general statement is :
 
 \lstinputlisting{sageSnip_9.py}
+
+%--------------------------------------------------------------------------------------------------------------------------- 
+\subsection{On angles}
+%---------------------------------------------------------------------------------------------------------------------------
+
+You can add a mark inside an angle. The positioning is automatic, and needs two passes.
+
+\begin{example}
+
+    \lstinputlisting{phystricksFBTCooBKTryQ.py}
+
+Picture : \info{FBTCooBKTryQ}
+\begin{center}
+   \input{Fig_FBTCooBKTryQ.pstricks}
+\end{center}
+
+\end{example}
+
 
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 \section{How to get the LaTeX counters ?}
