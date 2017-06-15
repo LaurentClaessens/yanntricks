@@ -26,8 +26,6 @@ from sage.all import *
 from Utilities import *
 import Defaults
 
-from Debug import dprint
-
 class GenericCurve(object):
     def __init__(self,pI,pF):
         """
@@ -210,8 +208,10 @@ class GenericCurve(object):
 
         A dictionary
         """
-        x_list = [ P.x for P in self.representative_points()  ]
-        y_list = [ P.y for P in self.representative_points()  ]
+        x_list = [ numerical_approx(P.x,prec=30) 
+                                        for P in self.representative_points()  ]
+        y_list = [ numerical_approx(P.y,prec=30) 
+                                        for P in self.representative_points()  ]
         d={}
         d['xmin']=min(x_list)
         d['xmax']=max(x_list)
