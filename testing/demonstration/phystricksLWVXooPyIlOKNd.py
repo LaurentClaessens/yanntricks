@@ -16,7 +16,7 @@ def LWVXooPyIlOKNd():
     matrix.elements[3,3].text="$\\vdots$"
 
     square=matrix.square(   (1,1) , (2,2),pspict )
-    square.parameters.color="red"
+    square.edges_parameters.color="red"
     h=square.edges[0].midpoint()
     h.parameters.symbol=""
     h.put_mark(0.1,angle=90,text="\( \Delta_2(A)\)",pspict=pspict)

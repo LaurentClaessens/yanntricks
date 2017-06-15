@@ -1,0 +1,61 @@
+# phystricks changelog
+
+
+## Polygon parameters, June 15, 2017
+
+### Problem
+
+There are three different things in a polygon : its edges, its filling and its 
+hatching.
+
+From now on a polygon had only its `parameters` attribute (from
+`GraphOfAnObject`), and we were making some complicated guessing. 
+Also the attribute `segment_model` was not really sexy.
+
+### Solution
+
+Now we have three attributes :
+* edges_parameters
+* hatch_parameters
+* fill_parameters
+
+### Side effects
+
+Have to rewrite the functions in which the color of a polygon is customosed.
+Also the ones in which a polygon is hatched or filled.
+
+
+## Non deterministic function evaluation, June 15, 2017
+
+### Problem
+
+The test picture `XOLB` had a non-deterministic behaviour. This was probably
+due to a cancelation error: we were substracting two numbers of order of
+magnitude 22000 with a differences like 0.01. The 12th decimal was
+non-deterministic (change when restarting Sage).
+
+This was impacting the computation of the bounding box of the function and
+then the axes.
+
+### Solution.
+
+When computing the X and Y coordinates of the representative points of a
+curve, we consider a numerical approximation with `prec=30` in order to get
+less digits than the correct ones.
+
+See `GenericCurve.get_minmax_data`.
+
+
+### Side effects
+
+The 6th or 7th decimal of some bounding boxes are changed. So the axes of some
+pictures are changed (not visible).
+The `recall` files of these pictures have to be recreated to take that into
+account.
+
+### See also
+
+See the question here :
+https://ask.sagemath.org/question/37946/undeterministic-numerical-approximation/
+
+

@@ -4,6 +4,8 @@
 import sys
 from phystricks import *
 
+from phystricksWWPPooTSxdXI import WWPPooTSxdXI
+from phystricksXOLBooGcrjiwoU import XOLBooGcrjiwoU
 from phystricksMJWWooEMdGoa import MJWWooEMdGoa
 from phystricksAAPMooHEcnzW import AAPMooHEcnzW
 from phystricksAEUYooWXYBuI import AEUYooWXYBuI
@@ -201,11 +203,14 @@ append_picture(AEUYooWXYBuI,2)
 append_picture(TBAGooZgekGa,2)
 append_picture(AAPMooHEcnzW,2)
 append_picture(MJWWooEMdGoa,2)
+append_picture(WWPPooTSxdXI,1)
+append_picture(XOLBooGcrjiwoU,2)
 """
 append_picture(<++>,1)
 append_picture(<++>,1)
+append_picture(<++>,1)
+append_picture(<++>,1)
 """
-
 
 def AllFigures():
     figures_list=figures_list_1

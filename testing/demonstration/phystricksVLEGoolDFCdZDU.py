@@ -11,7 +11,7 @@ def VLEGoolDFCdZDU():
     L=Point(M.x,-2)
 
     trig=Polygon(K,L,M)
-    trig.parameters.color="brown"
+    trig.edges_parameters.color="brown"
 
     rh=RightAngleAOB(L,M,K)
 

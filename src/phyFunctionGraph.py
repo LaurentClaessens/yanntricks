@@ -112,6 +112,7 @@ class phyFunctionGraph(GenericCurve,ObjectGraph):
 
         curve._representativeParameters=self._representativeParameters
         self._parametric_curve = curve
+
         return curve
     def visualParametricCurve(self,xunit,yunit):
         return self.parametric_curve().visualParametricCurve(xunit,yunit)
