@@ -13,15 +13,13 @@ import sys
 directory=sys.argv[1]
 
 def pstricks_files_iterator(directory):
-    os.chdir(directory)
-    for f in os.listdir():
+    for f in os.listdir(directory):
         if f.endswith(".pstricks"):
             yield f
 
 for filename in pstricks_files_iterator(directory):
     with open(filename,'r') as f:
         get_text=f.read()
-
     try :
         with open(filename+".recall",'r') as f:
             recall_text=f.read()
