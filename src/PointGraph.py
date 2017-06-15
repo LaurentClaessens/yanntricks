@@ -313,6 +313,14 @@ class PointGraph(ObjectGraph):
 
         If a pspicture is given, we divide by xunit and yunit to normalize.
         """
+
+        # These lines have to be removed for a final  version, and
+        # if possible, these arguments have to be removed.
+        if not numerical:
+            raise
+        if not digits:
+            raise
+
         from Numerical import is_almost_zero
         x=self.x
         y=self.y
@@ -416,7 +424,7 @@ class PointGraph(ObjectGraph):
             from NoMathUtilities import logging
             logging("You should use '' instead of 'none'",pspict=pspict)
         if self.parameters.symbol not in ["none",""]:
-            s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(numerical=True,pspict=pspict),effective_symbol,self.params(language="tikz",refute=["symbol","dotangle"]),"DOTANGLE")
+            s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(numerical=True,digits=5,pspict=pspict),effective_symbol,self.params(language="tikz",refute=["symbol","dotangle"]),"DOTANGLE")
             if self.parameters.dotangle != None :
                 s=s.replace("DOTANGLE",str(self.parameters.dotangle))
             else :
