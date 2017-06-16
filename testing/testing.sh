@@ -9,6 +9,7 @@
 
 BASEDIR=$(pwd)
 SAGE_PATH=$PYTHONPATH:$BASEDIR/../..
+RECALLTEST_DIR=$BASEDIR/recall_tests/
 
 LOGFILE=$BASEDIR/testing.log
 rm $LOGFILE
@@ -20,14 +21,14 @@ demonstration_testing ()
     SAGE_PATH=$SAGE_PATH ./testing.sh&&
     cd $BASEDIR
     echo BASEDIR est : $BASEDIR
-    ./test_recall.py $BASEDIR/demonstration >> $LOGFILE
+    ./test_recall.py $BASEDIR/demonstration   >> $LOGFILE
 }
 
 manual_testing ()
 {
     cd $BASEDIR/../manual
-    SAGE_PATH=$SAGE_PATH ./testing.sh&&
-    cd $BASEDIR
+    #SAGE_PATH=$SAGE_PATH ./testing.sh&&
+    cd $RECALLTEST_DIR
     ./test_recall.py $BASEDIR/../manual >> $LOGFILE
 }
 
@@ -38,9 +39,9 @@ unit_testing ()
 }
 
 
-unit_testing &&
+#unit_testing &&
 manual_testing&&
-demonstration_testing
+#demonstration_testing
 
 echo "---- Results : "
 cat $LOGFILE
