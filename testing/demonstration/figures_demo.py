@@ -24,7 +24,6 @@ from phystricksRefraction import Refraction
 from phystricksTgCercleTrigono import TgCercleTrigono
 from phystricksHRIVooBXxZES import HRIVooBXxZES
 from phystricksXWWHooIkLOwZ import XWWHooIkLOwZ
-from phystricksFBTCooBKTryQ import FBTCooBKTryQ
 from phystricksUOEOooLxhpSC import UOEOooLxhpSC
 from phystricksJRCJooPHFcKn import JRCJooPHFcKn
 from phystricksCornetGlace import CornetGlace
@@ -178,7 +177,6 @@ append_picture(OMPAooMbyOIqeA,2)
 append_picture(JRCJooPHFcKn,2)
 
 append_picture(UOEOooLxhpSC,2)
-append_picture(FBTCooBKTryQ,2)
 append_picture(HRIVooBXxZES,2)
 append_picture(XWWHooIkLOwZ,2)
 append_picture(CWKJooppMsZXjw,2)
