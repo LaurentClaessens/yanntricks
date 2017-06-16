@@ -15,7 +15,7 @@ directory=sys.argv[1]
 def pstricks_files_iterator(directory):
     for f in os.listdir(directory):
         if f.endswith(".pstricks"):
-            yield f
+            yield os.path.join(directory,f)
 
 for filename in pstricks_files_iterator(directory):
     with open(filename,'r') as f:
