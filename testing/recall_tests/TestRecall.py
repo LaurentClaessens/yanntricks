@@ -109,12 +109,26 @@ class FileDecomposition(object):
                 self.points_list.append(Point(x,y))
                 self.texts_list.append(text)
 
-def comparison(dec,other,epsilon):
-    for t in zip(dec.texts_list,other.texts_list):
+## \brief Print a comparison of files 'f1' and 'f2' which are assumed
+# to be auto generated '.pstricks' files.
+def comparison(f1,f2,epsilon):
+    d1=FileDecomposition(f1)
+    d2=FileDecomposition(f2)
+    for t in zip(d1.texts_list,d2.texts_list):
         if t[0] != t[1]:
             print("There is a change of text")
-    for t in zip(dec.points_list,other.points_list):
+    for t in zip(d1.points_list,d2.points_list):
         Dx=t[1].x-t[0].x
         Dy=t[1].y-t[0].y
         if abs(Dx)>epsilon or abs(Dy)>epsilon :
             print("{} Vs {} : Dx={}, Dy={}".format(t[0],t[1],Dx,Dy))
+
+def check_pictures(pstricks_directory,recall_directory):
+    mfl,wfl=wrong_file_list(pstricks_directory,recall_directory)
+
+    for f in mfl:
+        print("Missing recall file for ",f)
+    for f in wfl:
+        print("Wrong : ")
+        g=f.replace(pstricks_directory,recall_directory)+".recall"
+        comparison(f,g,epsilon=0.001)
