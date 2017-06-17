@@ -27,7 +27,7 @@ demonstration_testing ()
 manual_testing ()
 {
     cd $BASEDIR/../manual
-    #SAGE_PATH=$SAGE_PATH ./testing.sh&&
+    SAGE_PATH=$SAGE_PATH ./testing.sh&&
     cd $RECALLTEST_DIR
     ./test_recall.py $BASEDIR/../manual >> $LOGFILE
 }
@@ -39,9 +39,9 @@ unit_testing ()
 }
 
 
-#unit_testing &&
+unit_testing &&
 manual_testing&&
-#demonstration_testing
+demonstration_testing
 
 echo "---- Results : "
 cat $LOGFILE
