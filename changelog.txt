@@ -1,5 +1,14 @@
 # phystricks changelog
 
+## Better test recall, June 19, 2017
+
+The module 'TestRecall' is improved and furnish 
+- a way to know if the difference between two files are only small move
+  of points
+- a way to check all '.pstricks' of a directory at once.
+
+
+
 ## Point coordinates precision, June 15, 2017
 
 ### Problem

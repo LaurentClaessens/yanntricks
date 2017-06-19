@@ -13,6 +13,7 @@ import os
 import sys
 
 from TestRecall import check_pictures
+from TestRecall import comparison
 
 pstricks_directory=sys.argv[1]
 recall_directory=sys.argv[1]
