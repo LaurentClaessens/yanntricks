@@ -177,14 +177,14 @@ class CuboidGraph(ObjectGraph):
             pspict.DrawGraphs(s)
         if not self.transparent :
             surface1=Polygon( self.c1 )
-            surface1.parameters.filled()
+            surface1.filled()
             surface2=Polygon( self.c1[0],self.c1[1],self.c2[1],self.c2[0] )
-            surface2.parameters.filled()
+            surface2.filled()
             if self.op.alpha<90:
                 surface3=Polygon(self.c1[1],self.c2[1],self.c2[2],self.c1[2])
             else :
                 surface3=Polygon(self.c1[0],self.c2[0],self.c2[3],self.c1[3])
-            surface3.parameters.filled()
+            surface3.filled()
             pspict.DrawGraphs(surface1,surface2,surface3)
     def latex_code(self,language=None,pspict=None):
         return ""   # Everything is in action_on_pspict

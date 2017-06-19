@@ -46,33 +46,26 @@
 %OPEN_WRITE_AND_LABEL
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
 \ifthenelse{\isundefined{\lengthOfforphystricks}}{\newlength{\lengthOfforphystricks}}{}
-\immediate\openout\writeOfphystricks=OnePoint.phystricks.aux%
+\immediate\openout\writeOfphystricks=WWPPooTSxdXI.phystricks.aux%
 \ifthenelse{\isundefined{\writeOfphystricks}}{\newwrite{\writeOfphystricks}}{}
 \ifthenelse{\isundefined{\lengthOfforphystricks}}{\newlength{\lengthOfforphystricks}}{}
-\immediate\openout\writeOfphystricks=OnePoint.phystricks.aux%
+\immediate\openout\writeOfphystricks=WWPPooTSxdXI.phystricks.aux%
 %WRITE_AND_LABEL
-\setlength{\lengthOfforphystricks}{\totalheightof{\(P\)}}%
-\immediate\write\writeOfphystricks{totalheightof1903839d9021e180dd790c4cc63081c63b2fe6f1:\the\lengthOfforphystricks-}
-\setlength{\lengthOfforphystricks}{\widthof{\(P\)}}%
-\immediate\write\writeOfphystricks{widthof1903839d9021e180dd790c4cc63081c63b2fe6f1:\the\lengthOfforphystricks-}
-\setlength{\lengthOfforphystricks}{\totalheightof{\(Q\)}}%
-\immediate\write\writeOfphystricks{totalheightof15a6448f2b408bb6a0dabb437cc671b7beb909fc:\the\lengthOfforphystricks-}
-\setlength{\lengthOfforphystricks}{\widthof{\(Q\)}}%
-\immediate\write\writeOfphystricks{widthof15a6448f2b408bb6a0dabb437cc671b7beb909fc:\the\lengthOfforphystricks-}
 %CLOSE_WRITE_AND_LABEL
 \immediate\closeout\writeOfphystricks%
 %BEFORE PSPICTURE
 %BEGIN PSPICTURE
-\tikzsetnextfilename{tikzOnePoint}
+\tikzsetnextfilename{tikzWWPPooTSxdXI}
 \begin{tikzpicture}[xscale=1,yscale=1,inner sep=2.25pt,outer sep=0pt]
 %GRID
 %AXES
 %OTHER STUFF
 %PSTRICKS CODE
 %DEFAULT
-\draw [color=red]  (1.0000,1.0000) node [rotate=0] {$\bullet$};
-\draw (1.3034,1.2139) node {\(P\)};
-\draw (1.0000,0.65370) node {\(Q\)};
+\draw [style=dashed] (1.00,2.00) -- (0,0);
+\draw [style=dashed] (0,0) -- (3.00,0);
+\draw [style=dashed] (3.00,0) -- (1.00,2.00);
+\draw [style=dashed] (0,0) -- (1.00,1.00);
 %END PSPICTURE
 \end{tikzpicture}
 %AFTER PSPICTURE

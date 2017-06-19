@@ -11,6 +11,8 @@ from phystricksPBFCooVlPiRBpt import PBFCooVlPiRBpt
 from phystricksGKMEooBcNxcWBt import GKMEooBcNxcWBt
 from FunctionThird import FunctionThird
 from phystricksVSJOooJXAwbVEt import VSJOooJXAwbVEt
+from phystricksIllusionNHwEtp import IllusionNHwEtp
+from phystricksFBTCooBKTryQ import FBTCooBKTryQ
 
 figures_list_1=[]
 figures_list_2=[]
@@ -30,6 +32,8 @@ append_picture(GKMEooBcNxcWBt,2)
 append_picture(LARGooSLxQTdPC,2)
 append_picture(PBFCooVlPiRBpt,2)
 append_picture(VSJOooJXAwbVEt,2)
+append_picture(IllusionNHwEtp,1)
+append_picture(FBTCooBKTryQ,2)
 """
 append_picture(<++>,1)
 append_picture(<++>,1)

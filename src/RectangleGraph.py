@@ -30,7 +30,6 @@ class RectangleGraph(PolygonGraph):
     graph_N returns the north side as a phystricks.Segment object
     """
     def __init__(self,NW,SE):
-        #ObjectGraph.__init__(self,self)
         self.NW = NW
         self.SE = SE
         self.SW = Point(self.NW.x,self.SE.y)

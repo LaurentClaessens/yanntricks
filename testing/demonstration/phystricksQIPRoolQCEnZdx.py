@@ -9,7 +9,7 @@ def QIPRoolQCEnZdx():
     C=Point(3,0)
 
     trig=Polygon(A,B,C)
-    trig.parameters.color="blue"
+    trig.edges_parameters.color="blue"
 
     angA=AngleAOB(C,A,B,r=0.3)
     angA.put_mark(0.4,None,"\SI{110}{\degree}",pspict=pspict)

@@ -59,7 +59,7 @@ def sort_and_assert_real(f):
 
         pts.sort(key=lambda S:S.x)
         for P in pts:
-            if "I" in P.coordinates():
+            if "I" in str(P.x)+str(P.y):
                 from Exception import ImaginaryPartException
                 raise ImaginaryPartException("There seem to be an imaginary part in "+P.coordinates())
         return pts

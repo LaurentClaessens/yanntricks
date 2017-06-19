@@ -4,6 +4,8 @@
 import sys
 from phystricks import *
 
+from phystricksWWPPooTSxdXI import WWPPooTSxdXI
+from phystricksXOLBooGcrjiwoU import XOLBooGcrjiwoU
 from phystricksMJWWooEMdGoa import MJWWooEMdGoa
 from phystricksAAPMooHEcnzW import AAPMooHEcnzW
 from phystricksAEUYooWXYBuI import AEUYooWXYBuI
@@ -22,10 +24,8 @@ from phystricksRefraction import Refraction
 from phystricksTgCercleTrigono import TgCercleTrigono
 from phystricksHRIVooBXxZES import HRIVooBXxZES
 from phystricksXWWHooIkLOwZ import XWWHooIkLOwZ
-from phystricksFBTCooBKTryQ import FBTCooBKTryQ
 from phystricksUOEOooLxhpSC import UOEOooLxhpSC
 from phystricksJRCJooPHFcKn import JRCJooPHFcKn
-from phystricksRJDEoobOibtkfv import RJDEoobOibtkfv
 from phystricksCornetGlace import CornetGlace
 from phystricksECQDooWEpuCM import ECQDooWEpuCM
 from phystricksSFdgHdO import SFdgHdO
@@ -136,7 +136,6 @@ append_picture(WQVZooAhkdlegv,1)
 append_picture(ProjPoly,1)
 append_picture(EXIIooJzzoJeai,1)
 append_picture(CornetGlace,2)
-append_picture(RJDEoobOibtkfv,3)
 append_picture(ECQDooWEpuCM,2)
 append_picture(FMLCooxHtqRzUz,2)
 append_picture(MBWHooeesXIrsz,2)
@@ -178,7 +177,6 @@ append_picture(OMPAooMbyOIqeA,2)
 append_picture(JRCJooPHFcKn,2)
 
 append_picture(UOEOooLxhpSC,2)
-append_picture(FBTCooBKTryQ,2)
 append_picture(HRIVooBXxZES,2)
 append_picture(XWWHooIkLOwZ,2)
 append_picture(CWKJooppMsZXjw,2)
@@ -201,11 +199,14 @@ append_picture(AEUYooWXYBuI,2)
 append_picture(TBAGooZgekGa,2)
 append_picture(AAPMooHEcnzW,2)
 append_picture(MJWWooEMdGoa,2)
+append_picture(WWPPooTSxdXI,1)
+append_picture(XOLBooGcrjiwoU,2)
 """
 append_picture(<++>,1)
 append_picture(<++>,1)
+append_picture(<++>,1)
+append_picture(<++>,1)
 """
-
 
 def AllFigures():
     figures_list=figures_list_1

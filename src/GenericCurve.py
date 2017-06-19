@@ -30,8 +30,8 @@ class GenericCurve(object):
     def __init__(self,pI,pF):
         """
         `pI` and `pF` are initial and final value of the parameters. 
-        This is to abstract the notational problem between (mx,Mx) in the phyFunction
-        and (llamI,llamF) in ParametricCurve.
+        This is to abstract the notational problem between
+        (mx,Mx) in the phyFunction and (llamI,llamF) in ParametricCurve.
         """
         self.linear_plotpoints=Defaults.LINEAR_PLOTPOINTS
         self.curvature_plotpoints=Defaults.CURVATURE_PLOTPOINTS
@@ -39,6 +39,7 @@ class GenericCurve(object):
         self.pI=pI
         self.pF=pF
         self._representativeParameters=None
+        self._representative_points=None
     def addPlotPoint(self,x):
         self.added_plotpoints.append(x)
     def getFunctionIntegral( self,fun,  lmin=None,lmax=None ):
@@ -155,6 +156,7 @@ class GenericCurve(object):
 
         initial = numerical_approx(self.pI) 
         final = numerical_approx(self.pF)
+    
         curvature_Llam=[]
         linear_Llam=[]
         if self.curvature_plotpoints :
@@ -170,12 +172,17 @@ class GenericCurve(object):
         Llam.extend(linear_Llam)
         Llam.extend(curvature_Llam)
         Llam.sort()
-        for llam in Llam:
-            P=self.get_point(llam,advised=False)
+
+        # seem to me that these two lines do not serve : (June 2017)
+        #for llam in Llam:
+        #    P=self.get_point(llam,advised=False)
 
         self._representativeParameters = Llam
         return Llam
     def representative_points(self):
+        if self._representative_points is not None :
+            return self._representative_points
+
         rp=self.representativeParameters()
         pts = [ self.get_point(x,advised=False) for x in rp ]
 
@@ -185,6 +192,7 @@ class GenericCurve(object):
             if not isreal:
                 print("There is a not so small imaginary part ... Prepare to crash or something")
             pl.append(Q)
+        self._representative_points = pl
         return pl
     
     def get_minmax_data(self,start=None,end=None):
@@ -200,8 +208,10 @@ class GenericCurve(object):
 
         A dictionary
         """
-        x_list = [ P.x for P in self.representative_points()  ]
-        y_list = [ P.y for P in self.representative_points()  ]
+        x_list = [ numerical_approx(P.x,prec=30) 
+                                        for P in self.representative_points()  ]
+        y_list = [ numerical_approx(P.y,prec=30) 
+                                        for P in self.representative_points()  ]
         d={}
         d['xmin']=min(x_list)
         d['xmax']=max(x_list)

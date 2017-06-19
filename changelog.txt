@@ -1,0 +1,95 @@
+# phystricks changelog
+
+## Better test recall, June 19, 2017
+
+The module 'TestRecall' is improved and furnish 
+- a way to know if the difference between two files are only small move
+  of points
+- a way to check all '.pstricks' of a directory at once.
+
+
+
+## Point coordinates precision, June 15, 2017
+
+### Problem
+
+I found too many cancellation errors here and there in the code. This leads to 
+non-deterministic final '.pstricks' file : there is some variation like on the
+12th decimal of the coordinates of some points.
+
+The last one I found is in `AngleMeasure.measure :`
+```
+return AngleMeasure(value_degree=self.angleF.degree-self.angleI.degree)
+```
+
+In the picture FBTC the difference is
+`206.565051177078- 341.565051177078` which leads to problems.
+
+
+### Solution (partial)
+
+Make write only 5 digits in the coordinates of the central point of a mark.
+    
+### Side effect
+
+Many `.recall` files to be redone.
+
+
+## Polygon parameters, June 15, 2017
+
+### Problem
+
+There are three different things in a polygon : its edges, its filling and its 
+hatching.
+
+From now on a polygon had only its `parameters` attribute (from
+`GraphOfAnObject`), and we were making some complicated guessing. 
+Also the attribute `segment_model` was not really sexy.
+
+### Solution
+
+Now we have three attributes :
+* edges_parameters
+* hatch_parameters
+* fill_parameters
+
+### Side effects
+
+Have to rewrite the functions in which the color of a polygon is customosed.
+Also the ones in which a polygon is hatched or filled.
+
+
+## Non deterministic function evaluation, June 15, 2017
+
+### Problem
+
+The test picture `XOLB` had a non-deterministic behaviour. This was probably
+due to a cancelation error: we were substracting two numbers of order of
+magnitude 22000 with a differences like 0.01. The 12th decimal was
+non-deterministic (change when restarting Sage).
+
+This was impacting the computation of the bounding box of the function and
+then the axes.
+
+### Solution.
+
+When computing the X and Y coordinates of the representative points of a
+curve, we consider a numerical approximation with `prec=30` in order to get
+less digits than the correct ones.
+
+See `GenericCurve.get_minmax_data`.
+
+
+### Side effects
+
+The 6th or 7th decimal of some bounding boxes are changed. So the axes of some
+pictures are changed (not visible).
+The `recall` files of these pictures have to be recreated to take that into
+account.
+
+### See also
+
+See the question here :
+https://ask.sagemath.org/question/37946/undeterministic-numerical-approximation/
+
+

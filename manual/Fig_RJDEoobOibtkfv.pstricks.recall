@@ -53,10 +53,10 @@
 %WRITE_AND_LABEL
 \immediate\write\writeOfphystricks{Countersection:\arabic{section}-}
 \immediate\write\writeOfphystricks{Counterpage:\arabic{page}-}
-\setlength{\lengthOfforphystricks}{\totalheightof{\( 11.0 \)}}%
-\immediate\write\writeOfphystricks{totalheightof97f7c9fca0af8a41fbb01188679e0b9ad223f3c6:\the\lengthOfforphystricks-}
-\setlength{\lengthOfforphystricks}{\widthof{\( 11.0 \)}}%
-\immediate\write\writeOfphystricks{widthof97f7c9fca0af8a41fbb01188679e0b9ad223f3c6:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\totalheightof{\( 14.0 \)}}%
+\immediate\write\writeOfphystricks{totalheightof73b42c14338f82cf8b265c1cf0addcc48f88fc1d:\the\lengthOfforphystricks-}
+\setlength{\lengthOfforphystricks}{\widthof{\( 14.0 \)}}%
+\immediate\write\writeOfphystricks{widthof73b42c14338f82cf8b265c1cf0addcc48f88fc1d:\the\lengthOfforphystricks-}
 \setlength{\lengthOfforphystricks}{\totalheightof{$ 1 $}}%
 \immediate\write\writeOfphystricks{totalheightof2f9abdf237016df2db0c349fe50e30dbad8bcb6c:\the\lengthOfforphystricks-}
 \setlength{\lengthOfforphystricks}{\widthof{$ 1 $}}%
@@ -86,37 +86,37 @@
 %PSTRICKS CODE
 %GRID
 \draw [color=gray,style=solid] (0,0) -- (0,5.00);
-\draw [color=gray,style=solid] (12.0,0) -- (12.0,5.00);
-\draw [color=gray,style=dotted] (6.00,0) -- (6.00,5.00);
-\draw [color=gray,style=dotted] (0,0.500) -- (12.0,0.500);
-\draw [color=gray,style=dotted] (0,1.50) -- (12.0,1.50);
-\draw [color=gray,style=dotted] (0,2.50) -- (12.0,2.50);
-\draw [color=gray,style=dotted] (0,3.50) -- (12.0,3.50);
-\draw [color=gray,style=dotted] (0,4.50) -- (12.0,4.50);
-\draw [color=gray,style=solid] (0,0) -- (12.0,0);
-\draw [color=gray,style=solid] (0,1.00) -- (12.0,1.00);
-\draw [color=gray,style=solid] (0,2.00) -- (12.0,2.00);
-\draw [color=gray,style=solid] (0,3.00) -- (12.0,3.00);
-\draw [color=gray,style=solid] (0,4.00) -- (12.0,4.00);
-\draw [color=gray,style=solid] (0,5.00) -- (12.0,5.00);
+\draw [color=gray,style=solid] (14.0,0) -- (14.0,5.00);
+\draw [color=gray,style=dotted] (7.00,0) -- (7.00,5.00);
+\draw [color=gray,style=dotted] (0,0.500) -- (14.0,0.500);
+\draw [color=gray,style=dotted] (0,1.50) -- (14.0,1.50);
+\draw [color=gray,style=dotted] (0,2.50) -- (14.0,2.50);
+\draw [color=gray,style=dotted] (0,3.50) -- (14.0,3.50);
+\draw [color=gray,style=dotted] (0,4.50) -- (14.0,4.50);
+\draw [color=gray,style=solid] (0,0) -- (14.0,0);
+\draw [color=gray,style=solid] (0,1.00) -- (14.0,1.00);
+\draw [color=gray,style=solid] (0,2.00) -- (14.0,2.00);
+\draw [color=gray,style=solid] (0,3.00) -- (14.0,3.00);
+\draw [color=gray,style=solid] (0,4.00) -- (14.0,4.00);
+\draw [color=gray,style=solid] (0,5.00) -- (14.0,5.00);
 %AXES
-\draw [,->,>=latex] (-0.5000000000,0) -- (12.50000000,0);
-\draw [,->,>=latex] (0,-0.5000000000) -- (0,5.500000000);
+\draw [,->,>=latex] (-0.50000,0) -- (14.500,0);
+\draw [,->,>=latex] (0,-0.50000) -- (0,5.5000);
 %DEFAULT
-\draw (10.00000000,5.304954000) node {\( 11.0 \)};
+\draw (10.000,5.3050) node {\( 14.0 \)};
 \draw [color=blue] (0,0)--(0.1010,0.05051)--(0.2020,0.1010)--(0.3030,0.1515)--(0.4040,0.2020)--(0.5051,0.2525)--(0.6061,0.3030)--(0.7071,0.3535)--(0.8081,0.4040)--(0.9091,0.4545)--(1.010,0.5051)--(1.111,0.5556)--(1.212,0.6061)--(1.313,0.6566)--(1.414,0.7071)--(1.515,0.7576)--(1.616,0.8081)--(1.717,0.8586)--(1.818,0.9091)--(1.919,0.9596)--(2.020,1.010)--(2.121,1.061)--(2.222,1.111)--(2.323,1.162)--(2.424,1.212)--(2.525,1.263)--(2.626,1.313)--(2.727,1.364)--(2.828,1.414)--(2.929,1.465)--(3.030,1.515)--(3.131,1.566)--(3.232,1.616)--(3.333,1.667)--(3.434,1.717)--(3.535,1.768)--(3.636,1.818)--(3.737,1.869)--(3.838,1.919)--(3.939,1.970)--(4.040,2.020)--(4.141,2.071)--(4.242,2.121)--(4.343,2.172)--(4.444,2.222)--(4.545,2.273)--(4.646,2.323)--(4.747,2.374)--(4.849,2.424)--(4.950,2.475)--(5.050,2.525)--(5.151,2.576)--(5.253,2.626)--(5.354,2.677)--(5.455,2.727)--(5.556,2.778)--(5.657,2.828)--(5.758,2.879)--(5.859,2.929)--(5.960,2.980)--(6.061,3.030)--(6.162,3.081)--(6.263,3.131)--(6.364,3.182)--(6.465,3.232)--(6.566,3.283)--(6.667,3.333)--(6.768,3.384)--(6.869,3.434)--(6.970,3.485)--(7.071,3.535)--(7.172,3.586)--(7.273,3.636)--(7.374,3.687)--(7.475,3.737)--(7.576,3.788)--(7.677,3.838)--(7.778,3.889)--(7.879,3.939)--(7.980,3.990)--(8.081,4.040)--(8.182,4.091)--(8.283,4.141)--(8.384,4.192)--(8.485,4.242)--(8.586,4.293)--(8.687,4.343)--(8.788,4.394)--(8.889,4.444)--(8.990,4.495)--(9.091,4.545)--(9.192,4.596)--(9.293,4.646)--(9.394,4.697)--(9.495,4.747)--(9.596,4.798)--(9.697,4.849)--(9.798,4.899)--(9.899,4.950)--(10.00,5.000);
 
-\draw (12.00000000,-0.3049540000) node {$ 1 $};
-\draw [] (12.0,-0.100) -- (12.0,0.100);
-\draw (-0.2833333333,1.000000000) node {$ 1 $};
+\draw (14.000,-0.30495) node {$ 1 $};
+\draw [] (14.0,-0.100) -- (14.0,0.100);
+\draw (-0.28333,1.0000) node {$ 1 $};
 \draw [] (-0.100,1.00) -- (0.100,1.00);
-\draw (-0.2833333333,2.000000000) node {$ 2 $};
+\draw (-0.28333,2.0000) node {$ 2 $};
 \draw [] (-0.100,2.00) -- (0.100,2.00);
-\draw (-0.2833333333,3.000000000) node {$ 3 $};
+\draw (-0.28333,3.0000) node {$ 3 $};
 \draw [] (-0.100,3.00) -- (0.100,3.00);
-\draw (-0.2833333333,4.000000000) node {$ 4 $};
+\draw (-0.28333,4.0000) node {$ 4 $};
 \draw [] (-0.100,4.00) -- (0.100,4.00);
-\draw (-0.2833333333,5.000000000) node {$ 5 $};
+\draw (-0.28333,5.0000) node {$ 5 $};
 \draw [] (-0.100,5.00) -- (0.100,5.00);
 %OTHER STUFF
 %END PSPICTURE

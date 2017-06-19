@@ -263,6 +263,23 @@ By the way you should note the method \info{getRegularLengthParameters} that ret
 
 returns a list of parameters such that the arc length between two points is \( 2\).
 
+
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+\section{Perspective}
+%+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+You can make your cube opaque (non-transparent) with the method \info{make\_opaque}.
+
+
+\begin{example}
+    
+\lstinputlisting{phystricksIllusionNHwEtp.py}
+
+    \begin{center}
+        \input{Fig_IllusionNHwEtp.pstricks}
+    \end{center}
+\end{example}
+
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 \section{Figure, subfigure}
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -282,6 +299,24 @@ You should use the utility \info{new\_picture.py} to generate the skeleton of yo
 One can always put a mark on an object; the position is by default automatically determined. The general statement is :
 
 \lstinputlisting{sageSnip_9.py}
+
+%--------------------------------------------------------------------------------------------------------------------------- 
+\subsection{On angles}
+%---------------------------------------------------------------------------------------------------------------------------
+
+You can add a mark inside an angle. The positioning is automatic, and needs two passes.
+
+\begin{example}
+
+    \lstinputlisting{phystricksFBTCooBKTryQ.py}
+
+Picture : \info{FBTCooBKTryQ}
+\begin{center}
+   \input{Fig_FBTCooBKTryQ.pstricks}
+\end{center}
+
+\end{example}
+
 
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 \section{How to get the LaTeX counters ?}
@@ -346,15 +381,21 @@ A dilatation in the \( x\)-direction is computed in such a way that the picture 
     The page number is written just on the top of coordinates \( (x_{max},y_{max})\).
 \end{enumerate}
 
+Here is a newpage for reasons that will be explained right on the next page.
+
+\newpage
+
+Obviously this kind of picture has to be recompiled each time we change the containing document, and it can be wrong if the picture happens to be on the top of a page; in this case, \LaTeX\ sees the request for writing the page number on the bottom of the previous page.
+
+\begin{example}
+    
 \begin{center}
    \input{Fig_RJDEoobOibtkfv.pstricks}
 \end{center}
 
-Obviously this kind of picture has to be recompiled each time we change the containing document.
-
-Here is the code :
-
 \lstinputlisting{phystricksRJDEoobOibtkfv.py}
+\end{example}
+
 
 The default value for the \info{section} counter is given to avoid division by zero, because zero is the default-default value : the one which is returned at first compilation, when the auxiliary file does not yet contain the value of the counter (there is a bootstrap here).
 
