@@ -28,8 +28,6 @@ A collection of tools for building LaTeX pictures with python.
 from __future__ import division
 from __future__ import unicode_literals
 
-from sage.all import *
-
 from phystricks.src.main import FigureGenerationSuite
 
 from phystricks.src.main import SinglePicture
