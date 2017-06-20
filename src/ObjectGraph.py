@@ -66,7 +66,7 @@ class ObjectGraph(object):
     def draw_edges(self):
         self._draw_edges=True
     def wave(self,dx,dy):     # dx is the wave length and dy is the amplitude
-        from Parameters import Waviness
+        from parameters.Waviness import Waviness
         self.wavy = True
         self.waviness = Waviness(self,dx,dy)
     def get_arrow(self,llam):
