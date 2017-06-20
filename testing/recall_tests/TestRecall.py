@@ -158,7 +158,7 @@ def comparison(f1,f2,epsilon,verbose=False):
         return "Wrong points list size"
     for t in zip(d1.texts_list,d2.texts_list):
         if t[0] != t[1]:
-            return "There is a change of text"
+            return "There is a change of text : {} Vs {} ".format(t[0],t[1])
     for t in zip(d1.points_list,d2.points_list):
         try :
             Dx=t[1].x-t[0].x
