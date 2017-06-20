@@ -118,6 +118,12 @@ append_picture(SMXRooCnrlNw,1)
 append_picture(TKXZooLwXzjS,1)
 append_picture(exCircle,1)
 append_picture(OnePoint,1)
+
+
+figures_list_1=[]
+figures_list_2=[]
+figures_list_3=[]
+
 append_picture(FunctionSecond,1)
 append_picture(GridThree,1)
 append_picture(GridTwo,1)

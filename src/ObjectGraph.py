@@ -23,8 +23,9 @@
 from __future__ import division
 
 from sage.all import *
-from Parameters import Parameters
-from Parameters import Options
+
+from parameters.Options import Options
+from parameters.Parameters import Parameters
 from Exceptions import ShouldNotHappenException
 from NoMathUtilities import logging
 from AddedObjects import AddedObjects

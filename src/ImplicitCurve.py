@@ -28,7 +28,7 @@ from sage.all import *
 
 from phystricks.src.ObjectGraph import ObjectGraph
 from Constructors import *
-from Parameters import Parameters
+from parameters.Parameters import Parameters
 
 
 def get_paths_from_plot(p):

@@ -29,7 +29,7 @@ from phystricks.src.Constructors import *
 
 from phystricks.src.ObjectGraph import ObjectGraph
 
-from phystricks.src.Parameters import Parameters
+from parameters.Parameters import Parameters
 from phystricks.src.PointGraph import PointGraph
 
 def genericBracketAttributeToLanguage(attr,language):

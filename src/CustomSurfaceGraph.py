@@ -23,7 +23,7 @@
 from ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
-from Parameters import Parameters
+from parameters.Parameters import Parameters
 
 class CustomSurfaceGraph(ObjectGraph):
     """
