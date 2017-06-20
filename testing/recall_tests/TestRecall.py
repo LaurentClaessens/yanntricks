@@ -137,10 +137,15 @@ def file_to_tikz_decomposition(filename):
     content=open(filename,'r').read()
     return TikzDecomposition(content)
 
-## \brief Print a comparison of files 'f1' and 'f2' which are assumed
+## \brief return a comparison of files 'f1' and 'f2' which are assumed
 # to be auto generated '.pstricks' files.
 #
 # \param f1,f2  file names.
+#
+# \return (string) a small summary of the comparison.
+#
+# - if the files are equals, return `None`
+# - string containing a *small* explanation about the difference
 def comparison(f1,f2,epsilon,verbose=False):
     try :
         d1=file_to_tikz_decomposition(f1)
@@ -148,12 +153,12 @@ def comparison(f1,f2,epsilon,verbose=False):
     except TikzDecompositionParsingException as e :
         raise TikzDecompositionParsingException(e.block,f1,f2,x=e.x,y=e.y)
     if len(d1.texts_list) != len(d2.texts_list) :
-        print("Wrong texts list size")
+        return "Wrong texts list size"
     if len(d1.points_list) != len(d2.points_list) :
-        print("Wrong points list size")
+        return "Wrong points list size"
     for t in zip(d1.texts_list,d2.texts_list):
         if t[0] != t[1]:
-            print("There is a change of text")
+            return "There is a change of text"
     for t in zip(d1.points_list,d2.points_list):
         try :
             Dx=t[1].x-t[0].x
@@ -165,7 +170,13 @@ def comparison(f1,f2,epsilon,verbose=False):
             print(f2)
             raise
         if abs(Dx)>epsilon or abs(Dy)>epsilon :
-            print("{} Vs {} : Dx={}, Dy={}".format(t[0],t[1],Dx,Dy))
+            return "Large point move : {} Vs {} : Dx={}, Dy={}".format(t[0],t[1],Dx,Dy)
+    for t in zip(d1.points_list,d2.points_list):
+        Dx=t[1].x-t[0].x
+        Dy=t[1].y-t[0].y
+        if abs(Dx)>0 or abs(Dy)>0 :
+            return "Small point move : {} Vs {} : Dx={}, Dy={}".format(t[0],t[1],Dx,Dy)
+    return None
 
 ## \brief check the picrures against their 'recall' file in a directory.
 #
@@ -177,7 +188,7 @@ def comparison(f1,f2,epsilon,verbose=False):
 # 'recall' is not exactly the same.
 # If `False`, print only the ones for which a point is significantly moved or 
 # a text outside points coordinates is changed.
-def check_pictures(pstricks_directory,recall_directory,verbose=False):
+def check_pictures(pstricks_directory,recall_directory,verbose=True):
     mfl,wfl=wrong_file_list(pstricks_directory,recall_directory)
 
     for f in mfl:
@@ -187,4 +198,4 @@ def check_pictures(pstricks_directory,recall_directory,verbose=False):
         if verbose :
             print("Wrong : ")
             print(f,g)
-        comparison(f,g,epsilon=0.001,verbose=verbose)
+        print(comparison(f,g,epsilon=0.001,verbose=verbose))
