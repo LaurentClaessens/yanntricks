@@ -195,7 +195,9 @@ def check_pictures(pstricks_directory,recall_directory,verbose=True):
         print("Missing recall file for ",f)
     for f in wfl:
         g=f.replace(pstricks_directory,recall_directory)+".recall"
-        if verbose :
-            print("Wrong : ")
-            print(f,g)
-        print(comparison(f,g,epsilon=0.001,verbose=verbose))
+        comment=comparison(f,g,epsilon=0.001,verbose=verbose)
+        if comment is not None :
+            if verbose :
+                print("Wrong : ")
+                print(f,g)
+            print(comment)
