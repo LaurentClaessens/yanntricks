@@ -67,7 +67,7 @@
 %PSTRICKS CODE
 %DEFAULT
 \draw []  (0,0) node [rotate=0] {$\bullet$};
-\draw (0.2548463562,0.2562338562) node {P};
+\draw (0.25485,0.25623) node {P};
 %END PSPICTURE
 \end{tikzpicture}
 %AFTER PSPICTURE

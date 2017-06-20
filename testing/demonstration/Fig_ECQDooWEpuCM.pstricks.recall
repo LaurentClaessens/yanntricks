@@ -75,11 +75,11 @@
 %PSTRICKS CODE
 %DEFAULT
 \draw []  (0,0) node [rotate=0] {$\bullet$};
-\draw (-0.9123261815,-0.1001480782) node {$KLLL\Omega$};
-\draw []  (4.000000000,-1.000000000) node [rotate=0] {$\bullet$};
-\draw (4.273545117,-1.350350131) node {$BBB$};
-\draw []  (4.000000000,2.000000000) node [rotate=0] {$\bullet$};
-\draw (4.228106298,2.369083742) node {$C$};
+\draw (-0.91233,-0.10015) node {$KLLL\Omega$};
+\draw []  (4.0000,-1.0000) node [rotate=0] {$\bullet$};
+\draw (4.2735,-1.3503) node {$BBB$};
+\draw []  (4.0000,2.0000) node [rotate=0] {$\bullet$};
+\draw (4.2281,2.3691) node {$C$};
 \draw [] (0,0) -- (4.00,-1.00);
 \draw [] (4.00,-1.00) -- (4.00,2.00);
 \draw [] (4.00,2.00) -- (0,0);

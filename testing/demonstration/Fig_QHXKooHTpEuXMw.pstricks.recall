@@ -68,7 +68,7 @@
 %DEFAULT
 \draw [color=red] (0,0.500) -- (0.350,0);
 \draw []  (0,0) node [rotate=0] {$\bullet$};
-\draw (0.2548463562,0.2562338562) node {P};
+\draw (0.25485,0.25623) node {P};
 \draw [color=cyan] (0.500,0.500) -- (0,0);
 %END PSPICTURE
 \end{tikzpicture}

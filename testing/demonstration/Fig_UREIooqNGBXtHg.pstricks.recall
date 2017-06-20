@@ -96,14 +96,14 @@
 \draw [color=gray,style=solid] (-0.800,2.40) -- (3.20,2.40);
 \draw [color=gray,style=solid] (-0.800,3.20) -- (3.20,3.20);
 %DEFAULT
-\draw []  (0.8000000000,1.600000000) node [rotate=0] {$\bullet$};
-\draw (1.014443052,1.892773938) node {\( A\)};
-\draw []  (-0.8000000000,1.600000000) node [rotate=0] {$\bullet$};
-\draw (-1.024222719,1.892773938) node {\( B\)};
-\draw []  (2.400000000,0) node [rotate=0] {$\bullet$};
-\draw (2.400000000,-0.3138885000) node {\( C\)};
+\draw []  (0.80000,1.6000) node [rotate=0] {$\bullet$};
+\draw (1.0144,1.8928) node {\( A\)};
+\draw []  (-0.80000,1.6000) node [rotate=0] {$\bullet$};
+\draw (-1.0242,1.8928) node {\( B\)};
+\draw []  (2.4000,0) node [rotate=0] {$\bullet$};
+\draw (2.4000,-0.31389) node {\( C\)};
 \draw []  (0,0) node [rotate=0] {$\bullet$};
-\draw (-0.2731805229,-0.2553098562) node {\( O\)};
+\draw (-0.27318,-0.25531) node {\( O\)};
 
 %AXES
 %OTHER STUFF
