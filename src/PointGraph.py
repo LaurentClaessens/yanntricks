@@ -294,32 +294,17 @@ class PointGraph(ObjectGraph):
         Return type : MathStructure.AngleMeasure
         """
         return self.polar_coordinates(origin=origin).measure            # No more degree. February 11, 2015
-    def coordinates(self,numerical=False,digits=None,pspict=None):
-        """
-        Return the coordinates of the point as a string.
 
-        When one coordinate if very small (lower than 0.0001), it
-        is rounded to zero in order to avoid string like "0.2335e-6"
-        in the pstricks code.
-
-        EXAMPLE::
-
-            sage: from phystricks import *
-            sage: P=Point(1,3)
-            sage: print P.coordinates()
-            sage: Q=Point(1,-pi)
-            sage: print P.coordinates()
-            (1,-pi)
-
-        If a pspicture is given, we divide by xunit and yunit to normalize.
-        """
-
-        # These lines have to be removed for a final  version, and
-        # if possible, these arguments have to be removed.
-        if not numerical:
-            raise
-        if not digits:
-            raise
+    ## Return the coordinates of the point as a string.
+    #
+    # - When one coordinate if very small (lower than 0.0001), it
+    #   is rounded to zero in order to avoid string like "0.2335e-6"
+    #    in the pstricks code.
+    #
+    # - If a pspicture is given, 
+    #    * we multiply by xunit and yunit 
+    #    * we apply the rotation
+    def coordinates(self,digits=5,pspict=None):
 
         from Numerical import is_almost_zero
         x=self.x
@@ -333,13 +318,8 @@ class PointGraph(ObjectGraph):
                 ny=-x*sin(ang)+y*cos(ang)
                 x=nx
                 y=ny
-        if digits :
-            numerical=True
-        if numerical :
-            if digits==None :
-                digits=10
-            x=numerical_approx(x,digits=digits)
-            y=numerical_approx(y,digits=digits)
+        x=numerical_approx(x,digits=digits)
+        y=numerical_approx(y,digits=digits)
         # Avoid something like "0.125547e-6" (LaTeX will not accept).
         if is_almost_zero(x,0.001):
             x=0
