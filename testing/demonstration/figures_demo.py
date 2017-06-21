@@ -4,6 +4,7 @@
 import sys
 from phystricks import *
 
+from phystricksERPMooZibfNOiU import ERPMooZibfNOiU
 from phystricksWWPPooTSxdXI import WWPPooTSxdXI
 from phystricksXOLBooGcrjiwoU import XOLBooGcrjiwoU
 from phystricksMJWWooEMdGoa import MJWWooEMdGoa
@@ -201,8 +202,8 @@ append_picture(AAPMooHEcnzW,2)
 append_picture(MJWWooEMdGoa,2)
 append_picture(WWPPooTSxdXI,1)
 append_picture(XOLBooGcrjiwoU,2)
+append_picture(ERPMooZibfNOiU,1)
 """
-append_picture(<++>,1)
 append_picture(<++>,1)
 append_picture(<++>,1)
 append_picture(<++>,1)

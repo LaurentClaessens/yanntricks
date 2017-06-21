@@ -84,7 +84,22 @@ def test_is_negative():
     echo_single_test("zero is not negative")
     assert_false(numerical_is_negative(0))
 
+def test_number_to_string():
+    echo_function("test_number_to_string")
+    from phystricks.src.Utilities import number_to_string
+
+    a=7.73542889062775*cos(11/9*pi + 1.30951587282752) - 7.55775391156456*cos(5/18*pi) + 2.5*cos(2/9*pi)
+    assert_equal(number_to_string(a,digits=7),"0.329851")
+
+    assert_equal(number_to_string(0,digits=15),"0.00000000000000")
+    assert_equal(number_to_string(120,digits=3),"120")
+    assert_equal(number_to_string(120,digits=5),"120.00")
+    assert_equal(number_to_string(120.67,digits=3),"120")
+    assert_equal(number_to_string(120.67,digits=4),"120.6")
+    assert_equal(number_to_string(120.67,digits=14),"120.67000000000")
+
 def testNumericalOperations():
     test_vector_equality()
     test_visual_length()
     test_is_negative()
+    test_number_to_string()

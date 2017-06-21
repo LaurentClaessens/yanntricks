@@ -64,6 +64,10 @@ def testEnsureUnicode():
     double_u2=ensure_unicode( ensure_str(u2) )
     assert_equal(double_u2,u2)
 
+from testNumericalOperations import testNumericalOperations
+print("testNumericalOperations")
+testNumericalOperations()
+
 from testRecall import testRecall
 print("testRecall")
 testRecall()
@@ -96,9 +100,6 @@ from testPointCoordinates import testPointCoordinates
 print("testPointCoordinates")
 testPointCoordinates()
 
-from testNumericalOperations import testNumericalOperations
-print("testNumericalOperations")
-testNumericalOperations()
 
 from testAngleMeasure import testAngleMeasure
 print("testAngleMeasure")
@@ -106,6 +107,7 @@ testAngleMeasure()
 
 print("testSegment")
 testSegment()
+
 print("testEnsureUnicode")
 testEnsureUnicode()
 print("testFGetMinMaxData")
