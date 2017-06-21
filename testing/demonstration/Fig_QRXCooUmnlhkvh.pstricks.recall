@@ -69,10 +69,10 @@
 \draw []  (1.0000,3.0000) node [rotate=0] {$\bullet$};
 \draw (1.8692,3.4709) node {\(  e^{\int_{\Omega}\gamma}  \)};
 
-\draw [color=cyan] (1.14,3.80) -- (2.60,3.80);
-\draw [color=cyan] (2.60,3.80) -- (2.60,3.14);
-\draw [color=cyan] (2.60,3.14) -- (1.14,3.14);
-\draw [color=cyan] (1.14,3.14) -- (1.14,3.80);
+\draw [color=cyan] (1.1414,3.8003) -- (2.5970,3.8003);
+\draw [color=cyan] (2.5970,3.8003) -- (2.5970,3.1414);
+\draw [color=cyan] (2.5970,3.1414) -- (1.1414,3.1414);
+\draw [color=cyan] (1.1414,3.1414) -- (1.1414,3.8003);
 %END PSPICTURE
 \end{tikzpicture}
 %AFTER PSPICTURE

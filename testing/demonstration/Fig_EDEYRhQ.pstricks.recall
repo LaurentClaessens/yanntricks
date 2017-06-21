@@ -102,28 +102,28 @@
 %OTHER STUFF
 %PSTRICKS CODE
 %DEFAULT
-\draw []  (-0.66667,0) node [rotate=0] {$\bullet$};
-\draw (-0.66667,-0.34722) node {Besançon};
-\draw []  (1.0000,0) node [rotate=0] {$\bullet$};
-\draw (1.0000,-0.31481) node {St-Vit};
-\draw []  (3.5000,0) node [rotate=0] {$\bullet$};
-\draw (3.5000,-0.31481) node {Dole};
-\draw []  (5.0000,0) node [rotate=0] {$\bullet$};
-\draw (5.0000,-0.31481) node {Auxonne};
-\draw []  (6.5000,0) node [rotate=0] {$\bullet$};
-\draw (6.5000,-0.31481) node {Genlis};
-\draw []  (8.5000,0) node [rotate=0] {$\bullet$};
-\draw (8.5000,-0.34722) node {Dijon};
-\draw [color=brown,->,>=latex] (-0.66667,0) -- (1.0000,0);
-\draw (0.16667,0.30495) node {\( 10\)};
-\draw [color=brown,->,>=latex] (1.0000,0) -- (3.5000,0);
-\draw (2.2500,0.30495) node {\( 15\)};
-\draw [color=brown,->,>=latex] (3.5000,0) -- (5.0000,0);
-\draw (4.2500,0.30495) node {\( 9\)};
-\draw [color=brown,->,>=latex] (5.0000,0) -- (6.5000,0);
-\draw (5.7500,0.30495) node {\( 9\)};
-\draw [color=brown,->,>=latex] (6.5000,0) -- (8.5000,0);
-\draw (7.5000,0.30495) node {\( 12\)};
+\draw []  (-0.6666,0.0000) node [rotate=0] {$\bullet$};
+\draw (-0.6666,-0.3472) node {Besançon};
+\draw []  (1.0000,0.0000) node [rotate=0] {$\bullet$};
+\draw (1.0000,-0.3148) node {St-Vit};
+\draw []  (3.5000,0.0000) node [rotate=0] {$\bullet$};
+\draw (3.5000,-0.3148) node {Dole};
+\draw []  (5.0000,0.0000) node [rotate=0] {$\bullet$};
+\draw (5.0000,-0.3148) node {Auxonne};
+\draw []  (6.5000,0.0000) node [rotate=0] {$\bullet$};
+\draw (6.5000,-0.3148) node {Genlis};
+\draw []  (8.5000,0.0000) node [rotate=0] {$\bullet$};
+\draw (8.5000,-0.3472) node {Dijon};
+\draw [color=brown,->,>=latex] (-0.6666,0.0000) -- (1.0000,0.0000);
+\draw (0.1666,0.3049) node {\( 10\)};
+\draw [color=brown,->,>=latex] (1.0000,0.0000) -- (3.5000,0.0000);
+\draw (2.2500,0.3049) node {\( 15\)};
+\draw [color=brown,->,>=latex] (3.5000,0.0000) -- (5.0000,0.0000);
+\draw (4.2500,0.3049) node {\( 9\)};
+\draw [color=brown,->,>=latex] (5.0000,0.0000) -- (6.5000,0.0000);
+\draw (5.7500,0.3049) node {\( 9\)};
+\draw [color=brown,->,>=latex] (6.5000,0.0000) -- (8.5000,0.0000);
+\draw (7.5000,0.3049) node {\( 12\)};
 %END PSPICTURE
 \end{tikzpicture}
 %AFTER PSPICTURE

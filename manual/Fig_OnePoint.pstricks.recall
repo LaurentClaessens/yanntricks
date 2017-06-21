@@ -71,8 +71,8 @@
 %PSTRICKS CODE
 %DEFAULT
 \draw [color=red]  (1.0000,1.0000) node [rotate=0] {$\bullet$};
-\draw (1.3034,1.2139) node {\(P\)};
-\draw (1.0000,0.65370) node {\(Q\)};
+\draw (1.3033,1.2138) node {\(P\)};
+\draw (1.0000,0.6537) node {\(Q\)};
 %END PSPICTURE
 \end{tikzpicture}
 %AFTER PSPICTURE

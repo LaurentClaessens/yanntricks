@@ -62,7 +62,7 @@
 %OTHER STUFF
 %PSTRICKS CODE
 %DEFAULT
-\draw [color=blue,->,>=latex] (1.9151,1.6070) -- (0.32984,0.38756);
+\draw [color=blue,->,>=latex] (1.9151,1.6069) -- (0.3298,0.3875);
 %END PSPICTURE
 \end{tikzpicture}
 %AFTER PSPICTURE

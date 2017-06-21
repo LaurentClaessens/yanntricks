@@ -68,33 +68,33 @@
 %GRID
 %PSTRICKS CODE
 %AXES
-\draw [,->,>=latex] (-4.5000,0) -- (4.1000,0);
-\draw [,->,>=latex] (0,-4.1269) -- (0,3.4422);
+\draw [,->,>=latex] (-4.5000,0.0000) -- (4.1000,0.0000);
+\draw [,->,>=latex] (0.0000,-4.1268) -- (0.0000,3.4421);
 %DEFAULT
-\draw []  (-4.0000,-3.6269) node [rotate=0] {$\bullet$};
-\draw []  (-3.6000,-2.9422) node [rotate=0] {$\bullet$};
-\draw []  (-3.2000,-2.3756) node [rotate=0] {$\bullet$};
+\draw []  (-4.0000,-3.6268) node [rotate=0] {$\bullet$};
+\draw []  (-3.6000,-2.9421) node [rotate=0] {$\bullet$};
+\draw []  (-3.2000,-2.3755) node [rotate=0] {$\bullet$};
 \draw []  (-2.8000,-1.9043) node [rotate=0] {$\bullet$};
-\draw []  (-2.4000,-1.5095) node [rotate=0] {$\bullet$};
+\draw []  (-2.4000,-1.5094) node [rotate=0] {$\bullet$};
 \draw []  (-2.0000,-1.1752) node [rotate=0] {$\bullet$};
-\draw []  (-1.6000,-0.88811) node [rotate=0] {$\bullet$};
-\draw []  (-1.2000,-0.63665) node [rotate=0] {$\bullet$};
-\draw []  (-0.80000,-0.41075) node [rotate=0] {$\bullet$};
-\draw []  (-0.40000,-0.20134) node [rotate=0] {$\bullet$};
-\draw []  (0,0) node [rotate=0] {$\bullet$};
-\draw []  (0.40000,0.20134) node [rotate=0] {$\bullet$};
-\draw []  (0.80000,0.41075) node [rotate=0] {$\bullet$};
-\draw []  (1.2000,0.63665) node [rotate=0] {$\bullet$};
-\draw []  (1.6000,0.88811) node [rotate=0] {$\bullet$};
+\draw []  (-1.6000,-0.8881) node [rotate=0] {$\bullet$};
+\draw []  (-1.2000,-0.6366) node [rotate=0] {$\bullet$};
+\draw []  (-0.8000,-0.4107) node [rotate=0] {$\bullet$};
+\draw []  (-0.4000,-0.2013) node [rotate=0] {$\bullet$};
+\draw []  (0.0000,0.0000) node [rotate=0] {$\bullet$};
+\draw []  (0.4000,0.2013) node [rotate=0] {$\bullet$};
+\draw []  (0.8000,0.4107) node [rotate=0] {$\bullet$};
+\draw []  (1.2000,0.6366) node [rotate=0] {$\bullet$};
+\draw []  (1.6000,0.8881) node [rotate=0] {$\bullet$};
 \draw []  (2.0000,1.1752) node [rotate=0] {$\bullet$};
-\draw []  (2.4000,1.5095) node [rotate=0] {$\bullet$};
+\draw []  (2.4000,1.5094) node [rotate=0] {$\bullet$};
 \draw []  (2.8000,1.9043) node [rotate=0] {$\bullet$};
-\draw []  (3.2000,2.3756) node [rotate=0] {$\bullet$};
-\draw []  (3.6000,2.9422) node [rotate=0] {$\bullet$};
-\draw (4.4074,-0.28389) node {\( x\)};
-\draw (4.4074,-0.28389) node {\( x\)};
-\draw (1.1332,3.4422) node {\( y=\sinh(x)\)};
-\draw (1.1332,3.4422) node {\( y=\sinh(x)\)};
+\draw []  (3.2000,2.3755) node [rotate=0] {$\bullet$};
+\draw []  (3.6000,2.9421) node [rotate=0] {$\bullet$};
+\draw (4.4073,-0.2838) node {\( x\)};
+\draw (4.4073,-0.2838) node {\( x\)};
+\draw (1.1332,3.4421) node {\( y=\sinh(x)\)};
+\draw (1.1332,3.4421) node {\( y=\sinh(x)\)};
 %OTHER STUFF
 %END PSPICTURE
 \end{tikzpicture}
