@@ -173,7 +173,7 @@ class InterpolationCurveGraph(ObjectGraph):
             params=self.params(language="tikz")
             l.append("\draw [{0}] plot [smooth,tension=1] coordinates {{".format(params))
             for p in pl:
-                l.append(p.coordinates(digits=3,pspict=pspict))  # see 295815047.
+                l.append(p.coordinates(digits=5,pspict=pspict)) 
             l.append("};")
             return "".join(l)
         raise
