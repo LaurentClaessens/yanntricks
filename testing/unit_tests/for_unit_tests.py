@@ -42,14 +42,6 @@ def testFGetMinMaxData():
     ans_d={'xmax': 1.1885897706607917, 'xmin': -1.1885897706608, 'ymax': 1.188452472892108, 'ymin': -1.1884524728921004}
     assert_true(d==ans_d,failure_message="get_min_max data badly computed.")
 
-def testSegment():
-    echo_function("testSegment")
-    s= Segment(Point(1,1),Point(2,2))
-    v=s.get_normal_vector()
-    assert_equal(v.I,Point(1.5,1.5))
-    assert_almost_equal(v.length,1,epsilon=0.001)
-    assert_almost_equal(v.F,Point(1/2*sqrt(2) + 1.5,-1/2*sqrt(2) + 1.5),epsilon=0.001)
-
 def testEnsureUnicode():
     echo_function("testEnsureUnicode")
     from phystricks.src.NoMathUtilities import ensure_unicode
