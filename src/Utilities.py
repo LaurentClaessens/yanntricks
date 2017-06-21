@@ -721,6 +721,8 @@ def put_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=No
 # digits than `digits`.
 def number_to_string(x,digits):
     from Numerical import is_almost_zero
+    if digits<5:
+        raise
     nx=numerical_approx(x)
 
     # Avoid something like "0.125547e-6" (LaTeX will not accept).
@@ -739,7 +741,10 @@ def number_to_string(x,digits):
         raise
 
     sx=sx+"0"*(digits+1) # be sure not to lack digits
-    sx=sx[0:digits+1]    # +1 for the decimal dot
+    if nx<0:
+        sx=sx[0:digits+2]    # +1 for the decimal dot, +1 for the minus
+    else :
+        sx=sx[0:digits+1]    
     if sx.endswith("."):
         sx=sx[:-1]
 
