@@ -73,7 +73,7 @@ class CustomSurfaceGraph(ObjectGraph):
             l=[]
             for obj in self.graphList :
                 try:
-                    l.extend( [p.coordinates(digits=3,pspict=pspict) for p in obj.representative_points()] )
+                    l.extend( [p.coordinates(digits=5,pspict=pspict) for p in obj.representative_points()] )
                 except AttributeError :
                     print("The object "+obj+" seems to have no 'representative_points' method")
                     raise

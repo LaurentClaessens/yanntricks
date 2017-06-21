@@ -125,9 +125,11 @@ class InterpolationCurveGraph(ObjectGraph):
                 l.extend(  [abs(P.y) for P in spl]  )
                 namax=max(l)  # Largest coordinate present in the curve.
 
-                # The absolution value is for the case where the whole
+                # The absolute value is for the case where the whole
                 # curve is in the ball of radius 0.001 for example.
-                digits=3+abs(ceil(  log(namax,10) ))
+
+                #digits=3+abs(ceil(  log(namax,10) ))
+                digits=5
                 params=self.params(language="tikz")
                 a.append("\draw [{0}] {1};".format(params,"--".join(   [x.coordinates(digits=digits,pspict=pspict) for x in spl]  ) ))
             return "\n".join(a)
