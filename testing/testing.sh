@@ -8,7 +8,7 @@
 # we want to test what is here.
 
 BASE_DIR=$(pwd)
-SAGE_PATH=$PYTHONPATH:$BASE_DIR/../..
+SAGE_PATH=$BASE_DIR/../..:$PYTHONPATH
 RECALLTEST_DIR=$BASE_DIR/recall_tests/
 DEMO_DIR=$BASE_DIR/demonstration
 MANUAL_DIR=$BASE_DIR/../manual/
