@@ -188,14 +188,17 @@ def comparison(f1,f2,epsilon,verbose=False):
 # 'recall' is not exactly the same.
 # If `False`, print only the ones for which a point is significantly moved or 
 # a text outside points coordinates is changed.
-def check_pictures(pstricks_directory,recall_directory,verbose=True):
+# \param epsilon is the tolerance for point move. When the coordinates of a point
+# did not change by more than `epsilon`, the files are considered as "small point
+# move".
+def check_pictures(pstricks_directory,recall_directory,verbose=True,epsilon=0.001):
     mfl,wfl=wrong_file_list(pstricks_directory,recall_directory)
 
     for f in mfl:
         print("Missing recall file for ",f)
     for f in wfl:
         g=f.replace(pstricks_directory,recall_directory)+".recall"
-        comment=comparison(f,g,epsilon=0.001,verbose=verbose)
+        comment=comparison(f,g,epsilon=epsilon,verbose=verbose)
         if comment is not None :
             if verbose :
                 print("Wrong : ")

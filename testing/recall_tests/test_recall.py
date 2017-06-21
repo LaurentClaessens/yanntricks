@@ -22,4 +22,4 @@ try:
 except IndexError:
     pass
 
-check_pictures(pstricks_directory,recall_directory)
+check_pictures(pstricks_directory,recall_directory,epsilon=0.01)
