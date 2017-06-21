@@ -32,6 +32,14 @@ from Testing import echo_function
 from Testing import echo_single_test
 from Testing import SilentOutput
 
+def test_almost_equal():
+    echo_function("test_almost_equal")
+    s= Segment(Point(1,1),Point(2,2))
+    v=s.get_normal_vector()
+    assert_equal(v.I,Point(1.5,1.5))
+    assert_almost_equal(v.length,1,epsilon=0.001)
+    assert_almost_equal(v.F,Point(1/2*sqrt(2) + 1.5,-1/2*sqrt(2) + 1.5),epsilon=0.001)
+
 def test_constructors():
 
     echo_single_test("Usual constructor")
@@ -52,4 +60,5 @@ def test_constructors():
 
 def testSegment():
     test_constructors()
+    test_almost_equal()
 
