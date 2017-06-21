@@ -295,20 +295,21 @@ class PointGraph(ObjectGraph):
         """
         return self.polar_coordinates(origin=origin).measure            # No more degree. February 11, 2015
 
-    ## Return the coordinates of the point as a string.
+    ## \brief Return the coordinates of the point as a string.
     #
-    # - When one coordinate if very small (lower than 0.0001), it
-    #   is rounded to zero in order to avoid string like "0.2335e-6"
-    #    in the pstricks code.
     #
-    # - If a pspicture is given, 
-    #    * we multiply by xunit and yunit 
-    #    * we apply the rotation
-    def coordinates(self,digits=5,pspict=None):
+    # \param digits the number of digits that will be written in the return string
+    #
+    # \param pspict If given,
+    # - we multiply by xunit and yunit 
+    # - we apply the rotation
+    #
+    # Some conversions and approximations are done. See `number_to_string`.
 
-        from Numerical import is_almost_zero
+    def coordinates(self,digits=5,pspict=None):
         x=self.x
         y=self.y
+
         if pspict :
             x=x*pspict.xunit
             y=y*pspict.yunit
@@ -318,14 +319,11 @@ class PointGraph(ObjectGraph):
                 ny=-x*sin(ang)+y*cos(ang)
                 x=nx
                 y=ny
-        x=numerical_approx(x,digits=digits)
-        y=numerical_approx(y,digits=digits)
-        # Avoid something like "0.125547e-6" (LaTeX will not accept).
-        if is_almost_zero(x,0.001):
-            x=0
-        if is_almost_zero(y,0.001):
-            y=0
-        return str("("+str(x)+","+str(y)+")")
+
+        sx=number_to_string(x,digits=digits)
+        sy=number_to_string(y,digits=digits)
+
+        return str("("+sx+","+sy+")")
     def graph_object(self):
         return PointGraph(self)
     def copy(self):
@@ -404,7 +402,7 @@ class PointGraph(ObjectGraph):
             from NoMathUtilities import logging
             logging("You should use '' instead of 'none'",pspict=pspict)
         if self.parameters.symbol not in ["none",""]:
-            s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(numerical=True,digits=5,pspict=pspict),effective_symbol,self.params(language="tikz",refute=["symbol","dotangle"]),"DOTANGLE")
+            s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(digits=5,pspict=pspict),effective_symbol,self.params(language="tikz",refute=["symbol","dotangle"]),"DOTANGLE")
             if self.parameters.dotangle != None :
                 s=s.replace("DOTANGLE",str(self.parameters.dotangle))
             else :
