@@ -226,7 +226,7 @@ argument is not good :"+position)
     def tikz_code(self,pspict=None):
         central_point=self.central_point(pspict)
 
-        code="\draw "+central_point.coordinates(numerical=True,digits=5,pspict=pspict)+" node {"+self.text+"};"
+        code="\draw "+central_point.coordinates(digits=5,pspict=pspict)+" node {"+self.text+"};"
         return code
     def latex_code(self,pspict,language=None):
         if language=="tikz":
