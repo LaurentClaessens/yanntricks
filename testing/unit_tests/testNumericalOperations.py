@@ -97,6 +97,10 @@ def test_number_to_string():
     assert_equal(number_to_string(120.67,digits=3),"120")
     assert_equal(number_to_string(120.67,digits=4),"120.6")
     assert_equal(number_to_string(120.67,digits=14),"120.67000000000")
+    assert_equal(number_to_string(-1,digits=3),"-1.00")
+    assert_equal(number_to_string(-12,digits=2),"-12")
+    assert_equal(number_to_string(-0.1234,digits=6),"-0.12340")
+    assert_equal(number_to_string(-0.12,digits=3),"-0.12")
 
 def testNumericalOperations():
     test_vector_equality()
