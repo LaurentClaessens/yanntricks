@@ -960,8 +960,8 @@ class SegmentGraph(ObjectGraph):
         else:
             if language=="tikz":
                 a=[]
-                c1=self.I.coordinates(numerical=True,digits=3,pspict=pspict)
-                c2=self.F.coordinates(numerical=True,digits=3,pspict=pspict)
+                c1=self.I.coordinates(digits=3,pspict=pspict)
+                c2=self.F.coordinates(digits=3,pspict=pspict)
                 if 'I' in c1 or "I" in c2 :
                     from Exception import ImaginaryPartException
                     raise ImaginaryPartException(

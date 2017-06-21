@@ -129,7 +129,7 @@ class InterpolationCurveGraph(ObjectGraph):
                 # curve is in the ball of radius 0.001 for example.
                 digits=3+abs(ceil(  log(namax,10) ))
                 params=self.params(language="tikz")
-                a.append("\draw [{0}] {1};".format(params,"--".join(   [x.coordinates(numerical=True,digits=digits,pspict=pspict) for x in spl]  ) ))
+                a.append("\draw [{0}] {1};".format(params,"--".join(   [x.coordinates(digits=digits,pspict=pspict) for x in spl]  ) ))
             return "\n".join(a)
         elif self.mode=="quadratic":
             pieces=[]
@@ -171,7 +171,7 @@ class InterpolationCurveGraph(ObjectGraph):
             params=self.params(language="tikz")
             l.append("\draw [{0}] plot [smooth,tension=1] coordinates {{".format(params))
             for p in pl:
-                l.append(p.coordinates(numerical=True,digits=3,pspict=pspict))  # see 295815047.
+                l.append(p.coordinates(digits=3,pspict=pspict))  # see 295815047.
             l.append("};")
             return "".join(l)
         raise

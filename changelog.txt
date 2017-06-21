@@ -1,5 +1,40 @@
 # phystricks changelog
 
+## More deterministic 'PointGraph.coordinates', June 21, 2017
+
+### Problem
+
+A non-deterministic numerical approximation occurred :
+```
+a=7.73542889062775*cos(11/9*pi + 1.30951587282752) - 7.55775391156456*cos(5/18*pi) + 2.5*cos(2/9*pi)
+print(numerical_approx(a))
+print(numerical_approx(a,digits=5))
+```
+The first print is deterministic, while the second is not.
+
+Thus the invocation of `PointGraph.coordinates(numerical=True,digits=5)` is
+not a good way to get deterministic end-user '.pstricks' file.
+
+### Solution
+
+* Remove the argument `numerical` from `PointGraph.coordinates`. It is now
+always numerical
+
+* I created my own function `Utilities.number_to_string`. It cuts 
+```
+str( numerical_approx(x) )
+```
+to `digits` characters (+1 for the decimal dot).
+
+- This is more deterministic to the expense of precision.
+- There are some rules for adding zeros to the end if one needs more digits
+(like x=20.3 and digits=7).
+
+### Side effect
+
+- have to remove the given argument `numerical` everywhere it is invoked.
+- many '.recall' files to be redone.
+
 ## Better test recall, June 19, 2017
 
 The module 'TestRecall' is improved and furnish 

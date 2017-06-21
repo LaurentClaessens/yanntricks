@@ -230,8 +230,8 @@ class AffineVectorGraph(ObjectGraph):
     def tikz_code(self,pspict=None):
         params=self.params(language="tikz")
         params=params+",->,>=latex"
-        I_coord = self.I.coordinates(numerical=True,digits=5,pspict=pspict)
-        F_coord = self.F.coordinates(numerical=True,digits=5,pspict=pspict)
+        I_coord = self.I.coordinates(digits=5,pspict=pspict)
+        F_coord = self.F.coordinates(digits=5,pspict=pspict)
         a = "\draw [{0}] {1} -- {2};".format(params,I_coord,F_coord,pspict=pspict)
         return a
     def latex_code(self,language=None,pspict=None):
