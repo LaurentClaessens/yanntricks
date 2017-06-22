@@ -21,6 +21,7 @@
 # email: laurent@claessens-donadello.eu
 
 from __future__ import division
+from sage.all import RR,numerical_integral
 
 from Utilities import *
 import Defaults

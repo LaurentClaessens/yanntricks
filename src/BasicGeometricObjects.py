@@ -23,11 +23,11 @@
 from __future__ import division
 from __future__ import unicode_literals
 
+from sage.all import lazy_attribute
+
 from phystricks import *
 from phystricks.src.Constructors import *
-
 from phystricks.src.ObjectGraph import ObjectGraph
-
 from parameters.Parameters import Parameters
 from phystricks.src.PointGraph import PointGraph
 

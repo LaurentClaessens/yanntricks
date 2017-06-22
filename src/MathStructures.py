@@ -20,6 +20,9 @@
 # copyright (c) Laurent Claessens, 2010,2011,2013-2017
 # email: laurent@claessens-donadello.eu
 
+from sage.rings.rational import Rational
+from sage.all import latex
+
 from Utilities import *
 from SmallComputations import MultipleBetween
 from AngleMeasure import AngleMeasure
@@ -41,7 +44,7 @@ def RadianAngleMeasure(x):
 class AxesUnit(object):
     def __init__(self,numerical_value,latex_symbol=""):
         try :
-            numerical_value=sage.rings.rational.Rational(numerical_value)
+            numerical_value=Rational(numerical_value)
         except TypeError :
             pass
         self.numerical_value=numerical_value
@@ -59,7 +62,7 @@ class AxesUnit(object):
         Give <frac> as literal real. Recall that python evaluates 1/2 to 0. If you pass 0.5, it will be converted back to 1/2 for a nice display.
         """
         try :
-            frac=sage.rings.rational.Rational(frac)     # If the user enters "0.5", it is converted to 1/2
+            frac=Rational(frac)     # If the user enters "0.5", it is converted to 1/2
         except TypeError :
             pass
         if frac==0:

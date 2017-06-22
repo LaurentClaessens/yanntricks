@@ -20,6 +20,8 @@
 # copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
+from sage.all import sin,cos,RR
+
 from phystricks.src.Constructors import *
 from phystricks.src.Utilities import *
 from phystricks.src.GenericCurve import GenericCurve

@@ -22,6 +22,7 @@
 
 from __future__ import division
 
+from sage.all import sqrt,sin,cos,pi
 from Constructors import Vector,Point
 
 def visual_length(v,l,xunit=None,yunit=None,pspict=None):

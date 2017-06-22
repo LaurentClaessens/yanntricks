@@ -23,6 +23,8 @@
 from __future__ import division
 from __future__ import unicode_literals
 
+from sage.all import lazy_attribute, numerical_approx,cos,sin
+
 from ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *

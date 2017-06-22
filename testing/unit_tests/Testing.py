@@ -22,6 +22,9 @@
 
 from __future__ import division
 
+from sage.all import numerical_approx
+import sys
+
 def roundingMinMax( d ):
     """
     From a dictionary of "xmin,..." return the dictionary of three-digit rounded values

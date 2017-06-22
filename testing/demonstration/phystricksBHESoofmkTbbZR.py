@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 
 from __future__ import division
+from sage.all import ceil
 from phystricks import *
 
 def BHESoofmkTbbZR():

@@ -22,13 +22,16 @@
 
 from __future__ import division
 
+from sage.all import SR,sqrt,numerical_approx,arctan,var,solve,atan
+from sage.rings.real_mpfr import RealNumber
+
 from phystricks.src.Constructors import *
 from phystricks.src.MathStructures import *
 from phystricks.src.Exceptions import ShouldNotHappenException
 from phystricks.src.Decorators import sort_and_assert_real
 
 def is_real(z):
-    if type(z) in [int,sage.rings.real_mpfr.RealNumber]:
+    if type(z) in [int,RealNumber]:
         return True
     return z.is_real()
 

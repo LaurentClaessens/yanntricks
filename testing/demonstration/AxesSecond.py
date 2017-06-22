@@ -1,3 +1,4 @@
+from sage.all import sinh
 from phystricks import *
 def AxesSecond():
     pspict,fig = SinglePicture("AxesSecond")

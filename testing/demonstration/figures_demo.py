@@ -201,6 +201,9 @@ append_picture(TBAGooZgekGa,2)
 append_picture(AAPMooHEcnzW,2)
 append_picture(MJWWooEMdGoa,2)
 append_picture(WWPPooTSxdXI,1)
+figures_list_1=[]
+figures_list_2=[]
+figures_list_3=[]
 append_picture(XOLBooGcrjiwoU,2)
 append_picture(ERPMooZibfNOiU,1)
 """

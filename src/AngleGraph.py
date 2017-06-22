@@ -22,19 +22,17 @@
 
 from __future__ import division
 
+from sage.all import lazy_attribute,tan,sin,cos
+
 from phystricks.src.Constructors import *
 from phystricks.src.Utilities import *
-
 from phystricks.src.Visual import visual_polar_coordinates
 from phystricks.src.Visual import visual_length
 from phystricks.src.Visual import visual_vector
 from phystricks.src.Visual import inverse_visual_angle
-
-
 from phystricks.src.NoMathUtilities import logging
 from phystricks.src.Decorators import copy_parameters
 from phystricks.src.Exceptions import MissingPictureException
-
 from phystricks.src.ObjectGraph import ObjectGraph
 
 from Debug import dprint

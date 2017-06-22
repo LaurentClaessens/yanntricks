@@ -20,6 +20,8 @@
 # copyright(c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
+from sage.all import pi,PolynomialRing,QQ,symbolic_expression,sin,cos
+
 def BoundingBox(P1=None,P2=None,xmin=1000,xmax=-1000,ymin=1000,ymax=-1000,parent=None,mother=None,math=False):
     from phystricks.src.BoundingBox import BoundingBox_class
     return BoundingBox_class(P1,P2,xmin,xmax,ymin,ymax,parent,mother,math)

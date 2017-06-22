@@ -24,6 +24,8 @@
 from __future__ import division
 from __future__ import unicode_literals
 
+from sage.all import operator,implicit_plot
+
 from phystricks.src.ObjectGraph import ObjectGraph
 from Constructors import *
 from parameters.Parameters import Parameters

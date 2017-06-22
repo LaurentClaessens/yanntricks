@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+from sage.all import floor
 from phystricks import *
 def UARHooLMWqvyaI():
     pspict,fig = SinglePicture("UARHooLMWqvyaI")

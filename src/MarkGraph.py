@@ -22,10 +22,11 @@
 
 from __future__ import division
 
+from sage.all import cos,sin,numerical_approx
+
 from phystricks.src.Constructors import *
 from phystricks.src.Exceptions import ShouldNotHappenException
 from phystricks.src.NoMathUtilities import logging
-
 from phystricks.src.ObjectGraph import ObjectGraph
 
 ## The marks are not taken into account in the computation of the

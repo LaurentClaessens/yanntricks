@@ -20,11 +20,12 @@
 # copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
+from sage.all import lazy_attribute, numerical_approx
+
 from ObjectGraph import ObjectGraph,AddedObjects
 from Constructors import *
 from Utilities import *
 from NoMathUtilities import logging
-
 from PointGraph import PointGraph
 
 class SegmentGraph(ObjectGraph):

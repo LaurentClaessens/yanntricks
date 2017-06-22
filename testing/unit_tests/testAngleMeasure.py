@@ -21,6 +21,7 @@
 # email: laurent@claessens-donadello.eu
 
 from __future__ import division
+from sage.all import cos
 
 from phystricks import *
 
@@ -34,7 +35,7 @@ from Testing import echo_single_test
 def comparison():
     echo_function("comparison")
     alpha=AngleMeasure(value_degree=30)
-    betaa=AngleMeasure(value_radian=pi/2)
+    beta=AngleMeasure(value_radian=pi/2)
 
     assert_true(alpha<beta)
     assert_true(alpha<=alpha)
