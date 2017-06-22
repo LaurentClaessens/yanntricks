@@ -27,7 +27,6 @@ NonAnalyticParametricCurveGraph  describe a parametric curve for which we don't 
 NonAnalyticPointParametricCurveGraph describe a parametric curve for which we don't know an analytic form of the components. The given function 'f' is a function in the Python sense that return a Point.
 """
 
-from sage.all import *
 from ObjectGraph import ObjectGraph
 from Constructors import *
 

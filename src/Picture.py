@@ -21,8 +21,6 @@
 from __future__ import division
 from __future__ import unicode_literals
 
-from sage.all import *
-
 from NoMathUtilities import ensure_unicode
 from Separator import SeparatorList
 from ObjectGraph import DrawElement

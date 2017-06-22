@@ -22,7 +22,6 @@
 from __future__ import division
 from __future__ import unicode_literals
 
-from sage.all import *
 import sys
 import codecs
 import math, sys, os

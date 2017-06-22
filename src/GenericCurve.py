@@ -22,7 +22,6 @@
 
 from __future__ import division
 
-from sage.all import *
 from Utilities import *
 import Defaults
 

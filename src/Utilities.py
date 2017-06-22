@@ -22,7 +22,6 @@
 
 from __future__ import division
 
-from sage.all import *
 from phystricks.src.Constructors import *
 from phystricks.src.MathStructures import *
 from phystricks.src.Exceptions import ShouldNotHappenException

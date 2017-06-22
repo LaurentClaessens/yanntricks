@@ -25,12 +25,8 @@ This submodule contains some auxiliary computations that have to be performed
 by phystricks but that are not geometry.
 """
 
-
 from __future__ import division
-
-from sage.all import *
 import codecs
-
 
 def MultipleBetween(Dx,mx,Mx,mark_origin=True):
     """

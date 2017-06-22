@@ -23,7 +23,6 @@
 from __future__ import division
 from __future__ import unicode_literals
 
-from sage.all import *
 from phystricks import *
 from phystricks.src.Constructors import *
 

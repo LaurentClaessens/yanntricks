@@ -22,8 +22,6 @@
 
 from __future__ import division
 
-from sage.all import *
-
 from parameters.Options import Options
 from parameters.Parameters import Parameters
 from Exceptions import ShouldNotHappenException
