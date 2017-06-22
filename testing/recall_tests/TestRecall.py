@@ -137,15 +137,40 @@ def file_to_tikz_decomposition(filename):
     content=open(filename,'r').read()
     return TikzDecomposition(content)
 
+## \brief contains the comparison between two 'tikz' files
+#
+# \param f1,f2 filenames which have been compared
+# \param kind (string) the kind of encountered problem.
+#   for example)
+# \param  comment (string) the problem which was found
+#
+# The possibilities for `kind` are :
+# - "wrong texts list size"
+# - "wrong points list size"
+# - "text change"
+# - "large point move"
+# - "small point move"
+# - `None`
+class TikzComparison(object):
+    def __init__(self,f1,f2,kind,comment=None):
+        self.f1=f1
+        self.f2=f2
+        self.kind=kind
+        self.comment=comment
+    def __str__(self):
+        a=[]
+        a.append(self.kind)
+        a.append(self.f1+" "+self.f2)
+        a.append(self.comment)
+        return "\n".join(a)
+        
+
 ## \brief return a comparison of files 'f1' and 'f2' which are assumed
 # to be auto generated '.pstricks' files.
 #
 # \param f1,f2  file names.
 #
-# \return (string) a small summary of the comparison.
-#
-# - if the files are equals, return `None`
-# - string containing a *small* explanation about the difference
+# \return (`TikzComparison`) a small summary of the comparison.
 def comparison(f1,f2,epsilon,verbose=False):
     try :
         d1=file_to_tikz_decomposition(f1)
@@ -153,12 +178,12 @@ def comparison(f1,f2,epsilon,verbose=False):
     except TikzDecompositionParsingException as e :
         raise TikzDecompositionParsingException(e.block,f1,f2,x=e.x,y=e.y)
     if len(d1.texts_list) != len(d2.texts_list) :
-        return "Wrong texts list size"
+        return TikzComparison(f1,f2,kind="Wrong texts list size")
     if len(d1.points_list) != len(d2.points_list) :
-        return "Wrong points list size"
+        return TikzComparison(f1,f2,kind="Wrong points list size")
     for t in zip(d1.texts_list,d2.texts_list):
         if t[0] != t[1]:
-            return "There is a change of text : {} Vs {} ".format(t[0],t[1])
+            return TikzComparison(f1,f2,"text change","{} Vs {} ".format(t[0],t[1]))
     for t in zip(d1.points_list,d2.points_list):
         try :
             Dx=t[1].x-t[0].x
@@ -170,15 +195,15 @@ def comparison(f1,f2,epsilon,verbose=False):
             print(f2)
             raise
         if abs(Dx)>epsilon or abs(Dy)>epsilon :
-            return "Large point move : {} Vs {} : Dx={}, Dy={}".format(t[0],t[1],Dx,Dy)
+            return TikzComparison(f1,f2,"large point move","{} Vs {} : Dx={}, Dy={}".format(t[0],t[1],Dx,Dy))
     for t in zip(d1.points_list,d2.points_list):
         Dx=t[1].x-t[0].x
         Dy=t[1].y-t[0].y
         if abs(Dx)>0 or abs(Dy)>0 :
             return "Small point move : {} Vs {} : Dx={}, Dy={}".format(t[0],t[1],Dx,Dy)
-    return None
+    return TikzComparison(f1,f2,kind=None)
 
-## \brief check the picrures against their 'recall' file in a directory.
+## \brief check the pictures against their 'recall' file in a directory.
 #
 # \param pstricks_directory the directory which will be parsed in search
 # for '.pstricks' files.
@@ -194,13 +219,22 @@ def comparison(f1,f2,epsilon,verbose=False):
 def check_pictures(pstricks_directory,recall_directory,verbose=True,epsilon=0.001):
     mfl,wfl=wrong_file_list(pstricks_directory,recall_directory)
 
+    comparison_list=[]
+
     for f in mfl:
         print("Missing recall file for ",f)
     for f in wfl:
         g=f.replace(pstricks_directory,recall_directory)+".recall"
-        comment=comparison(f,g,epsilon=epsilon,verbose=verbose)
-        if comment is not None :
-            if verbose :
-                print("Wrong : ")
-                print(f,g)
-            print(comment)
+        comparison_list.append(comparison(f,g,epsilon=epsilon,verbose=verbose))
+
+    kinds=["wrong texts list size", 
+            "wrong points list size", 
+            "text change", 
+            "large point move", 
+            "small point move",
+            None]
+
+    for k in kinds :
+        print("========= ",k," ============")
+        for comp in [c in comparison_list if c.comment==k]:
+            print(comp)
