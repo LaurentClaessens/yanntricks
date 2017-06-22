@@ -28,7 +28,7 @@ A collection of tools for building LaTeX pictures with python.
 from __future__ import division
 from __future__ import unicode_literals
 
-from sage.all import cos,sin,tan,log,exp
+from sage.all import cos,sin,tan,exp,ln,log
 
 from phystricks.src.main import FigureGenerationSuite
 

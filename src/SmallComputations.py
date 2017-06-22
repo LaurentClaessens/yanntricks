@@ -27,7 +27,7 @@ by phystricks but that are not geometry.
 
 from __future__ import division
 
-from sage.all import find_root,floor,ceil
+from sage.all import find_root,floor,ceil,solve,numerical_approx,pi
 import codecs
 
 def MultipleBetween(Dx,mx,Mx,mark_origin=True):

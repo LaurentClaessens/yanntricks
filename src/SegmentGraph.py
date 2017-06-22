@@ -290,6 +290,7 @@ class SegmentGraph(ObjectGraph):
         Notice that it does not return the last point of the segment, unless the length is a multiple of dx.
            this is why we add by hand the last point in GetWavyPoint
         """
+        from sage.all import floor
         n = floor(self.length/dx)
         return [self.get_point_proportion(float(i)/n) for i in range(0,n)]
     def get_wavy_points(self,dx,dy):
