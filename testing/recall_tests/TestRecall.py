@@ -236,5 +236,5 @@ def check_pictures(pstricks_directory,recall_directory,verbose=True,epsilon=0.00
 
     for k in kinds :
         print("========= ",k," ============")
-        for comp in [c in comparison_list if c.comment==k]:
+        for comp in [c for c in comparison_list if c.comment==k]:
             print(comp)
