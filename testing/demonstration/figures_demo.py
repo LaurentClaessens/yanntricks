@@ -176,12 +176,10 @@ append_picture(OYBTooNUcJLzDH,2)
 append_picture(OGGDooIvakwNlL,2)
 append_picture(OMPAooMbyOIqeA,2)
 append_picture(JRCJooPHFcKn,2)
-
 append_picture(UOEOooLxhpSC,2)
 append_picture(HRIVooBXxZES,2)
 append_picture(XWWHooIkLOwZ,2)
 append_picture(CWKJooppMsZXjw,2)
-
 append_picture(AMDUooZZUOqa,2)
 append_picture(CercleTrigono,2)
 append_picture(Refraction,2)
@@ -192,7 +190,6 @@ append_picture(VRQCooOchjJA,2)
 append_picture(BQFUooTuMfnj,2)
 append_picture(HUGKooTkDsOg,2)
 append_picture(VNJWooDeKdcy,2)
-
 append_picture(AESIooxXxRYQdT,3)
 append_picture(FunctionFour,3)
 append_picture(QWEHooSRqSdw,2)
@@ -201,9 +198,6 @@ append_picture(TBAGooZgekGa,2)
 append_picture(AAPMooHEcnzW,2)
 append_picture(MJWWooEMdGoa,2)
 append_picture(WWPPooTSxdXI,1)
-figures_list_1=[]
-figures_list_2=[]
-figures_list_3=[]
 append_picture(XOLBooGcrjiwoU,2)
 append_picture(ERPMooZibfNOiU,1)
 """
