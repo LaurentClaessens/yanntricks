@@ -150,7 +150,7 @@ def file_to_tikz_decomposition(filename):
 # - "text change"
 # - "large point move"
 # - "small point move"
-# - `None`
+# - "none"
 class TikzComparison(object):
     def __init__(self,f1,f2,kind,comment=None):
         self.f1=f1
@@ -178,9 +178,9 @@ def comparison(f1,f2,epsilon,verbose=False):
     except TikzDecompositionParsingException as e :
         raise TikzDecompositionParsingException(e.block,f1,f2,x=e.x,y=e.y)
     if len(d1.texts_list) != len(d2.texts_list) :
-        return TikzComparison(f1,f2,kind="Wrong texts list size")
+        return TikzComparison(f1,f2,kind="Wrong texts list size",comment="")
     if len(d1.points_list) != len(d2.points_list) :
-        return TikzComparison(f1,f2,kind="Wrong points list size")
+        return TikzComparison(f1,f2,kind="Wrong points list size",comment="")
     for t in zip(d1.texts_list,d2.texts_list):
         if t[0] != t[1]:
             return TikzComparison(f1,f2,"text change","{} Vs {} ".format(t[0],t[1]))
@@ -200,8 +200,9 @@ def comparison(f1,f2,epsilon,verbose=False):
         Dx=t[1].x-t[0].x
         Dy=t[1].y-t[0].y
         if abs(Dx)>0 or abs(Dy)>0 :
-            return "Small point move : {} Vs {} : Dx={}, Dy={}".format(t[0],t[1],Dx,Dy)
-    return TikzComparison(f1,f2,kind=None)
+            return TikzComparison(f1,f2,"small point move",comment="{} Vs {} : Dx={}, Dy={}".format(t[0],t[1],Dx,Dy))
+
+    return TikzComparison(f1,f2,kind='none',comment="")
 
 ## \brief check the pictures against their 'recall' file in a directory.
 #
@@ -232,7 +233,7 @@ def check_pictures(pstricks_directory,recall_directory,verbose=True,epsilon=0.00
             "text change", 
             "large point move", 
             "small point move",
-            None]
+            "none"]
 
     for k in kinds :
         print("========= ",k," ============")
