@@ -62,7 +62,7 @@
 %OTHER STUFF
 %PSTRICKS CODE
 %DEFAULT
-\draw [color=red]  (1.000000000,1.000000000) node [rotate=0] {$\bullet$};
+\draw [color=red]  (1.0000,1.0000) node [rotate=0] {$\bullet$};
 %END PSPICTURE
 \end{tikzpicture}
 %AFTER PSPICTURE

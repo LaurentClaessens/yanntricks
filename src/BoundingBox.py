@@ -52,7 +52,7 @@ class BoundingBox_class(ObjectGraph):
         self.ymin=ymin
         self.ymax=ymax
         self.mother=mother
-        self.is_math=is_=math
+        self.is_math=is_math
         if P1 :
             self.add_math_object(P1,check_too_large=False)
             self.add_math_object(P2,check_too_large=False)

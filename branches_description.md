@@ -100,3 +100,7 @@ For a polygon, use 'self.parameters' for the edges. Draw a dashed polygon should
 ploy=Polygon(...)
 poly.parameters.style="dashed"
 ```
+# parameters
+
+Put the parameters class (Option, hatch, fill, etc) in their own subdirectory of 'src'
+

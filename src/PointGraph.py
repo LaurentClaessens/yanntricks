@@ -23,7 +23,7 @@
 from __future__ import division
 from __future__ import unicode_literals
 
-from sage.all import *
+from sage.all import lazy_attribute, numerical_approx,cos,sin
 
 from ObjectGraph import ObjectGraph
 from Constructors import *
@@ -294,28 +294,22 @@ class PointGraph(ObjectGraph):
         Return type : MathStructure.AngleMeasure
         """
         return self.polar_coordinates(origin=origin).measure            # No more degree. February 11, 2015
-    def coordinates(self,numerical=False,digits=None,pspict=None):
-        """
-        Return the coordinates of the point as a string.
 
-        When one coordinate if very small (lower than 0.0001), it
-        is rounded to zero in order to avoid string like "0.2335e-6"
-        in the pstricks code.
+    ## \brief Return the coordinates of the point as a string.
+    #
+    #
+    # \param digits the number of digits that will be written in the return string
+    #
+    # \param pspict If given,
+    # - we multiply by xunit and yunit 
+    # - we apply the rotation
+    #
+    # Some conversions and approximations are done. See `number_to_string`.
 
-        EXAMPLE::
-
-            sage: from phystricks import *
-            sage: P=Point(1,3)
-            sage: print P.coordinates()
-            sage: Q=Point(1,-pi)
-            sage: print P.coordinates()
-            (1,-pi)
-
-        If a pspicture is given, we divide by xunit and yunit to normalize.
-        """
-        from Numerical import is_almost_zero
+    def coordinates(self,digits=5,pspict=None):
         x=self.x
         y=self.y
+
         if pspict :
             x=x*pspict.xunit
             y=y*pspict.yunit
@@ -325,19 +319,11 @@ class PointGraph(ObjectGraph):
                 ny=-x*sin(ang)+y*cos(ang)
                 x=nx
                 y=ny
-        if digits :
-            numerical=True
-        if numerical :
-            if digits==None :
-                digits=10
-            x=numerical_approx(x,digits=digits)
-            y=numerical_approx(y,digits=digits)
-        # Avoid something like "0.125547e-6" (LaTeX will not accept).
-        if is_almost_zero(x,0.001):
-            x=0
-        if is_almost_zero(y,0.001):
-            y=0
-        return str("("+str(x)+","+str(y)+")")
+
+        sx=number_to_string(x,digits=digits)
+        sy=number_to_string(y,digits=digits)
+
+        return str("("+sx+","+sy+")")
     def graph_object(self):
         return PointGraph(self)
     def copy(self):
@@ -416,7 +402,7 @@ class PointGraph(ObjectGraph):
             from NoMathUtilities import logging
             logging("You should use '' instead of 'none'",pspict=pspict)
         if self.parameters.symbol not in ["none",""]:
-            s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(numerical=True,pspict=pspict),effective_symbol,self.params(language="tikz",refute=["symbol","dotangle"]),"DOTANGLE")
+            s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(digits=5,pspict=pspict),effective_symbol,self.params(language="tikz",refute=["symbol","dotangle"]),"DOTANGLE")
             if self.parameters.dotangle != None :
                 s=s.replace("DOTANGLE",str(self.parameters.dotangle))
             else :

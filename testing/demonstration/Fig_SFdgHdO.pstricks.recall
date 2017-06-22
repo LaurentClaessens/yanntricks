@@ -67,15 +67,15 @@
 %GRID
 %PSTRICKS CODE
 %AXES
-\draw [,->,>=latex] (-1.500000000,0) -- (1.500000000,0);
-\draw [,->,>=latex] (0,-1.500000000) -- (0,1.500000000);
+\draw [,->,>=latex] (-1.5000,0.0000) -- (1.5000,0.0000);
+\draw [,->,>=latex] (0.0000,-1.5000) -- (0.0000,1.5000);
 %DEFAULT
-\draw [color=red]  (1.000000000,0) node [rotate=0] {$\bullet$};
-\draw [color=red]  (-1.000000000,0) node [rotate=0] {$\bullet$};
-\draw [color=brown]  (0,1.000000000) node [rotate=0] {$\bullet$};
-\draw [color=brown]  (0,-1.000000000) node [rotate=0] {$\bullet$};
-\draw (1.909384523,-0.2803096896) node {$K_H$};
-\draw (1.909384523,-0.2803096896) node {$K_H$};
+\draw [color=red]  (1.0000,0.0000) node [rotate=0] {$\bullet$};
+\draw [color=red]  (-1.0000,0.0000) node [rotate=0] {$\bullet$};
+\draw [color=brown]  (0.0000,1.0000) node [rotate=0] {$\bullet$};
+\draw [color=brown]  (0.0000,-1.0000) node [rotate=0] {$\bullet$};
+\draw (1.9093,-0.2803) node {$K_H$};
+\draw (1.9093,-0.2803) node {$K_H$};
 %OTHER STUFF
 %END PSPICTURE
 \end{tikzpicture}

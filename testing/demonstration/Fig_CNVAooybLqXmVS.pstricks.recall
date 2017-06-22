@@ -60,8 +60,8 @@
 %GRID
 %PSTRICKS CODE
 %AXES
-\draw [,->,>=latex] (-0.5000000000,0) -- (4.000000000,0);
-\draw [,->,>=latex] (0,-0.5000000000) -- (0,4.000000000);
+\draw [,->,>=latex] (-0.50000,0) -- (4.0000,0);
+\draw [,->,>=latex] (0,-0.50000) -- (0,4.0000);
 %DEFAULT
 
 % declaring the keys in tikz

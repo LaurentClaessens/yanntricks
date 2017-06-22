@@ -22,6 +22,7 @@
 
 from __future__ import division
 
+from sage.all import cos,sin
 from phystricks import *
 
 from Testing import assert_true

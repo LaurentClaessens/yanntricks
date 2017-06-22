@@ -23,7 +23,7 @@
 from ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *
-from Parameters import Parameters
+from parameters.Parameters import Parameters
 
 class CustomSurfaceGraph(ObjectGraph):
     """
@@ -73,7 +73,7 @@ class CustomSurfaceGraph(ObjectGraph):
             l=[]
             for obj in self.graphList :
                 try:
-                    l.extend( [p.coordinates(numerical=True,digits=3,pspict=pspict) for p in obj.representative_points()] )
+                    l.extend( [p.coordinates(digits=5,pspict=pspict) for p in obj.representative_points()] )
                 except AttributeError :
                     print("The object "+obj+" seems to have no 'representative_points' method")
                     raise

@@ -22,14 +22,16 @@
 
 from __future__ import division
 
-from sage.all import *
+from sage.all import SR,sqrt,numerical_approx,arctan,var,solve,atan
+from sage.rings.real_mpfr import RealNumber
+
 from phystricks.src.Constructors import *
 from phystricks.src.MathStructures import *
 from phystricks.src.Exceptions import ShouldNotHappenException
 from phystricks.src.Decorators import sort_and_assert_real
 
 def is_real(z):
-    if type(z) in [int,sage.rings.real_mpfr.RealNumber]:
+    if type(z) in [int,RealNumber]:
         return True
     return z.is_real()
 
@@ -695,3 +697,55 @@ def put_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=No
         c2=added[1]
         s1.added_objects.fusion( c1 )
         s2.added_objects.fusion( c2 )
+
+## \brief turn the given number into a string with some conversion
+#  and approximations rules.
+#
+# When one coordinate if very small (lower than 0.0001), it
+# is rounded to zero in order to avoid string like "0.2335e-6"
+# in the pstricks code.
+#
+# The parameter `digit` is *not* the same as the one in
+# Sage's `numerical_approx`.
+# Here we compute a numerical approximation (the one of sage) and then we cut 
+# the resulting *string* to the desired numbers of digits.
+# The rounding is thus not always the expected one.
+# The reason is this kind of expression :
+#    ```
+#    a=7.73542889062775*cos(11/9*pi + 1.30951587282752) - 7.55775391156456*cos(5/18*pi) + 2.5*cos(2/9*pi)
+#    print(numerical_approx(a))
+#    print(numerical_approx(a,digits=5))
+#   ```
+# The first print is deterministic (0.329851686365047), while the second
+# one is not.
+#
+# Remark : undefined behaviour is the integer part of `x` requires more 
+# digits than `digits`.
+def number_to_string(x,digits):
+    from Numerical import is_almost_zero
+    nx=numerical_approx(x)
+
+    # Avoid something like "0.125547e-6" (LaTeX will not accept).
+    if is_almost_zero(nx,0.001):
+        if digits==1:
+            return "0"
+        return "0."+"0"*(digits-1)
+
+    sx=str(nx)
+
+    # in a definitive release, this test can be removed.
+    # this is only for my culture; I guess that it never happens
+    if "." not in sx:
+        print(x)
+        print(sx)
+        raise
+
+    sx=sx+"0"*(digits+1) # be sure not to lack digits
+    if nx<0:
+        sx=sx[0:digits+2]    # +1 for the decimal dot, +1 for the minus
+    else :
+        sx=sx[0:digits+1]    
+    if sx.endswith("."):
+        sx=sx[:-1]
+
+    return sx

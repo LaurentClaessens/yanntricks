@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+from sage.all import RealDistribution
 from phystricks import *
 def HUBEoofsPjXOQx():
     pspict,fig = SinglePicture("HUBEoofsPjXOQx")

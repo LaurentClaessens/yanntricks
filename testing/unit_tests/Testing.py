@@ -21,7 +21,9 @@
 # This file contains some functions used for testing purpose.
 
 from __future__ import division
-from sage.all import *
+
+from sage.all import numerical_approx
+import sys
 
 def roundingMinMax( d ):
     """

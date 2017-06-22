@@ -20,8 +20,6 @@
 # copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
-from sage.all import *
-
 from ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import *

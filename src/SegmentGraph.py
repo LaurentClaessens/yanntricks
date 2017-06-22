@@ -20,13 +20,12 @@
 # copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
-from sage.all import *
+from sage.all import lazy_attribute, numerical_approx
 
 from ObjectGraph import ObjectGraph,AddedObjects
 from Constructors import *
 from Utilities import *
 from NoMathUtilities import logging
-
 from PointGraph import PointGraph
 
 class SegmentGraph(ObjectGraph):
@@ -291,6 +290,7 @@ class SegmentGraph(ObjectGraph):
         Notice that it does not return the last point of the segment, unless the length is a multiple of dx.
            this is why we add by hand the last point in GetWavyPoint
         """
+        from sage.all import floor
         n = floor(self.length/dx)
         return [self.get_point_proportion(float(i)/n) for i in range(0,n)]
     def get_wavy_points(self,dx,dy):
@@ -960,8 +960,8 @@ class SegmentGraph(ObjectGraph):
         else:
             if language=="tikz":
                 a=[]
-                c1=self.I.coordinates(numerical=True,digits=3,pspict=pspict)
-                c2=self.F.coordinates(numerical=True,digits=3,pspict=pspict)
+                c1=self.I.coordinates(digits=5,pspict=pspict)
+                c2=self.F.coordinates(digits=5,pspict=pspict)
                 if 'I' in c1 or "I" in c2 :
                     from Exception import ImaginaryPartException
                     raise ImaginaryPartException(

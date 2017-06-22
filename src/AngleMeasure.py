@@ -118,6 +118,7 @@ class AngleMeasure(object):
 
         self.degree=value_degree
         self.radian=value_radian
+
         if self.degree>359 and self.radian < 0.1:
             print "Problem with an angle : ",self.degree,self.radian
             print "dep degree",given_value_degree,numerical_approx(given_value_degree)

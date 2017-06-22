@@ -22,9 +22,8 @@
 
 from __future__ import division
 
-from sage.all import *
-from Parameters import Parameters
-from Parameters import Options
+from parameters.Options import Options
+from parameters.Parameters import Parameters
 from Exceptions import ShouldNotHappenException
 from NoMathUtilities import logging
 from AddedObjects import AddedObjects
@@ -65,7 +64,7 @@ class ObjectGraph(object):
     def draw_edges(self):
         self._draw_edges=True
     def wave(self,dx,dy):     # dx is the wave length and dy is the amplitude
-        from Parameters import Waviness
+        from parameters.Waviness import Waviness
         self.wavy = True
         self.waviness = Waviness(self,dx,dy)
     def get_arrow(self,llam):

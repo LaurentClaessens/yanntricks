@@ -22,10 +22,11 @@
 
 from __future__ import division
 
+from sage.all import cos,sin,numerical_approx
+
 from phystricks.src.Constructors import *
 from phystricks.src.Exceptions import ShouldNotHappenException
 from phystricks.src.NoMathUtilities import logging
-
 from phystricks.src.ObjectGraph import ObjectGraph
 
 ## The marks are not taken into account in the computation of the
@@ -94,7 +95,6 @@ class MarkGraph(ObjectGraph):
         # It will be 'center_vector'
         # In a first time we compute it as there were no dilatations,
         # and then we will deform it to take xunit,yunit into account.
-
 
         if self.position :
 
@@ -227,7 +227,7 @@ argument is not good :"+position)
     def tikz_code(self,pspict=None):
         central_point=self.central_point(pspict)
 
-        code="\draw "+central_point.coordinates(numerical=True,pspict=pspict)+" node {"+self.text+"};"
+        code="\draw "+central_point.coordinates(digits=5,pspict=pspict)+" node {"+self.text+"};"
         return code
     def latex_code(self,pspict,language=None):
         if language=="tikz":

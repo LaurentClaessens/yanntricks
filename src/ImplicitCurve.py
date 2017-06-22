@@ -24,12 +24,11 @@
 from __future__ import division
 from __future__ import unicode_literals
 
-from sage.all import *
+from sage.all import operator,implicit_plot
 
 from phystricks.src.ObjectGraph import ObjectGraph
 from Constructors import *
-from Parameters import Parameters
-
+from parameters.Parameters import Parameters
 
 def get_paths_from_plot(p):
     """

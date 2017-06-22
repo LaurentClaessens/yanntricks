@@ -25,6 +25,7 @@
 """
 
 from __future__ import division
+from sage.all import lazy_attribute
 
 from ObjectGraph import ObjectGraph
 from Constructors import *

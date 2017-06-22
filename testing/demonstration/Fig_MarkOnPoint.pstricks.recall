@@ -70,10 +70,10 @@
 %OTHER STUFF
 %PSTRICKS CODE
 %DEFAULT
-\draw [color=blue]  (0,0) node [rotate=0] {$\bullet$};
-\draw (0.3695403677,0.3593517010) node {çà};
-\draw []  (1.000000000,1.000000000) node [rotate=0] {$\diamondsuit$};
-\draw (0.6196183333,1.000000000) node {$q$};
+\draw [color=blue]  (0.0000,0.0000) node [rotate=0] {$\bullet$};
+\draw (0.3695,0.3593) node {çà};
+\draw []  (1.0000,1.0000) node [rotate=0] {$\diamondsuit$};
+\draw (0.6196,1.0000) node {$q$};
 %END PSPICTURE
 \end{tikzpicture}
 %AFTER PSPICTURE

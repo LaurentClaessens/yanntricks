@@ -66,10 +66,10 @@
 %OTHER STUFF
 %PSTRICKS CODE
 %DEFAULT
-\draw [color=red] (0,0.500) -- (0.350,0);
-\draw []  (0,0) node [rotate=0] {$\bullet$};
-\draw (0.2548463562,0.2562338562) node {P};
-\draw [color=cyan] (0.500,0.500) -- (0,0);
+\draw [color=red] (0.0000,0.5000) -- (0.3500,0.0000);
+\draw []  (0.0000,0.0000) node [rotate=0] {$\bullet$};
+\draw (0.2548,0.2562) node {P};
+\draw [color=cyan] (0.5000,0.5000) -- (0.0000,0.0000);
 %END PSPICTURE
 \end{tikzpicture}
 %AFTER PSPICTURE

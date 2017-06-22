@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+from sage.all import numerical_integral
 from phystricks import *
 
 def fun(b):

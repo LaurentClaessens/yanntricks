@@ -26,7 +26,6 @@ This module uses phystricks in order to produces some mathematical situations/
 """
 
 from __future__ import division
-from sage.all import *
 from phystricks import *
 
 

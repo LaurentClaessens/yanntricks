@@ -4,6 +4,7 @@
 import sys
 from phystricks import *
 
+from phystricksERPMooZibfNOiU import ERPMooZibfNOiU
 from phystricksWWPPooTSxdXI import WWPPooTSxdXI
 from phystricksXOLBooGcrjiwoU import XOLBooGcrjiwoU
 from phystricksMJWWooEMdGoa import MJWWooEMdGoa
@@ -24,10 +25,8 @@ from phystricksRefraction import Refraction
 from phystricksTgCercleTrigono import TgCercleTrigono
 from phystricksHRIVooBXxZES import HRIVooBXxZES
 from phystricksXWWHooIkLOwZ import XWWHooIkLOwZ
-from phystricksFBTCooBKTryQ import FBTCooBKTryQ
 from phystricksUOEOooLxhpSC import UOEOooLxhpSC
 from phystricksJRCJooPHFcKn import JRCJooPHFcKn
-from phystricksRJDEoobOibtkfv import RJDEoobOibtkfv
 from phystricksCornetGlace import CornetGlace
 from phystricksECQDooWEpuCM import ECQDooWEpuCM
 from phystricksSFdgHdO import SFdgHdO
@@ -138,7 +137,6 @@ append_picture(WQVZooAhkdlegv,1)
 append_picture(ProjPoly,1)
 append_picture(EXIIooJzzoJeai,1)
 append_picture(CornetGlace,2)
-append_picture(RJDEoobOibtkfv,3)
 append_picture(ECQDooWEpuCM,2)
 append_picture(FMLCooxHtqRzUz,2)
 append_picture(MBWHooeesXIrsz,2)
@@ -178,13 +176,10 @@ append_picture(OYBTooNUcJLzDH,2)
 append_picture(OGGDooIvakwNlL,2)
 append_picture(OMPAooMbyOIqeA,2)
 append_picture(JRCJooPHFcKn,2)
-
 append_picture(UOEOooLxhpSC,2)
-append_picture(FBTCooBKTryQ,2)
 append_picture(HRIVooBXxZES,2)
 append_picture(XWWHooIkLOwZ,2)
 append_picture(CWKJooppMsZXjw,2)
-
 append_picture(AMDUooZZUOqa,2)
 append_picture(CercleTrigono,2)
 append_picture(Refraction,2)
@@ -195,7 +190,6 @@ append_picture(VRQCooOchjJA,2)
 append_picture(BQFUooTuMfnj,2)
 append_picture(HUGKooTkDsOg,2)
 append_picture(VNJWooDeKdcy,2)
-
 append_picture(AESIooxXxRYQdT,3)
 append_picture(FunctionFour,3)
 append_picture(QWEHooSRqSdw,2)
@@ -205,8 +199,8 @@ append_picture(AAPMooHEcnzW,2)
 append_picture(MJWWooEMdGoa,2)
 append_picture(WWPPooTSxdXI,1)
 append_picture(XOLBooGcrjiwoU,2)
+append_picture(ERPMooZibfNOiU,1)
 """
-append_picture(<++>,1)
 append_picture(<++>,1)
 append_picture(<++>,1)
 append_picture(<++>,1)

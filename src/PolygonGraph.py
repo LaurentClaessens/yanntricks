@@ -22,8 +22,6 @@
 
 from __future__ import division
 
-from sage.all import *
-
 from ObjectGraph import ObjectGraph
 from Constructors import *
 from Utilities import make_psp_list
@@ -52,7 +50,10 @@ class PolygonGraph(ObjectGraph):
         self.independent_edge=False
         self.parameters=None
 
-        from Parameters import Parameters, HatchParameters, FillParameters
+        from parameters.Parameters import Parameters
+        from parameters.HatchParameters import  HatchParameters
+        from parameters.FillParameters import FillParameters
+        
         self.edges_parameters=Parameters(self)
         self.hatch_parameters=HatchParameters()
         self.fill_parameters=FillParameters()
