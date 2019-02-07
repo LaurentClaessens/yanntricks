@@ -7,6 +7,8 @@ import os
 import random
 import string
 
+from src.NoMathUtilities import SubdirectoryFilenames
+
 def via_random(alphabet,n):
     a=""
     for k in range(0,n):
@@ -89,7 +91,6 @@ def create_file(sfile,text):
 
 code=code_base.replace("XXXX",figure_name)
 
-from src.NoMathUtilities import SubdirectoryFilenames
 filename=SubdirectoryFilenames("phystricks%s.py"%figure_name,"pictures_src")
 pstricksfilename=SubdirectoryFilenames("Fig_{}.pstricks".format(figure_name),"pictures_tex")
 pdffilename=SubdirectoryFilenames("tikzFIGLabelFig"+figure_name+"PICT"+figure_name+".pdf","pictures_tikz")
