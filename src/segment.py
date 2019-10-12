@@ -20,11 +20,8 @@
 
 from sage.all import lazy_attribute, numerical_approx
 
-from ObjectGraph import ObjectGraph, AddedObjects
-from Constructors import *
-from Utilities import *
-from NoMathUtilities import logging
-from PointGraph import PointGraph
+from phystricks.src.point import Point
+from phystricks.src.ObjectGraph import ObjectGraph, AddedObjects
 
 
 def Segment(A, B=None, vector=None):
@@ -804,7 +801,7 @@ class Segment(ObjectGraph):
             print("You cannot ask both only F and only I")
             raise ValueError
         if L < 0.001:     # epsilon
-            print "fix_size problem: this vector has a norm equal to zero"
+            print("fix_size problem: this vector has a norm equal to zero")
             return self.copy()
         if only_F == False and only_I == False:
             v = self.dilatation(l/self.length)
@@ -967,21 +964,6 @@ class Segment(ObjectGraph):
         """
         print("If you want to translate something you should\
                 probably use '.translate' instead.")
-        raise DeprecationWarning
-        from AffineVectorGraph import AffineVectorGraph
-        from PointGraph import PointGraph
-        if isinstance(other, AffineVectorGraph):
-            return Segment(self.I+other, self.F+other)
-        if isinstance(other, PointGraph):
-            return self+Vector(other)
-        if isinstance(other, tuple):
-            if len(other) != 2:
-                raise TypeError("You can add a SegmentGraph with a tuple\
-                        of length 2, not "+str(len(other)))
-            return self+Vector(other)
-        else:
-            raise TypeError, "I do not know how to sum %s with %s" % (
-                self, other)
 
     # \brief Says if two segments are equal.
     #

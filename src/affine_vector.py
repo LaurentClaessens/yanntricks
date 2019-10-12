@@ -21,7 +21,9 @@
 from sage.all import lazy_attribute, numerical_approx
 
 from phystricks.src.ObjectGraph import ObjectGraph
-from phystricks.src.Constructors import Segment, AffineVector, Vector, Point
+from phystricks.src.segment import Segment
+from phystricks.src.point import Point
+from phystricks.src.Constructors import Vector
 from NoMathUtilities import logging
 from Decorators import copy_parameters
 
