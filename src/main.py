@@ -29,8 +29,8 @@ import phystricks.src.SmallComputations as SmallComputations
 from phystricks.src.Exceptions import *
 from phystricks.src.SmallComputations import *
 
-import Separator
-import Figure
+import phystricks.src.Separator
+import phystricks.src.Figure
 
 # TODO : f=phyFunction(x**2+3*x-10), then  g=f/3 does not work.
 # TODO : In figureHYeBZVj, the grid begins at negative numbers. Why ? (see smath available on  https://github.com/LaurentClaessens/smath)

@@ -23,6 +23,7 @@ from phystricks.src.parameters.Parameters import Parameters
 from phystricks.src.Exceptions import ShouldNotHappenException
 from phystricks.src.NoMathUtilities import logging
 from phystricks.src.AddedObjects import AddedObjects
+from phystricks.src.Utilities import make_psp_list
 
 ##
 # This class is supposed to be used to create other "<Foo>Graph"
@@ -173,9 +174,6 @@ class ObjectGraph(object):
                  mark_point=None, added_angle=None, position=None,
                  pspict=None, pspicts=None):
 
-        from NoMathUtilities import ensure_unicode
-        from Utilities import make_psp_list
-        text = ensure_unicode(text)
         pspicts = make_psp_list(pspict, pspicts)
 
         for psp in pspicts:

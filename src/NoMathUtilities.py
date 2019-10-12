@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module phystricks
 #
@@ -27,6 +25,12 @@ parts of phystricks.
 So you can safely import from here.
 """
 
+import codecs
+import hashlib
+
+from phystricks.src.Defaults import LOGGING_FILENAME
+
+
 def text_to_hexdigest(text):
     """
     Return the sha1 hexdigest of a text.
@@ -34,12 +38,10 @@ def text_to_hexdigest(text):
     The point of this function is to take care about the fact
     that the hashlib wants 'str', not 'unicode'
     """
-    import hashlib
-    str_text=ensure_str(text)
-
-    h=hashlib.new("sha1")
-    h.update(str_text)            # This one wants 'str', not 'unicode'
+    h = hashlib.new("sha1")
+    h.update(text)            # This one wants 'str', not 'unicode'
     return h.hexdigest()
+
 
 def first_bracket(text):
     """
@@ -47,54 +49,19 @@ def first_bracket(text):
     """
     if "[" not in text:
         return ""
-    a=text.find("[")
-    b=text[a:].find("]")+1+a
-    bracket=text[a:b]
+    a = text.find("[")
+    b = text[a:].find("]")+1+a
+    bracket = text[a:b]
     return bracket
 
 
-def ensure_unicode(s):
-    """
-    Return a 'unicode' object that represents 's'. 
-    No conversion if 's' is already unicode.
-
-    str->unicode (via s.decode("utf8"))
-    unicode->unicode (identity map)
-    """
-    if isinstance(s,str):
-        return s.decode("utf8")
-    if isinstance(s,unicode):
-        return s
-    testtype(s)
-    raise TypeError("You are trying to convert to unicode the following object "+str(s)+" of type "+str(type(s)))
-
-def ensure_str(s):
-    """
-    Return a 'str' object that represents 's'. 
-    No conversion if 's' is already str.
-
-    unicode->str (via s.encode("utf8"))
-    str->str (identity map)
-    """
-    if isinstance(s,str):
-        return s
-    if isinstance(s,unicode):
-        return s.encode("utf8")
-    else :
-        rep=str(s)
-        return ensure_str(rep)
-    testtype(s)
-    raise TypeError("You are trying to convert to unicode the following object "+str(s)+" of type "+str(type(s)))
-
-def logging(text,pspict=None):
-    from Defaults import LOGGING_FILENAME
-    import codecs
-    text=ensure_unicode(text)
-    if pspict :
-        text="in "+pspict.name+" : "+text
+def logging(text, pspict=None):
+    if pspict:
+        text = "in "+pspict.name+" : "+text
     print(text)
-    with codecs.open(LOGGING_FILENAME,"a",encoding="utf8") as f:
+    with codecs.open(LOGGING_FILENAME, "a", encoding="utf8") as f:
         f.write(text+"\n")
+
 
 class SubdirectoryFilenames(object):
     """
@@ -106,7 +73,8 @@ class SubdirectoryFilenames(object):
     In all cases if the file "Directories.py" is not found, everything will
     return the unmodified filename.
     """
-    def __init__(self,filename,position="here"):
+
+    def __init__(self, filename, position="here"):
         """
     - `filename` is a string containing the filenam
         e with no directory indications.
@@ -121,64 +89,67 @@ class SubdirectoryFilenames(object):
         if "tikz" : the file is the directiry for md5 and pdf tikz files.
         """
         import os.path
-        self.filename=filename
-        self.position=position
+        self.filename = filename
+        self.position = position
         if os.path.isfile("Directories.py"):
 
             # 'importlib' is the solution for python3
             # 'imp' is the solution for python2
-            # This class is imported by python3 from the script 
+            # This class is imported by python3 from the script
             # 'new_picture.py'
-            try :
+            try:
                 import importlib.util
-                spec = importlib.util.spec_from_file_location("Directories", "Directories.py")
+                spec = importlib.util.spec_from_file_location(
+                    "Directories", "Directories.py")
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
-            except ImportError :
+            except ImportError:
                 import imp
-                module = imp.load_source("Directories","Directories.py")
+                module = imp.load_source("Directories", "Directories.py")
 
+            self.PICTURES_TEX = module.PICTURES_TEX
+            self.PICTURES_SRC = module.PICTURES_SRC
+            self.PICTURES_TIKZ = module.PICTURES_TIKZ
+            self.MAIN_TEX = module.MAIN_TEX
 
-            self.PICTURES_TEX=module.PICTURES_TEX
-            self.PICTURES_SRC=module.PICTURES_SRC
-            self.PICTURES_TIKZ=module.PICTURES_TIKZ
-            self.MAIN_TEX=module.MAIN_TEX
+            if position == "here":
+                self.abs_filename = os.path.abspath(filename)
+            if position == "main":
+                ff = os.path.join(self.MAIN_TEX, filename)
+                self.abs_filename = os.path.abspath(ff)
+            if position == "pictures_tex":
+                ff = os.path.join(self.PICTURES_TEX, filename)
+                self.abs_filename = os.path.abspath(ff)
+            if position == "pictures_src":
+                ff = os.path.join(self.PICTURES_SRC, filename)
+                self.abs_filename = os.path.abspath(ff)
+            if position == "pictures_tikz":
+                ff = os.path.join(self.PICTURES_TIKZ, filename)
+                self.abs_filename = os.path.abspath(ff)
+        else:
+            self.abs_filename = os.path.abspath(filename)
 
-            if position=="here":
-                self.abs_filename=os.path.abspath(filename)
-            if position=="main":
-                ff=os.path.join(self.MAIN_TEX,filename)
-                self.abs_filename=os.path.abspath(ff)
-            if position=="pictures_tex":
-                ff=os.path.join(self.PICTURES_TEX,filename)
-                self.abs_filename=os.path.abspath(ff)
-            if position=="pictures_src":
-                ff=os.path.join(self.PICTURES_SRC,filename)
-                self.abs_filename=os.path.abspath(ff)
-            if position=="pictures_tikz":
-                ff=os.path.join(self.PICTURES_TIKZ,filename)
-                self.abs_filename=os.path.abspath(ff)
-        else :
-            self.abs_filename=os.path.abspath(filename)
     def from_here(self):
         import os.path
         if not os.path.isfile("Directories.py"):
             return self.filename
-        current="."
-        tex=os.path.relpath(self.PICTURES_TEX,current)
-        ff=os.path.relpath(self.abs_filename,current)
+        current = "."
+        tex = os.path.relpath(self.PICTURES_TEX, current)
+        ff = os.path.relpath(self.abs_filename, current)
         return ff
+
     def from_main(self):
         import os.path
         if not os.path.isfile("Directories.py"):
             return self.filename
-        current="."
+        current = "."
 
-        main=os.path.relpath(self.MAIN_TEX,current)
-        tex=os.path.relpath(self.PICTURES_TEX,current)
-        vfile=self.abs_filename
+        main = os.path.relpath(self.MAIN_TEX, current)
+        tex = os.path.relpath(self.PICTURES_TEX, current)
+        vfile = self.abs_filename
 
-        ff=os.path.relpath(self.abs_filename,main)
-        return os.path.relpath(vfile,main)
+        ff = os.path.relpath(self.abs_filename, main)
+        return os.path.relpath(vfile, main)
+
     def abspath(self):
         return self.abs_filename

@@ -21,24 +21,21 @@
 from sage.all import pi, PolynomialRing, QQ, symbolic_expression
 from sage.all import sin, cos, prod
 
-from phystricks.src.BoundingBox import BoundingBox_class
 from phystricks.src.point import Point
-from phystricks.src.affine_vector import AffineVector
 from phystricks.src.segment import Segment
+from phystricks.src.GridGraph import GridGraph
+from phystricks.src.AxesGraph import AxesGraph
 from phystricks.src.MarkGraph import MarkGraph
-from phystricks.src.MiscGraph import FractionPieDiagramGraph
-from phystricks.src.NoMathUtilities import ensure_unicode
-from phystricks.src.InterpolationCurveGraph import InterpolationCurveGraph
-from phystricks.src.NonAnalytic import NonAnalyticPointParametricCurveGraph
-from phystricks.src.ParametricCurveGraph import ParametricCurveGraph
-from phystricks.src.phyFunctionGraph import phyFunctionGraph
 from phystricks.src.AngleGraph import AngleGraph
 from phystricks.src.CircleGraph import CircleGraph
+from phystricks.src.affine_vector import AffineVector
+from phystricks.src.PerspectiveGraphs import CuboidGraph
 from phystricks.src.Utilities import EnsureParametricCurve
-
-
-def BoundingBox(P1=None, P2=None, xmin=1000, xmax=-1000, ymin=1000, ymax=-1000, parent=None, mother=None, math=False):
-    return BoundingBox_class(P1, P2, xmin, xmax, ymin, ymax, parent, mother, math)
+from phystricks.src.MiscGraph import FractionPieDiagramGraph
+from phystricks.src.phyFunctionGraph import phyFunctionGraph
+from phystricks.src.ParametricCurveGraph import ParametricCurveGraph
+from phystricks.src.InterpolationCurveGraph import InterpolationCurveGraph
+from phystricks.src.NonAnalytic import NonAnalyticPointParametricCurveGraph
 
 
 def PolarPoint(r, theta):
@@ -181,7 +178,6 @@ def Mark(graph=None, dist=None, angle=None, central_point=None, text="", mark_po
          What is done is that the closest corner of the bounding box is at position (dist;angle) from the point.
     - ``pspict`` - the pspict in which the mark has to be computed and drawn.
     """
-    text = ensure_unicode(text)
     return MarkGraph.MarkGraph(graph, dist, angle, text, central_point=central_point, mark_point=mark_point, position=position, pspict=pspict)
 
 
@@ -652,12 +648,10 @@ def Cuboid(op, P, a, b, c):
         3-------------------------2
 
     """
-    from phystricks.src.PerspectiveGraphs import CuboidGraph
     return CuboidGraph(op, P, a, b, c)
 
 
 def Grid(bb):
-    from phystricks.src.GridGraph import GridGraph
     return GridGraph(bb)
 
 
@@ -667,7 +661,6 @@ def Axes(C, bb, pspict=None):
 
     By default they are orthogonal.
     """
-    from phystricks.src.AxesGraph import AxesGraph
     return AxesGraph(C, bb, pspict)
 
 

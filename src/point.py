@@ -19,7 +19,7 @@
 # email: laurent@claessens-donadello.eu
 
 
-from sage.all import lazy_attribute, numerical_approx, cos, sin
+from sage.all import lazy_attribute, numerical_approx, cos, sin, SR
 
 from phystricks.src.ObjectGraph import ObjectGraph
 

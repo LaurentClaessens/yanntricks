@@ -24,7 +24,7 @@ from phystricks.src.Utilities import check_too_large
 import phystricks.src.main
 
 
-class BoundingBox_class(ObjectGraph):
+class BoundingBox(ObjectGraph):
     r"""
     Represent the bounding box of something.
 
@@ -45,9 +45,8 @@ class BoundingBox_class(ObjectGraph):
     containing the text. In order to be correct one has to take into account the 
     parameters `xunit`/`yunit` that are not yet fixed at the time of `DrawGraph`.
 
-    If 'math' is True, it always tries to include 'math_bounding_box' instead of 'bounding_box'
+    If 'is_math' is True, it always tries to include 'math_bounding_box' instead of 'bounding_box'
     """
-
     def __init__(self, P1=None, P2=None, xmin=1000, xmax=-1000, ymin=1000, ymax=-1000, parent=None, mother=None, is_math=False):
         self.xmin = xmin
         self.xmax = xmax
