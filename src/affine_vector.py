@@ -23,12 +23,15 @@ from sage.all import lazy_attribute, numerical_approx
 from phystricks.src.ObjectGraph import ObjectGraph
 from phystricks.src.segment import Segment
 from phystricks.src.point import Point
-from phystricks.src.Constructors import Vector
-from NoMathUtilities import logging
-from Decorators import copy_parameters
+from phystricks.src.Decorators import copy_parameters
 
 
-class AffineVectorGraph(ObjectGraph):
+class AffineVector(ObjectGraph):
+    """
+    Describe an affine vector.
+
+    An affine vector is a vector whose origin is not specifically (0,0).
+    """
     def __init__(self, I, F):
         ObjectGraph.__init__(self, self)
         self.I = I
@@ -164,7 +167,7 @@ class AffineVectorGraph(ObjectGraph):
         """
         L = self.length
         if L < 0.001:     # epsilon
-            logging("This vector is too small to normalize. I return a copy.")
+            print("This vector is too small to normalize. I return a copy.")
             return self.copy()
         return (l*self).__div__(L)
 
@@ -273,3 +276,23 @@ class AffineVectorGraph(ObjectGraph):
             return ""
         if language == "tikz":
             return self.tikz_code(pspict=pspict)
+
+
+def Vector(A, B=None):
+    """
+    Return an affine vector from (0,0) to the given point.
+
+    Vector(3,4)
+    Vector(P)  # If 'P' is a point
+    Vector(t)  # if 't' is a tuple of two numbers
+    """
+    O = Point(0, 0)
+    if isinstance(A, Point):
+        return AffineVector(O, A)
+    if isinstance(A, tuple):
+        if len(A) != 2:
+            raise TypeError(
+                "You can define a vector from a tuple of length 2, not "+str(len(other)))
+        return AffineVector(O, Point(A[0], A[1]))
+    return AffineVector(Point(0, 0), Point(A, B))
+

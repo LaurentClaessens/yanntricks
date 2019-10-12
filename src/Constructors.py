@@ -23,8 +23,18 @@ from sage.all import sin, cos, prod
 
 from phystricks.src.BoundingBox import BoundingBox_class
 from phystricks.src.point import Point
-from phystricks.src.AffineVectorGraph import AffineVectorGraph
-from phystricks.src.SegmentGraph import SegmentGraph
+from phystricks.src.affine_vector import AffineVector
+from phystricks.src.segment import Segment
+from phystricks.src.MarkGraph import MarkGraph
+from phystricks.src.MiscGraph import FractionPieDiagramGraph
+from phystricks.src.NoMathUtilities import ensure_unicode
+from phystricks.src.InterpolationCurveGraph import InterpolationCurveGraph
+from phystricks.src.NonAnalytic import NonAnalyticPointParametricCurveGraph
+from phystricks.src.ParametricCurveGraph import ParametricCurveGraph
+from phystricks.src.phyFunctionGraph import phyFunctionGraph
+from phystricks.src.AngleGraph import AngleGraph
+from phystricks.src.CircleGraph import CircleGraph
+from phystricks.src.Utilities import EnsureParametricCurve
 
 
 def BoundingBox(P1=None, P2=None, xmin=1000, xmax=-1000, ymin=1000, ymax=-1000, parent=None, mother=None, math=False):
@@ -58,46 +68,6 @@ def PolarSegment(P, r, theta):
     """
     alpha = radian(theta)
     return Segment(P, Point(P.x+r*cos(alpha), P.y+r*sin(alpha)))
-
-
-def AffineVector(A=None, B=None):
-    """
-    return an affine vector.
-
-    An affine vector is a vector whose origin is not specifically (0,0).
-
-    EXAMPLES:
-
-    An affine vector can be given by two points::
-
-        sage: from phystricks import *
-        sage: print AffineVector(Point(1,1),Point(pi,sqrt(2)))
-        <vector I=<Point(1,1)> F=<Point(pi,sqrt(2))>>
-    """
-    if isinstance(A, PointGraph):
-        return AffineVectorGraph(A, B)
-    if isinstance(A, SegmentGraph):
-        return AffineVector(A.I, A.F)
-
-
-def Vector(A, B=None):
-    """
-    return a vector from (0,0) to the given point.
-
-    Vector(3,4)
-    Vector(P)  # If 'P' is a point
-    Vector(t)  # if 't' is a tuple of two numbers
-    """
-    from phystricks.src.PointGraph import PointGraph
-    O = Point(0, 0)        # Was (0,1) up to December 29, 2016
-    if isinstance(A, PointGraph):
-        return AffineVector(O, A)
-    if isinstance(A, tuple):
-        if len(A) != 2:
-            raise TypeError(
-                "You can define a vector from a tuple of length 2, not "+str(len(other)))
-        return AffineVector(O, Point(A[0], A[1]))
-    return AffineVector(Point(0, 0), Point(A, B))
 
 
 def Circle(center, radius, angleI=0, angleF=360, visual=False, pspict=None):
@@ -134,7 +104,6 @@ def Circle(center, radius, angleI=0, angleF=360, visual=False, pspict=None):
     if visual and not pspict:
         print("You cannot try to use 'visual' not giving a pspicture")
         raise ValueError
-    import CircleGraph
     return CircleGraph.CircleGraph(center, radius, angleI=angleI, angleF=angleF, visual=visual, pspict=pspict)
 
 
@@ -185,7 +154,6 @@ def CircularSector(center, radius, a, b):
 
 
 def FractionPieDiagram(center, radius, a, b):
-    from phystricks.src.MiscGraph import FractionPieDiagramGraph
     return FractionPieDiagramGraph(center, radius, a, b)
 
 
@@ -213,8 +181,6 @@ def Mark(graph=None, dist=None, angle=None, central_point=None, text="", mark_po
          What is done is that the closest corner of the bounding box is at position (dist;angle) from the point.
     - ``pspict`` - the pspict in which the mark has to be computed and drawn.
     """
-    import MarkGraph
-    from phystricks.src.NoMathUtilities import ensure_unicode
     text = ensure_unicode(text)
     return MarkGraph.MarkGraph(graph, dist, angle, text, central_point=central_point, mark_point=mark_point, position=position, pspict=pspict)
 
@@ -256,15 +222,7 @@ def AngleAOB(A, O, B, r=None):
     .. image:: Picture_FIGLabelFigTriangleRectanglePICTTriangleRectangle-for_eps.png
 
     """
-    from phystricks.src.AngleGraph import AngleGraph
     return AngleGraph(A, O, B, r)
-
-
-def Angle(A, O, B, r=None):
-    raise DeprecationWarning
-    from NoMathUtilities import logging
-    logging("Warning : You should use 'AngleAOB' instead of 'Angle'")
-    return AngleAOB(A, O, B, r=r)
 
 
 def phyFunction(fun, mx=None, Mx=None):
@@ -305,7 +263,6 @@ def phyFunction(fun, mx=None, Mx=None):
 
     """
 
-    from phystricks.src.phyFunctionGraph import phyFunctionGraph
     # The first try is that the given expression is already a phyFunction.
     try:
         return fun.graph(mx, Mx)
@@ -362,7 +319,6 @@ def ParametricCurve(f1, f2, interval=(None, None)):
     f2 = EnsurephyFunction(f2)
     if isinstance(llamI, AngleMeasure):
         raise
-    from phystricks.src.ParametricCurveGraph import ParametricCurveGraph
     return ParametricCurveGraph(f1, f2, llamI, llamF)
 
 
@@ -373,7 +329,6 @@ def NonAnalyticPointParametricCurve(f, mx, Mx):
     - f : a function (in the Python sense) that takes a number as argument and which returns a PointGraph.
     - mx,Mx  : the minimal and maximal values of the parameters.
     """
-    from phystricks.src.NonAnalytic import NonAnalyticPointParametricCurveGraph
     return NonAnalyticPointParametricCurveGraph(f, mx, Mx)
 
 
@@ -411,8 +366,7 @@ def InterpolationCurve(points_list, context_object=None, mode=None):
 
     InterpolationCurve is used in order to produce implicit plot and wavy functions.
     """
-    import InterpolationCurveGraph
-    return InterpolationCurveGraph.InterpolationCurveGraph(points_list, context_object, mode=mode)
+    return InterpolationCurveGraph(points_list, context_object, mode=mode)
 
 
 def MeasureLength(seg, dist=0.1):
@@ -871,9 +825,6 @@ def SurfaceBetweenParametricCurves(curve1, curve2, interval=None, interval1=None
     .. image:: Picture_FIGLabelFigBetweenParametricPICTBetweenParametric-for_eps.png
 
     """
-    from phystricks.src.CircleGraph import CircleGraph
-    from phystricks.src.SegmentGraph import SegmentGraph
-    from phystricks.src.Utilities import EnsureParametricCurve
     exceptions = [CircleGraph, SegmentGraph]
 
     on = True

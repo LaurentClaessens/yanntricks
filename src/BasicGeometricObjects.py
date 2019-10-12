@@ -20,10 +20,9 @@
 
 from sage.all import lazy_attribute
 
-from phystricks.src.Constructors import *
 from phystricks.src.ObjectGraph import ObjectGraph
-from parameters.Parameters import Parameters
-from phystricks.src.PointGraph import PointGraph
+from phystricks.src.parameters.Parameters import Parameters
+from phystricks.src.point import Point
 
 
 def genericBracketAttributeToLanguage(attr, language):

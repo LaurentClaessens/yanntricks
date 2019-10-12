@@ -409,10 +409,14 @@ class Segment(ObjectGraph):
         ao = self.get_code(n=n, d=d, l=l, angle=angle, pspict=pspict)
         self.added_objects.extend(pspict, ao)
 
+    def affine_vector(self):
+        """Return the affine vector corresponding to self."""
+        return AffineVector(self.I, self.F)
+
     def get_code(self, n=1, d=0.1, l=0.1, angle=45, pspict=None, pspicts=None):
         # TODO : the angle given here should be visual
         ao = []
-        vect = AffineVector(self.I, self.F).normalize(d)
+        vect = self.affine_vector().normalize(d)
         center = self.midpoint(advised=False)
         positions = []
         if n % 2 == 1:

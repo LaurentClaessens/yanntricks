@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module phystricks
 #
@@ -17,13 +15,12 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2017
+# copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
 from sage.all import lazy_attribute
-from ObjectGraph import ObjectGraph
-from Constructors import *
-from Utilities import *
+from phystricks.src.ObjectGraph import ObjectGraph
+
 
 class InterpolationCurveGraph(ObjectGraph):
     def __init__(self,points_list,context_object=None,mode=None):

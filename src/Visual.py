@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module phystricks
 #
@@ -17,13 +15,12 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2017
+# copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from __future__ import division
-
 from sage.all import sqrt,sin,cos,pi
-from Constructors import Vector,Point
+from phystricks.src.point import Point
+from phystricks.src.affine_vector import Vector
 
 def visual_length(v,l,xunit=None,yunit=None,pspict=None):
     """

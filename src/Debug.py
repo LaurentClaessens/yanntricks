@@ -39,13 +39,3 @@ class DebugException(PhystricksGenericException):
 def testtype(s):
     print(s,type(s))
     print("\n")
-
-def dprint(*args):
-    """
-    This function is for debug purpose. It serves to roughly print stuff
-    on the screen. Then "grep dprint" helps to remove all the garbage.
-    """
-    a=[ensure_str(x) for x in list(args)]
-    print(" ".join(a))
-
-
