@@ -20,8 +20,8 @@
 
 from sage.all import numerical_approx
 
-from src.phystricks.Utilities import degreeUnit
-from src.phystricks.Utilities import radianUnit
+from phystricks.src.angle_utilities import degreeUnit
+from phystricks.src.angle_utilities import radianUnit
 
 class AngleMeasure(object):
     """
