@@ -4,6 +4,7 @@
 *.swp
 sources.vim
 tests.vim
+venv/*
 all-*
 tests/*
 *~

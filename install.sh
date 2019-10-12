@@ -40,6 +40,7 @@ install_pip_packages()
 {
     pip3_install pylint
     pip3_install pycodestyle
+    pip3_install pydocstyle
 }
 
 install_venv
