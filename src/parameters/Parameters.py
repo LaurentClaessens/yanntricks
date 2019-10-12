@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module phystricks
 #
@@ -17,61 +15,70 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2017
+# copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from FillParameters import FillParameters
-from HatchParameters import HatchParameters
+from phystricks.src.parameters.FillParameters import FillParameters
+from phystricks.src.parameters.HatchParameters import HatchParameters
+
 
 class Parameters(object):
-    def __init__(self,graph=None):
+    def __init__(self, graph=None):
         # These are the "bracket" attributes, that is the ones that are
         # subject to be put there :  \draw [  *here*  ]  (...)
         # See the code position 1935811332
-        self.color = None   
+        self.color = None
         self.symbol = None
         self.style = None
-        self.dotangle=None
-        self.linewidth=None
-        self.bracket_attributes=["color","symbol","style","dotangle","linewidth"]
+        self.dotangle = None
+        self.linewidth = None
+        self.bracket_attributes = [
+            "color", "symbol", "style", "dotangle", "linewidth"]
 
         # Other attributes :
-        self.fill=FillParameters()
-        self.hatch=HatchParameters()
-        self.other_options={}
-        self._filled=False
-        self._hatched=False
-        self.visual=None        # If True, it means that one wants the object to be non deformed by xunit,yunit
-        self.trivial=False   # For Interpolation curve, only draw a piecewise affine approximation.
-        self.graph=graph
+        self.fill = FillParameters()
+        self.hatch = HatchParameters()
+        self.other_options = {}
+        self._filled = False
+        self._hatched = False
+        # If True, it means that one wants the object to be non deformed by xunit,yunit
+        self.visual = None
+        # For Interpolation curve, only draw a piecewise affine approximation.
+        self.trivial = False
+        self.graph = graph
+
     def bracketAttributesDictionary(self):
         """
         Return a dictionary for the bracket attributes and their values.
         See also the position 1935811332
         """
-        d={}
+        d = {}
         for attr in self.bracket_attributes:
-            value=self.__getattribute__(attr)
-            d[attr]=value
+            value = self.__getattribute__(attr)
+            d[attr] = value
         return d
+
     def copy(self):
-        cop=Parameters()
-        cop.visual=self.visual
-        cop._hatched=self._hatched
-        cop._filled=self._filled
-        cop.hatch=self.hatch
-        cop.fill=self.fill
-        cop.style=self.style
-        cop.symbol=self.symbol
-        cop.color=self.color
-        cop.dotangle=self.dotangle
-        cop.linewidth=self.linewidth
+        cop = Parameters()
+        cop.visual = self.visual
+        cop._hatched = self._hatched
+        cop._filled = self._filled
+        cop.hatch = self.hatch
+        cop.fill = self.fill
+        cop.style = self.style
+        cop.symbol = self.symbol
+        cop.color = self.color
+        cop.dotangle = self.dotangle
+        cop.linewidth = self.linewidth
         return cop
+
     def filled(self):
-        self._filled=True
+        self._filled = True
+
     def hatched(self):
-        self._hatched=True
-    def add_option(self,key,value):
+        self._hatched = True
+
+    def add_option(self, key, value):
         # TODO : This method should be used as the other "add_option" methods in other classes.
         """
         Add options that will be added to to code.
@@ -85,24 +92,26 @@ class Parameters(object):
         to a graph object `seg` is to use
         seg.add_option("linewidth=1mm")
         """
-        self.other_options[key]=value
-    def add_to_options(self,opt):
+        self.other_options[key] = value
+
+    def add_to_options(self, opt):
         """
         Add to the object `opt` (type Option) the different options that correspond to the parameters.
 
         In an imaged way, this method adds `self` to the object `opt`.
         """
-        if self.color :
-            opt.add_option("linecolor=%s"%str(self.color))
-        if self.style :
-            opt.add_option("linestyle=%s"%str(self.style))
-        if self.symbol :
-            opt.add_option("PointSymbol=%s"%str(self.symbol))
+        if self.color:
+            opt.add_option("linecolor=%s" % str(self.color))
+        if self.style:
+            opt.add_option("linestyle=%s" % str(self.style))
+        if self.symbol:
+            opt.add_option("PointSymbol=%s" % str(self.symbol))
         if self._filled:
             self.fill.add_to_options(opt)
         if self._hatched:
             self.hatch.add_to_options(opt)
-    def add_to(self,parameters,force=False):
+
+    def add_to(self, parameters, force=False):
         """
         Add `self` to `parameters`.
 
@@ -112,11 +121,12 @@ class Parameters(object):
         If `force` is True, it fills all.
         """
         for attr in parameters.interesting_attributes:
-            if (parameters.__getattribute__(attr) in [None,False]) or force :
-                parameters.__dict__[attr]=self.__getattribute__(attr)
-        parameters.fill=self.fill
-        parameters.hatch=self.hatch
-    def replace_to(self,parameters):
+            if (parameters.__getattribute__(attr) in [None, False]) or force:
+                parameters.__dict__[attr] = self.__getattribute__(attr)
+        parameters.fill = self.fill
+        parameters.hatch = self.hatch
+
+    def replace_to(self, parameters):
         """
         The same as :func:`add_to`, but replace also non-trivial parameters
 
@@ -141,9 +151,8 @@ class Parameters(object):
         :func:`add_to`.
         """
         for attr in parameters.__dict__.iterkeys():
-            candidate=self.__getattribute__(attr)
-            if candidate is not None :
-                parameters.__dict__[attr]=candidate
-        parameters.fill=self.fill
-        parameters.hatch=self.hatch
-
+            candidate = self.__getattribute__(attr)
+            if candidate is not None:
+                parameters.__dict__[attr] = candidate
+        parameters.fill = self.fill
+        parameters.hatch = self.hatch

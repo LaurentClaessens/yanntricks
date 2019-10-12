@@ -1,5 +1,4 @@
 #! /usr/bin/sage -python
-# -*- coding: utf8 -*-
 
 
 ###########################################################################
@@ -19,11 +18,8 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2016-2017
+# copyright (c) Laurent Claessens, 2016-2017, 2019
 # email: laurent@claessens-donadello.eu
-
-
-from __future__ import division
 
 from phystricks import *
 

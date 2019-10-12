@@ -2,6 +2,7 @@
 *.swo
 *.py~
 *.swp
+avant_oct_2019/*
 sources.vim
 tests.vim
 venv/*

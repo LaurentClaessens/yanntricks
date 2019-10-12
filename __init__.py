@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,20 +13,15 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2017
+# copyright (c) Laurent Claessens, 2009-2017, 2019
 # email: laurent@claessens-donadello.eu
 
 # This file must only contain import statements for the
 # functions needed by the user.
 
-"""
-A collection of tools for building LaTeX pictures with python.
-"""
+"""A collection of tools for building LaTeX pictures with python."""
 
-from __future__ import division
-from __future__ import unicode_literals
-
-from sage.all import cos,sin,tan,exp,ln,log
+from sage.all import cos, sin, tan, exp, ln, log
 
 from phystricks.src.main import FigureGenerationSuite
 

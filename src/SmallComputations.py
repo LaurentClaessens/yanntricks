@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module phystricks
 #
@@ -17,7 +15,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010,2011,2013-2015,2017
+# copyright (c) Laurent Claessens, 2010,2011,2013-2015,2017, 2019
 # email: laurent@claessens-donadello.eu
 
 """
@@ -25,112 +23,121 @@ This submodule contains some auxiliary computations that have to be performed
 by phystricks but that are not geometry.
 """
 
-from __future__ import division
-
-from sage.all import find_root,floor,ceil,solve,numerical_approx,pi
+from sage.all import find_root, floor, ceil, solve, numerical_approx, pi
 import codecs
 
-def MultipleBetween(Dx,mx,Mx,mark_origin=True):
+
+def MultipleBetween(Dx, mx, Mx, mark_origin=True):
     """
     Return the list of values that are all the integer multiple of Dx between mx and Mx.
 
     If <mark_origin> is True, the list includes 0 if applicable.
     """
-    ni=ceil(float(mx)/Dx)
-    nf=floor(float(Mx)/Dx)
-    l = [i*Dx for i in range(ni,nf+1)]
-    if not mark_origin :
-        try :
+    ni = ceil(float(mx)/Dx)
+    nf = floor(float(Mx)/Dx)
+    l = [i*Dx for i in range(ni, nf+1)]
+    if not mark_origin:
+        try:
             l.remove(0)
-        except ValueError :
+        except ValueError:
             pass
     return l
 
 
-def SubGridArray(mx,Mx,Dx,num_subX):
+def SubGridArray(mx, Mx, Dx, num_subX):
     """ Provides the values between mx and Mx such that there are num_subX-1 numbers between two integer separated by Dx """
     dx = float(Dx)/num_subX
     valeurs = []
-    base = MultipleLower(mx,Dx)
-    for i in range(0,ceil((Mx-mx)*num_subX/Dx)+3*num_subX):     # The range is designed by purpose to be sure to be too wide
+    base = MultipleLower(mx, Dx)
+    # The range is designed by purpose to be sure to be too wide
+    for i in range(0, ceil((Mx-mx)*num_subX/Dx)+3*num_subX):
         tentative = base + float(i)*dx
-        if (tentative < Mx) and (tentative > mx) and ( i % num_subX <> 0 ) :
+        if (tentative < Mx) and (tentative > mx) and (i % num_subX != 0):
             valeurs.append(tentative)
     return valeurs
 
-def MainGridArray(mx,Mx,Dx):
-        """
-        Return the list of number that are
-        1. integer multiple of Dx
-        2. between mx and Mx
 
-        If mx=-1.4 and Dx=0.5, the first element of the list will be -1
-        If mx=-1.5 and Dx=0.5, the first element of the list will be -1.5
-        If mx=0 and Dx=1, the first element of the list will be 0.
-        """
-        m=mx/Dx
-        if not m.is_integer():
-            m = floor(mx/Dx - 1)
-        M=Mx/Dx
-        if not M.is_integer():
-            M = ceil(Mx/Dx + 1)
-        a=[]
-        # These two lines are cancelling all the previous ones.
+def MainGridArray(mx, Mx, Dx):
+    """
+    Return the list of number that are
+    1. integer multiple of Dx
+    2. between mx and Mx
+
+    If mx=-1.4 and Dx=0.5, the first element of the list will be -1
+    If mx=-1.5 and Dx=0.5, the first element of the list will be -1.5
+    If mx=0 and Dx=1, the first element of the list will be 0.
+    """
+    m = mx/Dx
+    if not m.is_integer():
         m = floor(mx/Dx - 1)
+    M = Mx/Dx
+    if not M.is_integer():
         M = ceil(Mx/Dx + 1)
-        for i in range(m,M):
-            tentative=i*Dx
-            if (tentative >= mx) and (tentative <= Mx):
-                a.append(tentative)
-        return a
+    a = []
+    # These two lines are cancelling all the previous ones.
+    m = floor(mx/Dx - 1)
+    M = ceil(Mx/Dx + 1)
+    for i in range(m, M):
+        tentative = i*Dx
+        if (tentative >= mx) and (tentative <= Mx):
+            a.append(tentative)
+    return a
+
 
 class CalculSage(object):
     # I cannot merge the function for solving with respect to one or more variables because Sage returns like that:
     # If 1 and 2 are the solutions for one variable : [x == 1,x==2]
     # If (1,2) and (3,4) are solutions of a two variable equation : [ [x==1,y==2],[x==3,y==4] ]
     # The list nesting structure is different. Do I have to read the doc ?
-    def solve_one_var(self,eqs,var):
+    def solve_one_var(self, eqs, var):
         """
         Solve the equations with respect to the given variable
 
         Returns a list of numerical values.
         """
-        liste = solve(eqs,var,explicit_solutions=True)
+        liste = solve(eqs, var, explicit_solutions=True)
         a = []
-        for soluce in liste :
+        for soluce in liste:
             a.append(numerical_approx(soluce.rhs()))
         return a
-    def solve_more_vars(self,eqs,*vars):
+
+    def solve_more_vars(self, eqs, *vars):
         """
         Solve the equations with respect to the given variables
 
         Returns a list like [  [1,2],[3,4] ] if the solutions are (1,2) and (3,4)
         """
-        liste = solve(eqs,vars,explicit_solutions=True)
+        liste = solve(eqs, vars, explicit_solutions=True)
         a = []
-        for soluce in liste :
+        for soluce in liste:
             sol = []
-            for variable in soluce :
-                sol.append( numerical_approx(variable.rhs()))
+            for variable in soluce:
+                sol.append(numerical_approx(variable.rhs()))
             a.append(sol)
         return a
 
 # TODO : this class should not exist.
+
+
 class Fichier(object):
-    def __init__ (self, filename):
+    def __init__(self, filename):
         self.NomComplet = filename
         self.chemin = self.NomComplet
         self.nom = os.path.basename(self.chemin)
-        self.filename=filename
-    def open_file(self,opt):
-        self.file = codecs.open(self.chemin,encoding="utf8",mode=opt)
+        self.filename = filename
+
+    def open_file(self, opt):
+        self.file = codecs.open(self.chemin, encoding="utf8", mode=opt)
+
     def close_file(self):
         self.file.close()
-    def write(self,texte,opt):
+
+    def write(self, texte, opt):
         """ Write in a file following the option """
         self.open_file(opt)
         self.file.write(texte)
         self.close_file()
+
     def contenu(self):
         r"""
         Return the list of the lines of the file, including the \n at the end of each line.
@@ -140,13 +147,14 @@ class Fichier(object):
         self.close_file()
         return c
 
-def RemoveLastZeros(x,n):
+
+def RemoveLastZeros(x, n):
     """
     Cut the number `x` to n decimals and then remove the last zeros.
 
     If there remain no decimals, also remove the dot.
     We only cut a given number of decimals; if the integer part has more digits, we keep them.
-    
+
     The output is a string, not a number.
 
     INPUT:
@@ -178,18 +186,18 @@ def RemoveLastZeros(x,n):
     Part of the algorithm comes from
     http://www.java2s.com/Code/Python/Development/StringformatFivedigitsafterdecimalinfloat.htm
     """
-    s="%.15f"%x
-    t=s[:s.find(".")+n+1]
-    k=len(t)-1
-    while t[k]=="0":
-        k=k-1
-    u=t[:k+1]
-    if u[-1]==".":
+    s = "%.15f" % x
+    t = s[:s.find(".")+n+1]
+    k = len(t)-1
+    while t[k] == "0":
+        k = k-1
+    u = t[:k+1]
+    if u[-1] == ".":
         return u[:-1]
     return u
 
 
-def number_at_position(s,n):
+def number_at_position(s, n):
     """
     return the number being at position `n` in `s`
     as well as the first and last positions of that number in `s`.
@@ -250,24 +258,25 @@ def number_at_position(s,n):
         1.94848632812
 
     """
-    digits=["0","1","2","3","4","5","6","7","8","9"]
-    number_elements = digits+["-","."]
-    s=str(s)
-    if s[n] not in number_elements :
-        return False,0,0
-    i=n
+    digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    number_elements = digits+["-", "."]
+    s = str(s)
+    if s[n] not in number_elements:
+        return False, 0, 0
+    i = n
     while s[i] in number_elements:
-        i=i-1
-    first=i+1
-    i=n
+        i = i-1
+    first = i+1
+    i = n
     while s[i] in number_elements:
-        i=i+1
-    last=i
+        i = i+1
+    last = i
     # When treating the string read in the test file,
     # the string is an unicode. SR does not work with unicode
-    return str(s[first:last]),first,last
+    return str(s[first:last]), first, last
 
-def get_line(s,pos):
+
+def get_line(s, pos):
     r"""
     return the line containing `s[pos]`
 
@@ -285,12 +294,12 @@ def get_line(s,pos):
         how do you do ?
 
     """
-    a=s.rfind("\n",0,pos)
-    b=s.find("\n",pos,len(s))
+    a = s.rfind("\n", 0, pos)
+    b = s.find("\n", pos, len(s))
     return s[a+1:b]
 
 
-def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
+def string_number_comparison(s1, s2, epsilon=0.01, last_justification=""):
     r"""
     Compare two strings. 
 
@@ -339,27 +348,32 @@ def string_number_comparison(s1,s2,epsilon=0.01,last_justification=""):
     """
 
     if s1 == s2:
-        return True,last_justification
-    pos=0
+        return True, last_justification
+    pos = 0
     while s1[pos] == s2[pos]:
         pos = pos+1
-    v1,first1,last1=number_at_position(s1,pos)
-    v2,first2,last2=number_at_position(s2,pos)
+    v1, first1, last1 = number_at_position(s1, pos)
+    v2, first2, last2 = number_at_position(s2, pos)
 
-    if v1 == False or v2 == False :
-        line1=get_line(s1,pos)
-        line2=get_line(s2,pos)
-        justification="There is a difference outside a number\nExpected:\n%s\nGot:\n %s"%(line2,line1)
-        return False,justification
-    if abs(SR(v1)-SR(v2))<epsilon:
-        justification=last_justification+"d(%s,%s)=%s\n"%(v1,v2,str(SR(v1)-SR(v2)))
-        t1=s1[:first1]+v2+s1[last1:]
-        t2=s2
-        return string_number_comparison(t1,t2,epsilon=epsilon,last_justification=justification)
-    justification=last_justification+"Distance between %s and %s is larger than %s."%(str(v1),str(v2),str(epsilon))
-    return False,justification
+    if v1 == False or v2 == False:
+        line1 = get_line(s1, pos)
+        line2 = get_line(s2, pos)
+        justification = "There is a difference outside a number\nExpected:\n%s\nGot:\n %s" % (
+            line2, line1)
+        return False, justification
+    if abs(SR(v1)-SR(v2)) < epsilon:
+        justification = last_justification + \
+            "d(%s,%s)=%s\n" % (v1, v2, str(SR(v1)-SR(v2)))
+        t1 = s1[:first1]+v2+s1[last1:]
+        t2 = s2
+        return string_number_comparison(t1, t2, epsilon=epsilon, last_justification=justification)
+    justification = last_justification + \
+        "Distance between %s and %s is larger than %s." % (
+            str(v1), str(v2), str(epsilon))
+    return False, justification
 
-def around(x,decimals):
+
+def around(x, decimals):
     """
     return `x` truncated after a certain number of decimals.
 
@@ -380,17 +394,19 @@ def around(x,decimals):
 
     """
     from numpy import around as numpy_around
-    a=[x]
-    return numpy_around(a,decimals=decimals)[0]
+    a = [x]
+    return numpy_around(a, decimals=decimals)[0]
 
-def MultipleLower(x,m):
+
+def MultipleLower(x, m):
     """ return the biggest multiple of m which is lower or equal to x"""
     return floor(x/m)*m
 
-def MultipleBigger(x,m):
+
+def MultipleBigger(x, m):
     """
     Return the lower multiple of m which is bigger or equal to x
-    
+
     EXAMPLES ::
 
         sage: from phystricks.SmallComputations import *
@@ -399,7 +415,8 @@ def MultipleBigger(x,m):
     """
     return ceil(x/m)*m
 
-def visualPolarCoordinates(r,theta,xunit=1,yunit=1):
+
+def visualPolarCoordinates(r, theta, xunit=1, yunit=1):
     """
     return the polar coordinated that you have to give
     in such a way the it *visually* appears `(r,theta)`
@@ -443,60 +460,62 @@ def visualPolarCoordinates(r,theta,xunit=1,yunit=1):
     """
     from MathStructures import AngleMeasure
 
-    arg_is_angle_measure=False
-    orig_theta=theta
-    if isinstance(theta,AngleMeasure):
-        theta=numerical_approx(theta.radian)
-        arg_is_angle_measure=True
-    else :
-        theta=numerical_approx(theta)
+    arg_is_angle_measure = False
+    orig_theta = theta
+    if isinstance(theta, AngleMeasure):
+        theta = numerical_approx(theta.radian)
+        arg_is_angle_measure = True
+    else:
+        theta = numerical_approx(theta)
 
-    if cos(theta)==0:
-        return (r/yunit,orig_theta)
-    if cos(theta)==1:
-        return (r/xunit,orig_theta)
-    if cos(theta)==-1:
-        return (r/xunit,orig_theta)
+    if cos(theta) == 0:
+        return (r/yunit, orig_theta)
+    if cos(theta) == 1:
+        return (r/xunit, orig_theta)
+    if cos(theta) == -1:
+        return (r/xunit, orig_theta)
 
     # For Sage, atan : R -> [-pi/2,pi/2]
     # thus one has to check the angle after having done atan( ... tan(...)  )
     # Here we assume that the deformed angle is next to the original one
-    if xunit==yunit:
-        alpha=theta
-    else :
-        alpha=atan( (xunit/yunit)*tan(theta) )
-        if theta>pi/2 and theta<3*pi/2 :
-            alpha=alpha+pi
-            
-    rp=(r/xunit)*(cos(theta)/cos(alpha))
+    if xunit == yunit:
+        alpha = theta
+    else:
+        alpha = atan((xunit/yunit)*tan(theta))
+        if theta > pi/2 and theta < 3*pi/2:
+            alpha = alpha+pi
+
+    rp = (r/xunit)*(cos(theta)/cos(alpha))
 
     if rp < 0:
-        rp=-rp
-        alpha=alpha+pi
-    if arg_is_angle_measure :
-        alpha=AngleMeasure(value_radian=alpha)
-    return (rp,alpha)
+        rp = -rp
+        alpha = alpha+pi
+    if arg_is_angle_measure:
+        alpha = AngleMeasure(value_radian=alpha)
+    return (rp, alpha)
 
-def split_list(starting_list,fun,cut_ymin,cut_ymax):
-    ldel=[]
-    l=[]
-    for i,k in enumerate(starting_list):
+
+def split_list(starting_list, fun, cut_ymin, cut_ymax):
+    ldel = []
+    l = []
+    for i, k in enumerate(starting_list):
         try:
-            on=fun(k) > cut_ymin and fun(k) < cut_ymax
+            on = fun(k) > cut_ymin and fun(k) < cut_ymax
         except ValueError:      # Happens when 1/x and x=0.
-            on=False
-        if on :
+            on = False
+        if on:
             l.append(k)
         else:
             ldel.append(l)
-            l=[]
+            l = []
     ldel.append(l)
     while [] in ldel:
         ldel.remove([])
-    s=[  (l[0],l[-1])  for l in ldel  ]
+    s = [(l[0], l[-1]) for l in ldel]
     return s
 
-def find_roots_recursive(f,a,b,tol=0.000000000001):
+
+def find_roots_recursive(f, a, b, tol=0.000000000001):
     """
     Return the roots of the function 'f' between 'a' and 'b' as a list.
 
@@ -507,11 +526,11 @@ def find_roots_recursive(f,a,b,tol=0.000000000001):
     # The method was proposed by ndomes in http://ask.sagemath.org/question/8886/obtaining-all-numerical-roots-of-a-function-in-an-interval/
     L = []
     try:
-        x0 = find_root(f,a,b)
-    except RuntimeError :
+        x0 = find_root(f, a, b)
+    except RuntimeError:
         return []
     L.append(x0)
-    L += find_roots_recursive(f,a,x0-tol,tol)       
-    L += find_roots_recursive(f,x0+tol,b,tol)       
+    L += find_roots_recursive(f, a, x0-tol, tol)
+    L += find_roots_recursive(f, x0+tol, b, tol)
     L.sort()
     return L

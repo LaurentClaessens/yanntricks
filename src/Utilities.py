@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module phystricks
 #
@@ -17,12 +15,10 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2017
+# copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from __future__ import division
-
-from sage.all import SR,sqrt,numerical_approx,arctan,var,solve,atan
+from sage.all import SR, sqrt, numerical_approx, arctan, var, solve, atan
 from sage.rings.real_mpfr import RealNumber
 
 from phystricks.src.Constructors import *
@@ -30,74 +26,82 @@ from phystricks.src.MathStructures import *
 from phystricks.src.Exceptions import ShouldNotHappenException
 from phystricks.src.Decorators import sort_and_assert_real
 
+
 def is_real(z):
-    if type(z) in [int,RealNumber]:
+    if type(z) in [int, RealNumber]:
         return True
     return z.is_real()
 
-def test_imaginary_part(z,epsilon=0.0001):
+
+def test_imaginary_part(z, epsilon=0.0001):
     """
     Return a tuple '(isreal,w)' where 'isreal' is a boolean saying if 'z' is real (in the sense that it is real and does not contain 'I' in its string representation) and 'w' is 'z' when the imaginary part is larger than epsilon and an 'numerical_approx' of 'z' when its imaginary part is smaller than 'epsilon'
 
     With the collateral effect that it returns a numerical approximation.
     """
     if is_real(z) and "I" not in str(z):
-        return True,z
-    k=numerical_approx(z)
+        return True, z
+    k = numerical_approx(z)
     if is_real(k):
-        return True,k
-    if abs( k.imag_part() )<epsilon:
-        return True,numerical_approx( z.real_part() )
+        return True, k
+    if abs(k.imag_part()) < epsilon:
+        return True, numerical_approx(z.real_part())
     print("It seems that an imaginary part is not so small.")
-    return False,z
+    return False, z
 
-def test_imaginary_part_point(P,epsilon=0.0001):
+
+def test_imaginary_part_point(P, epsilon=0.0001):
     """
     return the tuple '(isreal,P)' whit the same description of 'test_imaginary_part'
     """
     from Constructors import Point
-    realx,x=test_imaginary_part(P.x)
-    realy,y=test_imaginary_part(P.y)
-    on=False
+    realx, x = test_imaginary_part(P.x)
+    realy, y = test_imaginary_part(P.y)
+    on = False
     if realx and realy:
-        on=True
-    return on,Point(x,y)
-    
-##return the squared distance between P and Q
+        on = True
+    return on, Point(x, y)
+
+# return the squared distance between P and Q
 #
-# \param numerical If True, use numerical approximations and return 
+# \param numerical If True, use numerical approximations and return
 # a numerical approximation.
-def distance_sq(P,Q,numerical=False):
-    if not numerical :
+
+
+def distance_sq(P, Q, numerical=False):
+    if not numerical:
         return (P.x-Q.x)**2+(P.y-Q.y)**2
-    Px=numerical_approx(P.x)
-    Qx=numerical_approx(Q.x)
-    Qy=numerical_approx(Q.y)
-    Py=numerical_approx(P.y)
+    Px = numerical_approx(P.x)
+    Qx = numerical_approx(Q.x)
+    Qy = numerical_approx(Q.y)
+    Py = numerical_approx(P.y)
     return (Px-Qx)**2+(Py-Qy)**2
 
-def distance(P,Q):
-    """ return the distance between P and Q """
-    return sqrt(distance_sq(P,Q))
 
-##  \brief  Return the inner product of vectors `v` and `w`
+def distance(P, Q):
+    """ return the distance between P and Q """
+    return sqrt(distance_sq(P, Q))
+
+# \brief  Return the inner product of vectors `v` and `w`
 # \param v a vector
 # \param w a vector
 # \param numerical a boolean
 #
 # If `numerical` is true, the computations are done on
 # numerical approximations of the coordinates.
-def inner_product(v,w,numerical=False):
+
+
+def inner_product(v, w, numerical=False):
     from PointGraph import PointGraph
     from Constructors import Point
     from AffineVectorGraph import AffineVectorGraph
 
-    if numerical :
+    if numerical:
         if not v.I.is_almost_equal(w.I):
             raise OperationNotPermitedException("I only compute inner products\
                     of vectors based on the same point.")
-    if not numerical :
-        if v.I != w.I :
+    if not numerical:
+        if v.I != w.I:
             raise OperationNotPermitedException("I only compute inner products\
                     of vectors based on the same point.")
 
@@ -106,8 +110,9 @@ def inner_product(v,w,numerical=False):
         return numerical_approx(s)
     return s
 
+
 @sort_and_assert_real
-def Intersection(f,g,a=None,b=None,numerical=False):
+def Intersection(f, g, a=None, b=None, numerical=False):
     ##
     # When f and g are objects with an attribute equation, return the list of points of intersections.
     #
@@ -115,7 +120,7 @@ def Intersection(f,g,a=None,b=None,numerical=False):
     # - Return only real solutions.
     #
     # Only numerical approximations are returned as there are some errors
-    # otherwise. As an example the following #solving return points that 
+    # otherwise. As an example the following #solving return points that
     # are not even near from the circle \f$ x^2+y^2=9 \f$ :
     # ```
     # solve( [ -1/3*sqrt(3)*y + 1/3*sqrt(3)*(-0.19245008972987399*sqrt(3) - 3) + x == 0,x^2 + y^2 - 9 == 0 ],[x,y] )
@@ -148,95 +153,100 @@ def Intersection(f,g,a=None,b=None,numerical=False):
 
     from AffineVectorGraph import AffineVectorGraph
 
-    if isinstance(f,AffineVectorGraph):
-        f=f.segment
-    if isinstance(g,AffineVectorGraph):
-        g=g.segment
+    if isinstance(f, AffineVectorGraph):
+        f = f.segment
+    if isinstance(g, AffineVectorGraph):
+        g = g.segment
 
-    if numerical and "sage" in dir(f) :
+    if numerical and "sage" in dir(f):
         import SmallComputations
-        k=f-g
-        xx=SmallComputations.find_roots_recursive(k.sage,a,b)
-        pts=[  Point(x,f(x)) for x in xx ]
+        k = f-g
+        xx = SmallComputations.find_roots_recursive(k.sage, a, b)
+        pts = [Point(x, f(x)) for x in xx]
         return pts
 
-    x,y=var('x,y')
-    pts=[]
-    if numerical :
-        soluce=solve([f.equation(numerical=True),g.equation(numerical=True)],[x,y])
-    else :
-        soluce=solve([f.equation(),g.equation()],[x,y])
+    x, y = var('x,y')
+    pts = []
+    if numerical:
+        soluce = solve([f.equation(numerical=True),
+                        g.equation(numerical=True)], [x, y])
+    else:
+        soluce = solve([f.equation(), g.equation()], [x, y])
     for s in soluce:
-        a=s[0].rhs()
-        b=s[1].rhs()
-        z=a**2+b**2
-        ok1,a=test_imaginary_part(a)
-        ok2,b=test_imaginary_part(b)
-        if ok1 and ok2 :
-            pts.append(Point(a,b))
+        a = s[0].rhs()
+        b = s[1].rhs()
+        z = a**2+b**2
+        ok1, a = test_imaginary_part(a)
+        ok2, b = test_imaginary_part(b)
+        if ok1 and ok2:
+            pts.append(Point(a, b))
     return pts
 
-## \brief The intersection between the line from the given point and
+# \brief The intersection between the line from the given point and
 # the center of the given box.
 #
 # \arg P : a point
-# \arg box : a box, which means a duck which has attributes 
+# \arg box : a box, which means a duck which has attributes
 #               `xmin`, `xmax`, `ymin`, `ymax`
 #
 # Consider the line from `P` to the center of the box
 # and return the intersection
-# points. 
+# points.
 #
 # \return a list of `Point`.
 #
 # - The list always contains exactly 2 points
 # - They are sorted by order of distance to `P`
-def point_to_box_intersection(P,box,pspict=None):
-    from phystricks.src.Utilities import distance_sq
-    A=Point(box.xmin,box.ymin)
-    B=Point(box.xmax,box.ymin)
-    C=Point(box.xmax,box.ymax)
-    D=Point(box.xmin,box.ymax)
-    # n'écrivez pas ça au tableau quand un inspecteur est dans la salle :
-    center=(A+B+C+D)/4
-    line=Segment(P,center)
 
-    edges=[Segment(A,B),Segment(B,C),Segment(C,D),Segment(D,A)]
-    inter=[]
+
+def point_to_box_intersection(P, box, pspict=None):
+    from phystricks.src.Utilities import distance_sq
+    A = Point(box.xmin, box.ymin)
+    B = Point(box.xmax, box.ymin)
+    C = Point(box.xmax, box.ymax)
+    D = Point(box.xmin, box.ymax)
+    # n'écrivez pas ça au tableau quand un inspecteur est dans la salle :
+    center = (A+B+C+D)/4
+    line = Segment(P, center)
+
+    edges = [Segment(A, B), Segment(B, C), Segment(C, D), Segment(D, A)]
+    inter = []
     for ed in edges:
-        c=Intersection(line,ed)
-        if len(c)>0:
-            S=c[0]
+        c = Intersection(line, ed)
+        if len(c) > 0:
+            S = c[0]
 
             # We deal with the case in which the line travers the corner.
             # In this case, the line passes trough the other one.
-            if S==A:
-                inter=[A,C]
-            if S==B:
-                inter=[B,D]
-            if S==C:
-                inter=[A,C]
-            if S==D:
-                inter=[B,D]
+            if S == A:
+                inter = [A, C]
+            if S == B:
+                inter = [B, D]
+            if S == C:
+                inter = [A, C]
+            if S == D:
+                inter = [B, D]
             # The last two tests are to know if S lies between ed.I and ed.F
-            # We use numerical approximations in order to avoid some 
+            # We use numerical approximations in order to avoid some
             # OverflowError: Python int too large to convert to C long
-            elif numerical_approx( (S.x-ed.I.x)*(S.x-ed.F.x) )<0:
+            elif numerical_approx((S.x-ed.I.x)*(S.x-ed.F.x)) < 0:
                 inter.append(S)
-            elif numerical_approx( (S.y-ed.I.y)*(S.y-ed.F.y) )<0:
+            elif numerical_approx((S.y-ed.I.y)*(S.y-ed.F.y)) < 0:
                 inter.append(S)
 
-    if len(inter)==2:
-        inter.sort(key=lambda Q:distance_sq(Q,P,numerical=True))
+    if len(inter) == 2:
+        inter.sort(key=lambda Q: distance_sq(Q, P, numerical=True))
 
     if pspict:
-        for i,S in enumerate(inter):
-            S.put_mark(0.2,angle=None,added_angle=0,text=str(i),pspict=pspict)
-        pspict.DrawGraphs(inter,line,center,box)
+        for i, S in enumerate(inter):
+            S.put_mark(0.2, angle=None, added_angle=0,
+                       text=str(i), pspict=pspict)
+        pspict.DrawGraphs(inter, line, center, box)
 
     return inter
 
-def PointToPolaire(P=None,x=None,y=None,origin=None,numerical=True):
+
+def PointToPolaire(P=None, x=None, y=None, origin=None, numerical=True):
     """
     Return the polar coordinates of a point.
 
@@ -260,39 +270,40 @@ def PointToPolaire(P=None,x=None,y=None,origin=None,numerical=True):
     """
     from Numerical import numerical_is_negative
     if origin:
-        Ox=origin.x
-        Oy=origin.y
+        Ox = origin.x
+        Oy = origin.y
     if not origin:
-        Ox=0
-        Oy=0
+        Ox = 0
+        Oy = 0
     if P:
-        Px=P.x
-        Py=P.y
-    else :
-        Px=x
-        Py=y
-    Qx=Px-Ox
-    Qy=Py-Oy
+        Px = P.x
+        Py = P.y
+    else:
+        Px = x
+        Py = y
+    Qx = Px-Ox
+    Qy = Py-Oy
     if numerical:
-        Qx=numerical_approx(Qx)
-        Qy=numerical_approx(Qy)
-    r=sqrt(  Qx**2+Qy**2 )
-    if abs(Qx)<0.001:   # epsilon
-        if Qy>0:
-            radian=pi/2
-        else :
-            radian=3*pi/2
-    else :
-        radian=arctan(Qy/Qx)
-    if Qx<0:
-        if Qy>0:
-            radian=radian+pi
-        if Qy<=0:
-            radian=pi+radian
+        Qx = numerical_approx(Qx)
+        Qy = numerical_approx(Qy)
+    r = sqrt(Qx**2+Qy**2)
+    if abs(Qx) < 0.001:   # epsilon
+        if Qy > 0:
+            radian = pi/2
+        else:
+            radian = 3*pi/2
+    else:
+        radian = arctan(Qy/Qx)
+    if Qx < 0:
+        if Qy > 0:
+            radian = radian+pi
+        if Qy <= 0:
+            radian = pi+radian
     # Only positive values (February 11, 2015)
     if numerical_is_negative(radian):
-        radian=radian+2*pi
-    return PolarCoordinates(r,value_radian=radian)
+        radian = radian+2*pi
+    return PolarCoordinates(r, value_radian=radian)
+
 
 class ConversionAngles(object):
     """
@@ -303,12 +314,14 @@ class ConversionAngles(object):
     - ``conversion_factor`` - the conversion factor from the considered unit to the other (radian->degree or the contrary)
     - ``max_value`` - the maximal value (360 or 2*pi)
     """
-    def __init__(self,conversion_factor,max_value,exit_attribute=None,create_function=None):
-        self.conversion_factor=conversion_factor
-        self.max_value=max_value
-        self.exit_attribute=exit_attribute
-        self.create_function=create_function
-    def simplify(self,angle,keep_max=False,keep_large=False,number=False,numerical=False):
+
+    def __init__(self, conversion_factor, max_value, exit_attribute=None, create_function=None):
+        self.conversion_factor = conversion_factor
+        self.max_value = max_value
+        self.exit_attribute = exit_attribute
+        self.create_function = create_function
+
+    def simplify(self, angle, keep_max=False, keep_large=False, number=False, numerical=False):
         """
         Simplify the angles modulo the maximum (if 'keep_large'=False, which is default). 
 
@@ -317,7 +330,7 @@ class ConversionAngles(object):
         Keep the negative numbers to negative numbers. The return interval is
         [-2 pi,2pi]
         which could be open or closed following the `keep_max` boolean.
-    
+
         INPUT:
 
         - ``angle`` - an angle that can be an instance of AngleMeasure or a number.  if it is a number, the simplify modulo self.max_value if it is a AngleMeasure, then first extract the value of the angle using self.exit_attribute .
@@ -360,37 +373,37 @@ class ConversionAngles(object):
 
         """
         if numerical:
-            number=True
-        if isinstance(angle,AngleMeasure) :
-            x=angle.__getattribute__(self.exit_attribute)
-            gotMeasure=True
-        else :
-            x=angle
-            gotMeasure=False
+            number = True
+        if isinstance(angle, AngleMeasure):
+            x = angle.__getattribute__(self.exit_attribute)
+            gotMeasure = True
+        else:
+            x = angle
+            gotMeasure = False
         if keep_max and (x == self.max_value or x == -self.max_value):
-            if gotMeasure and number==False:
+            if gotMeasure and number == False:
                 return angle
-            else :
+            else:
                 if numerical:
                     return numerical_approx(x)
                 else:
                     return x
 
         if not keep_large:
-            while x >= self.max_value :
-                x=x-self.max_value
-            while x <= -self.max_value :
-                x=x+self.max_value
+            while x >= self.max_value:
+                x = x-self.max_value
+            while x <= -self.max_value:
+                x = x+self.max_value
 
-        if gotMeasure and number==False :
+        if gotMeasure and number == False:
             return self.create_function(x)
-        else :
+        else:
             if numerical:
                 return numerical_approx(x)
             else:
                 return x
 
-    def conversion(self,theta,number=False,keep_max=False,keep_large=False,converting=True,numerical=False):
+    def conversion(self, theta, number=False, keep_max=False, keep_large=False, converting=True, numerical=False):
         """
         Makes the conversion and simplify.
 
@@ -436,26 +449,31 @@ class ConversionAngles(object):
 
         """
         if numerical:
-            number=True
-        if isinstance(theta,AngleMeasure):
-            angle = self.simplify(theta,keep_max=keep_max,keep_large=keep_large)
+            number = True
+        if isinstance(theta, AngleMeasure):
+            angle = self.simplify(
+                theta, keep_max=keep_max, keep_large=keep_large)
             if number:
-                 x = angle.__getattribute__(self.exit_attribute)
-                 if numerical:
-                     return numerical_approx(x)
-                 else:
-                     return x
-            else :
+                x = angle.__getattribute__(self.exit_attribute)
+                if numerical:
+                    return numerical_approx(x)
+                else:
+                    return x
+            else:
                 return angle
-        else :
-            if converting :
-                return self.simplify(self.conversion_factor*theta,keep_max=keep_max,keep_large=keep_large,numerical=numerical)
-            else :
-                raise ShouldNotHappenException("You are in a converting function with argument converting=false. WTF ? Sincerely, I'm trying to figure out what I had in mind when I wrote this case.")
-                return self.simplify(theta,keep_max=keep_max,keep_large=keep_large,numerical=numerical)
+        else:
+            if converting:
+                return self.simplify(self.conversion_factor*theta, keep_max=keep_max, keep_large=keep_large, numerical=numerical)
+            else:
+                raise ShouldNotHappenException(
+                    "You are in a converting function with argument converting=false. WTF ? Sincerely, I'm trying to figure out what I had in mind when I wrote this case.")
+                return self.simplify(theta, keep_max=keep_max, keep_large=keep_large, numerical=numerical)
 
-DegreeConversions=ConversionAngles(SR(180)/pi,360,exit_attribute="degree",create_function=DegreeAngleMeasure)
-RadianConversions=ConversionAngles(pi/180,2*pi,exit_attribute="radian",create_function=RadianAngleMeasure)
+
+DegreeConversions = ConversionAngles(
+    SR(180)/pi, 360, exit_attribute="degree", create_function=DegreeAngleMeasure)
+RadianConversions = ConversionAngles(
+    pi/180, 2*pi, exit_attribute="radian", create_function=RadianAngleMeasure)
 
 """
 For degreeUnit and radianUnit
@@ -465,84 +483,95 @@ For degreeUnit and radianUnit
 
 
 class degreeUnit(object):
-    def __call__(self,x,number=False,keep_max=None,keep_large=False,converting=True,numerical=False):
-        if isinstance(x,PolarCoordinates) or isinstance(x,AngleMeasure):
+    def __call__(self, x, number=False, keep_max=None, keep_large=False, converting=True, numerical=False):
+        if isinstance(x, PolarCoordinates) or isinstance(x, AngleMeasure):
             return x.degree
-        return DegreeConversions.conversion(x,number=number,keep_max=keep_max,keep_large=keep_large,converting=converting,numerical=numerical)
-    def __rmul__(self,x):
+        return DegreeConversions.conversion(x, number=number, keep_max=keep_max, keep_large=keep_large, converting=converting, numerical=numerical)
+
+    def __rmul__(self, x):
         return AngleMeasure(value_degree=x)
 
+
 class radianUnit(object):
-    def __call__(self,x,number=False,keep_max=None,keep_large=False,converting=True,numerical=False):
-        if isinstance(x,PolarCoordinates) or isinstance(x,AngleMeasure):
+    def __call__(self, x, number=False, keep_max=None, keep_large=False, converting=True, numerical=False):
+        if isinstance(x, PolarCoordinates) or isinstance(x, AngleMeasure):
             return x.radian
-        return RadianConversions.conversion(x,number=number,keep_max=keep_max,keep_large=keep_large,converting=converting,numerical=numerical)
-    def __rmul__(self,x):
+        return RadianConversions.conversion(x, number=number, keep_max=keep_max, keep_large=keep_large, converting=converting, numerical=numerical)
+
+    def __rmul__(self, x):
         return AngleMeasure(value_radian=x)
 
-degree=degreeUnit()
-radian=radianUnit()
 
-simplify_degree=DegreeConversions.simplify
-simplify_radian=RadianConversions.simplify
+degree = degreeUnit()
+radian = radianUnit()
+
+simplify_degree = DegreeConversions.simplify
+simplify_radian = RadianConversions.simplify
+
 
 def EnsurephyFunction(f):
     from Constructors import phyFunction
-    try :
-        k= phyFunction(f.sage)
-    except AttributeError :
+    try:
+        k = phyFunction(f.sage)
+    except AttributeError:
         pass
-    try :
+    try:
         k = f.phyFunction()
-    except AttributeError :
+    except AttributeError:
         pass
     k = phyFunction(f)
-    try :
+    try:
         k.nul_function = f.nul_function
     except AttributeError:
         pass
     return k
 
+
 def EnsureParametricCurve(curve):
     if "parametric_curve" in dir(curve):
         return curve.parametric_curve()
-    else :
+    else:
         return curve
 
-def check_too_large(obj,pspict=None):
+
+def check_too_large(obj, pspict=None):
     try:
-        bb=obj.bounding_box(pspict)
-        mx=bb.xmin
-        my=bb.ymin
-        Mx=bb.xmax
-        My=bb.ymax
+        bb = obj.bounding_box(pspict)
+        mx = bb.xmin
+        my = bb.ymin
+        Mx = bb.xmax
+        My = bb.ymax
 
     except AttributeError:
-        print "Object {0} has no method bounding_box.".format(obj)
-        mx=obj.mx
-        my=obj.my
-        Mx=obj.Mx
-        My=obj.My
+        print("Object {0} has no method bounding_box.".format(obj))
+        mx = obj.mx
+        my = obj.my
+        Mx = obj.Mx
+        My = obj.My
     if pspict:
         from Exceptions import TooLargeBBException
         # In some circumstances, the comparison
         # mx<pspict.mx_acceptable_BB
         # provokes a MemoryError.
-        n_Mx=numerical_approx(Mx)
-        n_mx=numerical_approx(mx)
-        n_My=numerical_approx(My)
-        n_my=numerical_approx(my)
-        if n_mx<pspict.mx_acceptable_BB :
-            raise TooLargeBBException(obj=obj,faulty="xmin",acceptable=pspict.mx_acceptable_BB,got=n_mx)
-        if n_my<pspict.my_acceptable_BB :
-            raise TooLargeBBException(obj=obj,faulty="ymin",acceptable=pspict.my_acceptable_BB,got=n_my)
-        if n_Mx>pspict.Mx_acceptable_BB :
-            raise TooLargeBBException(obj=obj,faulty="xmax",acceptable=pspict.Mx_acceptable_BB,got=n_Mx)
-        if n_My>pspict.My_acceptable_BB :
-            raise TooLargeBBException(obj=obj,faulty="ymax",acceptable=pspict.My_acceptable_BB,got=n_My)
+        n_Mx = numerical_approx(Mx)
+        n_mx = numerical_approx(mx)
+        n_My = numerical_approx(My)
+        n_my = numerical_approx(my)
+        if n_mx < pspict.mx_acceptable_BB:
+            raise TooLargeBBException(
+                obj=obj, faulty="xmin", acceptable=pspict.mx_acceptable_BB, got=n_mx)
+        if n_my < pspict.my_acceptable_BB:
+            raise TooLargeBBException(
+                obj=obj, faulty="ymin", acceptable=pspict.my_acceptable_BB, got=n_my)
+        if n_Mx > pspict.Mx_acceptable_BB:
+            raise TooLargeBBException(
+                obj=obj, faulty="xmax", acceptable=pspict.Mx_acceptable_BB, got=n_Mx)
+        if n_My > pspict.My_acceptable_BB:
+            raise TooLargeBBException(
+                obj=obj, faulty="ymax", acceptable=pspict.My_acceptable_BB, got=n_My)
 
 
-def general_function_get_point(fun,x,advised=True):
+def general_function_get_point(fun, x, advised=True):
     """
     Return a point on the graph of the function with the given x, i.e. it return the point (x,f(x)).
 
@@ -554,19 +583,20 @@ def general_function_get_point(fun,x,advised=True):
     If you don't plan to put a mark on the point, you are invited
     to use advised=False in order to speed up the computations.
     """
-    P = Point(float(x),fun(x))
-    if advised :
-        try :
-            ca = fun.derivative()(x) 
+    P = Point(float(x), fun(x))
+    if advised:
+        try:
+            ca = fun.derivative()(x)
         except TypeError:    # Sage cannot derivate the function
-            print ("I'm not able to compute derivative of {0}.\
+            print("I'm not able to compute derivative of {0}.\
             You should pass advised=False".format(fun))
-        else :
-            angle_n=degree(atan(ca)+pi/2)
+        else:
+            angle_n = degree(atan(ca)+pi/2)
             if fun.derivative(2)(x) > 0:
-                angle_n=angle_n+180
-            P._advised_mark_angle=angle_n
+                angle_n = angle_n+180
+            P._advised_mark_angle = angle_n
     return P
+
 
 def latinize(word):
     """
@@ -585,7 +615,7 @@ def latinize(word):
 
     OUTPUT:
     string
-    
+
     EXAMPLES::
 
         sage: from phystricks.SmallComputations import *
@@ -600,49 +630,52 @@ def latinize(word):
     """
     latin = ""
     for s in word:
-        if s.lower() in "abcdefghijklmnopqrstuvwxyz" :
+        if s.lower() in "abcdefghijklmnopqrstuvwxyz":
             latin = latin+s
-        if s=="1":
+        if s == "1":
             latin = latin+"ONE"
-        if s=="2":
+        if s == "2":
             latin = latin+"TWO"
-        if s=="3":
+        if s == "3":
             latin = latin+"THREE"
-        if s=="4":
+        if s == "4":
             latin = latin+"FOR"
-        if s=="5":
+        if s == "5":
             latin = latin+"FIVE"
-        if s=="6":
+        if s == "6":
             latin = latin+"SIX"
-        if s=="7":
+        if s == "7":
             latin = latin+"SEVEN"
-        if s=="8":
+        if s == "8":
             latin = latin+"HEITH"
-        if s=="9":
+        if s == "9":
             latin = latin+"NINE"
-        if s=="0":
+        if s == "0":
             latin = latin+"ZERO"
-        if s==".":
+        if s == ".":
             latin = latin+"DOT"
     return latin
+
 
 def counterName():
     r"""
     This function provides the name of the counter.
-    
+
     This has the same use of newwriteName, for the same reason of limitation.
     """
     return "counterOfforphystricks"
 
+
 def newlengthName():
     r"""
     This function provides the name of the length.
-    
+
     This has the same use of newwriteName, for the same reason of limitation.
     """
     return "lengthOfforphystricks"
 
-def sublist(l,condition):
+
+def sublist(l, condition):
     """
     Extract a sublist of 'l' made of the elements that satisfy the condition.
 
@@ -652,17 +685,20 @@ def sublist(l,condition):
         if condition(x):
             yield x
 
-def make_psp_list(pspict,pspicts):
-    if isinstance(pspict,list):
+
+def make_psp_list(pspict, pspicts):
+    if isinstance(pspict, list):
         raise
-    a=[]
+    a = []
     if pspict is not None:
         a.append(pspict)
     if pspicts is not None:
         a.extend(pspicts)
-    if a==[] :
-        raise ShouldNotHappenException("Picture missing. You have to use at least one of 'pspict=...' or 'pspicts=[...]'")
+    if a == []:
+        raise ShouldNotHappenException(
+            "Picture missing. You have to use at least one of 'pspict=...' or 'pspicts=[...]'")
     return a
+
 
 def no_symbol(*arg):
     for l in arg:
@@ -670,35 +706,37 @@ def no_symbol(*arg):
             for P in l:
                 no_symbol(P)
         except TypeError:
-            l.parameters.symbol=""
+            l.parameters.symbol = ""
 
-def get_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=None):
+
+def get_equal_lengths_code(s1, s2, n=1, d=0.1, l=0.1, angle=45, pspict=None, pspicts=None):
     from ObjectGraph import AddedObjects
     from phystricks.src.Utilities import make_psp_list
-    added1=AddedObjects()
-    added2=AddedObjects()
-    pspicts=make_psp_list(pspict,pspicts)
-    for psp in pspicts :
-        c1=s1.get_code(n=n,d=d,l=l,pspict=psp)
-        c2=s2.get_code(n=n,d=d,l=l,pspict=psp)
-        added1.append(psp,c1)
-        added2.append(psp,c2)
-    return added1,added2
+    added1 = AddedObjects()
+    added2 = AddedObjects()
+    pspicts = make_psp_list(pspict, pspicts)
+    for psp in pspicts:
+        c1 = s1.get_code(n=n, d=d, l=l, pspict=psp)
+        c2 = s2.get_code(n=n, d=d, l=l, pspict=psp)
+        added1.append(psp, c1)
+        added2.append(psp, c2)
+    return added1, added2
 
-def put_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=None):
+
+def put_equal_lengths_code(s1, s2, n=1, d=0.1, l=0.1, angle=45, pspict=None, pspicts=None):
     """
     Add the code for equal length between segments s1 and s2
     """
     from phystricks.src.Utilities import make_psp_list
-    pspicts=make_psp_list(pspict,pspicts)
-    for psp in pspicts :
-        added=get_equal_lengths_code(s1,s2,n,d,l,angle,pspict=psp)
-        c1=added[0]
-        c2=added[1]
-        s1.added_objects.fusion( c1 )
-        s2.added_objects.fusion( c2 )
+    pspicts = make_psp_list(pspict, pspicts)
+    for psp in pspicts:
+        added = get_equal_lengths_code(s1, s2, n, d, l, angle, pspict=psp)
+        c1 = added[0]
+        c2 = added[1]
+        s1.added_objects.fusion(c1)
+        s2.added_objects.fusion(c2)
 
-## \brief turn the given number into a string with some conversion
+# \brief turn the given number into a string with some conversion
 #  and approximations rules.
 #
 # When one coordinate if very small (lower than 0.0001), it
@@ -707,7 +745,7 @@ def put_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=No
 #
 # The parameter `digit` is *not* the same as the one in
 # Sage's `numerical_approx`.
-# Here we compute a numerical approximation (the one of sage) and then we cut 
+# Here we compute a numerical approximation (the one of sage) and then we cut
 # the resulting *string* to the desired numbers of digits.
 # The rounding is thus not always the expected one.
 # The reason is this kind of expression :
@@ -719,19 +757,21 @@ def put_equal_lengths_code(s1,s2,n=1,d=0.1,l=0.1,angle=45,pspict=None,pspicts=No
 # The first print is deterministic (0.329851686365047), while the second
 # one is not.
 #
-# Remark : undefined behaviour is the integer part of `x` requires more 
+# Remark : undefined behaviour is the integer part of `x` requires more
 # digits than `digits`.
-def number_to_string(x,digits):
+
+
+def number_to_string(x, digits):
     from Numerical import is_almost_zero
-    nx=numerical_approx(x)
+    nx = numerical_approx(x)
 
     # Avoid something like "0.125547e-6" (LaTeX will not accept).
-    if is_almost_zero(nx,0.001):
-        if digits==1:
+    if is_almost_zero(nx, 0.001):
+        if digits == 1:
             return "0"
         return "0."+"0"*(digits-1)
 
-    sx=str(nx)
+    sx = str(nx)
 
     # in a definitive release, this test can be removed.
     # this is only for my culture; I guess that it never happens
@@ -740,12 +780,12 @@ def number_to_string(x,digits):
         print(sx)
         raise
 
-    sx=sx+"0"*(digits+1) # be sure not to lack digits
-    if nx<0:
-        sx=sx[0:digits+2]    # +1 for the decimal dot, +1 for the minus
-    else :
-        sx=sx[0:digits+1]    
+    sx = sx+"0"*(digits+1)  # be sure not to lack digits
+    if nx < 0:
+        sx = sx[0:digits+2]    # +1 for the decimal dot, +1 for the minus
+    else:
+        sx = sx[0:digits+1]
     if sx.endswith("."):
-        sx=sx[:-1]
+        sx = sx[:-1]
 
     return sx

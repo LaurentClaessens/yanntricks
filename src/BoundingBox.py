@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module phystricks
 #
@@ -17,11 +15,14 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright(c) Laurent Claessens, 2010-2017
+# copyright(c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from Constructors import *
-from ObjectGraph import ObjectGraph
+from phystricks.src.point import Point
+from phystricks.src.ObjectGraph import ObjectGraph
+from phystricks.src.Utilities import check_too_large
+import phystricks.main
+
 
 class BoundingBox_class(ObjectGraph):
     r"""
@@ -46,152 +47,183 @@ class BoundingBox_class(ObjectGraph):
 
     If 'math' is True, it always tries to include 'math_bounding_box' instead of 'bounding_box'
     """
-    def __init__(self,P1=None,P2=None,xmin=1000,xmax=-1000,ymin=1000,ymax=-1000,parent=None,mother=None,is_math=False):
-        self.xmin=xmin
-        self.xmax=xmax
-        self.ymin=ymin
-        self.ymax=ymax
-        self.mother=mother
-        self.is_math=is_math
-        if P1 :
-            self.add_math_object(P1,check_too_large=False)
-            self.add_math_object(P2,check_too_large=False)
-        self.take_math_BB=False
-        self.take_BB=True
+
+    def __init__(self, P1=None, P2=None, xmin=1000, xmax=-1000, ymin=1000, ymax=-1000, parent=None, mother=None, is_math=False):
+        self.xmin = xmin
+        self.xmax = xmax
+        self.ymin = ymin
+        self.ymax = ymax
+        self.mother = mother
+        self.is_math = is_math
+        if P1:
+            self.add_math_object(P1, check_too_large=False)
+            self.add_math_object(P2, check_too_large=False)
+        self.take_math_BB = False
+        self.take_BB = True
     # Because I do not want BoundingBox to inherit from ObjectGraph
-    def _draw_added_objects(self,pspict):
+
+    def _draw_added_objects(self, pspict):
         pass
-    def add_object(self,obj,pspict=None,fun="bounding_box",check_too_large=True):
+
+    def add_object(self, obj, pspict=None, fun="bounding_box", check_too_large=True):
         if self.is_math:
-            fun="math_bounding_box"
-        try :
-            bb=obj.__getattribute__(fun)(pspict=pspict)
-        except AttributeError,message :
+            fun = "math_bounding_box"
+        try:
+            bb = obj.__getattribute__(fun)(pspict=pspict)
+        except AttributeError as message:
             if obj:     # If obj is None, we are not surprised.
-                print "The attribute {1} of the object {0} seems to have problems".format(obj,fun)
-                print "The message was :"
-                print message
-                import main
-                raise main.NoMathBoundingBox(obj,fun)
-        else :
-            if check_too_large :
+                print("The attribute {1} of the object {0} seems to have problems".format(
+                    obj, fun))
+                print("The message was :")
+                print(message)
+                raise main.NoMathBoundingBox(obj, fun)
+        else:
+            if check_too_large:
                 bb.check_too_large(pspict)
             self.AddBB(bb)
-    def add_math_object(self,obj,pspict=None,check_too_large=True):
-        try :
-            self.add_object(obj,pspict=pspict,fun="math_bounding_box",check_too_large=check_too_large)
-        except TypeError :
+
+    def add_math_object(self, obj, pspict=None, check_too_large=True):
+        try:
+            self.add_object(
+                obj, pspict=pspict, fun="math_bounding_box", check_too_large=check_too_large)
+        except TypeError:
             print("I got a TypeError with")
-            print("Object",obj)
-            print("of type",type(obj))
-    def check_too_large(self,pspict=None):
+            print("Object", obj)
+            print("of type", type(obj))
+
+    def check_too_large(self, pspict=None):
         """
         Raise a ValueError if the bounding box is too large.
         """
-        from Utilities import check_too_large
-        check_too_large(self,pspict=pspict)
+        check_too_large(self, pspict=pspict)
 
-    def getEdge(self,pos):
-        if pos=="NORTH":
-            return Segment(self.getVertex("NW"),self.getVertex("NE"))
-        if pos=="SOUTH":
-            return Segment(self.getVertex("SW"),self.getVertex("SE"))
-        if pos=="EAST":
-            return Segment( self.getVertex("NE"),self.getVertex("SE") )
-        if pos=="WEST":
-            return Segment( self.getVertex("NW"),self.getVertex("SW") )
-    def getVertex(self,pos):
-        if pos=="NE":
-            return Point(self.xmax,self.ymax)
-        if pos=="NW":
-            return Point(self.xmin,self.ymax)
-        if pos=="SE":
-            return Point(self.xmax,self.ymin)
-        if pos=="SW":
-            return Point(self.xmin,self.ymin)
+    def getEdge(self, pos):
+        if pos == "NORTH":
+            return Segment(self.getVertex("NW"), self.getVertex("NE"))
+        if pos == "SOUTH":
+            return Segment(self.getVertex("SW"), self.getVertex("SE"))
+        if pos == "EAST":
+            return Segment(self.getVertex("NE"), self.getVertex("SE"))
+        if pos == "WEST":
+            return Segment(self.getVertex("NW"), self.getVertex("SW"))
+
+    def getVertex(self, pos):
+        if pos == "NE":
+            return Point(self.xmax, self.ymax)
+        if pos == "NW":
+            return Point(self.xmin, self.ymax)
+        if pos == "SE":
+            return Point(self.xmax, self.ymin)
+        if pos == "SW":
+            return Point(self.xmin, self.ymin)
+
     def N(self):
-        return Segment(self.getVertex("NW"),self.getVertex("NE")).midpoint()
+        return Segment(self.getVertex("NW"), self.getVertex("NE")).midpoint()
+
     def S(self):
-        return Segment(self.getVertex("SW"),self.getVertex("SE")).midpoint()
-    def coordinates(self,pspict=None):
+        return Segment(self.getVertex("SW"), self.getVertex("SE")).midpoint()
+
+    def coordinates(self, pspict=None):
         return self.getVertex("SW").coordinates(pspict=pspict)+self.getVertex("NE").coordinates(pspict=pspict)
+
     def xsize(self):
         return self.xmax-self.xmin
+
     def ysize(self):
         return self.ymax-self.ymin
-    def extraX_left(self,l):
+
+    def extraX_left(self, l):
         """Enlarge the bounding box of a length l on the left"""
-        self.xmin=self.xmin-l
-    def extraX_right(self,l):
+        self.xmin = self.xmin-l
+
+    def extraX_right(self, l):
         """Enlarge the bounding box of a length l on the right"""
-        self.xmax=self.xmax+l
-    def extraX(self,l):
+        self.xmax = self.xmax+l
+
+    def extraX(self, l):
         """Enlarge the bounding box of a length l on both sides"""
         self.extraX_left(l)
         self.extraX_right(l)
-    def addX(self,x):
-        self.xmin=min(self.xmin,x)
-        self.xmax=max(self.xmax,x)
-    def addY(self,y):
-        self.ymin=min(self.ymin,y)
-        self.ymax=max(self.ymax,y)
-    def AddBB(self,bb):
+
+    def addX(self, x):
+        self.xmin = min(self.xmin, x)
+        self.xmax = max(self.xmax, x)
+
+    def addY(self, y):
+        self.ymin = min(self.ymin, y)
+        self.ymax = max(self.ymax, y)
+
+    def AddBB(self, bb):
         from Numerical import numerical_min
         from Numerical import numerical_max
-        self.xmin = numerical_min(self.xmin,bb.xmin)
-        self.ymin = numerical_min(self.ymin,bb.ymin)
-        self.xmax = numerical_max(self.xmax,bb.xmax)
-        self.ymax = numerical_max(self.ymax,bb.ymax)
-    def append(self,graph,pspict=None):
-        if isinstance(graph,list):
-            raise KeyError,"%s is a list"%graph
-        if not pspict :
+        self.xmin = numerical_min(self.xmin, bb.xmin)
+        self.ymin = numerical_min(self.ymin, bb.ymin)
+        self.xmax = numerical_max(self.xmax, bb.xmax)
+        self.ymax = numerical_max(self.ymax, bb.ymax)
+
+    def append(self, graph, pspict=None):
+        if isinstance(graph, list):
+            raise KeyError("%s is a list" % graph)
+        if not pspict:
             from Exceptions import MissingPictureException
-            raise MissingPictureException("You should provide a pspict in order to add this object to a bounding box.")
+            raise MissingPictureException(
+                "You should provide a pspict in order to add this object to a bounding box.")
         if self.is_math:
-            bb=graph.math_bounding_box(pspict=pspict)
+            bb = graph.math_bounding_box(pspict=pspict)
             self.AddBB(graph.math_bounding_box(pspict=pspict))
-        else :
-            bb=graph.bounding_box(pspict=pspict)
+        else:
+            bb = graph.bounding_box(pspict=pspict)
             self.AddBB(graph.bounding_box(pspict=pspict))
-    def add_math_graph(self,graphe,pspict=None):
-        try :
+
+    def add_math_graph(self, graphe, pspict=None):
+        try:
             self.addBB(graphe.math_bounding_box(pspict))
-        except NoMathBoundingBox,message :
-            print message
+        except NoMathBoundingBox as message:
+            print(message)
             self.addBB(graphe.bounding_box(pspict))
-    def AddAxes(self,axes):
-        self.AddPoint( axes.BB.getVertex("SW") )
-        self.AddPoint( axes.getVertex("NE") )
-    def latex_code(self,language=None,pspict=None):
+
+    def AddAxes(self, axes):
+        self.AddPoint(axes.BB.getVertex("SW"))
+        self.AddPoint(axes.getVertex("NE"))
+
+    def latex_code(self, language=None, pspict=None):
         return ""
-    def conclude(self,pspict):
+
+    def conclude(self, pspict):
         pass
-    def action_on_pspict(self,pspict=None):
-        rect=Rectangle(self.getVertex("SW"),self.getVertex("NE"))
-        rect.edges_parameters.color="cyan"
+
+    def action_on_pspict(self, pspict=None):
+        rect = Rectangle(self.getVertex("SW"), self.getVertex("NE"))
+        rect.edges_parameters.color = "cyan"
         pspict.DrawGraphs(rect)
-    def bounding_box(self,pspict=None):
+
+    def bounding_box(self, pspict=None):
         return self
-    def math_bounding_box(self,pspict=None):
+
+    def math_bounding_box(self, pspict=None):
         return self.bounding_box(pspict)
+
     def copy(self):
-        return BoundingBox(xmin=self.xmin,ymin=self.ymin,xmax=self.xmax,ymax=self.ymax)
+        return BoundingBox(xmin=self.xmin, ymin=self.ymin, xmax=self.xmax, ymax=self.ymax)
+
     def __str__(self):
-        return "<BoundingBox xmin={0},xmax={1},ymin={2},ymax={3}>".format(self.xmin,self.xmax,self.ymin,self.ymax)
-    def __eq__(self,other):
-        if self.xmin!=other.xmin:
+        return "<BoundingBox xmin={0},xmax={1},ymin={2},ymax={3}>".format(self.xmin, self.xmax, self.ymin, self.ymax)
+
+    def __eq__(self, other):
+        if self.xmin != other.xmin:
             return False
-        if self.xmax!=other.xmax:
+        if self.xmax != other.xmax:
             return False
-        if self.ymin!=other.ymin:
+        if self.ymin != other.ymin:
             return False
-        if self.ymax!=other.ymax:
+        if self.ymax != other.ymax:
             return False
         return True
-    def __ne__(self,other):
+
+    def __ne__(self, other):
         return not self.__eq__(other)
-    def __contains__(self,P):
+
+    def __contains__(self, P):
         """
         Return True if the point P belongs to self and False otherwise.
 
@@ -201,6 +233,6 @@ class BoundingBox_class(ObjectGraph):
 
         from http://www.rafekettler.com/magicmethods.html
         """
-        if P.x <= self.xmax and P.x>=self.xmin and P.y<=self.ymax and P.y>=self.ymin:
+        if P.x <= self.xmax and P.x >= self.xmin and P.y <= self.ymax and P.y >= self.ymin:
             return True
         return False

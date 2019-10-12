@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module phystricks
 #
@@ -17,25 +15,22 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2017
+# copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
-
-from __future__ import division
-from __future__ import unicode_literals
 
 from sage.all import lazy_attribute
 
-from phystricks import *
 from phystricks.src.Constructors import *
 from phystricks.src.ObjectGraph import ObjectGraph
 from parameters.Parameters import Parameters
 from phystricks.src.PointGraph import PointGraph
 
-def genericBracketAttributeToLanguage(attr,language):
-    if language=="tikz":
-        if attr=="plotpoints":
+
+def genericBracketAttributeToLanguage(attr, language):
+    if language == "tikz":
+        if attr == "plotpoints":
             return "samples"
-        if attr=="linewidth":
+        if attr == "linewidth":
             return "line width"
     return attr
 
@@ -45,48 +40,56 @@ def genericBracketAttributeToLanguage(attr,language):
 #    CerB.parameters.fill.color="blue"
 # See the picture RouletteACaVVA
 
+
 def OptionsStyleLigne():
-    return ["linecolor","linestyle"]
+    return ["linecolor", "linestyle"]
 
 
 class TextGraph(ObjectGraph):
     """
     You can customize the background via the object `self.rectangle`
     """
-    def __init__(self,P,text,hide=True):
-        ObjectGraph.__init__(self,self)
-        self.P=P
-        self.text=text
-        self.mark=Mark(self,0,0,self.text)
-        self.hide=hide
 
-        self.rectangle=Rectangle(Point(0,0),Point(1,1))     # This is fake; just to have an object to act on.
+    def __init__(self, P, text, hide=True):
+        ObjectGraph.__init__(self, self)
+        self.P = P
+        self.text = text
+        self.mark = Mark(self, 0, 0, self.text)
+        self.hide = hide
+
+        # This is fake; just to have an object to act on.
+        self.rectangle = Rectangle(Point(0, 0), Point(1, 1))
         self.rectangle.parameters.filled()
-        self.rectangle.parameters.fill.color="white"
-        self.rectangle.parameters.style="none"
-    def mark_point(self,pspict=None):
+        self.rectangle.parameters.fill.color = "white"
+        self.rectangle.parameters.style = "none"
+
+    def mark_point(self, pspict=None):
         return self.P
-    def _math_bounding_box(self,pspict=None):
+
+    def _math_bounding_box(self, pspict=None):
         # a text has no math_bounding_box because the axes do not want to fit them.
-        #return self.mark.math_bounding_box(pspict)         # June 1, 2015
+        # return self.mark.math_bounding_box(pspict)         # June 1, 2015
         return BoundingBox()
-    def _bounding_box(self,pspict=None):
+
+    def _bounding_box(self, pspict=None):
         return self.mark.bounding_box(pspict)
-    def latex_code(self,language=None,pspict=None):
-        a=[]
-        rect=Rectangle(self.mark.bounding_box(pspict))
-        rect.parameters=self.rectangle.parameters
+
+    def latex_code(self, language=None, pspict=None):
+        a = []
+        rect = Rectangle(self.mark.bounding_box(pspict))
+        rect.parameters = self.rectangle.parameters
         if self.hide:
-            a.append(rect.latex_code(language=language,pspict=pspict))
-        a.append(self.mark.latex_code(language=language,pspict=pspict))
+            a.append(rect.latex_code(language=language, pspict=pspict))
+        a.append(self.mark.latex_code(language=language, pspict=pspict))
         return "\n".join(a)
+
 
 class GeometricVectorField(object):
     """
     Describe a vector field
 
     INPUT:
-    
+
     - ``f`` - a tupe of function
 
     EXAMPLES::
@@ -100,19 +103,21 @@ class GeometricVectorField(object):
         <vector I=<Point(3,1/3*pi)> F=<Point(12,1/3*pi - 1)>>
 
     """
-    def __init__(self,fx,fy):
-        x,y=var('x,y')
+
+    def __init__(self, fx, fy):
+        x, y = var('x,y')
         fx = EnsurephyFunction(fx)
         fy = EnsurephyFunction(fy)
-        self.fx=symbolic_expression(fx.sage).function(x,y)
-        self.fy=symbolic_expression(fy.sage).function(x,y)
-        #g=[fx,fy]
-        #for i in [0,1]:
+        self.fx = symbolic_expression(fx.sage).function(x, y)
+        self.fy = symbolic_expression(fy.sage).function(x, y)
+        # g=[fx,fy]
+        # for i in [0,1]:
         #    if isinstance(g[i],phyFunction):
         #        g[i]=g[i].sage
-        #self.fx=g[0]
-        #self.fy=g[1]
-        self.vector_field=self
+        # self.fx=g[0]
+        # self.fy=g[1]
+        self.vector_field = self
+
     def divergence(self):
         """
         return the divergence of the vector field.
@@ -143,11 +148,12 @@ class GeometricVectorField(object):
             3*b^2 + 2*a
 
         """
-        x,y=var('x,y')
+        x, y = var('x,y')
         formula = self.fx.diff(x)+self.fy.diff(y)
-        divergence=symbolic_expression(formula).function(x,y)
+        divergence = symbolic_expression(formula).function(x, y)
         return divergence
-    def graph(self,xvalues=None,yvalues=None,draw_points=None):
+
+    def graph(self, xvalues=None, yvalues=None, draw_points=None):
         """
         return a graph of self with the given points
 
@@ -164,7 +170,7 @@ class GeometricVectorField(object):
         OUTPUT:
 
         object VectorFieldGraph.
-        
+
         EXAMPLES::
 
             sage: from phystricks.BasicGeometricObjects import *
@@ -176,22 +182,23 @@ class GeometricVectorField(object):
             10
         """
         if draw_points is None:
-            draw_points=[]
+            draw_points = []
         if xvalues is not None:
-            mx=xvalues[1]
-            Mx=xvalues[2]
-            nx=xvalues[3]
-            my=yvalues[1]
-            My=yvalues[2]
-            ny=yvalues[3]
+            mx = xvalues[1]
+            Mx = xvalues[2]
+            nx = xvalues[3]
+            my = yvalues[1]
+            My = yvalues[2]
+            ny = yvalues[3]
             from numpy import linspace
-            pos_x=linspace(mx,Mx,nx)
-            pos_y=linspace(my,numerical_approx(My),ny)
+            pos_x = linspace(mx, Mx, nx)
+            pos_y = linspace(my, numerical_approx(My), ny)
             for xx in pos_x:
                 for yy in pos_y:
-                    draw_points.append(Point(xx,yy))
-        return VectorFieldGraph(self,draw_points=draw_points)
-    def __call__(self,a,b=None):
+                    draw_points.append(Point(xx, yy))
+        return VectorFieldGraph(self, draw_points=draw_points)
+
+    def __call__(self, a, b=None):
         """
         return the affine vector at point (a,b).
 
@@ -215,15 +222,16 @@ class GeometricVectorField(object):
             <vector I=<Point(3,4)> F=<Point(12,68)>>
 
         """
-        if b is not None :
-            P=Point(a,b)
-        else :
-            P=a
-        vx=self.fx(x=P.x,y=P.y)
-        vy=self.fy(x=P.x,y=P.y)
-        return AffineVector(P,Point(P.x+vx,P.y+vy))
+        if b is not None:
+            P = Point(a, b)
+        else:
+            P = a
+        vx = self.fx(x=P.x, y=P.y)
+        vy = self.fy(x=P.x, y=P.y)
+        return AffineVector(P, Point(P.x+vx, P.y+vy))
 
-class VectorFieldGraph(ObjectGraph,GeometricVectorField):
+
+class VectorFieldGraph(ObjectGraph, GeometricVectorField):
     """
     the graph object of a vector field
 
@@ -238,20 +246,21 @@ class VectorFieldGraph(ObjectGraph,GeometricVectorField):
 
     See the function VectorField and GeometricVectorField.graph for documentation.
     """
-    def __init__(self,F,draw_points):
-        ObjectGraph.__init__(self,F)
-        GeometricVectorField.__init__(self,F.fx,F.fy)
-        self.vector_field=F
-        self.F=self.vector_field
-        self.draw_points=draw_points
+
+    def __init__(self, F, draw_points):
+        ObjectGraph.__init__(self, F)
+        GeometricVectorField.__init__(self, F.fx, F.fy)
+        self.vector_field = F
+        self.F = self.vector_field
+        self.draw_points = draw_points
 
     @lazy_attribute
     def draw_vectors(self):
         """
         the list of vectors to be drawn
         """
-        l=[]
-        return  [self(P) for P in self.draw_points] 
+        l = []
+        return [self(P) for P in self.draw_points]
 
     @lazy_attribute
     def pos_x(self):
@@ -265,7 +274,7 @@ class VectorFieldGraph(ObjectGraph,GeometricVectorField):
         If `self` was created using the optional argument `draw_points`,
         then the set of points on which there is a vector
         is not equal to the Cartesian product `self.pos_x` times `self.pos_y`
-        
+
         EXAMPLES:
 
         The two lists created in the following example are the same::
@@ -292,7 +301,7 @@ class VectorFieldGraph(ObjectGraph,GeometricVectorField):
 
         """
         l = []
-        for P in self.draw_points :
+        for P in self.draw_points:
             if P.x not in l:
                 l.append(P.x)
         l.sort()
@@ -306,25 +315,28 @@ class VectorFieldGraph(ObjectGraph,GeometricVectorField):
         See pos_x
         """
         l = []
-        for P in self.draw_points :
+        for P in self.draw_points:
             if P.y not in l:
                 l.append(P.y)
         l.sort()
         return l
 
-    def _math_bounding_box(self,pspict):
+    def _math_bounding_box(self, pspict):
         return self.bounding_box(pspict)
-    def _bounding_box(self,pspict=None):
+
+    def _bounding_box(self, pspict=None):
         bb = BoundingBox()
         for v in self.draw_vectors:
-            bb.append(v,pspict)
+            bb.append(v, pspict)
         return bb
-    def latex_code(self,language=None,pspict=None):
-        code=[]
+
+    def latex_code(self, language=None, pspict=None):
+        code = []
         for v in self.draw_vectors:
-            v.parameters=self.parameters.copy()
-            code.append(v.latex_code(language=language,pspict=pspict))
+            v.parameters = self.parameters.copy()
+            code.append(v.latex_code(language=language, pspict=pspict))
         return "\n".join(code)
+
 
 def draw_to_fill(text):
     r"""
@@ -340,12 +352,12 @@ def draw_to_fill(text):
      There are also interpolations curves whose come like that :
        \draw [...] plot [smooth,tension=1] coordinates {(x1,y2)(x2,y2)} 
     """
-    t1=text.replace("\draw","").replace(";","")
-    bracket=first_bracket(t1)
-    t2=t1.replace(bracket,"")
-    t3=t2.strip()
-    if "coordinates" in t3 :
+    t1 = text.replace("\draw", "").replace(";", "")
+    bracket = first_bracket(t1)
+    t2 = t1.replace(bracket, "")
+    t3 = t2.strip()
+    if "coordinates" in t3:
         return t3
-    else :
-        answer=t3.replace("plot","plot "+bracket)
+    else:
+        answer = t3.replace("plot", "plot "+bracket)
     return answer

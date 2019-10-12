@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,13 +14,7 @@
 ###########################################################################
 
 
-# copyright (c) Laurent Claessens, 2009-2017
+# copyright (c) Laurent Claessens, 2009-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-
-# This is a blank file for the sake of import.
-
-
-from __future__ import division
-from __future__ import unicode_literals
-
+"""This is a blank file for the sake of import."""

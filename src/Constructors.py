@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module phystricks
 #
@@ -17,46 +15,24 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright(c) Laurent Claessens, 2010-2017
+# copyright(c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from sage.all import pi,PolynomialRing,QQ,symbolic_expression,sin,cos,prod
+from sage.all import pi, PolynomialRing, QQ, symbolic_expression
+from sage.all import sin, cos, prod
 
-def BoundingBox(P1=None,P2=None,xmin=1000,xmax=-1000,ymin=1000,ymax=-1000,parent=None,mother=None,math=False):
-    from phystricks.src.BoundingBox import BoundingBox_class
-    return BoundingBox_class(P1,P2,xmin,xmax,ymin,ymax,parent,mother,math)
-
-def Point(x,y):
-    """
-    return a point.
-
-    INPUT:
-
-    - ``x,y`` - the coordinates of the point. These are numbers.
+from phystricks.src.BoundingBox import BoundingBox_class
+from phystricks.src.PointGraph import PointGraph
+from phystricks.src.AffineVectorGraph import AffineVectorGraph
+from phystricks.src.SegmentGraph import SegmentGraph
+from phystricks.src.SegmentGraph import SegmentGraph
 
 
-    EXAMPLES::
+def BoundingBox(P1=None, P2=None, xmin=1000, xmax=-1000, ymin=1000, ymax=-1000, parent=None, mother=None, math=False):
+    return BoundingBox_class(P1, P2, xmin, xmax, ymin, ymax, parent, mother, math)
 
-        sage: from phystricks import *
-        sage: print Point(1,1)
-        <Point(1,1)>
-        sage: print Point(pi,sqrt(2))
-        <Point(pi,sqrt(2))>
-    
-    You can pass variables::
 
-        sage: x=var('x')
-        sage: P=Point(x**2,1)   
-        sage: print P
-        <Point(x^2,1)>
-
-    Notice that the coordinates of the point have to be numerical in order to be passed to tikz (and then LaTeX) at the end::
-
-    """
-    from phystricks.src.PointGraph import PointGraph
-    return PointGraph(x,y)
-
-def PolarPoint(r,theta):
+def PolarPoint(r, theta):
     """
     return the point at polar coordinates (r,theta).
 
@@ -73,9 +49,10 @@ def PolarPoint(r,theta):
 
 
     """
-    return Point(r*cos(radian(theta)),r*sin(radian(theta)))
+    return Point(r*cos(radian(theta)), r*sin(radian(theta)))
 
-def Segment(A,B=None,vector=None):
+
+def Segment(A, B=None, vector=None):
     """
     Creates a segment.
 
@@ -83,42 +60,40 @@ def Segment(A,B=None,vector=None):
     An alternative is to provide a point and a vector.
     """
     if vector:
-        B=A.translate(vector)
-    from phystricks.src.SegmentGraph import SegmentGraph
-    return SegmentGraph(A,B)
+        B = A.translate(vector)
+    return SegmentGraph(A, B)
 
-def PolarSegment(P,r,theta):
+
+def PolarSegment(P, r, theta):
     """
     return a segment on the base point P (class Point) of 
     length r and angle theta (degree)
     """
     alpha = radian(theta)
-    import SegmentGraph
-    return Segment(P, Point(P.x+r*cos(alpha),P.y+r*sin(alpha)) )
+    return Segment(P, Point(P.x+r*cos(alpha), P.y+r*sin(alpha)))
 
-def AffineVector(A=None,B=None):
+
+def AffineVector(A=None, B=None):
     """
     return an affine vector.
 
     An affine vector is a vector whose origin is not specifically (0,0).
 
     EXAMPLES:
-        
+
     An affine vector can be given by two points::
 
         sage: from phystricks import *
         sage: print AffineVector(Point(1,1),Point(pi,sqrt(2)))
         <vector I=<Point(1,1)> F=<Point(pi,sqrt(2))>>
     """
-    from phystricks.src.AffineVectorGraph import AffineVectorGraph
-    from phystricks.src.PointGraph import PointGraph
-    from phystricks.src.SegmentGraph import SegmentGraph
-    if isinstance(A,PointGraph):
-        return AffineVectorGraph(A,B)
-    if isinstance(A,SegmentGraph):
-        return AffineVector(A.I,A.F)
+    if isinstance(A, PointGraph):
+        return AffineVectorGraph(A, B)
+    if isinstance(A, SegmentGraph):
+        return AffineVector(A.I, A.F)
 
-def Vector(A,B=None):
+
+def Vector(A, B=None):
     """
     return a vector from (0,0) to the given point.
 
@@ -127,16 +102,18 @@ def Vector(A,B=None):
     Vector(t)  # if 't' is a tuple of two numbers
     """
     from phystricks.src.PointGraph import PointGraph
-    O=Point(0,0)        # Was (0,1) up to December 29, 2016
-    if isinstance(A,PointGraph):
-        return AffineVector(O,A)
-    if isinstance(A,tuple):
-        if len(A)!=2 :
-            raise TypeError("You can define a vector from a tuple of length 2, not "+str(len(other)))
-        return AffineVector(O,Point( A[0],A[1]  ))
-    return AffineVector(Point(0,0),Point(A,B))
+    O = Point(0, 0)        # Was (0,1) up to December 29, 2016
+    if isinstance(A, PointGraph):
+        return AffineVector(O, A)
+    if isinstance(A, tuple):
+        if len(A) != 2:
+            raise TypeError(
+                "You can define a vector from a tuple of length 2, not "+str(len(other)))
+        return AffineVector(O, Point(A[0], A[1]))
+    return AffineVector(Point(0, 0), Point(A, B))
 
-def Circle(center,radius,angleI=0,angleF=360,visual=False,pspict=None):
+
+def Circle(center, radius, angleI=0, angleF=360, visual=False, pspict=None):
     """
     Return a circle of given radius and center.
 
@@ -145,7 +122,7 @@ def Circle(center,radius,angleI=0,angleF=360,visual=False,pspict=None):
     - ``center`` - the center of the circle.
 
     - ``radius`` - the radius of the circle.
-    
+
     - ``angleI`` - (default=0) If you want an arc of circle, this is the beginning angle.
     - ``angleF`` - (default=0) If you want an arc of circle, this is the ending angle.
     - ``visual`` - (default=False) if 'True', the radius is taken as a 'visual' length. This option only affects the underlying parametric curve and then the graph. It is probably buggy to attempt to get normal and tangent vectors when a dilatation is performed when 'visual' is True.
@@ -167,20 +144,21 @@ def Circle(center,radius,angleI=0,angleF=360,visual=False,pspict=None):
 
     """
     # TODO: in the last example, the radian value should be 2*pi.
-    if visual and not pspict :
+    if visual and not pspict:
         print("You cannot try to use 'visual' not giving a pspicture")
         raise ValueError
     import CircleGraph
-    return CircleGraph.CircleGraph(center,radius,angleI=angleI,angleF=angleF,visual=visual,pspict=pspict)
+    return CircleGraph.CircleGraph(center, radius, angleI=angleI, angleF=angleF, visual=visual, pspict=pspict)
 
-def CircleOA(O,A):
+
+def CircleOA(O, A):
     """
     From the centrer O and a point A, return the circle.
 
     INPUT:
 
     - ``O`` - a point that will be the center of the circle.
-    
+
     - ``A`` - a point on the circle.
 
     OUTPUT:
@@ -197,30 +175,34 @@ def CircleOA(O,A):
         sqrt(5)
 
     """
-    radius=distance(O,A)
-    return Circle(O,radius)
+    radius = distance(O, A)
+    return Circle(O, radius)
 
-def CircleAB(A,B):
+
+def CircleAB(A, B):
     """
     return a circle with diameter [AB]
     """
-    center=Segment(A,B).midpoint()
-    return CircleOA(center,A)
+    center = Segment(A, B).midpoint()
+    return CircleOA(center, A)
 
-def CircularSector(center,radius,a,b):
-    circle=Circle(center,radius)
-    P=circle.get_point(a)
-    Q=circle.get_point(b)
-    l1=Segment( circle.center,P  )
-    l2=circle.graph(a,b)
-    l3=Segment(Q,circle.center)
-    return CustomSurface(l1,l2,l3)
 
-def FractionPieDiagram(center,radius,a,b):
+def CircularSector(center, radius, a, b):
+    circle = Circle(center, radius)
+    P = circle.get_point(a)
+    Q = circle.get_point(b)
+    l1 = Segment(circle.center, P)
+    l2 = circle.graph(a, b)
+    l3 = Segment(Q, circle.center)
+    return CustomSurface(l1, l2, l3)
+
+
+def FractionPieDiagram(center, radius, a, b):
     from phystricks.src.MiscGraph import FractionPieDiagramGraph
-    return FractionPieDiagramGraph(center,radius,a,b)
+    return FractionPieDiagramGraph(center, radius, a, b)
 
-def Mark(graph=None,dist=None,angle=None,central_point=None,text="",mark_point=None,position=None,pspict=None):
+
+def Mark(graph=None, dist=None, angle=None, central_point=None, text="", mark_point=None, position=None, pspict=None):
     """
     Describe a mark on a point.
 
@@ -246,10 +228,11 @@ def Mark(graph=None,dist=None,angle=None,central_point=None,text="",mark_point=N
     """
     import MarkGraph
     from phystricks.src.NoMathUtilities import ensure_unicode
-    text=ensure_unicode(text)
-    return MarkGraph.MarkGraph(graph,dist,angle,text,central_point=central_point,mark_point=mark_point,position=position,pspict=pspict)
+    text = ensure_unicode(text)
+    return MarkGraph.MarkGraph(graph, dist, angle, text, central_point=central_point, mark_point=mark_point, position=position, pspict=pspict)
 
-def AngleAOB(A,O,B,r=None):
+
+def AngleAOB(A, O, B, r=None):
     """
     Return the angle AOB.
 
@@ -287,15 +270,17 @@ def AngleAOB(A,O,B,r=None):
 
     """
     from phystricks.src.AngleGraph import AngleGraph
-    return AngleGraph(A,O,B,r)
+    return AngleGraph(A, O, B, r)
 
-def Angle(A,O,B,r=None):
+
+def Angle(A, O, B, r=None):
     raise DeprecationWarning
     from NoMathUtilities import logging
     logging("Warning : You should use 'AngleAOB' instead of 'Angle'")
-    return AngleAOB(A,O,B,r=r)
+    return AngleAOB(A, O, B, r=r)
 
-def phyFunction(fun,mx=None,Mx=None):
+
+def phyFunction(fun, mx=None, Mx=None):
     """
     Represent a function.
 
@@ -305,7 +290,7 @@ def phyFunction(fun,mx=None,Mx=None):
     - ``mx,Mx`` - initial and final value of the argument.
 
     EXAMPLES::
-    
+
         sage: from phystricks import *
         sage: f=phyFunction(cos(x))
         sage: f(pi/2)
@@ -336,20 +321,21 @@ def phyFunction(fun,mx=None,Mx=None):
     from phystricks.src.phyFunctionGraph import phyFunctionGraph
     # The first try is that the given expression is already a phyFunction.
     try:
-        return fun.graph(mx,Mx)     
-    except (AttributeError,TypeError):
+        return fun.graph(mx, Mx)
+    except (AttributeError, TypeError):
         pass
 
     # The second try is that `fun` is something that Sage knows.
     try:
-        sy=symbolic_expression(fun)
+        sy = symbolic_expression(fun)
     except TypeError:   # Happens with probability distributions.
-        return phyFunctionGraph(fun,mx,Mx)
+        return phyFunctionGraph(fun, mx, Mx)
 
-    x=var('x')
-    return phyFunctionGraph(sy.function(x),mx,Mx)
+    x = var('x')
+    return phyFunctionGraph(sy.function(x), mx, Mx)
 
-def ParametricCurve(f1,f2,interval=(None,None)):
+
+def ParametricCurve(f1, f2, interval=(None, None)):
     """
     Construct a parametric curve from its two Cartesian coordinates functions.
 
@@ -379,20 +365,21 @@ def ParametricCurve(f1,f2,interval=(None,None)):
     .. image:: Picture_FIGLabelFigCycloidePICTCycloide-for_eps.png
 
     """
-    llamI=interval[0]
-    llamF=interval[1]
-    if "mx" in dir(f1) :
+    llamI = interval[0]
+    llamF = interval[1]
+    if "mx" in dir(f1):
         if f1.mx != None:
-            llamI=f1.mx
-            llamF=f1.Mx
-    f1=EnsurephyFunction(f1)
-    f2=EnsurephyFunction(f2)
-    if isinstance(llamI,AngleMeasure):
+            llamI = f1.mx
+            llamF = f1.Mx
+    f1 = EnsurephyFunction(f1)
+    f2 = EnsurephyFunction(f2)
+    if isinstance(llamI, AngleMeasure):
         raise
     from phystricks.src.ParametricCurveGraph import ParametricCurveGraph
-    return ParametricCurveGraph(f1,f2,llamI,llamF)
+    return ParametricCurveGraph(f1, f2, llamI, llamF)
 
-def NonAnalyticPointParametricCurve(f,mx,Mx):
+
+def NonAnalyticPointParametricCurve(f, mx, Mx):
     """
     Describe a parametric curve when we have a function 'f' that associates a Point from a value of the parameter.
 
@@ -400,10 +387,10 @@ def NonAnalyticPointParametricCurve(f,mx,Mx):
     - mx,Mx  : the minimal and maximal values of the parameters.
     """
     from phystricks.src.NonAnalytic import NonAnalyticPointParametricCurveGraph
-    return NonAnalyticPointParametricCurveGraph(f,mx,Mx)
+    return NonAnalyticPointParametricCurveGraph(f, mx, Mx)
 
 
-def InterpolationCurve(points_list,context_object=None,mode=None):
+def InterpolationCurve(points_list, context_object=None, mode=None):
     """
     determine an interpolation curve from a list of points.
 
@@ -427,7 +414,7 @@ def InterpolationCurve(points_list,context_object=None,mode=None):
         sage: F=InterpolationCurve([Point(0,0),Point(0.5,0.5),Point(1,1)])
 
     The following draws a circle::
-    
+
         sage: C=Circle(Point(0,0),1)
         sage: G=InterpolationCurve([C.get_point(2*pi/i,advised=False) for i in range(1,100)])
 
@@ -438,9 +425,10 @@ def InterpolationCurve(points_list,context_object=None,mode=None):
     InterpolationCurve is used in order to produce implicit plot and wavy functions.
     """
     import InterpolationCurveGraph
-    return InterpolationCurveGraph.InterpolationCurveGraph(points_list,context_object,mode=mode)
+    return InterpolationCurveGraph.InterpolationCurveGraph(points_list, context_object, mode=mode)
 
-def MeasureLength(seg,dist=0.1):
+
+def MeasureLength(seg, dist=0.1):
     """
     When a segment exists, one wants sometimes to denote its length drawing a double-arrow parallel to the segment. This is what this class is intended to.
 
@@ -465,7 +453,7 @@ def MeasureLength(seg,dist=0.1):
 
     .. literalinclude:: phystricksIntervalleUn.py
     .. image:: Picture_FIGLabelFigIntervallePICTIntervalle-for_eps.png
-    
+
     In order to check the position of the arrow line,
     we check the position of the mark_point::
 
@@ -493,7 +481,7 @@ def MeasureLength(seg,dist=0.1):
         sage: print measureOB.mark_point()
         <Point(0.100000000000000,1.0)>
 
-        
+
 
     USEFUL ATTRIBUTE:
 
@@ -511,8 +499,9 @@ def MeasureLength(seg,dist=0.1):
     You are invited to use advised_mark_angle. If not the position of the mark
     could be unpredictable.
     """
-    from phystricks.src.MeasureLengthGraph  import MeasureLengthGraph
-    return MeasureLengthGraph(seg,dist)
+    from phystricks.src.MeasureLengthGraph import MeasureLengthGraph
+    return MeasureLengthGraph(seg, dist)
+
 
 def CustomSurface(*args):
     """
@@ -522,10 +511,10 @@ def CustomSurface(*args):
     - ``*args`` - la tuple of lines like segments, functions, parametric curves.
 
     EXAMPLE:
-  
+
     The following describes the surface between the circle of radius 1 and 
     the square of length 1::
-    
+
         sage: from phystricks import *
         sage: C=Circle(Point(0,0),1)
         sage: arc=C.parametric_curve(0,pi/2)
@@ -537,29 +526,32 @@ def CustomSurface(*args):
 
     This is somewhat the more general use of the pstricks's macro \pscustom
     """
-    if len(args)==1:        # This is in the case in which we give a tuple or a list directly
-        a=args[0]
-    else :
-        a=args
+    if len(args) == 1:        # This is in the case in which we give a tuple or a list directly
+        a = args[0]
+    else:
+        a = args
     from phystricks.src.CustomSurfaceGraph import CustomSurfaceGraph
     return CustomSurfaceGraph(list(a))
 
-def RightAngle(d1,d2,n1=0,n2=1,r=0.3):
+
+def RightAngle(d1, d2, n1=0, n2=1, r=0.3):
     """
     'd1' and 'd2' are the two lines.
     'r' is the size of the "edge"
     'n1' and 'n2' are 0 ot 1 and are determining which of the 4 angles has to be marked (two lines -> 4 angles)
     """
     from phystricks.src.AngleGraph import RightAngleGraph
-    return RightAngleGraph(d1,d2,r,n1,n2)
+    return RightAngleGraph(d1, d2, r, n1, n2)
 
-def RightAngleAOB(A,O,B,n1=0,n2=1,r=0.3):
+
+def RightAngleAOB(A, O, B, n1=0, n2=1, r=0.3):
     """
     return the right angle between Segment(A,O) and Segment(O,B)
     """
-    return RightAngle( Segment(A,O),Segment(O,B),n1,n2,r  ) 
+    return RightAngle(Segment(A, O), Segment(O, B), n1, n2, r)
 
-def PolarCurve(fr,ftheta=None):
+
+def PolarCurve(fr, ftheta=None):
     """
     return the parametric curve (:class:`ParametricCurve`) corresponding to the 
     curve of equation r=f(theta) in polar coordinates.
@@ -573,19 +565,20 @@ def PolarCurve(fr,ftheta=None):
     y(t)=fr(t)sin( ftheta(t) )
 
     EXAMPLES::
-    
+
     .. literalinclude:: phystricksCardioid.py
     .. image:: Picture_FIGLabelFigCardioidPICTCardioid-for_eps.png
 
     """
-    x=var('x')
-    if ftheta==None :
-        f1=fr*cos(x)
-        f2=fr*sin(x)
+    x = var('x')
+    if ftheta == None:
+        f1 = fr*cos(x)
+        f2 = fr*sin(x)
     else:
-        f1=fr(x=x)*cos(ftheta(x=x))
-        f2=fr(x=x)*sin(ftheta(x=x))
-    return ParametricCurve(f1,f2)
+        f1 = fr(x=x)*cos(ftheta(x=x))
+        f2 = fr(x=x)*sin(ftheta(x=x))
+    return ParametricCurve(f1, f2)
+
 
 def LagrangePolynomial(*args):
     """
@@ -594,17 +587,18 @@ def LagrangePolynomial(*args):
 
     You can either provide a list of points or some points.
     """
-    #http://ask.sagemath.org/question/1815/polynomialring-and-from-__future__-import
-    points_list=[]
-    for arg in args :
+    # http://ask.sagemath.org/question/1815/polynomialring-and-from-__future__-import
+    points_list = []
+    for arg in args:
         try:
-            for P in arg :
+            for P in arg:
                 points_list.append(P)
-        except TypeError :
+        except TypeError:
             points_list.append(arg)
-    R = PolynomialRing(QQ,str('x'))
-    f = R.lagrange_polynomial([   (float(P.x),float(P.y)) for P in points_list  ])
+    R = PolynomialRing(QQ, str('x'))
+    f = R.lagrange_polynomial([(float(P.x), float(P.y)) for P in points_list])
     return phyFunction(f)
+
 
 def HermiteInterpolation(points_list):
     """
@@ -621,23 +615,24 @@ def HermiteInterpolation(points_list):
     2*x^3 - x^2 + 3*x + 10
 
     """
-    x=var('x')
-    n=len(points_list)
-    xx={ i:points_list[i][0] for i in range(0,n) }
-    y={ i:points_list[i][1] for i in range(0,n) }
-    d={ i:points_list[i][2] for i in range(0,n) }
+    x = var('x')
+    n = len(points_list)
+    xx = {i: points_list[i][0] for i in range(0, n)}
+    y = {i: points_list[i][1] for i in range(0, n)}
+    d = {i: points_list[i][2] for i in range(0, n)}
 
-    b={ i:(x-xx[i])**2 for i in range(0,n) }
+    b = {i: (x-xx[i])**2 for i in range(0, n)}
 
-    Q={}
-    for j in range(0,n):
-        Q[j]=prod(    [  b[i] for i in range(0,n) if i <> j  ]   )
-    P={}
-    for j in range(0,n):
-        parenthese=1-(x-xx[j])*Q[j].diff(x)(xx[j])/Q[j](xx[j])
-        P[j]=(Q[j](x)/Q[j](xx[j]))*(    parenthese*y[j]+(x-xx[j])*d[j]      )
-    f=sum(P.values())
+    Q = {}
+    for j in range(0, n):
+        Q[j] = prod([b[i] for i in range(0, n) if i != j])
+    P = {}
+    for j in range(0, n):
+        parenthese = 1-(x-xx[j])*Q[j].diff(x)(xx[j])/Q[j](xx[j])
+        P[j] = (Q[j](x)/Q[j](xx[j]))*(parenthese*y[j]+(x-xx[j])*d[j])
+    f = sum(P.values())
     return phyFunction(f.expand())
+
 
 def Polygon(*args):
     """
@@ -649,13 +644,14 @@ def Polygon(*args):
     .. image:: Picture_FIGLabelFigExPolygonePICTExPolygone-for_eps.png
     """
     from phystricks.src.PolygonGraph import PolygonGraph
-    if len(args)==1:     # In this case, we suppose that this is a list
+    if len(args) == 1:     # In this case, we suppose that this is a list
         # args is a tupe containing the arguments. If you call
         # Polygon([P,Q]) then args[0] is [P,Q]
         return PolygonGraph(args[0])
     return PolygonGraph(list(args))
 
-def Rectangle(*args,**arg):
+
+def Rectangle(*args, **arg):
     """
     INPUT:
 
@@ -665,34 +661,39 @@ def Rectangle(*args,**arg):
 
     Still alternatively, you can pass xmin,ymin,xmax,ymax
     """
-    if len(args)==2:
-        NW=args[0]
-        SE=args[1]
-    if len(args)==1:
-        NW=args[0].NW()
-        SE=args[0].SE()
-    if "xmin" in arg.iterkeys() :
-        bb=BoundingBox(xmin=arg["xmin"],ymin=arg["ymin"],xmax=arg["xmax"],ymax=arg["ymax"])
+    if len(args) == 2:
+        NW = args[0]
+        SE = args[1]
+    if len(args) == 1:
+        NW = args[0].NW()
+        SE = args[0].SE()
+    if "xmin" in arg.iterkeys():
+        bb = BoundingBox(xmin=arg["xmin"], ymin=arg["ymin"],
+                         xmax=arg["xmax"], ymax=arg["ymax"])
         # TODO : I should be able to pass directly the dictionary to BoundingBox
-        NW=bb.getVertex("NW")
-        SE=bb.getVertex("SE")
-    if "mx" in arg.iterkeys() :
-        bb=BoundingBox(xmin=arg["mx"],ymin=arg["my"],xmax=arg["Mx"],ymax=arg["My"])
+        NW = bb.getVertex("NW")
+        SE = bb.getVertex("SE")
+    if "mx" in arg.iterkeys():
+        bb = BoundingBox(xmin=arg["mx"], ymin=arg["my"],
+                         xmax=arg["Mx"], ymax=arg["My"])
         # TODO : I should be able to pass directly the dictionary to BoundingBox
-        NW=bb.getVertex("NW")
-        SE=bb.getVertex("SE")
+        NW = bb.getVertex("NW")
+        SE = bb.getVertex("SE")
     from phystricks.src.RectangleGraph import RectangleGraph
-    return RectangleGraph(NW,SE)
+    return RectangleGraph(NW, SE)
 
-def Circle3D(op,O,A,B,angleI=0,angleF=2*pi):
+
+def Circle3D(op, O, A, B, angleI=0, angleF=2*pi):
     from phystricks.src.PerspectiveGraphs import Circle3DGraph
-    return Circle3DGraph(op,O,A,B,angleI,angleF)
+    return Circle3DGraph(op, O, A, B, angleI, angleF)
 
-def Vector3D(x,y,z):
+
+def Vector3D(x, y, z):
     from phystricks.src.PerspectiveGraphs import Vector3DGraph
-    return Vector3DGraph(x,y,z)
+    return Vector3DGraph(x, y, z)
 
-def Cuboid(op,P,a,b,c):
+
+def Cuboid(op, P, a, b, c):
     """
     - `op` -- the projection method.
     - `P` -- tuple (x,y) giving the lower left point
@@ -711,25 +712,28 @@ def Cuboid(op,P,a,b,c):
 
     """
     from phystricks.src.PerspectiveGraphs import CuboidGraph
-    return CuboidGraph(op,P,a,b,c)
+    return CuboidGraph(op, P, a, b, c)
+
 
 def Grid(bb):
     from phystricks.src.GridGraph import GridGraph
     return GridGraph(bb)
 
-def Axes(C,bb,pspict=None):
+
+def Axes(C, bb, pspict=None):
     """
     Describe a system of axes (two axes).
 
     By default they are orthogonal.
     """
     from phystricks.src.AxesGraph import AxesGraph
-    return AxesGraph(C,bb,pspict)
+    return AxesGraph(C, bb, pspict)
 
-def SingleAxe(C,base,mx,Mx,pspict=None):
+
+def SingleAxe(C, base, mx, Mx, pspict=None):
     """
     Return an axe.
-    
+
     INPUT:
 
     - ``C`` - the center of the axe. This is the point corresponding to the "zero" coordinate
@@ -754,33 +758,35 @@ def SingleAxe(C,base,mx,Mx,pspict=None):
     If an user-defined axes_unit is given, the length of ``base`` is "forgotten"
 
     EXAMPLES::
-    
+
         sage: from phystricks import *
         sage: axe = SingleAxe(Point(1,1),Vector(0,1),-2,2)
         """
     from phystricks.src.SingleAxeGraph import SingleAxeGraph
-    return SingleAxeGraph(C,base,mx,Mx,pspict)
+    return SingleAxeGraph(C, base, mx, Mx, pspict)
 
-def intervals(curve1,curve2,interval,interval1,interval2):
+
+def intervals(curve1, curve2, interval, interval1, interval2):
     if interval:
-        mx1=interval[0]
-        Mx1=interval[1]
-        mx2=interval[0]
-        Mx2=interval[1]
-        return mx1,Mx1,mx2,Mx2
+        mx1 = interval[0]
+        Mx1 = interval[1]
+        mx2 = interval[0]
+        Mx2 = interval[1]
+        return mx1, Mx1, mx2, Mx2
     if interval1:
-        mx1=interval1[0]
-        Mx1=interval1[1]
-    else: 
-        mx1,Mx1=extract_interval_information(curve1)
+        mx1 = interval1[0]
+        Mx1 = interval1[1]
+    else:
+        mx1, Mx1 = extract_interval_information(curve1)
     if interval2:
-        mx2=interval2[0]
-        Mx2=interval2[1]
-    else: 
-        mx2,Mx2=extract_interval_information(curve2)
-    return mx1,Mx1,mx2,Mx2
+        mx2 = interval2[0]
+        Mx2 = interval2[1]
+    else:
+        mx2, Mx2 = extract_interval_information(curve2)
+    return mx1, Mx1, mx2, Mx2
 
-def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,interval1=None,interval2=None,reverse1=False,reverse2=True):
+
+def SurfaceBetweenParametricCurves(curve1, curve2, interval=None, interval1=None, interval2=None, reverse1=False, reverse2=True):
     """
     Represents a surface between two parametric curves.
 
@@ -815,7 +821,7 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,interval1=None,in
     Fsegment:    B1 -> B2
     curve2:        A2 -> B2
     Isegment:   A2 -> A1
-        
+
     This is wrong since the last point of each line is not the first
     point of the next line.
 
@@ -873,7 +879,7 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,interval1=None,in
 
     NOTE:
     If the two curves make intersections, the result could be messy.
-    
+
     .. literalinclude:: phystricksBetweenParametric.py
     .. image:: Picture_FIGLabelFigBetweenParametricPICTBetweenParametric-for_eps.png
 
@@ -881,56 +887,58 @@ def SurfaceBetweenParametricCurves(curve1,curve2,interval=None,interval1=None,in
     from phystricks.src.CircleGraph import CircleGraph
     from phystricks.src.SegmentGraph import SegmentGraph
     from phystricks.src.Utilities import EnsureParametricCurve
-    exceptions = [CircleGraph,SegmentGraph]
+    exceptions = [CircleGraph, SegmentGraph]
 
-    on=True
-    for ex in exceptions :
-        if isinstance(curve1,ex):
-            on=False
+    on = True
+    for ex in exceptions:
+        if isinstance(curve1, ex):
+            on = False
     if on:
-        iz11=curve1.f1.nul_function
-        iz21=curve2.f1.nul_function
+        iz11 = curve1.f1.nul_function
+        iz21 = curve2.f1.nul_function
 
-    on=True
-    for ex in exceptions :
-        if isinstance(curve2,ex):
-            on=False
+    on = True
+    for ex in exceptions:
+        if isinstance(curve2, ex):
+            on = False
     if on:
-        iz22=curve2.f2.nul_function
-        iz12=curve1.f2.nul_function
+        iz22 = curve2.f2.nul_function
+        iz12 = curve1.f2.nul_function
 
+    mx = [None, None]
+    Mx = [None, None]
+    mx[0], Mx[0], mx[1], Mx[1] = intervals(
+        curve1, curve2, interval, interval1, interval2)
 
-    mx=[None,None]
-    Mx=[None,None]
-    mx[0],Mx[0],mx[1],Mx[1]=intervals(curve1,curve2,interval,interval1,interval2)
+    curve = [curve1, curve2]
 
-    curve=[curve1,curve2]
+    for i in [0, 1]:
+        curve[i] = EnsureParametricCurve(curve[i]).graph(mx[i], Mx[i])
 
-    for i in [0,1]:
-        curve[i]=EnsureParametricCurve(curve[i]).graph(mx[i],Mx[i])
+    c1 = curve[0]
+    c2 = curve[1]
+    mx1 = mx[0]
+    mx2 = mx[1]
+    Mx1 = Mx[0]
+    Mx2 = Mx[1]
 
-    c1=curve[0]
-    c2=curve[1]
-    mx1=mx[0]
-    mx2=mx[1]
-    Mx1=Mx[0]
-    Mx2=Mx[1]
-
-    try :
-        c1.f1.nul_function=iz11
-        c1.f2.nul_function=iz12
-        c2.f1.nul_function=iz21
-        c2.f2.nul_function=iz22
-    except UnboundLocalError :
+    try:
+        c1.f1.nul_function = iz11
+        c1.f2.nul_function = iz12
+        c2.f1.nul_function = iz21
+        c2.f2.nul_function = iz22
+    except UnboundLocalError:
         pass
 
     from phystricks.src.SurfacesGraph import SurfaceBetweenParametricCurvesGraph
-    surf = SurfaceBetweenParametricCurvesGraph(c1,c2,(mx1,mx2),(Mx1,Mx2),reverse1,reverse2)
+    surf = SurfaceBetweenParametricCurvesGraph(
+        c1, c2, (mx1, mx2), (Mx1, Mx2), reverse1, reverse2)
 
-    surf.add_option("fillstyle=vlines,linestyle=none")  
+    surf.add_option("fillstyle=vlines,linestyle=none")
     return surf
 
-def SurfaceUnderFunction(f,mx,Mx):
+
+def SurfaceUnderFunction(f, mx, Mx):
     """
     Represent a surface under a function.
 
@@ -951,22 +959,23 @@ def SurfaceUnderFunction(f,mx,Mx):
     .. literalinclude:: phystricksSurfaceFunction.py
     .. image:: Picture_FIGLabelFigSurfaceFunctionPICTSurfaceFunction-for_eps.png
 
-    
+
     .. literalinclude:: phystricksChiSquaresQuantile.py
     .. image:: Picture_FIGLabelFigChiSquaresQuantilePICTChiSquaresQuantile-for_eps.png
 
     """
     from phystricks.src.NonAnalytic import NonAnalyticFunctionGraph
-    if isinstance(f,NonAnalyticFunctionGraph):
-        line1=Segment(Point(mx,0),Point(Mx,0))
-        line2=f.parametric_curve(mx,Mx)
-        surf = SurfaceBetweenLines(line1,line2)
+    if isinstance(f, NonAnalyticFunctionGraph):
+        line1 = Segment(Point(mx, 0), Point(Mx, 0))
+        line2 = f.parametric_curve(mx, Mx)
+        surf = SurfaceBetweenLines(line1, line2)
         return surf
-    f2=phyFunction(0)
-    f2.nul_function=True  # See 2252914222
-    return SurfaceBetweenFunctions(f,f2,mx=mx,Mx=Mx)
+    f2 = phyFunction(0)
+    f2.nul_function = True  # See 2252914222
+    return SurfaceBetweenFunctions(f, f2, mx=mx, Mx=Mx)
 
-def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
+
+def SurfaceBetweenFunctions(f1, f2, mx=None, Mx=None):
     r"""
     Represents a surface between two functions.
 
@@ -1001,31 +1010,32 @@ def SurfaceBetweenFunctions(f1,f2,mx=None,Mx=None):
     .. image:: Picture_FIGLabelFigexSurfaceBetweenFunctionPICTexSurfaceBetweenFunction-for_eps.png
 
     """
-    mx1=mx
-    mx2=mx
-    Mx1=Mx
-    Mx2=Mx
-    if "mx" in dir(f1) and mx==None:
-        mx1=f1.mx
-        Mx1=f1.Mx
-    if "mx" in dir(f2) and mx==None:
-        mx2=f2.mx
-        Mx2=f2.Mx
+    mx1 = mx
+    mx2 = mx
+    Mx1 = Mx
+    Mx2 = Mx
+    if "mx" in dir(f1) and mx == None:
+        mx1 = f1.mx
+        Mx1 = f1.Mx
+    if "mx" in dir(f2) and mx == None:
+        mx2 = f2.mx
+        Mx2 = f2.Mx
     # The following is a precaution because it can happen that
     # f1 has a "mx" attribute which is set to None while
     # a mx is given here.
     if mx1 is None:
-        mx1=mx
+        mx1 = mx
     if Mx1 is None:
-        Mx1=Mx
+        Mx1 = Mx
     if mx2 is None:
-        mx2=mx
+        mx2 = mx
     if Mx2 is None:
-        Mx2=Mx
-    x=var('x')
-    curve1=ParametricCurve(x,f1,(mx1,Mx1))
-    curve2=ParametricCurve(x,f2,(mx2,Mx2))
-    return SurfaceBetweenParametricCurves(curve1,curve2,(mx1,Mx1),(mx,Mx2))
+        Mx2 = Mx
+    x = var('x')
+    curve1 = ParametricCurve(x, f1, (mx1, Mx1))
+    curve2 = ParametricCurve(x, f2, (mx2, Mx2))
+    return SurfaceBetweenParametricCurves(curve1, curve2, (mx1, Mx1), (mx, Mx2))
+
 
 def extract_interval_information(curve):
     """
@@ -1050,7 +1060,7 @@ def extract_interval_information(curve):
         sage: f=phyFunction(x**2).graph(1,pi)
         sage: extract_interval_information(f)
         (1, pi)
-         
+
         sage: from phystricks.BasicGeometricObjects import *
         sage: a=var('a')
         sage: curve=ParametricCurve(x,sin(x)).graph(sqrt(2),a)
@@ -1064,62 +1074,70 @@ def extract_interval_information(curve):
     """
     # For parametric curves
     if "llamI" in dir(curve):
-        return curve.llamI,curve.llamF
+        return curve.llamI, curve.llamF
     # for functions
     if "mx" in dir(curve):
-        return curve.mx,curve.Mx
+        return curve.mx, curve.Mx
     # for segments
     if "I" in dir(curve) and "F" in dir(curve):
-        return 0,curve.length()
+        return 0, curve.length()
     # for circles
     if "angleI" in dir(curve):
         # We know that circles are AngleI and AngleF that are of type 'AngleMeasure'
         # we are thus returning 'curve.angleI.radian' instead of 'curve.angleI'
-        return curve.angleI.radian,curve.angleF.radian
-    return None,None
+        return curve.angleI.radian, curve.angleF.radian
+    return None, None
 
-def SudokuGrid(question,length=1):
+
+def SudokuGrid(question, length=1):
     from phystricks.src.SudokuGridGraph import SudokuGridGraph
-    return SudokuGridGraph(question,length)
+    return SudokuGridGraph(question, length)
 
-def phyMatrix(nlines,ncolumns):
+
+def phyMatrix(nlines, ncolumns):
     from phystricks.src.MatrixGraph import MatrixGraph
-    return MatrixGraph(nlines,ncolumns)
+    return MatrixGraph(nlines, ncolumns)
 
-def EllipseOAB(O,A,B):
+
+def EllipseOAB(O, A, B):
     """
     An ellipse of center O and such that OA and OB are the axis 
     (OA and OB are supposed to be orthogonal)
     """
     from phystricks.src.EllipseGraph import EllipseGraph
-    return EllipseGraph(O,A,B)
+    return EllipseGraph(O, A, B)
 
-def BarDiagram(X,Y):
+
+def BarDiagram(X, Y):
     if len(X) != len(Y):
-        raise ValueError,"X and Y must be of the same size."
+        raise ValueError("X and Y must be of the same size.")
     from phystricks.src.BarDiagramGraph import BarDiagramGraph
-    return BarDiagramGraph(X,Y)
+    return BarDiagramGraph(X, Y)
 
-def Histogram(tuple_box_list,legende=None):
+
+def Histogram(tuple_box_list, legende=None):
     """
     An histogram is given by a list of tuple '(a,b,n)' where 'a' and 'b' are the extremal values of the box and 'n' is the number of elements in the box.
     """
     from phystricks.src.HistogramGraph import HistogramGraph
-    return HistogramGraph(tuple_box_list,legende)
+    return HistogramGraph(tuple_box_list, legende)
 
-def BoxDiagram(values,h,delta_y=0):
+
+def BoxDiagram(values, h, delta_y=0):
     from phystricks.src.BoxDiagramGraph import BoxDiagramGraph
-    return BoxDiagramGraph(values,h,delta_y)
+    return BoxDiagramGraph(values, h, delta_y)
 
-def Moustache(minimum,Q1,M,Q3,maximum,h,delta_y=0):
+
+def Moustache(minimum, Q1, M, Q3, maximum, h, delta_y=0):
     """
     Q1 and Q3 are first and third quartiles; M is the median.
     h is the size of the box
     """
     from phystricks.src.MoustacheGraph import MoustacheGraph
-    return MoustacheGraph(minimum,Q1,M,Q3,maximum,h,delta_y)
+    return MoustacheGraph(minimum, Q1, M, Q3, maximum, h, delta_y)
 
-def ImplicitCurve(f,xrange,yrange,plot_points=100):
+
+def ImplicitCurve(f, xrange, yrange, plot_points=100):
     """
     return the implicit curve given by equation f on the range xrange x yrange
 
@@ -1129,7 +1147,7 @@ def ImplicitCurve(f,xrange,yrange,plot_points=100):
     - ``f`` -- a function of two variables or equation in two variables
 
     - ``xrange,yrange`` - the range on which we want to compute the implicit curve.
-    
+
     OPTIONAL INPUT:
 
     - ``plot_points`` - (defautl : 100) the number of points that will be calculated in each direction. 
@@ -1165,38 +1183,41 @@ def ImplicitCurve(f,xrange,yrange,plot_points=100):
     Using Sage's implicit_curve and matplotlib, a list of points "contained" in the curve is created. The bounding_box is calculated from that list. The pstricsk code generated will be an interpolation curve passing trough all these points.
     """
     from phystricks.src.ImplicitCurve import GeometricImplicitCurve
-    return GeometricImplicitCurve(f).graph(xrange,yrange,plot_points=100)
+    return GeometricImplicitCurve(f).graph(xrange, yrange, plot_points=100)
+
 
 class ObliqueProjection(object):
-    def __init__(self,alpha,k):
+    def __init__(self, alpha, k):
         """
         This is the oblique projection of angle `alpha` and scale factor `k`.
 
         `alpha` is given in degree. It is immediately converted in order to have positive number. If you give -45, it will be converted to 315
         """
         from phystricks.src.MathStructures import AngleMeasure
-        self.k=k
-        if self.k>=1 :
+        self.k = k
+        if self.k >= 1:
             print("Are you sure that you want such a scale factor : ",
-                                                        float(self.k))
-        self.alpha=alpha
-        a=AngleMeasure(value_degree=self.alpha).positive()
-        self.alpha=a.degree
-        self.theta=radian(self.alpha)
-        self.kc=self.k*cos(self.theta)
-        self.ks=self.k*sin(self.theta)
-    def point(self,x,y,z):
-        return Point(x+z*self.kc,y+z*self.ks)
-    def cuboid(self,P,a,b,c):
+                  float(self.k))
+        self.alpha = alpha
+        a = AngleMeasure(value_degree=self.alpha).positive()
+        self.alpha = a.degree
+        self.theta = radian(self.alpha)
+        self.kc = self.k*cos(self.theta)
+        self.ks = self.k*sin(self.theta)
+
+    def point(self, x, y, z):
+        return Point(x+z*self.kc, y+z*self.ks)
+
+    def cuboid(self, P, a, b, c):
         """
         `P` -- a tupe (x,y) that gives the lower left point.
 
         `a,b,c` the size
         """
-        return Cuboid(self,P,a,b,c)
+        return Cuboid(self, P, a, b, c)
 
-def Text(P,text,hide=True):
 
+def Text(P, text, hide=True):
     """
     A text.
 
@@ -1211,9 +1232,10 @@ def Text(P,text,hide=True):
                     see :class:`BasicGeometricObjects.TextGraph`
 
     """
-    return BasicGeometricObjects.TextGraph(P,text,hide=hide)
+    return BasicGeometricObjects.TextGraph(P, text, hide=hide)
 
-def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
+
+def VectorField(fx, fy, xvalues=None, yvalues=None, draw_points=None):
     """
     return a vector field that is drawn on the points given in the list.
 
@@ -1278,8 +1300,9 @@ def VectorField(fx,fy,xvalues=None,yvalues=None,draw_points=None):
 
     """
     from phystricks.src.BasicGeometricObjects import GeometricVectorField
-    if xvalues is None and yvalues is None and draw_points is None :
-        return GeometricVectorField(fx,fy)
-    return GeometricVectorField(fx,fy).graph(xvalues,yvalues,draw_points)
+    if xvalues is None and yvalues is None and draw_points is None:
+        return GeometricVectorField(fx, fy)
+    return GeometricVectorField(fx, fy).graph(xvalues, yvalues, draw_points)
+
 
 from phystricks.src.Utilities import *

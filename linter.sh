@@ -22,4 +22,10 @@ lint_one_file()
     fi
 }
 
-for f in $(git ls-tree -r HEAD --name-only); do lint_one_file $f;done
+
+if [ $# -eq 0 ]; then
+    for f in $(git ls-tree -r HEAD --name-only); do lint_one_file $f;done
+else
+    lint_one_file $1
+fi
+

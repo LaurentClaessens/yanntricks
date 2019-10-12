@@ -1,5 +1,4 @@
 #!/bin/bash
-# -*- coding: utf8 -*-
 
 # This script launches the tests.
 
