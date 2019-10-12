@@ -18,13 +18,13 @@
 # copyright(c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from sage.all import pi, PolynomialRing, QQ, symbolic_expression
 from sage.all import sin, cos, prod
+from sage.all import pi, PolynomialRing, QQ, symbolic_expression
 
 from phystricks.src.point import Point
+from phystricks.src.AxesGraph import Axes
 from phystricks.src.segment import Segment
 from phystricks.src.GridGraph import GridGraph
-from phystricks.src.AxesGraph import AxesGraph
 from phystricks.src.MarkGraph import MarkGraph
 from phystricks.src.AngleGraph import AngleGraph
 from phystricks.src.CircleGraph import CircleGraph
@@ -329,7 +329,7 @@ def NonAnalyticPointParametricCurve(f, mx, Mx):
 
 
 def InterpolationCurve(points_list, context_object=None, mode=None):
-    """
+    r"""
     determine an interpolation curve from a list of points.
 
     INPUT:
@@ -441,7 +441,7 @@ def MeasureLength(seg, dist=0.1):
 
 
 def CustomSurface(*args):
-    """
+    r"""
     Represent the surface contained between some lines and (parametric) curves.
 
     INPUT:
@@ -653,51 +653,6 @@ def Cuboid(op, P, a, b, c):
 
 def Grid(bb):
     return GridGraph(bb)
-
-
-def Axes(C, bb, pspict=None):
-    """
-    Describe a system of axes (two axes).
-
-    By default they are orthogonal.
-    """
-    return AxesGraph(C, bb, pspict)
-
-
-def SingleAxe(C, base, mx, Mx, pspict=None):
-    """
-    Return an axe.
-
-    INPUT:
-
-    - ``C`` - the center of the axe. This is the point corresponding to the "zero" coordinate
-    - ``base`` - the unit of the axe. This indicates
-
-                1. the direction
-                2. the size of "1"
-
-                A mark will be added at each integer multiple of that vector (but zero) including negative.
-    - ``mx`` - the multiple of ``base`` at which the axe begins. This is typically negative
-    - ``Mx`` -  the multiple of ``base`` at which the axe ends. This is typically positive
-                    The axe goes from ``C+mx*base`` to ``C-Mx*base``. 
-
-    OTHER CONTROLS :
-
-    The default behaviour can be modified by the following attributes.
-
-    - ``self.Dx`` - (default=1) A mark is written each multiple of ``self.Dx*base``.
-    - ``self.mark_angle`` - the angle in degree under which the mark are written. By default this is orthogonal
-                        to the direction given by ``self.base``.
-
-    If an user-defined axes_unit is given, the length of ``base`` is "forgotten"
-
-    EXAMPLES::
-
-        sage: from phystricks import *
-        sage: axe = SingleAxe(Point(1,1),Vector(0,1),-2,2)
-        """
-    from phystricks.src.SingleAxeGraph import SingleAxeGraph
-    return SingleAxeGraph(C, base, mx, Mx, pspict)
 
 
 def intervals(curve1, curve2, interval, interval1, interval2):

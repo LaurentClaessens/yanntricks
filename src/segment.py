@@ -22,6 +22,7 @@ from sage.all import lazy_attribute, numerical_approx
 
 from phystricks.src.point import Point
 from phystricks.src.ObjectGraph import ObjectGraph, AddedObjects
+from phystricks.src.Utilities import distance
 
 
 def Segment(A, B=None, vector=None):
@@ -154,23 +155,12 @@ class Segment(ObjectGraph):
 
     @lazy_attribute
     def length(self):
-        """
-        return (a numerical approximation of) the length of the segment
-
-        EXAMPLES::
-
-            sage: from phystricks import *
-            sage: Segment(Point(1,1),Point(2,2)).length
-            sqrt(2)
-
-        """
+        """Return (a numerical approximation of) the length of the segment"""
         return numerical_approx(self.exact_length)
 
     @lazy_attribute
     def exact_length(self):
-        """
-        return the length of the segment.
-        """
+        """return the length of the segment."""
         return distance(self.I, self.F)
 
     def advised_mark_angle(self, pspict=None):

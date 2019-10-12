@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -18,8 +16,8 @@
 # copyright (c) Laurent Claessens, 2009-2017
 # email: laurent@claessens-donadello.eu
 
-from ObjectGraph import ObjectGraph
-from Constructors import *
+from phystricks.src.ObjectGraph import ObjectGraph
+
 
 class GridGraph(ObjectGraph):
     """
@@ -51,97 +49,106 @@ class GridGraph(ObjectGraph):
         sage: grid.main_horizontal.parameters.color = "red"
 
     """
-    def __init__(self,bb=None):
+
+    def __init__(self, bb=None):
         if bb is None:
-            bb=BasicGeometricObjects.BoundingBox()
-        ObjectGraph.__init__(self,self)
+            bb = BasicGeometricObjects.BoundingBox()
+        ObjectGraph.__init__(self, self)
         self.BB = bb
-        self.separator_name="GRID"
-        self.add_option({"Dx":1,"Dy":1})        # Default values, have to be integer.
+        self.separator_name = "GRID"
+        # Default values, have to be integer.
+        self.add_option({"Dx": 1, "Dy": 1})
         self.Dx = self.options.DicoOptions["Dx"]
         self.Dy = self.options.DicoOptions["Dy"]
         self.num_subX = 2
         self.num_subY = 2
         self.draw_border = False
-        self.draw_horizontal_grid=True
-        self.draw_vertical_grid=True
-        self.main_horizontal = Segment(Point(0,1),Point(1,1))
-        self.main_horizontal.parameters.color="gray"
+        self.draw_horizontal_grid = True
+        self.draw_vertical_grid = True
+        self.main_horizontal = Segment(Point(0, 1), Point(1, 1))
+        self.main_horizontal.parameters.color = "gray"
         self.main_horizontal.parameters.style = "solid"
-        self.main_vertical = Segment(Point(0,1),Point(1,1))
-        self.main_vertical.parameters.color="gray"
+        self.main_vertical = Segment(Point(0, 1), Point(1, 1))
+        self.main_vertical.parameters.color = "gray"
         self.main_vertical.parameters.style = "solid"
-        self.sub_vertical = Segment(Point(0,1),Point(1,1))
-        self.sub_vertical.parameters.color="gray"
+        self.sub_vertical = Segment(Point(0, 1), Point(1, 1))
+        self.sub_vertical.parameters.color = "gray"
         self.sub_vertical.parameters.style = "dotted"
-        self.sub_horizontal = Segment(Point(0,1),Point(1,1))
-        self.sub_horizontal.parameters.color="gray"
+        self.sub_horizontal = Segment(Point(0, 1), Point(1, 1))
+        self.sub_horizontal.parameters.color = "gray"
         self.sub_horizontal.parameters.style = "dotted"
-        self.border = Segment(Point(0,1),Point(1,1))
+        self.border = Segment(Point(0, 1), Point(1, 1))
         self.border.parameters.color = "gray"
         self.border.parameters.style = "dotted"
-    def _bounding_box(self,pspict=None):     # This method is for the sake of "Special cases aren't special enough to break the rules."
+
+    # This method is for the sake of "Special cases aren't special enough to break the rules."
+    def _bounding_box(self, pspict=None):
         return self.BB
-    def _math_bounding_box(self,pspict=None):
+
+    def _math_bounding_box(self, pspict=None):
         return self.bounding_box(pspict)
-    def add_option(self,opt):
+
+    def add_option(self, opt):
         self.options.add_option(opt)
+
     def optionsTrace(self):
         return self.options.sousOptions(OptionsStyleLigne())
+
     def optionsParams(self):
-        return self.options.sousOptions(["Dx","Dy"])
-    def action_on_pspict(self,pspict):
+        return self.options.sousOptions(["Dx", "Dy"])
+
+    def action_on_pspict(self, pspict):
         from SmallComputations import MainGridArray
         from SmallComputations import SubGridArray
         a = []
-        # ++++++++++++ Border ++++++++ 
-        if self.draw_border :
+        # ++++++++++++ Border ++++++++
+        if self.draw_border:
             # Right border
-            if self.draw_vertical_grid :
-                if self.BB.xmax <> int(self.BB.xmax):
+            if self.draw_vertical_grid:
+                if self.BB.xmax != int(self.BB.xmax):
                     S = self.BB.east_segment()
                     S.merge_options(self.border)
                     a.append(S)
             # Left border
-            if self.draw_vertical_grid :
-                if self.BB.xmin <> int(self.BB.xmin):
+            if self.draw_vertical_grid:
+                if self.BB.xmin != int(self.BB.xmin):
                     S = self.BB.west_segment()
                     S.merge_options(self.border)
                     a.append(S)
             # Upper border
-            if self.draw_horizontal_grid :
-                if self.BB.ymax <> int(self.BB.ymax):
+            if self.draw_horizontal_grid:
+                if self.BB.ymax != int(self.BB.ymax):
                     S = self.BB.north_segment()
                     S.merge_options(self.border)
                     a.append(S)
             # Lower border
-            if self.draw_horizontal_grid :
-                if self.BB.ymin <> int(self.BB.ymin):
+            if self.draw_horizontal_grid:
+                if self.BB.ymin != int(self.BB.ymin):
                     S = self.BB.south_segment()
                     S.merge_options(self.border)
                     a.append(S)
         if self.draw_vertical_grid:
             # ++++++++++++ Principal vertical lines ++++++++
-            for x in MainGridArray(self.BB.xmin,self.BB.xmax,self.Dx) :
-                S = Segment( Point(x,self.BB.ymin),Point(x,self.BB.ymax) )
+            for x in MainGridArray(self.BB.xmin, self.BB.xmax, self.Dx):
+                S = Segment(Point(x, self.BB.ymin), Point(x, self.BB.ymax))
                 S.merge_options(self.main_vertical)
                 a.append(S)
-            # ++++++++++++ The vertical sub grid ++++++++ 
-            if self.num_subX <> 0 :
-                for x in  SubGridArray(self.BB.xmin,self.BB.xmax,self.Dx,self.num_subX) :
-                        S = Segment( Point(x,self.BB.ymin),Point(x,self.BB.ymax) )
-                        S.merge_options(self.sub_vertical)
-                        a.append(S)
+            # ++++++++++++ The vertical sub grid ++++++++
+            if self.num_subX != 0:
+                for x in SubGridArray(self.BB.xmin, self.BB.xmax, self.Dx, self.num_subX):
+                    S = Segment(Point(x, self.BB.ymin), Point(x, self.BB.ymax))
+                    S.merge_options(self.sub_vertical)
+                    a.append(S)
         if self.draw_horizontal_grid:
-            # ++++++++++++ The horizontal sub grid ++++++++ 
-            if self.num_subY <> 0 :
-                for y in  SubGridArray(self.BB.ymin,self.BB.ymax,self.Dy,self.num_subY) :
-                        S = Segment( Point(self.BB.xmin,y),Point(self.BB.xmax,y) )
-                        S.merge_options(self.sub_horizontal)
-                        a.append(S)
-            # ++++++++++++ Principal horizontal lines ++++++++ 
-            for y in MainGridArray(self.BB.ymin,self.BB.ymax,self.Dy) :
-                S = Segment( Point(self.BB.xmin,y),Point(self.BB.xmax,y) )
+            # ++++++++++++ The horizontal sub grid ++++++++
+            if self.num_subY != 0:
+                for y in SubGridArray(self.BB.ymin, self.BB.ymax, self.Dy, self.num_subY):
+                    S = Segment(Point(self.BB.xmin, y), Point(self.BB.xmax, y))
+                    S.merge_options(self.sub_horizontal)
+                    a.append(S)
+            # ++++++++++++ Principal horizontal lines ++++++++
+            for y in MainGridArray(self.BB.ymin, self.BB.ymax, self.Dy):
+                S = Segment(Point(self.BB.xmin, y), Point(self.BB.xmax, y))
                 S.merge_options(self.main_horizontal)
                 a.append(S)
-        pspict.DrawGraphs(a,separator_name=self.separator_name)
+        pspict.DrawGraphs(a, separator_name=self.separator_name)

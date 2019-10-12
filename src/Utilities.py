@@ -24,6 +24,7 @@ from sage.rings.real_mpfr import RealNumber
 from phystricks.src.Decorators import sort_and_assert_real
 from phystricks.src.Numerical import numerical_is_negative
 from phystricks.src.Exceptions import ShouldNotHappenException
+from phystricks.src.AngleMeasure import degree
 
 
 def add_latex_line_entete(truc, position=""):
