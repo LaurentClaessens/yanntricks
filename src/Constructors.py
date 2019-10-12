@@ -22,9 +22,8 @@ from sage.all import pi, PolynomialRing, QQ, symbolic_expression
 from sage.all import sin, cos, prod
 
 from phystricks.src.BoundingBox import BoundingBox_class
-from phystricks.src.PointGraph import PointGraph
+from phystricks.src.point import Point
 from phystricks.src.AffineVectorGraph import AffineVectorGraph
-from phystricks.src.SegmentGraph import SegmentGraph
 from phystricks.src.SegmentGraph import SegmentGraph
 
 
@@ -50,18 +49,6 @@ def PolarPoint(r, theta):
 
     """
     return Point(r*cos(radian(theta)), r*sin(radian(theta)))
-
-
-def Segment(A, B=None, vector=None):
-    """
-    Creates a segment.
-
-    The typical use is to give two points.
-    An alternative is to provide a point and a vector.
-    """
-    if vector:
-        B = A.translate(vector)
-    return SegmentGraph(A, B)
 
 
 def PolarSegment(P, r, theta):

@@ -25,25 +25,6 @@ from phystricks.src.SmallComputations import MultipleBetween
 from phystricks.src.AngleMeasure import AngleMeasure
 
 
-class PolarCoordinates(object):
-    def __init__(self, r, value_degree=None, value_radian=None):
-        self.r = r
-        self.measure = AngleMeasure(
-            value_degree=value_degree, value_radian=value_radian)
-        self.degree = self.measure.degree
-        self.radian = self.measure.radian
-
-    def __str__(self):
-        return "PolarCoordinates, r=%s,degree=%s,radian=%s" % (str(self.r), str(self.degree), str(self.radian))
-
-
-def DegreeAngleMeasure(x):
-    return AngleMeasure(value_degree=x)
-
-
-def RadianAngleMeasure(x):
-    return AngleMeasure(value_radian=x)
-
 
 class AxesUnit(object):
     def __init__(self, numerical_value, latex_symbol=""):

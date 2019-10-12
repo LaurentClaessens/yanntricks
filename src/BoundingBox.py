@@ -21,7 +21,7 @@
 from phystricks.src.point import Point
 from phystricks.src.ObjectGraph import ObjectGraph
 from phystricks.src.Utilities import check_too_large
-import phystricks.main
+import phystricks.src.main
 
 
 class BoundingBox_class(ObjectGraph):
