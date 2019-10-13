@@ -150,7 +150,7 @@ class Parameters(object):
         Notice that here `p1.style` is replace while it was not replaced by the function 
         :func:`add_to`.
         """
-        for attr in parameters.__dict__.iterkeys():
+        for attr in parameters.__dict__:
             candidate = self.__getattribute__(attr)
             if candidate is not None:
                 parameters.__dict__[attr] = candidate

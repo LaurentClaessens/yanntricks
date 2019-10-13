@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module phystricks
 #
@@ -17,38 +15,41 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2017
+# copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from ObjectGraph import ObjectGraph
-from Constructors import *
-from Utilities import *
-from parameters.Parameters import Parameters
+from phystricks.src.ObjectGraph import ObjectGraph
+from phystricks.src.parameters.Parameters import Parameters
+from phystricks.src.BoundingBox import BoundingBox
 
-class CustomSurfaceGraph(ObjectGraph):
+
+class CustomSurface(ObjectGraph):
     """
     INPUT:
 
     - args - A list or a tuple of graphs that can compose a \pscustom
     """
-    def __init__(self,args):
-        ObjectGraph.__init__(self,self)
-        #self.add_option("fillstyle=vlines,linestyle=none")  
-        self.add_option("fillstyle=none,linestyle=none")
-        self.graphList=args
-        self.edges=Parameters()
 
-    def _bounding_box(self,pspict=None):
-        bb=BoundingBox()
-        for obj in self.graphList :
+    def __init__(self, args):
+        ObjectGraph.__init__(self, self)
+        # self.add_option("fillstyle=vlines,linestyle=none")
+        self.add_option("fillstyle=none,linestyle=none")
+        self.graphList = args
+        self.edges = Parameters()
+
+    def _bounding_box(self, pspict=None):
+        bb = BoundingBox()
+        for obj in self.graphList:
             bb.AddBB(obj.bounding_box(pspict))
         return bb
-    def _math_bounding_box(self,pspict=None):
-        bb=BoundingBox()
-        for obj in self.graphList :
+
+    def _math_bounding_box(self, pspict=None):
+        bb = BoundingBox()
+        for obj in self.graphList:
             bb.AddBB(obj.math_bounding_box(pspict=pspict))
         return bb
-    def tikz_code(self,pspict=None):
+
+    def tikz_code(self, pspict=None):
         """
         If the CustomSurface has to be filled, we start by plotting the filling.
 
@@ -57,35 +58,37 @@ class CustomSurfaceGraph(ObjectGraph):
         # The color attribution priority is the following.
         # if self.parameters.color is given, then this will be the color
         # if an hatch or a fill color is given and no self.parameters.color, then this will be used
-        a=[]
-        color=None
+        a = []
+        color = None
 
         # It cannot be filled by default when a color is given because Rectangles and Polygon drop here
-        #if self.parameters.color :
+        # if self.parameters.color :
         #    if self.parameters._hatched==False:     # By default it will be filled if one give a color
         #        self.parameters._filled=True
 
         if self.parameters._filled and self.parameters.fill.color:
-            color=self.parameters.fill.color
+            color = self.parameters.fill.color
         if self.parameters._hatched and self.parameters.hatch.color:
-            color=self.parameters.hatch.color
-        if self.parameters._filled or self.parameters._hatched :
-            l=[]
-            for obj in self.graphList :
+            color = self.parameters.hatch.color
+        if self.parameters._filled or self.parameters._hatched:
+            l = []
+            for obj in self.graphList:
                 try:
-                    l.extend( [p.coordinates(digits=5,pspict=pspict) for p in obj.representative_points()] )
-                except AttributeError :
-                    print("The object "+obj+" seems to have no 'representative_points' method")
+                    l.extend([p.coordinates(digits=5, pspict=pspict)
+                              for p in obj.representative_points()])
+                except AttributeError:
+                    print("The object "+obj +
+                          " seems to have no 'representative_points' method")
                     raise
-                    obj_code=obj.latex_code(language="tikz",pspict=pspict)
-                    l.append( draw_to_fill(obj_code) )
+                    obj_code = obj.latex_code(language="tikz", pspict=pspict)
+                    l.append(draw_to_fill(obj_code))
             l.append(" cycle;")
-            code=" -- ".join(l)
-            if self.parameters._hatched :
+            code = " -- ".join(l)
+            if self.parameters._hatched:
                 # This is from
                 # http://www.techques.com/question/31-54358/custom-and-built-in-tikz-fill-patterns
                 # position 170321508
-                def_hatching=r"""
+                def_hatching = r"""
 % declaring the keys in tikz
 \tikzset{hatchspread/.code={\setlength{\hatchspread}{#1}},
          hatchthickness/.code={\setlength{\hatchthickness}{#1}}}
@@ -94,16 +97,17 @@ class CustomSurfaceGraph(ObjectGraph):
          hatchthickness=0.4pt}
 """
                 a.append(def_hatching)
-                if color==None:
-                    color="lightgray"
-                options="color="+color
-                options=options+",  pattern=custom north west lines,hatchspread=10pt,hatchthickness=1pt "
+                if color == None:
+                    color = "lightgray"
+                options = "color="+color
+                options = options+",  pattern=custom north west lines,hatchspread=10pt,hatchthickness=1pt "
             if self.parameters._filled:
-                options="color="+color
+                options = "color="+color
             a.append("\\fill [{}] ".format(options)+code)
-    
+
         return "\n".join(a)
-    def latex_code(self,language=None,pspict=None):
+
+    def latex_code(self, language=None, pspict=None):
         """
         There are two quite different ways to get here. The first is to ask a surface under a function and the second is to ask for a rectangle or a polygon.
 
@@ -118,11 +122,11 @@ class CustomSurfaceGraph(ObjectGraph):
 
         If one wants the surface to be filled or hatched, on has to ask explicitly.
         """
-        a=[]
-        if language=="tikz":
+        a = []
+        if language == "tikz":
             a.append(self.tikz_code(pspict))
-        if self._draw_edges :
-            for obj in self.graphList :
+        if self._draw_edges:
+            for obj in self.graphList:
                 obj.parameters = self.edges.copy()
-                a.append(obj.latex_code(language=language,pspict=pspict))
+                a.append(obj.latex_code(language=language, pspict=pspict))
         return '\n'.join(a)

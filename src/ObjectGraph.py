@@ -214,7 +214,7 @@ class ObjectGraph(object):
         seg.add_option("linewidth=1mm")
         """
         oo = self.parameters.other_options
-        for opt in oo.iterkeys():
+        for opt in oo:
             self.add_option(opt+"="+oo[opt])
         self.parameters.add_to_options(self.options)
 
@@ -229,7 +229,7 @@ class ObjectGraph(object):
         # 1935811332
         l = []
         bracket_attributes = self.parameters.bracketAttributesDictionary()
-        for attr in [x for x in bracket_attributes.iterkeys() if x not in refute]:
+        for attr in [x for x in bracket_attributes if x not in refute]:
             value = bracket_attributes[attr]
             l_attr = genericBracketAttributeToLanguage(attr, language)
             if value != None:

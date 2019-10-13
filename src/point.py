@@ -66,8 +66,7 @@ class Point(ObjectGraph):
 
         a point.
         """
-        from AffineVectorGraph import AffineVectorGraph
-        from SingleAxeGraph import SingleAxeGraph
+        from phystricks.src.SingleAxeGraph import SingleAxeGraph
         if isinstance(seg, AffineVectorGraph):
             seg = seg.segment
         if isinstance(seg, SingleAxeGraph):
@@ -195,6 +194,7 @@ class Point(ObjectGraph):
     #        - either one vector
     #        - either two numbers
     def translate(self, a, b=None):
+        from phystricks.src.affine_vector import AffineVector
         if b == None:
             v = a
         else:
@@ -211,9 +211,11 @@ class Point(ObjectGraph):
         In other words, it return the affine vector O->self but
         attached on point P instead of O.
         """
-        return AffineVector(P, Point(P.x+self.x, P.y+self.y))
+        from phystricks.src.affine_vector import AffineVector
+        return AffineVector(P, P+self)
 
     def Vector(self):
+        from phystricks.src.affine_vector import AffineVector
         return AffineVector(Point(0, 0), self)
 
     @lazy_attribute
@@ -356,6 +358,7 @@ class Point(ObjectGraph):
         [1] If you dont't know what is the "bounding box", or if you don't wan
         t to fine tune it, you don't care.
         """
+        from phystricks.src.BoundingBox import BoundingBox
         if pspict == None:
             print("You should consider to give a Picture as argument. \
                     Otherwise the boundig box of %s could be bad" % str(self))
@@ -378,6 +381,7 @@ class Point(ObjectGraph):
 
         # Here one cannot use BoundingBox(self.point,self.point) because
         # it creates infinite loop.
+        from phystricks.src.BoundingBox import BoundingBox
         bb = BoundingBox(xmin=self.point.x, xmax=self.point.x,
                          ymin=self.point.y, ymax=self.point.y)
         return bb

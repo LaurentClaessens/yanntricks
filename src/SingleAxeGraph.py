@@ -21,7 +21,7 @@
 from sage.all import pi, sqrt, SR
 
 from phystricks.src.Visual import visual_polar
-from phystricks.src.AngleMeasure import degree
+from phystricks.src.degree_unit import degree
 from phystricks.src.ObjectGraph import Options
 from phystricks.src.ObjectGraph import ObjectGraph
 from phystricks.src.MathStructures import AxesUnit

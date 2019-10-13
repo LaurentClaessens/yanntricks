@@ -23,6 +23,7 @@ from sage.all import lazy_attribute, numerical_approx
 from phystricks.src.point import Point
 from phystricks.src.ObjectGraph import ObjectGraph, AddedObjects
 from phystricks.src.Utilities import distance
+from phystricks.src.polar_coordinates import PointToPolaire
 
 
 def Segment(A, B=None, vector=None):
@@ -997,12 +998,14 @@ class Segment(ObjectGraph):
         return self.midpoint().copy()
 
     def _bounding_box(self, pspict):
+        from phystricks.src.BoundingBox import BoundingBox
         if self.in_bounding_box:
             return BoundingBox(self.I, self.F)
         else:
             return BoundingBox()
 
     def _math_bounding_box(self, pspict=None):
+        from phystricks.src.BoundingBox import BoundingBox
         if self.in_math_bounding_box:
             return self.bounding_box(pspict)
         else:

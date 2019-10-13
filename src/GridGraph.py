@@ -13,10 +13,13 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2009-2017
+# copyright (c) Laurent Claessens, 2009-2017, 2019
 # email: laurent@claessens-donadello.eu
 
 from phystricks.src.ObjectGraph import ObjectGraph
+from phystricks.src.segment import Segment
+from phystricks.src.point import Point
+
 
 
 class GridGraph(ObjectGraph):

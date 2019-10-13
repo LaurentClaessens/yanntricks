@@ -16,6 +16,7 @@
 # copyright (c) Laurent Claessens, 2009-2017, 2019
 # email: laurent@claessens-donadello.eu
 
+import collections
 from sage.all import numerical_approx
 
 from phystricks.src.Separator import SeparatorList
@@ -292,9 +293,8 @@ given right after the creation of the picture.")
         self.record_bounding_box.append(obj)
 
     def deal_with_graph(self, gr, separator_name):
-        from ObjectGraph import AddedObjects
-        from ObjectGraph import ObjectGraph
-        import collections
+        from phystricks.src.ObjectGraph import AddedObjects
+        from phystricks.src.ObjectGraph import ObjectGraph
         if isinstance(gr, AddedObjects):
             self.DrawGraphs(gr[self])
             return None
@@ -316,12 +316,13 @@ given right after the creation of the picture.")
         re-passed to DrawGraphs.
 
     """
-        if "separator_name" not in arg.iterkeys():
+        if "separator_name" not in arg:
             separator_name = "DEFAULT"
         else:
             separator_name = arg["separator_name"]
 
-        # Here is why objects intended to be drawn cannot be iterable. Position 30282-11562
+        # Here is why objects intended to be drawn cannot be iterable.
+        # Position 30282-11562
         for gr in args:
             self.deal_with_graph(gr, separator_name)
 

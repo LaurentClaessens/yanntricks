@@ -21,6 +21,7 @@
 from phystricks.src.point import Point
 from phystricks.src.ObjectGraph import ObjectGraph
 from phystricks.src.Utilities import check_too_large
+from phystricks.src.Exceptions import MissingPictureException
 import phystricks.src.main
 
 
@@ -153,8 +154,8 @@ class BoundingBox(ObjectGraph):
         self.ymax = max(self.ymax, y)
 
     def AddBB(self, bb):
-        from Numerical import numerical_min
-        from Numerical import numerical_max
+        from phystricks.src.Numerical import numerical_min
+        from phystricks.src.Numerical import numerical_max
         self.xmin = numerical_min(self.xmin, bb.xmin)
         self.ymin = numerical_min(self.ymin, bb.ymin)
         self.xmax = numerical_max(self.xmax, bb.xmax)
@@ -164,7 +165,6 @@ class BoundingBox(ObjectGraph):
         if isinstance(graph, list):
             raise KeyError("%s is a list" % graph)
         if not pspict:
-            from Exceptions import MissingPictureException
             raise MissingPictureException(
                 "You should provide a pspict in order to add this object to a bounding box.")
         if self.is_math:

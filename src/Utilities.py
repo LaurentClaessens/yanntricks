@@ -24,7 +24,7 @@ from sage.rings.real_mpfr import RealNumber
 from phystricks.src.Decorators import sort_and_assert_real
 from phystricks.src.Numerical import numerical_is_negative
 from phystricks.src.Exceptions import ShouldNotHappenException
-from phystricks.src.AngleMeasure import degree
+from phystricks.src.degree_unit import degree
 
 
 def add_latex_line_entete(truc, position=""):
@@ -261,63 +261,6 @@ def point_to_box_intersection(P, box, pspict=None):
 
     return inter
 
-
-def PointToPolaire(P=None, x=None, y=None, origin=None, numerical=True):
-    """
-    Return the polar coordinates of a point.
-
-    INPUT:
-    - ``P`` - (default=None) a point
-    - ``x,y`` - (defautl=None) the coordinates of the points
-
-    EXAMPLES:
-
-    You can provide a point::
-
-        sage: from phystricks import Point
-        sage: from phystricks.SmallComputations import *
-        sage: print PointToPolaire(Point(1,1))
-        PolarCoordinates, r=sqrt(2),degree=45,radian=1/4*pi
-
-    or directly the coordinates ::
-
-        sage: print PointToPolaire(x=1,y=1)
-        PolarCoordinates, r=sqrt(2),degree=45,radian=1/4*pi
-    """
-    if origin:
-        Ox = origin.x
-        Oy = origin.y
-    if not origin:
-        Ox = 0
-        Oy = 0
-    if P:
-        Px = P.x
-        Py = P.y
-    else:
-        Px = x
-        Py = y
-    Qx = Px-Ox
-    Qy = Py-Oy
-    if numerical:
-        Qx = numerical_approx(Qx)
-        Qy = numerical_approx(Qy)
-    r = sqrt(Qx**2+Qy**2)
-    if abs(Qx) < 0.001:   # epsilon
-        if Qy > 0:
-            radian = pi/2
-        else:
-            radian = 3*pi/2
-    else:
-        radian = arctan(Qy/Qx)
-    if Qx < 0:
-        if Qy > 0:
-            radian = radian+pi
-        if Qy <= 0:
-            radian = pi+radian
-    # Only positive values (February 11, 2015)
-    if numerical_is_negative(radian):
-        radian = radian+2*pi
-    return PolarCoordinates(r, value_radian=radian)
 
 
 

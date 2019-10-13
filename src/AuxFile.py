@@ -134,13 +134,13 @@ class AuxFile(object):
             d[key] = value
 
         with open(self.interWriteFile.from_here(), "w") as f:
-            for k in d.iterkeys():
+            for k in d:
                 f.write("%s:%s-\n" % (k, d[k]))
 
         return d
 
     def get_Id_value(self, Id, default_value=0):
-        if Id not in self.id_values_dict().iterkeys():
+        if Id not in self.id_values_dict():
 
             if not self.already_warned_CompileYourLaTeXFile:
                 logging(self.picture.name+"-----")
