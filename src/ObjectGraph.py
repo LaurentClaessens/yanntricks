@@ -18,25 +18,35 @@
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
+# pylint: disable=too-few-public-methods
+# pylint: disable=missing-function-docstring
+# pylint: disable=missing-module-docstring
+# pylint: disable=invalid-name
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-instance-attributes
+
 from phystricks.src.parameters.Options import Options
 from phystricks.src.parameters.Parameters import Parameters
-from phystricks.src.Exceptions import ShouldNotHappenException
 from phystricks.src.NoMathUtilities import logging
 from phystricks.src.AddedObjects import AddedObjects
 from phystricks.src.Utilities import make_psp_list
 
-##
-# This class is supposed to be used to create other "<Foo>Graph"
-# by inheritance.
-#
-# Objects that are going to be drawn have to derive from `ObjectGraph`.
-# When creating you own class,
-# - do not override `bounding_box` nor `math_bounding_box`
-# - create the functions `_bounding_box` and eventually `_math_bounding_box`
-# - consider the attributes `take_BB` and `take_math_BB`.
 
 
-class ObjectGraph(object):
+
+class ObjectGraph:
+    """
+    This class is supposed to be used to create other "<Foo>Graph"
+    by inheritance.
+
+    Objects that are going to be drawn have to derive from `ObjectGraph`.
+    When creating you own class,
+    - do not override `bounding_box` nor `math_bounding_box`
+    - create the functions `_bounding_box`
+      and eventually `_math_bounding_box`
+    - consider the attributes `take_BB` and `take_math_BB`.
+    """
+
     def __init__(self, obj):
         self.obj = obj
         self.parameters = Parameters(self.obj)
@@ -59,12 +69,18 @@ class ObjectGraph(object):
         self.take_math_BB = True
 
         self.mark = None
+        self.marque = None
 
     def draw_edges(self):
         self._draw_edges = True
 
-    def wave(self, dx, dy):     # dx is the wave length and dy is the amplitude
-        from parameters.Waviness import Waviness
+    def wave(self, dx, dy):
+        """
+        Make self wavy.
+
+        dx is the wave length and dy is the amplitude
+        """
+        from phystricks.src.parameters.Waviness import Waviness
         self.wavy = True
         self.waviness = Waviness(self, dx, dy)
 
@@ -74,41 +90,43 @@ class ObjectGraph(object):
 
         This only works if one has a 'get_tangent_vector' method.
 
-        - `llam` could be radian, degree or something else, depending on the 
-            actual object on which you are using this.
+        - `llam` could be radian, degree or something else,
+                 depending on the actual object on which
+                 you are using this.
         """
         try:
             v = self.get_tangent_vector(llam)
-        except AttributeErrror:
-            print("you are using 'get_arrow' (probably from a 'put_arrow' on your part) on an object that does not support 'get_tangent_vector'")
+        except AttributeError:
+            print("you are using 'get_arrow' (probably from a "
+                  "'put_arrow' on your part) on an object that "
+                  "does not support 'get_tangent_vector'")
         v = v.normalize(0.01)
         return v
 
     def get_mark(self, dist, angle=None, text=None, mark_point=None,
                  added_angle=None, position=None, pspict=None):
+        # pylint:disable=too-many-branches
         """
         - `angle` is degree or AngleMeasure
 
-        In the internal representation of the mark, 
+        In the internal representation of the mark,
         the angle type will be `AngleMeasure`
         """
-        from phystricks.src.AngleGraph import AngleGraph
         from phystricks.src.Constructors import Mark
-        from phystricks.src.MathStructures import AngleMeasure
+        from phystricks.src.AngleMeasure import AngleMeasure
 
         self.marque = True
-        third = None
 
         if position in ["N", "S", "E", "W"] and angle is not None:
             angle = None
-            logging("When you want a position like N,S,E, or W, the mark\
- angle should not be given.", pspict=pspict)
+            logging(f"When you want a position like N,S,E, or W, "
+                    f"the mark angle should not be given.",
+                    pspict=pspict)
 
         if angle is None and position not in ["N", "S", "E", "W"]:
             try:
                 angle = self.advised_mark_angle(pspict=pspict)
             except AttributeError:
-                a = self.angle()
                 angle = self.angle().degree+90
 
         if position == "center_direction":
@@ -124,7 +142,7 @@ class ObjectGraph(object):
 
         if added_angle:
             angle = angle+added_angle
-        if position == None:
+        if position is None:
             position = "corner"
             alpha = AngleMeasure(value_degree=angle).positive()
             deg = alpha.degree
@@ -148,32 +166,37 @@ class ObjectGraph(object):
         if not isinstance(pspict, list):
             pspict = [pspict]
         for psp in pspict:
-            dimx, dimy = psp.get_box_size(text)
+            _, _ = psp.get_box_size(text)
 
         return mark
 
-    # \brief put a mark on an object
-    #
-    #
-    # If you want to put a mark on an object
-    # P.put_mark(0.1,text="foobar",pspict=pspict,position="N")
-    #
-    #        mark_point is a function which returns the position of the mark point.
-    #
-    #        If you give no position (i.e. no "S","N", etc.) the position will
-    #       be automatic regarding the angle.
-    #
-    #        - ``angle`` is given in degree.
-    # set `position` to "center" is dangerous because it puts the center of
-    # the box at given angle and distance. Thus the text can be ill placed,
-    # especially if the given `dist` is lower than the half of the box size.
-    #
-    # `center_direction` : the mark is placed in such a way that the center is
-    # at given angle, and the box's border at given distance.
     def put_mark(self, dist=None, angle=None, text="",
                  mark_point=None, added_angle=None, position=None,
                  pspict=None, pspicts=None):
 
+        """
+        Put a mark on an object
+
+
+        If you want to put a mark on an object
+        P.put_mark(0.1,text="foobar",pspict=pspict,position="N")
+
+        mark_point is a function which returns the
+        position of the mark point.
+
+        If you give no position (i.e. no "S","N", etc.) the position will
+        be automatic regarding the angle.
+
+        - ``angle`` is given in degree.
+        set `position` to "center" is dangerous because
+        it puts the center of the box at given angle and distance.
+        Thus the text can be ill placed, especially if the given
+        `dist` is lower than the half of the box size.
+
+        `center_direction` : the mark is placed in such a way
+        that the center is at given angle, and the box's border
+        at given distance.
+        """
         pspicts = make_psp_list(pspict, pspicts)
 
         for psp in pspicts:
@@ -190,16 +213,19 @@ class ObjectGraph(object):
     def add_option(self, opt):
         self.options.add_option(opt)
 
-    def get_option(opt):
+    def get_option(self, opt):
         return self.options.DicoOptions[opt]
 
-    def remove_option(opt):
+    def remove_option(self, opt):
         self.options.remove_option(opt)
 
     def merge_options(self, graph):
         """
-        Take an other object <Foo>Graph and merges the options as explained in the documentation of the class Options. 
-        That merge takes into account the attributes "color", "style", wavy
+        Take an other object <Foo>Graph and merges
+        the options as explained in the documentation
+        of the class Options.
+        That merge takes into account the
+        attributes "color", "style", wavy
         """
         self.parameters = graph.parameters
         self.options.merge_options(graph.options)
@@ -218,11 +244,16 @@ class ObjectGraph(object):
             self.add_option(opt+"="+oo[opt])
         self.parameters.add_to_options(self.options)
 
-    def params(self, language, refute=[]):
-        return self.bracketAttributesText(language=language, refute=refute)
+    def params(self, language, refute=None):
+        refute = refute or []
+        return self.bracketAttributesText(language=language,
+                                          refute=refute)
 
-    def bracketAttributesText(self, language, refute=[]):
+    def bracketAttributesText(self, language, refute=None):
         from phystricks.src.BasicGeometricObjects import genericBracketAttributeToLanguage
+
+        refute = refute or []
+
         self.conclude_params()
 
         # Create the text  a1=va,a2=v2, etc.
@@ -232,7 +263,7 @@ class ObjectGraph(object):
         for attr in [x for x in bracket_attributes if x not in refute]:
             value = bracket_attributes[attr]
             l_attr = genericBracketAttributeToLanguage(attr, language)
-            if value != None:
+            if value is not None:
                 if attr == "linewidth":
                     l.append(l_attr+"="+str(value)+"pt")
                 else:
@@ -247,11 +278,10 @@ class ObjectGraph(object):
         """
         The `conclude` function allows an object to make its ultimate
         settings before to be drawn.
-        This is used for objects like axes that have a list of added objects
-        (the graduation bars) that can depend on the other objects in the 
-        picture.
+        This is used for objects like axes
+        that have a list of added objects (the graduation bars)
+        that can depend on the other objects in the picture.
         """
-        pass
 
     def _draw_added_objects(self, pspict):
         # position 3598-30738
@@ -286,16 +316,17 @@ class ObjectGraph(object):
         return bb
 
     def latex_code(self, pspict, language=None):
+        # pylint: disable=no-self-use
+        # pylint: disable=unused-argument
+        # This method must be overridden.
         return ""
 
-
-class DrawElement(object):
-    # The attributes take_xxx are intended to say what we have to take into account in the element.
-    # If you put take_graph=False, this element will not be drawn, but its bounding boxes are going to be taken into account.
-    def __init__(self, graphe, separator_name, take_graph=True, take_BB=True, take_math_BB=True, *args):
-        self.take_graph = take_graph
-        self.take_BB = take_BB
-        self.take_math_BB = take_math_BB
-        self.graph = graphe
-        self.separator_name = separator_name
-        self.st_args = args
+    def _bounding_box(self, pspict, language=None):
+        # pylint: disable=no-self-use
+        # pylint: disable=unused-argument
+        # This method must be overridden.
+        return ""
+    def angle(self):
+        # pylint: disable=no-self-use
+        # This method must be overridden.
+        return None
