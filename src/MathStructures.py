@@ -1,4 +1,4 @@
-###########################################################################
+##########################################################################
 #   This is part of the module phystricks
 #
 #   phystricks is free software: you can redistribute it and/or modify
@@ -13,17 +13,17 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
-###########################################################################
+##########################################################################
 
 # copyright (c) Laurent Claessens, 2010,2011,2013-2017, 2019
 # email: laurent@claessens-donadello.eu
+
+# pylint: disable=invalid-name
 
 from sage.rings.rational import Rational
 from sage.all import latex, SR
 
 from phystricks.src.SmallComputations import MultipleBetween
-from phystricks.src.AngleMeasure import AngleMeasure
-
 
 
 class AxesUnit(object):
