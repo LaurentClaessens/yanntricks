@@ -16,46 +16,23 @@
 # copyright (c) Laurent Claessens, 2016-2017, 2019
 # email: laurent@claessens-donadello.eu
 
+# pylint: disable=invalid-name
+# pylint: disable=missing-function-docstring
+# pylint: disable=too-many-instance-attributes
+
+"""
+Describe an auxiliary file in which we make LaTeX write some informations.
+"""
+
 from phystricks.src.Utilities import newlengthName
 from phystricks.src.NoMathUtilities import logging
 from phystricks.src.NoMathUtilities import SubdirectoryFilenames
 from phystricks.src.NoMathUtilities import text_to_hexdigest
 
-# \brief Creates a name for a counter in LaTeX
-#
-# Suppose you need to ask for the value of the counter `page`. What you do is
-# ```
-# page=pspict.auxiliary_file.get_counter_value("page")
-# ```
-# What `phystricks` do is to add such a line in the 'pstricks' file :
-# ```
-# \immediate\write\writeOfphystricks{_some_id_:\arabic{page}-}
-# ```
-# where `some_id` is what we furnish here. This is the identifiant which whose
-# we are going to search for the answer in the dedicated `.aux` file.
-#
-# It has to be
-# - different for each thing that we are going to write in the `.aux` file
-# - deterministic because we are getting him back during a second pass of
-#   `phystricks`.
 
-
-class CounterId(object):
-    counter = {}
-
-    def __call__(self, counter_name):
-        try:
-            return self.counter[counter_name]
-        except KeyError:
-            pass
-        s = "Counter"+counter_name
-        self.counter[counter_name] = s
-        return s
-
-
-class AuxFile(object):
+class AuxFile:
     """
-    The auxiliary file serves to make a 'dialog' between LaTeX and phystricks. 
+    The auxiliary file serves to make a 'dialog' between LaTeX and phystricks.
     We ask LaTeX to write the box sizes therein.
 
     Each `Picture` has an auxiliary file.
@@ -77,16 +54,20 @@ class AuxFile(object):
         # while hashlib wants 'str' and some functions are passing 'str'.
         self.interId_to_tex_expression = {}
 
+    def CounterId(self, counter_name):
+        return f"Counter{self.name}{counter_name}"
+
     def open_latex_code(self):
         a = []
         code = r"""\ifthenelse{\isundefined{\NWN}}{\newwrite{\NWN}}{}""".replace(
             "NWN", self.newwriteName)
         a.append(code)
-        code = r"""\ifthenelse{\isundefined{\NLN}}{\newlength{\NLN}}{}""".replace(
-            "NLN", newlengthName())
+        code = r"""\ifthenelse{\isundefined{\NLN}}{\newlength{\NLN}}{}"""
+        code = code.replace("NLN", newlengthName())
         a.append(code)
-        code = "\immediate\openout\{}={}%".format(
-            self.newwriteName, self.interWriteFile.from_main())
+        code = r"\immediate\openout\AAA=BBB%"
+        code = code.replace("AAA", self.newwriteName)
+        code = code.replace("BBB", self.interWriteFile.from_main())
         a.append(code)
         return "\n".join(a)
 
@@ -101,27 +82,37 @@ class AuxFile(object):
         self._latex_line_list.append(line)
 
     def makeWriteValue(self, Id, value):
-        r"""Ask LaTeX to write the result of `value` into the standard auxiliary file with identifier `Id`
+        r""" Make LaTeX write `value` in the auxiliary file.
 
-            - `Id` some string that identifies what we will write (for reading the file later). Preferably ASCII string.
+        Ask LaTeX to write the result of `value` into
+        the standard auxiliary file with identifier `Id`
 
-            - `value` a LaTeX code that returns something; that something will be written. Typically this is a string like 
-                    \arabic{\thesection}
+        @param{str} `Id`
+            Some string that identifies what we will
+            write (for reading the file later). Preferably ASCII string.
+
+        @param{str} `value`
+            A LaTeX code that returns something; that something
+            will be written. Typically this is a string
+            like `\arabic{\thesection}`
         """
         self.add_latex_line(
             r"\immediate\write\{}{{{}:{}-}}".format(self.newwriteName, Id, value))
 
     def id_values_dict(self):
         """
-        Build the dictionary of stored values in the auxiliary file and rewrite that file.
+        Build the dictionary of stored values in the auxiliary file
+        and rewrite that file.
         """
         d = {}
         try:
             f = open(self.interWriteFile.from_here(), "r")
         except IOError:
             if not self.already_warned_CompileYourLaTeXFile:
-                logging("Warning: the auxiliary file %s does not seem to exist. Compile your LaTeX file." %
-                        self.interWriteFile.from_main(), pspict=self.picture)
+                logging(f"Warning: the auxiliary file "
+                        f"{self.interWriteFile.from_main()} does not "
+                        f"seem to exist. Compile your LaTeX file.",
+                        pspict=self.picture)
                 self.already_warned_CompileYourLaTeXFile = True
             return d
         idlist = f.read().replace('\n', '').replace(
@@ -144,12 +135,13 @@ class AuxFile(object):
 
             if not self.already_warned_CompileYourLaTeXFile:
                 logging(self.picture.name+"-----")
-                logging("Warning: the auxiliary file {} does not contain\
-                        the id «{}». Compile your LaTeX file.".format(
-                    self.interWriteFile.from_main(), Id), pspict=self.picture)
+                logging(f"Warning: the auxiliary file "
+                        f"{self.interWriteFile.from_main()} does not "
+                        f"contain the id «{Id}». Compile your LaTeX file.",
+                        pspict=self.picture)
                 try:
-                    logging(u"Concerned tex expression : " +
-                            self.interId_to_tex_expression[Id])
+                    logging("Concerned tex expression : "
+                            f"{self.interId_to_tex_expression[Id]}")
                 except KeyError:
                     pass    # when asking for a counter, not a box size.
 
@@ -158,23 +150,24 @@ class AuxFile(object):
         value = self.id_values_dict()[Id]
         return value
 
-    # \brief return the value of the (LaTeX) counter <name>
-    #    at this point of the LaTeX file.
-    #
-    # Makes LaTeX write the value of the counter in an auxiliary file,
-    # then reads the value in that file.  (needs several compilations to work)
-    #
-    # \return a float.
-    #
-    #
-    # If you ask for the page with for example
-    # ```page = pspict.get_counter_value("page")```
-    # the given page will be the one at which LaTeX thinks the figure lies.
-    # Since a figure is a floating object, if you have many of them in a row,
-    # the page number could be incorrect.
     def get_counter_value(self, counter_name, default_value=0):
-        # Make LaTeX write the value of the counter in a specific file
-        interCounterId = CounterId()(counter_name)
+        """
+        Return the value of the (LaTeX) counter <name>.
+
+        Makes LaTeX write the value of the counter in an auxiliary file,
+        then reads the value in that file.  (needs several compilations to work)
+
+        So we get the value at this point of the LaTeX file.
+
+        If you ask for the page with for example
+        ```
+        page = pspict.get_counter_value("page")
+        ```
+        the given page will be the one at which LaTeX thinks the figure lies.
+        Since a figure is a floating object, if you have many of them in a row,
+        the page number could be incorrect.
+        """
+        interCounterId = self.CounterId(counter_name)
         s = r"\arabic{%s}" % counter_name
         self.makeWriteValue(interCounterId, s)
 
@@ -200,8 +193,8 @@ class AuxFile(object):
         if interId not in self.already_used_interId:
             s = r"\setlength{{\AAA}}{{\BBB{{CCC}}}}%"
             s = s.replace("AAA", newlengthName())
-            s = s.replce("BBB", dimension_name)
-            s = s.repalce("CCC", tex_expression)
+            s = s.replace("BBB", dimension_name)
+            s = s.replace("CCC", tex_expression)
             self.add_latex_line(s)
             value = r"\the\{}".format(newlengthName())
 
@@ -215,7 +208,7 @@ class AuxFile(object):
         return (dimenPT)/30
 
     def get_box_size(self, tex_expression, default_value="0pt"):
-        """
+        r"""
         return as 2-uple the dimensions of a LaTeX box containing an expression.
 
         INPUT:

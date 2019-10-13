@@ -178,7 +178,7 @@ def Mark(graph=None, dist=None, angle=None, central_point=None, text="", mark_po
          What is done is that the closest corner of the bounding box is at position (dist;angle) from the point.
     - ``pspict`` - the pspict in which the mark has to be computed and drawn.
     """
-    return MarkGraph.MarkGraph(graph, dist, angle, text, central_point=central_point, mark_point=mark_point, position=position, pspict=pspict)
+    return MarkGraph(graph, dist, angle, text, central_point=central_point, mark_point=mark_point, position=position, pspict=pspict)
 
 
 def AngleAOB(A, O, B, r=None):

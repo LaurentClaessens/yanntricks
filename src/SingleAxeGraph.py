@@ -187,6 +187,7 @@ class SingleAxe(ObjectGraph):
     def _math_bounding_box(self, pspict):
         # The math_bounding box does not take into account the things
         # that are inside the picture (not even if this are default axes)
+        from phystricks.src.BoundingBox import BoundingBox
         bb = BoundingBox()
         for x, symbol in self.axes_unit.place_list(self.mx, self.Mx,
                                                    self.Dx, self.mark_origin):

@@ -18,6 +18,7 @@
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
+import numpy
 from sage.all import lazy_attribute, numerical_approx
 
 from phystricks.src.point import Point
@@ -115,12 +116,12 @@ class Segment(ObjectGraph):
 
     @lazy_attribute
     def is_vertical(self):
-        from Numerical import are_almost_equal
+        from phystricks.src.Numerical import are_almost_equal
         return are_almost_equal(self.I.x, self.F.x, epsilon=0.0001)
 
     @lazy_attribute
     def is_horizontal(self):
-        from Numerical import are_almost_equal
+        from phystricks.src.Numerical import are_almost_equal
         return are_almost_equal(self.I.y, self.F.y, epsilon=0.0001)
 
     @lazy_attribute
@@ -414,7 +415,6 @@ class Segment(ObjectGraph):
             for k in range(int(-(n-1)/2), int((n-1)/2)+1):
                 positions.append(center.translate(k*vect))
         if n % 2 == 0:
-            import numpy
             for k in numpy.linspace(-n/2+0.5, n/2-0.5, n):
                 positions.append(center.translate(k*vect))
         mini1 = self.rotation(angle).fix_visual_size(l)

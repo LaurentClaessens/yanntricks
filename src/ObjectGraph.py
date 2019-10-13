@@ -92,9 +92,9 @@ class ObjectGraph(object):
         In the internal representation of the mark, 
         the angle type will be `AngleMeasure`
         """
-        from AngleGraph import AngleGraph
-        from Constructors import Mark
-        from MathStructures import AngleMeasure
+        from phystricks.src.AngleGraph import AngleGraph
+        from phystricks.src.Constructors import Mark
+        from phystricks.src.MathStructures import AngleMeasure
 
         self.marque = True
         third = None
@@ -222,7 +222,7 @@ class ObjectGraph(object):
         return self.bracketAttributesText(language=language, refute=refute)
 
     def bracketAttributesText(self, language, refute=[]):
-        from BasicGeometricObjects import genericBracketAttributeToLanguage
+        from phystricks.src.BasicGeometricObjects import genericBracketAttributeToLanguage
         self.conclude_params()
 
         # Create the text  a1=va,a2=v2, etc.

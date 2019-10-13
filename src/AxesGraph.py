@@ -120,6 +120,8 @@ class Axes(ObjectGraph):
         If `self` is a default axe, it take into account the content of the pspicture
         and update the mx,my of the single axes X and Y.
         """
+    def _math_bounding_box(self, pspict=None):
+        from phystricks.src.BoundingBox import BoundingBox
         BB = BoundingBox()
         BB.append(self.single_axeX.bounding_box(pspict), pspict)
         BB.append(self.single_axeY.bounding_box(pspict), pspict)
@@ -132,6 +134,7 @@ class Axes(ObjectGraph):
         return BB
 
     def _math_bounding_box(self, pspict=None):
+        from phystricks.src.BoundingBox import BoundingBox
         BB = BoundingBox()
         BB.append(self.single_axeX.math_bounding_box(pspict), pspict=pspict)
         BB.append(self.single_axeY.math_bounding_box(pspict), pspict=pspict)

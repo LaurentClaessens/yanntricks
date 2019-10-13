@@ -15,12 +15,11 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright(c) Laurent Claessens, 2010-2017
+# copyright(c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
 from sage.all import cos, sin, numerical_approx
 
-from phystricks.src.Constructors import *
 from phystricks.src.Exceptions import ShouldNotHappenException
 from phystricks.src.ObjectGraph import ObjectGraph
 
@@ -33,6 +32,7 @@ from phystricks.src.ObjectGraph import ObjectGraph
 class MarkGraph(ObjectGraph):
     def __init__(self, graph, dist, angle, text, mark_point=None,
                  central_point=None, position=None, pspict=None):
+        from phystricks.src.AngleMeasure import AngleMeasure
         ObjectGraph.__init__(self, self)
 
         self.take_math_BB = False

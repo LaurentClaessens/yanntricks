@@ -15,7 +15,7 @@
 #   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2017
+# copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
 """
@@ -30,6 +30,7 @@ import hashlib
 
 from phystricks.src.Defaults import LOGGING_FILENAME
 
+dprint = print
 
 def text_to_hexdigest(text):
     """
@@ -39,7 +40,7 @@ def text_to_hexdigest(text):
     that the hashlib wants 'str', not 'unicode'
     """
     h = hashlib.new("sha1")
-    h.update(text)            # This one wants 'str', not 'unicode'
+    h.update(str(text).encode('utf8'))
     return h.hexdigest()
 
 

@@ -18,118 +18,138 @@
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from sage.all import sqrt,sin,cos,pi
+# pylint: disable=invalid-name
+# pylint: disable=missing-function-docstring
+# pylint: disable=missing-module-docstring
+
+from sage.all import sqrt, sin, cos, pi     #pylint:disable=import-error
 from phystricks.src.point import Point
 from phystricks.src.affine_vector import Vector
+from phystricks.src.Numerical import numerical_is_negative
 
-def visual_length(v,l,xunit=None,yunit=None,pspict=None):
+
+def visual_length(v, l, xunit=None, yunit=None, pspict=None):
     """
+    Return a vector which as the requested *visual* length.
+
     Return a vector in the direction of v that has *visual* length
     l taking xunit and yunit into account.
     """
-    from Numerical import numerical_is_negative
+    from phystricks.src.affine_vector import AffineVector
     if pspict:
-        xunit=pspict.xunit
-        yunit=pspict.yunit
-    Dx=v.Dx
-    Dy=v.Dy
-    if not v.is_vertical :
-        slope=v.slope
-        x=l/sqrt(xunit**2+slope**2*yunit**2)
+        xunit = pspict.xunit
+        yunit = pspict.yunit
+    Dx = v.Dx
+    Dy = v.Dy
+    if not v.is_vertical:
+        slope = v.slope
+        x = l/sqrt(xunit**2+slope**2*yunit**2)
 
         if numerical_is_negative(Dx):
-            x=-x
-        y=slope*x
+            x = -x
+        y = slope*x
     else:
-        x=0
-        y=l/yunit
+        x = 0
+        y = l/yunit
         if numerical_is_negative(Dy):
-            y=-l/yunit
-    if hasattr(v,"I"):
-        from phystricks import AffineVector
-        return AffineVector(v.I,v.I+(x,y))
+            y = -l/yunit
+    return AffineVector(v.I, v.I+(x, y))
 
-def visual_polar(P,r,theta,pspict=None):
+
+def visual_polar(P, r, theta, pspict=None):
     """
     Return a point at VISUAL coordinates (r,theta) from the point P.
 
     theta is given in degree.
     """
-    xunit=pspict.xunit
-    yunit=pspict.yunit
-    alpha=pi*theta/180
+    xunit = pspict.xunit
+    yunit = pspict.yunit
+    alpha = pi*theta/180
 
-    v=Vector( cos(alpha)/xunit,sin(alpha)/yunit  )
-    w=visual_length(v,r,pspict=pspict)
-    
+    v = Vector(cos(alpha)/xunit, sin(alpha)/yunit)
+    w = visual_length(v, r, pspict=pspict)
+
     return P.translate(w)
 
-def polar_to_visual_polar(r,theta,pspict=None):
+
+def polar_to_visual_polar(r, theta, pspict=None):
     """
     From '(r,theta)', return the (s,alpha) such that the point
     (s,alpha) visually appears as (r,theta).
     """
-    P=visual_polar( Point(0,0),r,theta,pspict  )
+    P = visual_polar(Point(0, 0), r, theta, pspict)
     return P.polar_coordinates()
 
-def visual_polar_coordinates(P,pspict=None):
+
+def visual_polar_coordinates(P, pspict=None):
     """
     return the visual polar coordinates of 'P'
     """
-    if pspict is None :
+    if pspict is None:
         return P.polar_coordinates()
-    if isinstance(pspict,list):
-        xu=pspict[0].xunit
-        yu=pspict[0].xunit
-        xunits=[ psp.xunit==xu for psp in pspict ]
-        yunits=[ psp.yunit==yu for psp in pspict ]
-        if sum(xunits)==len(xunits) and sum(yunits)==len(yunits):
-            xunit=xu
-            yunit=yu
-        else :
+    if isinstance(pspict, list):
+        xu = pspict[0].xunit
+        yu = pspict[0].xunit
+        xunits = [psp.xunit == xu for psp in pspict]
+        yunits = [psp.yunit == yu for psp in pspict]
+        if sum(xunits) == len(xunits) and sum(yunits) == len(yunits):
+            xunit = xu
+            yunit = yu
+        else:
             print("Probably more than one picture with different dilatations ...")
             raise ValueError
-    else :
-        xunit=pspict.xunit
-        yunit=pspict.yunit
-    Q=Point(xunit*P.x,yunit*P.y)
+    else:
+        xunit = pspict.xunit
+        yunit = pspict.yunit
+    Q = Point(xunit*P.x, yunit*P.y)
     return Q.polar_coordinates()
 
-## return a vector at the same base as 'v' but such that
-#    it will visually appears as 'v'
-def visual_vector(v,pspict=None,xunit=None,yunit=None):
-    from NoMathUtilities import logging
-    from Constructors import AffineVector
+
+def visual_vector(v, pspict=None, xunit=None, yunit=None):
+    """
+    Return a vector which will be visually `self`.
+
+    Return a vector at the same base as 'v' but such that
+    it will visually appears as 'v'
+    """
+    from phystricks.src.NoMathUtilities import logging
+    from phystricks.src.affine_vector import AffineVector
     if pspict is None and (xunit is None or yunit is None):
         logging("Trying to make visual_vector with no pspict ?")
         raise DeprecationWarning
-        return v
     if pspict:
-        xunit=pspict.xunit
-        yunit=pspict.yunit
-    I=v.I
-    F=I+(v.Dx/xunit,v.Dy/yunit)
-    return AffineVector(I,F)
+        xunit = pspict.xunit
+        yunit = pspict.yunit
+    I = v.I
+    F = I+(v.Dx/xunit, v.Dy/yunit)
+    return AffineVector(I, F)
 
-## return the coordinates where
+# return the coordinates where
 # the point `P` will be.
-def inverse_visual_point(P,pspict):
-    return Point( P.x*pspict.xunit,P.y*pspict.yunit  )
 
-## return the coordinates where
+
+def inverse_visual_point(P, pspict):
+    return Point(P.x*pspict.xunit, P.y*pspict.yunit)
+
+# return the coordinates where
 # a point has to be placed to arrive at `P` after taking
 # into account the dilatations.
-def visual_point(P,pspict):
-    return Point( P.x/pspict.xunit,P.y/pspict.yunit  )
 
-## \brief returns the 'visual' self
-# We compute a new triple of points `A'O'B'` :
-# where A',B' and C' are the points where the angle will be after
-# the dilatations.
-def inverse_visual_angle(angle,pspict):
-    from Constructors import AngleAOB
-    Ap=inverse_visual_point(angle.A,pspict)
-    Op=inverse_visual_point(angle.O,pspict)
-    Bp=inverse_visual_point(angle.B,pspict)
-    return AngleAOB(Ap,Op,Bp,r=angle.r)
 
+def visual_point(P, pspict):
+    return Point(P.x/pspict.xunit, P.y/pspict.yunit)
+
+
+def inverse_visual_angle(angle, pspict):
+    """
+    Return the 'visual' self.
+
+    We compute a new triple of points `A'O'B'` :
+    where A',B' and C' are the points where the angle will be after
+    the dilatations.
+    """
+    from phystricks.src.Constructors import AngleAOB
+    Ap = inverse_visual_point(angle.A, pspict)
+    Op = inverse_visual_point(angle.O, pspict)
+    Bp = inverse_visual_point(angle.B, pspict)
+    return AngleAOB(Ap, Op, Bp, r=angle.r)

@@ -19,7 +19,7 @@
 # email: laurent@claessens-donadello.eu
 
 from sage.rings.rational import Rational
-from sage.all import latex
+from sage.all import latex, SR
 
 from phystricks.src.SmallComputations import MultipleBetween
 from phystricks.src.AngleMeasure import AngleMeasure
@@ -57,7 +57,7 @@ class AxesUnit(object):
             raise ValueError(
                 "frac is zero in AxesUnit.place_list(). Maybe you ignore that python evaluates 1/2 to 0 ? (writes literal 0.5 instead) \n Or are you trying to push me in an infinite loop ?")
         l = []
-        k = var("TheTag")
+        k = SR.var("TheTag")
         for x in MultipleBetween(frac*self.numerical_value, mx, Mx, mark_origin):
             if self.latex_symbol == "":
                 l.append((x, "$"+latex(x)+"$"))
