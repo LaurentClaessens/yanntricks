@@ -18,13 +18,42 @@
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
+
+# pylint: disable=invalid-name
+# pylint: disable=missing-function-docstring
+# pylint: disable=missing-module-docstring
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-public-methods
+# pylint: disable=fixme
+
 from sage.all import SR, sqrt, numerical_approx, arctan, var, solve, atan
 from sage.rings.real_mpfr import RealNumber
 
+from phystricks.src.degree_unit import degree
+from phystricks.src.Separator import SeparatorList
 from phystricks.src.Decorators import sort_and_assert_real
 from phystricks.src.Numerical import numerical_is_negative
 from phystricks.src.Exceptions import ShouldNotHappenException
-from phystricks.src.degree_unit import degree
+
+
+
+def init_separator_list():
+    separator_list = SeparatorList()
+    separator_list.new_separator("ENTETE PSPICTURE")
+    separator_list.new_separator("OPEN_WRITE_AND_LABEL")
+    separator_list.new_separator("WRITE_AND_LABEL")
+    separator_list.new_separator("CLOSE_WRITE_AND_LABEL")
+    separator_list.new_separator("BEFORE PSPICTURE")
+    # This separator is supposed to contain only \begin{pspicture}
+    separator_list.new_separator("BEGIN PSPICTURE")
+    separator_list.new_separator("GRID")
+    separator_list.new_separator("AXES")
+    separator_list.new_separator("OTHER STUFF")
+    separator_list.new_separator("DEFAULT")
+    separator_list.new_separator("END PSPICTURE")
+    separator_list.new_separator("AFTER PSPICTURE")
+    return separator_list
 
 
 def add_latex_line_entete(truc, position=""):
