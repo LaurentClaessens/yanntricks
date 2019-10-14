@@ -21,9 +21,9 @@
 
 """A collection of tools for building LaTeX pictures with python."""
 
-from sage.all import cos, sin, tan, exp, ln, log
+from sage.all import cos, sin, tan, exp, ln, log    #pylint:disable=import-error
 
-from phystricks.src.main import FigureGenerationSuite
+from phystricks.src.figure_generation_suite import FigureGenerationSuite
 
 from phystricks.src.main import SinglePicture
 from phystricks.src.main import GenericFigure

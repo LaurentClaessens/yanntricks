@@ -16,12 +16,20 @@
 # copyright (c) Laurent Claessens, 2009-2017, 2019
 # email: laurent@claessens-donadello.eu
 
+
+#pylint: disable=invalid-name
+#pylint: disable=missing-function-docstring
+#pylint: disable=missing-module-docstring
+#pylint: disable=too-many-arguments
+#pylint: disable=too-many-public-methods
+#pylint: disable=fixme
+
+import os
 import collections
 from sage.all import numerical_approx
 
 from phystricks.src.Separator import SeparatorList
 from phystricks.src.ObjectGraph import DrawElement
-from phystricks.src.ObjectGraph import ObjectGraph
 from phystricks.src.Constructors import Axes, Grid
 from phystricks.src.point import Point
 from phystricks.src.AuxFile import AuxFile
@@ -90,12 +98,15 @@ class Picture(object):
         self.listePoint = []
         self.xunit = 1
         self.yunit = 1
+        self.xsize = None
+        self.ysize = None
         self.rotation_angle = None
         self.LabelSep = 1
         self.BB = BoundingBox(mother=self)
         self.math_BB = BoundingBox(is_math=True)
         # self.BB and self.math_BB serve to add some objects by hand.
-        # If you need the bounding box, use self.bounding_box() or self.math_bounding_box()
+        # If you need the bounding box, use self.bounding_box()
+        # or self.math_bounding_box()
         self.axes = Axes(Point(0, 0), BoundingBox(), pspict=self)
         self.single_axeX = self.axes.single_axeX
         self.single_axeY = self.axes.single_axeY
@@ -187,10 +198,6 @@ class Picture(object):
             #    pspict.math_BB.ymax+=1
             # placed after DrawGraph
 
-        # STEP : release the bounding box
-        # At this point the bounding box of the pspict is known.
-        self._bounding_box = self.BB
-
         # STEP : add the LaTeX code of each element
         for x in list_to_be_drawn:
             graph = x.graph
@@ -255,35 +262,38 @@ given right after the creation of the picture.")
         """
         Update and return the math bounding box of the picture.
         """
+        pspict= pspict or self
         math_list = [x.graph for x in self.record_draw_graph]
         math_list.extend(self.record_force_math_bounding_box)
         for a in [g for g in math_list if g.take_math_BB]:
-            self.math_BB.AddBB(a.math_bounding_box(pspict=self))
+            self.math_BB.AddBB(a.math_bounding_box(pspict=pspict))
         return self.math_BB
 
     def bounding_box(self, pspict=None):
-        """
-        Update and return the bounding box of the picture.
-        """
+        """Update and return the bounding box of the picture."""
         # The math bounding box of the picture has to be computed in the
-        # function 'DrawDefaultAxes'. But the axes themselves have to be taken
-        # into account in the bounding box of the picture.
+        # function 'DrawDefaultAxes'. But the axes themselves have
+        # to be taken into account in the bounding box of the picture.
+        pspict = pspict or self
 
-        self.BB.append(self.math_bounding_box(), pspict=self)
-
+        self.BB.append(self.math_bounding_box(), pspict=pspict)
 
         def condition(x):
             if x.take_BB:
                 return True
             if x.take_math_BB:
                 return True
+            return False
 
         for a in sublist(self.record_draw_graph, condition):
-            self.BB.AddBB(a.graph.bounding_box(pspict=self))
+            self.BB.AddBB(a.graph.bounding_box(pspict=pspict))
         return self.BB
 
-    def DrawBoundingBox(self, obj=None, color="cyan"):
-        """Draw the bounding box of an object when it has a method bounding_box
+    def DrawBoundingBox(self, obj=None):
+        """Draw the bounding box of the object.
+
+        Draw the bounding box of the object when it
+        has a method bounding_box
 
         If not, assume that the object is the bounding box to be drawn.
         If no object are given, draw its own bounding box
@@ -294,7 +304,6 @@ given right after the creation of the picture.")
 
     def deal_with_graph(self, gr, separator_name):
         from phystricks.src.ObjectGraph import AddedObjects
-        from phystricks.src.ObjectGraph import ObjectGraph
         if isinstance(gr, AddedObjects):
             self.DrawGraphs(gr[self])
             return None
@@ -303,6 +312,7 @@ given right after the creation of the picture.")
                 self.DrawGraphs(h, separator_name=separator_name)
             return None
         self._DrawGraph(gr, separator_name=separator_name)
+        return None
 
     def DrawGraphs(self, *args, **arg):
         """
@@ -341,14 +351,14 @@ given right after the creation of the picture.")
 
         More precisely, it does not draw the object now, but it add it (and its mark if applicable) to ``self.record_draw_graph`` which is the list of objects to be drawn. Thus it is still possible to modify the object later (even if extremely discouraged).
         """
-
+        from phystricks.src.ObjectGraph import ObjectGraph
         if not isinstance(graph, ObjectGraph):
             raise NotObjectGraphException(graph)
 
         if isinstance(graph, phyFunctionGraph):
-            if graph.mx == None or graph.Mx == None:
+            if graph.mx is None or graph.Mx is None:
                 raise TypeError("You cannot draw phyFunction but only graph.")
-        if separator_name == None:
+        if separator_name is None:
             try:
                 separator_name = graph.separator_name
             except AttributeError:
@@ -366,7 +376,7 @@ given right after the creation of the picture.")
 
         graph.conclude(self)
         self.math_BB.append(graph, self)
-        graph._draw_added_objects(self)
+        graph._draw_added_objects(self) # pylint:disable=protected-access
         graph.action_on_pspict(pspict=self)
 
     def DrawDefaultAxes(self):
@@ -374,9 +384,10 @@ given right after the creation of the picture.")
         This function computes the bounding box of the axes and add
         them to the list to be drawn.
 
-        The length of the axes is computed here (via self.math_bounding_box).
+        The length of the axes is computed here
+        (via self.math_bounding_box).
 
-        Sometimes you want the axes to be slightly larger. You can impose 
+        Sometimes you want the axes to be slightly larger. You can impose
         the length of the axes.
         """
         self.axes.BB = self.math_bounding_box(pspict=self)
@@ -401,7 +412,7 @@ given right after the creation of the picture.")
         """
         Add a line in the pstricks code. The optional argument <position> is the name of a marker like %GRID, %AXES, ...
         """
-        if separator_name == None:
+        if separator_name is None:
             separator_name = "DEFAULT"
         self.separator_list[separator_name].add_latex_line(
             ligne, add_line_jump=add_line_jump)
@@ -413,14 +424,13 @@ given right after the creation of the picture.")
         self.record_force_math_bounding_box.append(g)
 
     def test_if_test_file_is_present(self):
-        test_file = SmallComputations.Fichier(
+        from SmallComputations import Fichier
+        test_file = Fichier(
             "test_pspict_LaTeX_%s.tmp" % (self.name))
         return os.path.isfile(test_file.filename)
 
     def latex_code(self):
-        r"""
-        return the LaTeX code of the pspicture
-        """
+        """Return the LaTeX code of the pspicture"""
         self.add_latex_line(
             self.auxiliary_file.open_latex_code(), "OPEN_WRITE_AND_LABEL")
         self.add_latex_line(
@@ -429,5 +439,5 @@ given right after the creation of the picture.")
             self.auxiliary_file.close_latex_code(), "CLOSE_WRITE_AND_LABEL")
         if self.language == "tikz":
             return self.tikz_code()
-        else:
-            pass
+        raise NameError(f"Unknown language {self.language}."
+                        f" tikz is the only one.")
