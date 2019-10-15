@@ -47,20 +47,19 @@ class AngleMeasure(object):
         sage: b.degree
         180
 
-    If the numerical approximation of an angle in degree is close to an integer
-    up to less than 1e-10, we round it.
+    If the numerical approximation of an angle in degree is
+    close to an integer up to less than 1e-10, we round it.
     The reason is that in some case I got as entry such a number : 
     -(3.47548077273962e-14)/pi + 360
     Then the computation of radian gave 0 and we are left with degree 
     around 359.9999 while the radian was rounded to 0.
     (June, 2, 2013)
 
-        sage: a=AngleMeasure(value_degree=-(3.47548077273962e-14)/pi + 360)
-        sage: a.degree
-        360
-        sage: a.radian
-        2*pi
-
+    sage: a=AngleMeasure(value_degree=-(3.47548077273962e-14)/pi + 360)
+    sage: a.degree
+    360
+    sage: a.radian
+    2*pi
     """
     # TODO : take into account the following thread:
     # http://ask.sagemath.org/question/332/add-a-personnal-coercion-rule
@@ -228,4 +227,3 @@ def DegreeAngleMeasure(x):
 
 def RadianAngleMeasure(x):
     return AngleMeasure(value_radian=x)
-

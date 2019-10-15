@@ -18,9 +18,24 @@
 # copyright(c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from sage.all import cos, sin, numerical_approx
+
+# pylint: disable=invalid-name
+# pylint: disable=missing-function-docstring
+# pylint: disable=missing-module-docstring
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-statements
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-public-methods
+# pylint: disable=fixme
+
+
+from sage.all import numerical_approx  # pylint:disable=import-error
+from sage.all import cos, sin  # pylint:disable=import-error
 
 from yanntricks.src.Exceptions import ShouldNotHappenException
+from yanntricks.src.Utilities import point_to_box_intersection
 from yanntricks.src.ObjectGraph import ObjectGraph
 
 # The marks are not taken into account in the computation of the
@@ -30,9 +45,17 @@ from yanntricks.src.ObjectGraph import ObjectGraph
 
 
 class MarkGraph(ObjectGraph):
+    """
+    Describe a mark on an object.
+
+    That is, most of the time, the mathematical name to be written
+    next to the object.
+    """
+
     def __init__(self, graph, dist, angle, text, mark_point=None,
                  central_point=None, position=None, pspict=None):
         from yanntricks.src.AngleMeasure import AngleMeasure
+        from yanntricks.src.radian_unit import radian
         ObjectGraph.__init__(self, self)
 
         self.take_math_BB = False
@@ -69,11 +92,12 @@ class MarkGraph(ObjectGraph):
         Return the central point of the mark, that is the point where
         the mark arrives.
 
-        The central point of the mark is computed from self.graph.mark_point()
-        Thus an object that wants to accept a mark needs a method 
+        The central point of the mark is computed from
+        self.graph.mark_point()
+        Thus an object that wants to accept a mark needs a method
         mark_point that returns the point on which the mark will be put.
         """
-
+        from yanntricks.src.affine_vector import Vector
         if self._central_point:
             return self._central_point
         if self.mark_point:
@@ -82,10 +106,9 @@ class MarkGraph(ObjectGraph):
             try:
                 mark_point = self.graph.mark_point(pspict=pspict)
             except TypeError:
-                # Happens when mark_point is redefined as a 'lambda' function
+                # Happens when mark_point is redefined as a
+                # 'lambda' function
                 mark_point = self.graph.mark_point()
-
-        # default=mark_point.getVisualPolarPoint(self.dist,self.angle,pspict)
 
         # We are now going to compute the affine vector from the mark point
         # to the center of the mark.
@@ -154,8 +177,8 @@ class MarkGraph(ObjectGraph):
                 # - it is not because the box was put at random
                 # - dist/w.length is the multiplicative factor for 'w'
 
-                from Constructors import BoundingBox
-                from Utilities import point_to_box_intersection
+                from yanntricks.src.BoundingBox import BoundingBox
+                from yanntricks.src.affine_vector import AffineVector
                 r = dimx+dimy
                 v = Vector(r*cos(self.angle.radian), r*sin(self.angle.radian))
                 Q = mark_point.translate(v)
@@ -191,7 +214,7 @@ argument is not good :"+position)
 
         # The following is completely arbitrary.
         # TODO : each mark should be associated with a picture.
-        #           and here, 'pspict' should never be a list.
+        #        and here, 'pspict' should never be a list.
         if isinstance(pspict, list):
             xunit = pspict[0].xunit
             yunit = pspict[0].yunit
@@ -205,14 +228,19 @@ argument is not good :"+position)
         return cp
 
     def _math_bounding_box(self, pspict=None):
+        # pylint:disable=no-self-use
+        # pylint:disable=unused-argument
+        from yanntricks.src.BoundingBox import BoundingBox
         return BoundingBox()
 
-    def _bounding_box(self, pspict=None):
+    def _bounding_box(self, pspict=None):  # pylint:disable=arguments-differ
         raise DeprecationWarning
+        # pylint:disable=unreachable
+        from yanntricks.src.point import Point
+        from yanntricks.src.BoundingBox import BoundingBox
         central_point = self.central_point(pspict)
         if not central_point:
-            print("No central point. Parent =", self.parent)
-            raise
+            raise TypeError("No central point. Parent =", self.parent)
         bb = BoundingBox(central_point, central_point)
         dimx, dimy = pspict.get_box_size(self.text)
 
@@ -230,7 +258,7 @@ argument is not good :"+position)
         """Return the tikz code of self in the given pspict."""
         central_point = self.central_point(pspict)
 
-        code = "\draw " + \
+        code = r"\draw " + \
             central_point.coordinates(
                 digits=5, pspict=pspict)+" node {"+self.text+"};"
         return code
