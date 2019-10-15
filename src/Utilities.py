@@ -23,18 +23,20 @@
 # pylint: disable=missing-function-docstring
 # pylint: disable=missing-module-docstring
 # pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=too-many-public-methods
 # pylint: disable=fixme
 
-from sage.all import SR, sqrt, numerical_approx, arctan, var, solve, atan
-from sage.rings.real_mpfr import RealNumber
+from sage.all import sqrt, numerical_approx  # pylint:disable = import-error
+from sage.all import var, solve, atan, pi  # pylint:disable = import-error
+from sage.rings.real_mpfr import RealNumber  # pylint:disable = import-error
 
 from yanntricks.src.degree_unit import degree
 from yanntricks.src.Separator import SeparatorList
 from yanntricks.src.Decorators import sort_and_assert_real
-from yanntricks.src.Numerical import numerical_is_negative
 from yanntricks.src.Exceptions import ShouldNotHappenException
+from yanntricks.src.Exceptions import OperationNotPermitedException
 
 
 def init_figure_separator_list():
@@ -49,8 +51,9 @@ def init_figure_separator_list():
     separator_list.new_separator("DEFAULT")
     separator_list.new_separator("BEFORE PSPICTURE")
     separator_list.new_separator("PSPICTURE")
-    separator_listnew_separator("AFTER PSPICTURE")
+    separator_list.new_separator("AFTER PSPICTURE")
     return separator_list
+
 
 def init_picture_separator_list():
     """Initialize the separator list for a picture."""
@@ -80,7 +83,7 @@ def add_latex_line_entete(truc, position=""):
     truc.add_latex_line(
         "% http://student.ulb.ac.be/~lclaesse/yanntricks-doc.pdf ", position)
     truc.add_latex_line(
-        "% http://student.ulb.ac.be/~lclaesse/yanntricks-documentation/_build/html/index.html ", position)
+        "% http://student.ulb.ac.be/~lclaesse/yanntricks-documentation/_build/html/index.html ", position)  # pylint:disable=line-too-long
     truc.add_latex_line(
         "% and the projects yanntricks and yanntricks-doc at ", position)
     truc.add_latex_line(
@@ -88,14 +91,19 @@ def add_latex_line_entete(truc, position=""):
 
 
 def is_real(z):
-    if type(z) in [int, RealNumber]:
-        return True
+    for real_type in [int, RealNumber]:
+        if isinstance(z, real_type):
+            return True
     return z.is_real()
 
 
 def test_imaginary_part(z, epsilon=0.0001):
     """
-    Return a tuple '(isreal,w)' where 'isreal' is a boolean saying if 'z' is real (in the sense that it is real and does not contain 'I' in its string representation) and 'w' is 'z' when the imaginary part is larger than epsilon and an 'numerical_approx' of 'z' when its imaginary part is smaller than 'epsilon'
+    Return a tuple '(isreal,w)' where 'isreal' is a boolean saying
+    if 'z' is real (in the sense that it is real and does not contain
+    'I' in its string representation) and 'w' is 'z' when the
+    imaginary part is larger than epsilon and an 'numerical_approx'
+    of 'z' when its imaginary part is smaller than 'epsilon'
 
     With the collateral effect that it returns a numerical approximation.
     """
@@ -112,23 +120,28 @@ def test_imaginary_part(z, epsilon=0.0001):
 
 def test_imaginary_part_point(P, epsilon=0.0001):
     """
-    return the tuple '(isreal,P)' whit the same description of 'test_imaginary_part'
+    Return the tuple '(isreal,P)'.
+
+    The same description of 'test_imaginary_part'
     """
-    from Constructors import Point
-    realx, x = test_imaginary_part(P.x)
-    realy, y = test_imaginary_part(P.y)
+    from yanntricks.src.point import Point
+    realx, x = test_imaginary_part(P.x, epsilon)
+    realy, y = test_imaginary_part(P.y, epsilon)
     on = False
     if realx and realy:
         on = True
     return on, Point(x, y)
 
-# return the squared distance between P and Q
-#
-# \param numerical If True, use numerical approximations and return
-# a numerical approximation.
-
 
 def distance_sq(P, Q, numerical=False):
+    """
+    Return the squared distance between P and Q.
+
+    @param {bool} `numerical`
+        If True, use numerical approximations and return a
+        numerical approximation.
+    """
+
     if not numerical:
         return (P.x-Q.x)**2+(P.y-Q.y)**2
     Px = numerical_approx(P.x)
@@ -142,28 +155,27 @@ def distance(P, Q):
     """ return the distance between P and Q """
     return sqrt(distance_sq(P, Q))
 
-# \brief  Return the inner product of vectors `v` and `w`
-# \param v a vector
-# \param w a vector
-# \param numerical a boolean
-#
-# If `numerical` is true, the computations are done on
-# numerical approximations of the coordinates.
-
 
 def inner_product(v, w, numerical=False):
-    from PointGraph import PointGraph
-    from Constructors import Point
-    from AffineVectorGraph import AffineVectorGraph
+    """
+    Return the inner product of vectors `v` and `w`
+    @param v a vector
+    @param w a vector
+    @param numerical a boolean
 
+    If `numerical` is true, the computations are done on
+    numerical approximations of the coordinates.
+    """
     if numerical:
         if not v.I.is_almost_equal(w.I):
-            raise OperationNotPermitedException("I only compute inner products\
-                    of vectors based on the same point.")
+            raise OperationNotPermitedException(
+                "I only compute inner products "
+                "of vectors based on the same point.")
     if not numerical:
         if v.I != w.I:
-            raise OperationNotPermitedException("I only compute inner products\
-                    of vectors based on the same point.")
+            raise OperationNotPermitedException(
+                "I only compute inner products "
+                "of vectors based on the same point.")
 
     s = v.Dx*w.Dx+v.Dy*w.Dy
     if numerical:
@@ -173,55 +185,60 @@ def inner_product(v, w, numerical=False):
 
 @sort_and_assert_real
 def Intersection(f, g, a=None, b=None, numerical=False):
-    ##
-    # When f and g are objects with an attribute equation, return the list of points of intersections.
-    #
-    # - The list of point is sorted by order of `x` coordinates.
-    # - Return only real solutions.
-    #
-    # Only numerical approximations are returned as there are some errors
-    # otherwise. As an example the following #solving return points that
-    # are not even near from the circle \f$ x^2+y^2=9 \f$ :
-    # ```
-    # solve( [ -1/3*sqrt(3)*y + 1/3*sqrt(3)*(-0.19245008972987399*sqrt(3) - 3) + x == 0,x^2 + y^2 - 9 == 0 ],[x,y] )
-    # ```
-    #
-    # ## Examples
-    #
-    # ```
-    #    sage: from yanntricks import *
-    #    sage: fun=phyFunction(x**2-5*x+6)
-    #    sage: droite=phyFunction(2)
-    #    sage: pts = Intersection(fun,droite)
-    #    sage: for P in pts:print P
-    #    <Point(1,2)>
-    #    <Point(4,2)>
-    #```
-    #
-    #```
-    #    sage: f=phyFunction(sin(x))
-    #    sage: g=phyFunction(cos(x))
-    #    sage: pts=Intersection(f,g,-2*pi,2*pi,numerical=True)
-    #    sage: for P in pts:print P
-    #    <Point(-5.497787143782138,0.707106781186548)>
-    #    <Point(-2.3561944901923466,-0.707106781186546)>
-    #    <Point(0.7853981633974484,0.707106781186548)>
-    #    <Point(3.926990816987241,-0.707106781186547)>
-    #```
-    #
-    #  If 'numerical' is True, it search for the intersection points of the functions 'f' and 'g' (it only work with functions). In this case an interval is required.
+    """
+    Return the list of intersection point between `f` and `g`.
 
-    from AffineVectorGraph import AffineVectorGraph
+    When f and g are objects with an attribute equation, return
+    the list of points of intersections.
 
-    if isinstance(f, AffineVectorGraph):
+  - The list of point is sorted by order of `x` coordinates.
+  - Return only real solutions.
+
+    Only numerical approximations are returned as there are some errors
+    otherwise. As an example the following #solving return points that
+    are not even near from the circle \f$ x^2+y^2=9 \f$ :
+    ``` #pylint:disable=line-too-long
+    solve( [ -1/3*sqrt(3)*y + 1/3*sqrt(3)*(-0.19245008972987399*sqrt(3) - 3) + x == 0,x^2 + y^2 - 9 == 0 ],[x,y] )
+    ```
+
+     Examples
+    ```
+    sage: from yanntricks import *
+    sage: fun=phyFunction(x**2-5*x+6)
+    sage: droite=phyFunction(2)
+    sage: pts = Intersection(fun,droite)
+    sage: for P in pts:print P
+    <Point(1,2)>
+    <Point(4,2)>
+    ```
+
+   ```
+    sage: f=phyFunction(sin(x))
+    sage: g=phyFunction(cos(x))
+    sage: pts=Intersection(f,g,-2*pi,2*pi,numerical=True)
+    sage: for P in pts:print P
+    <Point(-5.497787143782138,0.707106781186548)>
+    <Point(-2.3561944901923466,-0.707106781186546)>
+    <Point(0.7853981633974484,0.707106781186548)>
+    <Point(3.926990816987241,-0.707106781186547)>
+    ```
+
+    If 'numerical' is True, it searchs for the intersection points
+    of the functions 'f' and 'g' (it only work with functions).
+    In this case an interval is required.
+    """
+    from yanntricks.src.affine_vector import AffineVector
+    from yanntricks.src.SmallComputations import find_roots_recursive
+    from yanntricks.src.point import Point
+
+    if isinstance(f, AffineVector):
         f = f.segment
-    if isinstance(g, AffineVectorGraph):
+    if isinstance(g, AffineVector):
         g = g.segment
 
     if numerical and "sage" in dir(f):
-        import SmallComputations
         k = f-g
-        xx = SmallComputations.find_roots_recursive(k.sage, a, b)
+        xx = find_roots_recursive(k.sage, a, b)
         pts = [Point(x, f(x)) for x in xx]
         return pts
 
@@ -235,37 +252,37 @@ def Intersection(f, g, a=None, b=None, numerical=False):
     for s in soluce:
         a = s[0].rhs()
         b = s[1].rhs()
-        z = a**2+b**2
         ok1, a = test_imaginary_part(a)
         ok2, b = test_imaginary_part(b)
         if ok1 and ok2:
             pts.append(Point(a, b))
     return pts
 
-# \brief The intersection between the line from the given point and
-# the center of the given box.
-#
-# \arg P : a point
-# \arg box : a box, which means a duck which has attributes
-#               `xmin`, `xmax`, `ymin`, `ymax`
-#
-# Consider the line from `P` to the center of the box
-# and return the intersection
-# points.
-#
-# \return a list of `Point`.
-#
-# - The list always contains exactly 2 points
-# - They are sorted by order of distance to `P`
-
 
 def point_to_box_intersection(P, box, pspict=None):
-    from yanntricks.src.Utilities import distance_sq
+    """
+    The intersection between the line from the given point and
+    the center of the given box.
+
+    P : a point
+    box : a box, which means a duck which has attributes
+                  `xmin`, `xmax`, `ymin`, `ymax`
+
+    Consider the line from `P` to the center of the box
+    and return the intersection
+    points.
+
+    return a list of `Point`.
+
+    - The list always contains exactly 2 points
+    - They are sorted by order of distance to `P`
+    """
+    from yanntricks.src.point import Point
+    from yanntricks.src.segment import Segment
     A = Point(box.xmin, box.ymin)
     B = Point(box.xmax, box.ymin)
     C = Point(box.xmax, box.ymax)
     D = Point(box.xmin, box.ymax)
-    # n'écrivez pas ça au tableau quand un inspecteur est dans la salle :
     center = (A+B+C+D)/4
     line = Segment(P, center)
 
@@ -286,7 +303,8 @@ def point_to_box_intersection(P, box, pspict=None):
                 inter = [A, C]
             if S == D:
                 inter = [B, D]
-            # The last two tests are to know if S lies between ed.I and ed.F
+            # The last two tests are to know if S lies
+            # between ed.I and ed.F
             # We use numerical approximations in order to avoid some
             # OverflowError: Python int too large to convert to C long
             elif numerical_approx((S.x-ed.I.x)*(S.x-ed.F.x)) < 0:
@@ -306,10 +324,8 @@ def point_to_box_intersection(P, box, pspict=None):
     return inter
 
 
-
-
 def EnsurephyFunction(f):
-    from Constructors import phyFunction
+    from yanntricks.src.Constructors import phyFunction
     try:
         k = phyFunction(f.sage)
     except AttributeError:
@@ -329,8 +345,7 @@ def EnsurephyFunction(f):
 def EnsureParametricCurve(curve):
     if "parametric_curve" in dir(curve):
         return curve.parametric_curve()
-    else:
-        return curve
+    return curve
 
 
 def check_too_large(obj, pspict=None):
@@ -372,9 +387,15 @@ def check_too_large(obj, pspict=None):
 
 def general_function_get_point(fun, x, advised=True):
     """
-    Return a point on the graph of the function with the given x, i.e. it return the point (x,f(x)).
+    Return a point on the graph of the function.
 
-    Also set an attribute advised_mark_angle to the point. This angle is the normal exterior to the graph; visually this is usually the best place to put a mark. Typically you use this as
+    Return a point on the graph of the function with the given
+    x, i.e. it returns the point (x,f(x)).
+
+    Also set an attribute advised_mark_angle to the point.
+    This angle is the normal exterior to the graph; visually
+    this is usually the best place to put a mark.
+    Typically you use this as
     P=f.get_point(3)
     P.mark(radius,P.advised_mark_angle,"$P$")
 
@@ -382,6 +403,7 @@ def general_function_get_point(fun, x, advised=True):
     If you don't plan to put a mark on the point, you are invited
     to use advised=False in order to speed up the computations.
     """
+    from yanntricks.src.point import Point
     P = Point(float(x), fun(x))
     if advised:
         try:
@@ -393,7 +415,7 @@ def general_function_get_point(fun, x, advised=True):
             angle_n = degree(atan(ca)+pi/2)
             if fun.derivative(2)(x) > 0:
                 angle_n = angle_n+180
-            P._advised_mark_angle = angle_n
+            P._advised_mark_angle = angle_n  # pylint:disable=protected-access
     return P
 
 
@@ -401,9 +423,10 @@ def latinize(word):
     """
     return a "latinized" version of a string.
 
-    From a string, return something that can be used as point name, file name.
-    In particular, remove the special characters, put everything in lowercase,
-    and turn the numbers into letters.
+    From a string, return something that can be used as point name,
+    file name.
+    In particular, remove the special characters,
+    put everything in lowercase, and turn the numbers into letters.
 
     This function is used in order to turn the script name into a
     string that can be a filename for the LaTeX's intermediate file.
@@ -428,31 +451,23 @@ def latinize(word):
         'homeMyNameDsagemyscriptOThDpy'
     """
     latin = ""
+    correspondances = {
+        0: "ZERO",
+        1: "ONE",
+        2: "TWO",
+        3: "THREE",
+        4: "FOUR",
+        5: "FIVE",
+        6: "SIX",
+        7: "SEVEN",
+        8: "HEITH",
+        9: "NINE",
+        '.': "DOT"}
     for s in word:
         if s.lower() in "abcdefghijklmnopqrstuvwxyz":
             latin = latin+s
-        if s == "1":
-            latin = latin+"ONE"
-        if s == "2":
-            latin = latin+"TWO"
-        if s == "3":
-            latin = latin+"THREE"
-        if s == "4":
-            latin = latin+"FOR"
-        if s == "5":
-            latin = latin+"FIVE"
-        if s == "6":
-            latin = latin+"SIX"
-        if s == "7":
-            latin = latin+"SEVEN"
-        if s == "8":
-            latin = latin+"HEITH"
-        if s == "9":
-            latin = latin+"NINE"
-        if s == "0":
-            latin = latin+"ZERO"
-        if s == ".":
-            latin = latin+"DOT"
+        if s in correspondances:
+            latin = latin + correspondances[s]
     return latin
 
 
@@ -460,7 +475,8 @@ def counterName():
     r"""
     This function provides the name of the counter.
 
-    This has the same use of newwriteName, for the same reason of limitation.
+    This has the same use of newwriteName, for the
+    same reason of limitation.
     """
     return "counterOfforyanntricks"
 
@@ -487,7 +503,7 @@ def sublist(l, condition):
 
 def make_psp_list(pspict, pspicts):
     if isinstance(pspict, list):
-        raise
+        raise TypeError("The argument 'pspict' must not be a list.")
     a = []
     if pspict is not None:
         a.append(pspict)
@@ -508,9 +524,8 @@ def no_symbol(*arg):
             l.parameters.symbol = ""
 
 
-def get_equal_lengths_code(s1, s2, n=1, d=0.1, l=0.1, angle=45, pspict=None, pspicts=None):
-    from ObjectGraph import AddedObjects
-    from yanntricks.src.Utilities import make_psp_list
+def get_equal_lengths_code(s1, s2, n=1, d=0.1, l=0.1, pspict=None, pspicts=None):
+    from yanntricks.src.ObjectGraph import AddedObjects
     added1 = AddedObjects()
     added2 = AddedObjects()
     pspicts = make_psp_list(pspict, pspicts)
@@ -522,46 +537,47 @@ def get_equal_lengths_code(s1, s2, n=1, d=0.1, l=0.1, angle=45, pspict=None, psp
     return added1, added2
 
 
-def put_equal_lengths_code(s1, s2, n=1, d=0.1, l=0.1, angle=45, pspict=None, pspicts=None):
-    """
-    Add the code for equal length between segments s1 and s2
-    """
-    from yanntricks.src.Utilities import make_psp_list
+def put_equal_lengths_code(s1, s2, n=1, d=0.1, l=0.1, pspict=None, pspicts=None):
+    """Add the code for equal length between segments s1 and s2"""
     pspicts = make_psp_list(pspict, pspicts)
     for psp in pspicts:
-        added = get_equal_lengths_code(s1, s2, n, d, l, angle, pspict=psp)
+        added = get_equal_lengths_code(s1, s2, n, d, l, pspict=psp)
         c1 = added[0]
         c2 = added[1]
         s1.added_objects.fusion(c1)
         s2.added_objects.fusion(c2)
 
-# \brief turn the given number into a string with some conversion
-#  and approximations rules.
-#
-# When one coordinate if very small (lower than 0.0001), it
-# is rounded to zero in order to avoid string like "0.2335e-6"
-# in the pstricks code.
-#
-# The parameter `digit` is *not* the same as the one in
-# Sage's `numerical_approx`.
-# Here we compute a numerical approximation (the one of sage) and then we cut
-# the resulting *string* to the desired numbers of digits.
-# The rounding is thus not always the expected one.
-# The reason is this kind of expression :
-#    ```
-#    a=7.73542889062775*cos(11/9*pi + 1.30951587282752) - 7.55775391156456*cos(5/18*pi) + 2.5*cos(2/9*pi)
-#    print(numerical_approx(a))
-#    print(numerical_approx(a,digits=5))
-#   ```
-# The first print is deterministic (0.329851686365047), while the second
-# one is not.
-#
-# Remark : undefined behaviour is the integer part of `x` requires more
-# digits than `digits`.
-
 
 def number_to_string(x, digits):
-    from Numerical import is_almost_zero
+    """
+    Return a string representation of the given number.
+
+    Turn the given number into a string with some conversion
+    and approximations rules.
+
+    When one coordinate if very small (lower than 0.0001), it
+    is rounded to zero in order to avoid string like "0.2335e-6"
+    in the pstricks code.
+
+    The parameter `digit` is *not* the same as the one in
+    Sage's `numerical_approx`.
+    Here we compute a numerical approximation (the one of sage)
+    and then we cut the resulting *string* to the desired numbers
+    of digits.
+    The rounding is thus not always the expected one.
+    The reason is this kind of expression :
+       ```  #pylint:disable=line-too-long
+       a=7.73542889062775*cos(11/9*pi + 1.30951587282752) - 7.55775391156456*cos(5/18*pi) + 2.5*cos(2/9*pi)
+       print(numerical_approx(a))
+       print(numerical_approx(a,digits=5))
+      ```
+    The first print is deterministic (0.329851686365047), while the second
+    one is not.
+
+    Remark : undefined behaviour is the integer part of `x` requires more
+    digits than `digits`.
+    """
+    from yanntricks.src.Numerical import is_almost_zero
     nx = numerical_approx(x)
 
     # Avoid something like "0.125547e-6" (LaTeX will not accept).
@@ -571,13 +587,6 @@ def number_to_string(x, digits):
         return "0."+"0"*(digits-1)
 
     sx = str(nx)
-
-    # in a definitive release, this test can be removed.
-    # this is only for my culture; I guess that it never happens
-    if "." not in sx:
-        print(x)
-        print(sx)
-        raise
 
     sx = sx+"0"*(digits+1)  # be sure not to lack digits
     if nx < 0:
