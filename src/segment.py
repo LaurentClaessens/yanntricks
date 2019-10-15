@@ -1,4 +1,4 @@
-###########################################################################
+#########################################################################
 #   This is part of the module yanntricks
 #
 #   yanntricks is free software: you can redistribute it and/or modify
@@ -12,8 +12,8 @@
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
-###########################################################################
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>
+#########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu

@@ -321,7 +321,7 @@ class ObjectGraph:
         # This method must be overridden.
         return ""
 
-    def _bounding_box(self, pspict, language=None):
+    def _bounding_box(self, pspict):
         # pylint: disable=no-self-use
         # pylint: disable=unused-argument
         # This method must be overridden.
