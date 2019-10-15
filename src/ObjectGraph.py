@@ -1,18 +1,18 @@
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
@@ -25,11 +25,11 @@
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-instance-attributes
 
-from phystricks.src.parameters.Options import Options
-from phystricks.src.parameters.Parameters import Parameters
-from phystricks.src.NoMathUtilities import logging
-from phystricks.src.AddedObjects import AddedObjects
-from phystricks.src.Utilities import make_psp_list
+from yanntricks.src.parameters.Options import Options
+from yanntricks.src.parameters.Parameters import Parameters
+from yanntricks.src.NoMathUtilities import logging
+from yanntricks.src.AddedObjects import AddedObjects
+from yanntricks.src.Utilities import make_psp_list
 
 
 
@@ -80,7 +80,7 @@ class ObjectGraph:
 
         dx is the wave length and dy is the amplitude
         """
-        from phystricks.src.parameters.Waviness import Waviness
+        from yanntricks.src.parameters.Waviness import Waviness
         self.wavy = True
         self.waviness = Waviness(self, dx, dy)
 
@@ -112,8 +112,8 @@ class ObjectGraph:
         In the internal representation of the mark,
         the angle type will be `AngleMeasure`
         """
-        from phystricks.src.Constructors import Mark
-        from phystricks.src.AngleMeasure import AngleMeasure
+        from yanntricks.src.Constructors import Mark
+        from yanntricks.src.AngleMeasure import AngleMeasure
 
         self.marque = True
 
@@ -250,7 +250,7 @@ class ObjectGraph:
                                           refute=refute)
 
     def bracketAttributesText(self, language, refute=None):
-        from phystricks.src.BasicGeometricObjects import genericBracketAttributeToLanguage
+        from yanntricks.src.BasicGeometricObjects import genericBracketAttributeToLanguage
 
         refute = refute or []
 

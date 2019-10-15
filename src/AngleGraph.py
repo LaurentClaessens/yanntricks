@@ -1,18 +1,18 @@
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
@@ -20,14 +20,14 @@
 
 from sage.all import lazy_attribute, tan, sin, cos
 
-from phystricks.src.Visual import visual_polar_coordinates
-from phystricks.src.Visual import visual_length
-from phystricks.src.Visual import visual_vector
-from phystricks.src.Visual import inverse_visual_angle
-from phystricks.src.NoMathUtilities import logging
-from phystricks.src.Decorators import copy_parameters
-from phystricks.src.Exceptions import MissingPictureException
-from phystricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.Visual import visual_polar_coordinates
+from yanntricks.src.Visual import visual_length
+from yanntricks.src.Visual import visual_vector
+from yanntricks.src.Visual import inverse_visual_angle
+from yanntricks.src.NoMathUtilities import logging
+from yanntricks.src.Decorators import copy_parameters
+from yanntricks.src.Exceptions import MissingPictureException
+from yanntricks.src.ObjectGraph import ObjectGraph
 
 
 class AngleGraph(ObjectGraph):

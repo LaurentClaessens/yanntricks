@@ -1,18 +1,18 @@
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
@@ -23,9 +23,9 @@
 # pylint: disable=missing-module-docstring
 
 from sage.all import sqrt, sin, cos, pi     #pylint:disable=import-error
-from phystricks.src.point import Point
-from phystricks.src.affine_vector import Vector
-from phystricks.src.Numerical import numerical_is_negative
+from yanntricks.src.point import Point
+from yanntricks.src.affine_vector import Vector
+from yanntricks.src.Numerical import numerical_is_negative
 
 
 def visual_length(v, l, xunit=None, yunit=None, pspict=None):
@@ -35,7 +35,7 @@ def visual_length(v, l, xunit=None, yunit=None, pspict=None):
     Return a vector in the direction of v that has *visual* length
     l taking xunit and yunit into account.
     """
-    from phystricks.src.affine_vector import AffineVector
+    from yanntricks.src.affine_vector import AffineVector
     if pspict:
         xunit = pspict.xunit
         yunit = pspict.yunit
@@ -112,8 +112,8 @@ def visual_vector(v, pspict=None, xunit=None, yunit=None):
     Return a vector at the same base as 'v' but such that
     it will visually appears as 'v'
     """
-    from phystricks.src.NoMathUtilities import logging
-    from phystricks.src.affine_vector import AffineVector
+    from yanntricks.src.NoMathUtilities import logging
+    from yanntricks.src.affine_vector import AffineVector
     if pspict is None and (xunit is None or yunit is None):
         logging("Trying to make visual_vector with no pspict ?")
         raise DeprecationWarning
@@ -148,7 +148,7 @@ def inverse_visual_angle(angle, pspict):
     where A',B' and C' are the points where the angle will be after
     the dilatations.
     """
-    from phystricks.src.Constructors import AngleAOB
+    from yanntricks.src.Constructors import AngleAOB
     Ap = inverse_visual_point(angle.A, pspict)
     Op = inverse_visual_point(angle.O, pspict)
     Bp = inverse_visual_point(angle.B, pspict)

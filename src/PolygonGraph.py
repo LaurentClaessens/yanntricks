@@ -1,28 +1,28 @@
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
 
-from phystricks.src.ObjectGraph import ObjectGraph
-from phystricks.src.Utilities import make_psp_list
-from phystricks.src.segment import Segment
-from phystricks.src.BoundingBox import BoundingBox
+from yanntricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.Utilities import make_psp_list
+from yanntricks.src.segment import Segment
+from yanntricks.src.BoundingBox import BoundingBox
 
 
 # \brief the graph of a polygon
@@ -50,9 +50,9 @@ class PolygonGraph(ObjectGraph):
         self.independent_edge = False
         self.parameters = None
 
-        from phystricks.src.parameters.Parameters import Parameters
-        from phystricks.src.parameters.HatchParameters import HatchParameters
-        from phystricks.src.parameters.FillParameters import FillParameters
+        from yanntricks.src.parameters.Parameters import Parameters
+        from yanntricks.src.parameters.HatchParameters import HatchParameters
+        from yanntricks.src.parameters.FillParameters import FillParameters
 
         self.edges_parameters = Parameters(self)
         self.hatch_parameters = HatchParameters()
@@ -153,7 +153,7 @@ class PolygonGraph(ObjectGraph):
 
     def action_on_pspict(self, pspict):
         """If one wants to fill or hatch, one has to ask explicitly."""
-        from phystricks.src.CustomSurfaceGraph import CustomSurface
+        from yanntricks.src.CustomSurfaceGraph import CustomSurface
         if self._filled:
             custom = CustomSurface(self.edges)
             custom.parameters.filled()

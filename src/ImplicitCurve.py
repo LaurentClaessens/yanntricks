@@ -1,20 +1,20 @@
 # -*- coding: utf8 -*-
 
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017
@@ -26,7 +26,7 @@ from __future__ import unicode_literals
 
 from sage.all import operator,implicit_plot
 
-from phystricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.ObjectGraph import ObjectGraph
 from Constructors import *
 from parameters.Parameters import Parameters
 
@@ -42,8 +42,8 @@ def get_paths_from_plot(p):
     - ``p`` - a plot object
 
     EXAMPLES:
-    sage: from phystricks import *
-    sage: from phystricks.BasicGeometricObjects import *
+    sage: from yanntricks import *
+    sage: from yanntricks.BasicGeometricObjects import *
     sage: x,y=var('x,y')
     sage: F=implicit_plot(x**2+y**2==2,(x,-5,5),(y,-5,5))
     sage: g=get_paths_from_plot(F)
@@ -81,14 +81,14 @@ def get_paths_from_implicit_plot(p):
 
     OUTPUT:
 
-    A list of lists of points. Each list corresponds to a path (see matplotlib), but the components are converted into points in the sens of phystricks (instead of matplotlib's vertices).
+    A list of lists of points. Each list corresponds to a path (see matplotlib), but the components are converted into points in the sens of yanntricks (instead of matplotlib's vertices).
 
     EXAMPLES:
 
     The length of the list can be quite long::
 
-        sage: from phystricks import *
-        sage: from phystricks.BasicGeometricObjects import *
+        sage: from yanntricks import *
+        sage: from yanntricks.BasicGeometricObjects import *
         sage: x,y=var('x,y')
         sage: F=implicit_plot(x**2+y**2==2,(x,-5,5),(y,-5,5))
         sage: len(get_paths_from_implicit_plot(F)[0])
@@ -101,7 +101,7 @@ def get_paths_from_implicit_plot(p):
         sage: len(paths)
         4
         sage: type(paths[0][1])
-        <class 'phystricks.BasicGeometricObjects.PointGraph'>
+        <class 'yanntricks.BasicGeometricObjects.PointGraph'>
         sage: print paths[0][3]
         <Point(4.87405534614323,-4.6644295302013425)>
         sage: print paths[1][3]
@@ -131,7 +131,7 @@ class GeometricImplicitCurve(object):
 
     EXAMPLES::
 
-        sage: from phystricks.BasicGeometricObjects import *
+        sage: from yanntricks.BasicGeometricObjects import *
         sage: x,y=var('x,y')
         sage: f(x,y)=x**2+1/x
         sage: F=GeometricImplicitCurve(f(x,y)==2)
@@ -159,7 +159,7 @@ class GeometricImplicitCurve(object):
 
         EXAMPLE ::
     
-            sage: from phystricks.BasicGeometricObjects import *
+            sage: from yanntricks.BasicGeometricObjects import *
             sage: x,y=var('x,y')
             sage: F=GeometricImplicitCurve(x-y==3)
             sage: graph=F.graph((x,-3,3),(y,-2,2))
@@ -176,7 +176,7 @@ class GeometricImplicitCurve(object):
 
         EXAMPLE::
 
-            sage: from phystricks.BasicGeometricObjects import *
+            sage: from yanntricks.BasicGeometricObjects import *
             sage: x,y=var('x,y')
             sage: f(x,y)=x**2+1/x
             sage: print GeometricImplicitCurve(f(x,y)==2)
@@ -209,7 +209,7 @@ class ImplicitCurveGraph(ObjectGraph,GeometricImplicitCurve):
     
     EXAMPLES::
 
-            sage: from phystricks.BasicGeometricObjects import *
+            sage: from yanntricks.BasicGeometricObjects import *
             sage: x,y=var('x,y')
             sage: implicit_curve=GeometricImplicitCurve(x**2+x==3)
             sage: F=ImplicitCurveGraph(implicit_curve,(x,-1,1),(y,-3,2))
@@ -238,7 +238,7 @@ class ImplicitCurveGraph(ObjectGraph,GeometricImplicitCurve):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: x,y=var('x,y')
             sage: F=ImplicitCurve(x**2+y**2==sqrt(2),(x,-5,5),(y,-4,4),plot_points=300)
             sage: F.get_minmax_data()   # random
@@ -283,7 +283,7 @@ class ImplicitCurveGraph(ObjectGraph,GeometricImplicitCurve):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: x,y=var('x,y')
             sage: f=x**2+2*y**2
             sage: G=ImplicitCurve(f==sqrt(2),(x,-5,5),(y,-5,5),plot_points=200)

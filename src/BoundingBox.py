@@ -1,28 +1,28 @@
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright(c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from phystricks.src.point import Point
-from phystricks.src.ObjectGraph import ObjectGraph
-from phystricks.src.Utilities import check_too_large
-from phystricks.src.Exceptions import MissingPictureException
-import phystricks.src.main
+from yanntricks.src.point import Point
+from yanntricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.Utilities import check_too_large
+from yanntricks.src.Exceptions import MissingPictureException
+import yanntricks.src.main
 
 
 class BoundingBox(ObjectGraph):
@@ -154,8 +154,8 @@ class BoundingBox(ObjectGraph):
         self.ymax = max(self.ymax, y)
 
     def AddBB(self, bb):
-        from phystricks.src.Numerical import numerical_min
-        from phystricks.src.Numerical import numerical_max
+        from yanntricks.src.Numerical import numerical_min
+        from yanntricks.src.Numerical import numerical_max
         self.xmin = numerical_min(self.xmin, bb.xmin)
         self.ymin = numerical_min(self.ymin, bb.ymin)
         self.xmax = numerical_max(self.xmax, bb.xmax)

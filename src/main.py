@@ -24,7 +24,7 @@
 #pylint: disable=fixme
 
 
-from phystricks.src.latex_to_be import pseudo_caption
+from yanntricks.src.latex_to_be import pseudo_caption
 
 
 # TODO : f=phyFunction(x**2+3*x-10), then  g=f/3 does not work.
@@ -53,7 +53,7 @@ def latex_portion(failed_list, lstinputlisting=False):
             text = base.replace(pseudo_caption, str(a[0]))
             portion.append(text)
             if lstinputlisting:
-                filename = "phystricks"+str(a[1].script_filename)
+                filename = "yanntricks"+str(a[1].script_filename)
                 portion.append(r"\lstinputlisting{"+filename+".py}")
                 portion.append(r"\clearpage")
             num = num+1
@@ -75,8 +75,8 @@ def no_symbol(*arg):
 
 def get_equal_lengths_code(s1, s2, n=1, d=0.1, l=0.1,
                            pspict=None, pspicts=None):
-    from phystricks.src.ObjectGraph import AddedObjects
-    from phystricks.src.Utilities import make_psp_list
+    from yanntricks.src.ObjectGraph import AddedObjects
+    from yanntricks.src.Utilities import make_psp_list
     added1 = AddedObjects()
     added2 = AddedObjects()
     pspicts = make_psp_list(pspict, pspicts)
@@ -92,7 +92,7 @@ def put_equal_lengths_code(s1, s2, n=1, d=0.1, l=0.1, pspict=None, pspicts=None)
     """
     Add the code for equal length between segments s1 and s2
     """
-    from phystricks.src.Utilities import make_psp_list
+    from yanntricks.src.Utilities import make_psp_list
     pspicts = make_psp_list(pspict, pspicts)
     for psp in pspicts:
         added = get_equal_lengths_code(s1, s2, n, d, l, pspict=psp)
@@ -120,7 +120,7 @@ def GenericFigure(nom, script_filename=None):
     label = "LabelFig"+nom
     filename = "Fig_"+nom+".pstricks"
 
-    from phystricks.src.Figure import Figure
+    from yanntricks.src.Figure import Figure
     fig = Figure(caption, label, filename, script_filename)
     fig.figure_mother = fig   # I'm not sure that this line is useful.
     print(fig.LaTeX_lines())
@@ -154,7 +154,7 @@ def MultiplePictures(name, n=None, pspicts=None, script_filename=None):
 
     EXAMPLE::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: pspicts,fig = MultiplePictures("MyName",3)
         The result is on figure \ref{LabelFigMyName}.
         \newcommand{\CaptionFigMyName}{<+Type your caption here+>}
@@ -204,7 +204,7 @@ def IndependentPictures(name, n):
     """
     pspicts = []
     figs = []
-    from phystricks.src.Utilities import latinize
+    from yanntricks.src.Utilities import latinize
     for i in range(0, n):
         # One has to latinize to be in grade of making subfigures :
         # if not one gets things like

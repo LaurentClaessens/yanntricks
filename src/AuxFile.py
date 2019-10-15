@@ -24,15 +24,15 @@
 Describe an auxiliary file in which we make LaTeX write some informations.
 """
 
-from phystricks.src.Utilities import newlengthName
-from phystricks.src.NoMathUtilities import logging
-from phystricks.src.NoMathUtilities import SubdirectoryFilenames
-from phystricks.src.NoMathUtilities import text_to_hexdigest
+from yanntricks.src.Utilities import newlengthName
+from yanntricks.src.NoMathUtilities import logging
+from yanntricks.src.NoMathUtilities import SubdirectoryFilenames
+from yanntricks.src.NoMathUtilities import text_to_hexdigest
 
 
 class AuxFile:
     """
-    The auxiliary file serves to make a 'dialog' between LaTeX and phystricks.
+    The auxiliary file serves to make a 'dialog' between LaTeX and yanntricks.
     We ask LaTeX to write the box sizes therein.
 
     Each `Picture` has an auxiliary file.
@@ -41,9 +41,9 @@ class AuxFile:
     def __init__(self, name, picture):
         self.name = name
         self.picture = picture
-        self.newwriteName = "writeOfphystricks"
+        self.newwriteName = "writeOfyanntricks"
         self.interWriteFile = SubdirectoryFilenames(
-            self.name+".phystricks.aux", position="main")
+            self.name+".yanntricks.aux", position="main")
 
         self._latex_line_list = []
         self.already_used_interId = []

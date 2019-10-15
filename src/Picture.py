@@ -29,18 +29,18 @@ import os
 import collections
 from sage.all import numerical_approx   # pylint:disable=import-error
 
-from phystricks.src.draw_element import DrawElement
-from phystricks.src.Constructors import Axes, Grid
-from phystricks.src.point import Point
-from phystricks.src.AuxFile import AuxFile
-from phystricks.src.BoundingBox import BoundingBox
-from phystricks.src.phyFunctionGraph import phyFunctionGraph
-from phystricks.src.Exceptions import NotObjectGraphException
-from phystricks.src.Utilities import sublist
-from phystricks.src.Utilities import init_picture_separator_list
-from phystricks.src.Exceptions import ShouldNotHappenException
-from phystricks.src.Utilities import add_latex_line_entete
-from phystricks.src.NoMathUtilities import SubdirectoryFilenames
+from yanntricks.src.draw_element import DrawElement
+from yanntricks.src.Constructors import Axes, Grid
+from yanntricks.src.point import Point
+from yanntricks.src.AuxFile import AuxFile
+from yanntricks.src.BoundingBox import BoundingBox
+from yanntricks.src.phyFunctionGraph import phyFunctionGraph
+from yanntricks.src.Exceptions import NotObjectGraphException
+from yanntricks.src.Utilities import sublist
+from yanntricks.src.Utilities import init_picture_separator_list
+from yanntricks.src.Exceptions import ShouldNotHappenException
+from yanntricks.src.Utilities import add_latex_line_entete
+from yanntricks.src.NoMathUtilities import SubdirectoryFilenames
 
 
 class Picture:
@@ -207,7 +207,7 @@ class Picture:
             except AttributeError as data:
                 if not "latex_code" in dir(graph):
                     print(
-                        "phystricks error: object %s has no pstricks_code method" % (str(graph)))
+                        "yanntricks error: object %s has no pstricks_code method" % (str(graph)))
                 raise
         self.separator_list.fusion(list_used_separators, "PSTRICKS CODE")
 
@@ -286,7 +286,7 @@ class Picture:
         self.record_bounding_box.append(obj)
 
     def deal_with_graph(self, gr, separator_name):
-        from phystricks.src.ObjectGraph import AddedObjects
+        from yanntricks.src.ObjectGraph import AddedObjects
         if isinstance(gr, AddedObjects):
             self.DrawGraphs(gr[self])
             return None
@@ -339,7 +339,7 @@ class Picture:
         to be drawn. Thus it is still possible to modify the
         object later (even if extremely discouraged).
         """
-        from phystricks.src.ObjectGraph import ObjectGraph
+        from yanntricks.src.ObjectGraph import ObjectGraph
         if not isinstance(graph, ObjectGraph):
             raise NotObjectGraphException(graph)
 

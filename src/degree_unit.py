@@ -1,5 +1,5 @@
 
-from phystricks.src.conversion_angles import DegreeConversions
+from yanntricks.src.conversion_angles import DegreeConversions
 
 class degreeUnit(object):
     """
@@ -9,8 +9,8 @@ class degreeUnit(object):
     """
 
     def __call__(self, x, number=False, keep_max=None, keep_large=False, converting=True, numerical=False):
-        from phystricks.src.polar_coordinates import PolarCoordinates
-        from phystricks.src.AngleMeasure import AngleMeasure
+        from yanntricks.src.polar_coordinates import PolarCoordinates
+        from yanntricks.src.AngleMeasure import AngleMeasure
         if isinstance(x, PolarCoordinates) or isinstance(x, AngleMeasure):
             return x.degree
         return DegreeConversions.conversion(x, number=number, keep_max=keep_max, keep_large=keep_large, converting=converting, numerical=numerical)

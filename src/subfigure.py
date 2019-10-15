@@ -8,7 +8,7 @@ class SubFigure(object):
 
     EXAMPLES
 
-    .. literalinclude:: phystricksSubFigure.py
+    .. literalinclude:: yanntricksSubFigure.py
     .. image:: Picture_FIGLabelFigSubFiguressLabelssFigFirstPICTFirstPoint-for_eps.png
     .. image:: Picture_FIGLabelFigSubFiguressLabelssFigSecondPICTSecondPoint-for_eps.png
     .. image:: Picture_FIGLabelFigSubFiguressLabelssFigThirdPICTthirdPoint-for_eps.png

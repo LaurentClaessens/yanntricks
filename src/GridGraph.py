@@ -16,9 +16,9 @@
 # copyright (c) Laurent Claessens, 2009-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from phystricks.src.ObjectGraph import ObjectGraph
-from phystricks.src.segment import Segment
-from phystricks.src.point import Point
+from yanntricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.segment import Segment
+from yanntricks.src.point import Point
 
 
 
@@ -47,7 +47,7 @@ class GridGraph(ObjectGraph):
 
     As an example, in order to have red main horizontal lines::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: grid=Grid()
         sage: grid.main_horizontal.parameters.color = "red"
 

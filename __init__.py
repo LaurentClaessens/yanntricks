@@ -23,15 +23,15 @@
 
 from sage.all import cos, sin, tan, exp, ln, log    #pylint:disable=import-error
 
-from phystricks.src.figure_generation_suite import FigureGenerationSuite
+from yanntricks.src.figure_generation_suite import FigureGenerationSuite
 
-from phystricks.src.main import SinglePicture
-from phystricks.src.main import GenericFigure
-from phystricks.src.main import MultiplePictures
-from phystricks.src.main import IndependentPictures
+from yanntricks.src.main import SinglePicture
+from yanntricks.src.main import GenericFigure
+from yanntricks.src.main import MultiplePictures
+from yanntricks.src.main import IndependentPictures
 
-from phystricks.src.Utilities import no_symbol
-from phystricks.src.Utilities import put_equal_lengths_code
-from phystricks.src.Utilities import distance
+from yanntricks.src.Utilities import no_symbol
+from yanntricks.src.Utilities import put_equal_lengths_code
+from yanntricks.src.Utilities import distance
 
-from phystricks.src.Constructors import *
+from yanntricks.src.Constructors import *

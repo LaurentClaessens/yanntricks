@@ -1,18 +1,18 @@
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright(c) Laurent Claessens, 2010-2017, 2019
@@ -21,21 +21,21 @@
 from sage.all import sin, cos, prod
 from sage.all import pi, PolynomialRing, QQ, symbolic_expression
 
-from phystricks.src.point import Point
-from phystricks.src.AxesGraph import Axes
-from phystricks.src.segment import Segment
-from phystricks.src.GridGraph import GridGraph
-from phystricks.src.MarkGraph import MarkGraph
-from phystricks.src.AngleGraph import AngleGraph
-from phystricks.src.CircleGraph import CircleGraph
-from phystricks.src.affine_vector import AffineVector
-from phystricks.src.PerspectiveGraphs import CuboidGraph
-from phystricks.src.Utilities import EnsureParametricCurve
-from phystricks.src.MiscGraph import FractionPieDiagramGraph
-from phystricks.src.phyFunctionGraph import phyFunctionGraph
-from phystricks.src.ParametricCurveGraph import ParametricCurveGraph
-from phystricks.src.InterpolationCurveGraph import InterpolationCurveGraph
-from phystricks.src.NonAnalytic import NonAnalyticPointParametricCurveGraph
+from yanntricks.src.point import Point
+from yanntricks.src.AxesGraph import Axes
+from yanntricks.src.segment import Segment
+from yanntricks.src.GridGraph import GridGraph
+from yanntricks.src.MarkGraph import MarkGraph
+from yanntricks.src.AngleGraph import AngleGraph
+from yanntricks.src.CircleGraph import CircleGraph
+from yanntricks.src.affine_vector import AffineVector
+from yanntricks.src.PerspectiveGraphs import CuboidGraph
+from yanntricks.src.Utilities import EnsureParametricCurve
+from yanntricks.src.MiscGraph import FractionPieDiagramGraph
+from yanntricks.src.phyFunctionGraph import phyFunctionGraph
+from yanntricks.src.ParametricCurveGraph import ParametricCurveGraph
+from yanntricks.src.InterpolationCurveGraph import InterpolationCurveGraph
+from yanntricks.src.NonAnalytic import NonAnalyticPointParametricCurveGraph
 
 
 def PolarPoint(r, theta):
@@ -49,7 +49,7 @@ def PolarPoint(r, theta):
 
     EXAMPLES::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: print PolarPoint(2,45)
         <Point(sqrt(2),sqrt(2))>
 
@@ -89,7 +89,7 @@ def Circle(center, radius, angleI=0, angleF=360, visual=False, pspict=None):
 
     The following describes the usual trigonometric circle::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: circle=Circle(Point(0,0),1)
             sage: print circle.angleI
             AngleMeasure, degree=0.000000000000000,radian=0
@@ -120,7 +120,7 @@ def CircleOA(O, A):
 
     EXAMPLES::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: A=Point(2,1)
         sage: O=Point(0,0)
         sage: circle=CircleOA(O,A)
@@ -204,7 +204,7 @@ def AngleAOB(A, O, B, r=None):
 
     Notice the difference between AOB and BOA::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: A=Point(1,1)
         sage: O=Point(0,0)
         sage: B=Point(1,0)
@@ -214,7 +214,7 @@ def AngleAOB(A, O, B, r=None):
         AngleMeasure, degree=45.0000000000000,radian=1/4*pi
 
 
-    .. literalinclude:: phystricksTriangleRectangle.py
+    .. literalinclude:: yanntricksTriangleRectangle.py
     .. image:: Picture_FIGLabelFigTriangleRectanglePICTTriangleRectangle-for_eps.png
 
     """
@@ -232,7 +232,7 @@ def phyFunction(fun, mx=None, Mx=None):
 
     EXAMPLES::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: f=phyFunction(cos(x))
         sage: f(pi/2)
         0
@@ -249,12 +249,12 @@ def phyFunction(fun, mx=None, Mx=None):
 
     EXAMPLES with function for which one don't know analytic form
 
-    .. literalinclude:: phystricksChiSquared.py
+    .. literalinclude:: yanntricksChiSquared.py
     .. image:: Picture_FIGLabelFigChiSquaredPICTChiSquared-for_eps.png
 
     OTHER EXAMPLE
 
-    .. literalinclude:: phystricksNonAnalyticOne.py
+    .. literalinclude:: yanntricksNonAnalyticOne.py
     .. image:: Picture_FIGLabelFigNonAnalyticOnePICTNonAnalyticOne-for_eps.png
 
     """
@@ -291,7 +291,7 @@ def ParametricCurve(f1, f2, interval=(None, None)):
 
     EXAMPLES::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: x=var('x')
         sage: f1=phyFunction(x)
         sage: f2=phyFunction(x**2)
@@ -300,7 +300,7 @@ def ParametricCurve(f1, f2, interval=(None, None)):
 
     Notice that due to several `@lazy_attribute`, changing the components after creation could produce unattended results.
 
-    .. literalinclude:: phystricksCycloide.py
+    .. literalinclude:: yanntricksCycloide.py
 
     .. image:: Picture_FIGLabelFigCycloidePICTCycloide-for_eps.png
 
@@ -344,7 +344,7 @@ def InterpolationCurve(points_list, context_object=None, mode=None):
 
     This example is valid, but will not plot the expected line (this is a feature of `\pscurve`)::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: F=InterpolationCurve([Point(0,0),Point(1,1)])
 
     If you want to plot the small segment, you have to add a point in the center::
@@ -388,13 +388,13 @@ def MeasureLength(seg, dist=0.1):
 
     EXAMPLES:
 
-    .. literalinclude:: phystricksIntervalleUn.py
+    .. literalinclude:: yanntricksIntervalleUn.py
     .. image:: Picture_FIGLabelFigIntervallePICTIntervalle-for_eps.png
 
     In order to check the position of the arrow line,
     we check the position of the mark_point::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: O=Point(0,0)
         sage: A=Point(1,0)
 
@@ -436,7 +436,7 @@ def MeasureLength(seg, dist=0.1):
     You are invited to use advised_mark_angle. If not the position of the mark
     could be unpredictable.
     """
-    from phystricks.src.MeasureLengthGraph import MeasureLengthGraph
+    from yanntricks.src.MeasureLengthGraph import MeasureLengthGraph
     return MeasureLengthGraph(seg, dist)
 
 
@@ -452,7 +452,7 @@ def CustomSurface(*args):
     The following describes the surface between the circle of radius 1 and 
     the square of length 1::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: C=Circle(Point(0,0),1)
         sage: arc=C.parametric_curve(0,pi/2)
         sage: h=Segment(Point(0,1),Point(1,1))
@@ -467,7 +467,7 @@ def CustomSurface(*args):
         a = args[0]
     else:
         a = args
-    from phystricks.src.CustomSurfaceGraph import CustomSurfaceGraph
+    from yanntricks.src.CustomSurfaceGraph import CustomSurfaceGraph
     return CustomSurfaceGraph(list(a))
 
 
@@ -477,7 +477,7 @@ def RightAngle(d1, d2, n1=0, n2=1, r=0.3):
     'r' is the size of the "edge"
     'n1' and 'n2' are 0 ot 1 and are determining which of the 4 angles has to be marked (two lines -> 4 angles)
     """
-    from phystricks.src.AngleGraph import RightAngleGraph
+    from yanntricks.src.AngleGraph import RightAngleGraph
     return RightAngleGraph(d1, d2, r, n1, n2)
 
 
@@ -503,7 +503,7 @@ def PolarCurve(fr, ftheta=None):
 
     EXAMPLES::
 
-    .. literalinclude:: phystricksCardioid.py
+    .. literalinclude:: yanntricksCardioid.py
     .. image:: Picture_FIGLabelFigCardioidPICTCardioid-for_eps.png
 
     """
@@ -577,10 +577,10 @@ def Polygon(*args):
 
     You can give either a list of point or a list containing the points :
 
-    .. literalinclude:: phystricksExPolygone.py
+    .. literalinclude:: yanntricksExPolygone.py
     .. image:: Picture_FIGLabelFigExPolygonePICTExPolygone-for_eps.png
     """
-    from phystricks.src.PolygonGraph import PolygonGraph
+    from yanntricks.src.PolygonGraph import PolygonGraph
     if len(args) == 1:     # In this case, we suppose that this is a list
         # args is a tupe containing the arguments. If you call
         # Polygon([P,Q]) then args[0] is [P,Q]
@@ -616,17 +616,17 @@ def Rectangle(*args, **arg):
         # TODO : I should be able to pass directly the dictionary to BoundingBox
         NW = bb.getVertex("NW")
         SE = bb.getVertex("SE")
-    from phystricks.src.RectangleGraph import RectangleGraph
+    from yanntricks.src.RectangleGraph import RectangleGraph
     return RectangleGraph(NW, SE)
 
 
 def Circle3D(op, O, A, B, angleI=0, angleF=2*pi):
-    from phystricks.src.PerspectiveGraphs import Circle3DGraph
+    from yanntricks.src.PerspectiveGraphs import Circle3DGraph
     return Circle3DGraph(op, O, A, B, angleI, angleF)
 
 
 def Vector3D(x, y, z):
-    from phystricks.src.PerspectiveGraphs import Vector3DGraph
+    from yanntricks.src.PerspectiveGraphs import Vector3DGraph
     return Vector3DGraph(x, y, z)
 
 
@@ -725,7 +725,7 @@ def SurfaceBetweenParametricCurves(curve1, curve2, interval=None, interval1=None
 
     EXAMPLES::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: curve1=ParametricCurve(x,x**2).graph(2,3)
         sage: curve2=ParametricCurve(x,x**3).graph(2,5)
         sage: region=SurfaceBetweenParametricCurves(curve1,curve2)
@@ -769,7 +769,7 @@ def SurfaceBetweenParametricCurves(curve1, curve2, interval=None, interval1=None
     NOTE:
     If the two curves make intersections, the result could be messy.
 
-    .. literalinclude:: phystricksBetweenParametric.py
+    .. literalinclude:: yanntricksBetweenParametric.py
     .. image:: Picture_FIGLabelFigBetweenParametricPICTBetweenParametric-for_eps.png
 
     """
@@ -816,7 +816,7 @@ def SurfaceBetweenParametricCurves(curve1, curve2, interval=None, interval1=None
     except UnboundLocalError:
         pass
 
-    from phystricks.src.SurfacesGraph import SurfaceBetweenParametricCurvesGraph
+    from yanntricks.src.SurfacesGraph import SurfaceBetweenParametricCurvesGraph
     surf = SurfaceBetweenParametricCurvesGraph(
         c1, c2, (mx1, mx2), (Mx1, Mx2), reverse1, reverse2)
 
@@ -842,15 +842,15 @@ def SurfaceUnderFunction(f, mx, Mx):
 
     EXAMPLES:
 
-    .. literalinclude:: phystricksSurfaceFunction.py
+    .. literalinclude:: yanntricksSurfaceFunction.py
     .. image:: Picture_FIGLabelFigSurfaceFunctionPICTSurfaceFunction-for_eps.png
 
 
-    .. literalinclude:: phystricksChiSquaresQuantile.py
+    .. literalinclude:: yanntricksChiSquaresQuantile.py
     .. image:: Picture_FIGLabelFigChiSquaresQuantilePICTChiSquaresQuantile-for_eps.png
 
     """
-    from phystricks.src.NonAnalytic import NonAnalyticFunctionGraph
+    from yanntricks.src.NonAnalytic import NonAnalyticFunctionGraph
     if isinstance(f, NonAnalyticFunctionGraph):
         line1 = Segment(Point(mx, 0), Point(Mx, 0))
         line2 = f.parametric_curve(mx, Mx)
@@ -880,7 +880,7 @@ def SurfaceBetweenFunctions(f1, f2, mx=None, Mx=None):
 
     If you want the surface to be blue ::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: surf=SurfaceBetweenFunctions(sin(x)+3,cos(x),0,2*pi)
         sage: surf.parameters.color="blue"
 
@@ -891,7 +891,7 @@ def SurfaceBetweenFunctions(f1, f2, mx=None, Mx=None):
 
     You can also try to control the option linestyle (use add_option).
 
-    .. literalinclude:: phystricksexSurfaceBetweenFunction.py
+    .. literalinclude:: yanntricksexSurfaceBetweenFunction.py
 
     .. image:: Picture_FIGLabelFigexSurfaceBetweenFunctionPICTexSurfaceBetweenFunction-for_eps.png
 
@@ -941,13 +941,13 @@ def extract_interval_information(curve):
 
     EXAMPLES::
 
-        sage: from phystricks import *
-        sage: from phystricks.BasicGeometricObjects import *
+        sage: from yanntricks import *
+        sage: from yanntricks.BasicGeometricObjects import *
         sage: f=phyFunction(x**2).graph(1,pi)
         sage: extract_interval_information(f)
         (1, pi)
 
-        sage: from phystricks.BasicGeometricObjects import *
+        sage: from yanntricks.BasicGeometricObjects import *
         sage: a=var('a')
         sage: curve=ParametricCurve(x,sin(x)).graph(sqrt(2),a)
         sage: extract_interval_information(curve)
@@ -976,12 +976,12 @@ def extract_interval_information(curve):
 
 
 def SudokuGrid(question, length=1):
-    from phystricks.src.SudokuGridGraph import SudokuGridGraph
+    from yanntricks.src.SudokuGridGraph import SudokuGridGraph
     return SudokuGridGraph(question, length)
 
 
 def phyMatrix(nlines, ncolumns):
-    from phystricks.src.MatrixGraph import MatrixGraph
+    from yanntricks.src.MatrixGraph import MatrixGraph
     return MatrixGraph(nlines, ncolumns)
 
 
@@ -990,14 +990,14 @@ def EllipseOAB(O, A, B):
     An ellipse of center O and such that OA and OB are the axis 
     (OA and OB are supposed to be orthogonal)
     """
-    from phystricks.src.EllipseGraph import EllipseGraph
+    from yanntricks.src.EllipseGraph import EllipseGraph
     return EllipseGraph(O, A, B)
 
 
 def BarDiagram(X, Y):
     if len(X) != len(Y):
         raise ValueError("X and Y must be of the same size.")
-    from phystricks.src.BarDiagramGraph import BarDiagramGraph
+    from yanntricks.src.BarDiagramGraph import BarDiagramGraph
     return BarDiagramGraph(X, Y)
 
 
@@ -1005,12 +1005,12 @@ def Histogram(tuple_box_list, legende=None):
     """
     An histogram is given by a list of tuple '(a,b,n)' where 'a' and 'b' are the extremal values of the box and 'n' is the number of elements in the box.
     """
-    from phystricks.src.HistogramGraph import HistogramGraph
+    from yanntricks.src.HistogramGraph import HistogramGraph
     return HistogramGraph(tuple_box_list, legende)
 
 
 def BoxDiagram(values, h, delta_y=0):
-    from phystricks.src.BoxDiagramGraph import BoxDiagramGraph
+    from yanntricks.src.BoxDiagramGraph import BoxDiagramGraph
     return BoxDiagramGraph(values, h, delta_y)
 
 
@@ -1019,7 +1019,7 @@ def Moustache(minimum, Q1, M, Q3, maximum, h, delta_y=0):
     Q1 and Q3 are first and third quartiles; M is the median.
     h is the size of the box
     """
-    from phystricks.src.MoustacheGraph import MoustacheGraph
+    from yanntricks.src.MoustacheGraph import MoustacheGraph
     return MoustacheGraph(minimum, Q1, M, Q3, maximum, h, delta_y)
 
 
@@ -1046,7 +1046,7 @@ def ImplicitCurve(f, xrange, yrange, plot_points=100):
 
     EXAMPLES::
 
-    sage: from phystricks import *
+    sage: from yanntricks import *
     sage: x,y=var('x,y')
     sage: f(x,y)=x**2+y**2
     sage: F=ImplicitCurve(f==2,(x,-5,5),(y,-5,5))
@@ -1068,7 +1068,7 @@ def ImplicitCurve(f, xrange, yrange, plot_points=100):
 
     Using Sage's implicit_curve and matplotlib, a list of points "contained" in the curve is created. The bounding_box is calculated from that list. The pstricsk code generated will be an interpolation curve passing trough all these points.
     """
-    from phystricks.src.ImplicitCurve import GeometricImplicitCurve
+    from yanntricks.src.ImplicitCurve import GeometricImplicitCurve
     return GeometricImplicitCurve(f).graph(xrange, yrange, plot_points=100)
 
 
@@ -1079,7 +1079,7 @@ class ObliqueProjection(object):
 
         `alpha` is given in degree. It is immediately converted in order to have positive number. If you give -45, it will be converted to 315
         """
-        from phystricks.src.MathStructures import AngleMeasure
+        from yanntricks.src.MathStructures import AngleMeasure
         self.k = k
         if self.k >= 1:
             print("Are you sure that you want such a scale factor : ",
@@ -1142,7 +1142,7 @@ def VectorField(fx, fy, xvalues=None, yvalues=None, draw_points=None):
 
     EXAMPLES::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: x,y=var('x,y')
         sage: F=VectorField(x*y,cos(x)+y)
         sage: F.divergence()
@@ -1175,20 +1175,20 @@ def VectorField(fx, fy, xvalues=None, yvalues=None, draw_points=None):
 
     A vector field with automatic management of the points to be drawn:
 
-    .. literalinclude:: phystricksChampVecteursDeux.py
+    .. literalinclude:: yanntricksChampVecteursDeux.py
     .. image:: Picture_FIGLabelFigChampVecteursDeuxPICTChampVecteursDeux-for_eps.png
 
     A vector field with given points to be drawn: 
 
-    .. literalinclude:: phystricksChampVecteur.py
+    .. literalinclude:: yanntricksChampVecteur.py
     .. image:: Picture_FIGLabelFigChampVecteursPICTChampVecteurs-for_eps.png
 
 
     """
-    from phystricks.src.BasicGeometricObjects import GeometricVectorField
+    from yanntricks.src.BasicGeometricObjects import GeometricVectorField
     if xvalues is None and yvalues is None and draw_points is None:
         return GeometricVectorField(fx, fy)
     return GeometricVectorField(fx, fy).graph(xvalues, yvalues, draw_points)
 
 
-from phystricks.src.Utilities import *
+from yanntricks.src.Utilities import *

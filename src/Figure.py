@@ -31,14 +31,14 @@ import codecs
 
 from sage.all import numerical_approx
 
-import phystricks.src.SmallComputations
-from phystricks.src.Picture import Picture
-from phystricks.src.Utilities import latinize
-from phystricks.src.Utilities import newlengthName
-from phystricks.src.latex_to_be import pseudo_caption
-from phystricks.src.Utilities import add_latex_line_entete
-from phystricks.src.Utilities import init_figure_separator_list
-from phystricks.src.NoMathUtilities import SubdirectoryFilenames
+import yanntricks.src.SmallComputations
+from yanntricks.src.Picture import Picture
+from yanntricks.src.Utilities import latinize
+from yanntricks.src.Utilities import newlengthName
+from yanntricks.src.latex_to_be import pseudo_caption
+from yanntricks.src.Utilities import add_latex_line_entete
+from yanntricks.src.Utilities import init_figure_separator_list
+from yanntricks.src.NoMathUtilities import SubdirectoryFilenames
 
 
 class Figure(object):

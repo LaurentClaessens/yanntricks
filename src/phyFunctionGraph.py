@@ -1,18 +1,18 @@
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017
@@ -21,9 +21,9 @@
 
 from sage.all import lazy_attribute
 
-from phystricks.src.ObjectGraph import ObjectGraph
-from phystricks.src.Exceptions import ShouldNotHappenException
-from phystricks.src.GenericCurve import GenericCurve
+from yanntricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.Exceptions import ShouldNotHappenException
+from yanntricks.src.GenericCurve import GenericCurve
 
 
 class phyFunctionGraph(GenericCurve, ObjectGraph):
@@ -146,7 +146,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: f=phyFunction(x**2)
             sage: print f.derivative()
             x |--> 2*x
@@ -185,7 +185,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
         a vector
 
         EXAMPLES:
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: x=var('x')
         sage: f=phyFunction(x**2)
         sage: print f.get_normal_vector(0)
@@ -229,7 +229,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
 
         EXAMPLE::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: g=phyFunction(cos(x))
             sage: print g.tangent_phyFunction(pi/2)
             x |--> 1/2*pi - x
@@ -264,7 +264,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: f=phyFunction(x+1)
             sage: print [P.coordinates() for P in f.get_regular_points(-2,2,sqrt(2))]  # random
 
@@ -304,14 +304,14 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: f=phyFunction(x)
             sage: f.get_minmax_data(-3,pi)      # random
 
 
         In the case of the sine function, the min and max are almost -1 and 1::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: f=phyFunction(sin(x))
             sage: f.get_minmax_data(0,2*pi)     # random
 
@@ -467,7 +467,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: x=var('x')
             sage: f=phyFunction(cos(x))
             sage: f(1)

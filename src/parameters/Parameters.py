@@ -1,25 +1,25 @@
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from phystricks.src.parameters.FillParameters import FillParameters
-from phystricks.src.parameters.HatchParameters import HatchParameters
+from yanntricks.src.parameters.FillParameters import FillParameters
+from yanntricks.src.parameters.HatchParameters import HatchParameters
 
 
 class Parameters(object):
@@ -83,7 +83,7 @@ class Parameters(object):
         """
         Add options that will be added to to code.
 
-            sage: from phystricks.BasicGeometricObjects import *
+            sage: from yanntricks.BasicGeometricObjects import *
             sage: seg=Segment(Point(0,0),Point(1,1))
             sage: seg.parameters.add_option("linewidth","1mm")
 
@@ -132,7 +132,7 @@ class Parameters(object):
 
         EXAMPLES::
 
-            sage: from phystricks.BasicGeometricObjects import *
+            sage: from yanntricks.BasicGeometricObjects import *
             sage: p1=Parameters()
             sage: p1.color="red"
             sage: p1.symbol="A"

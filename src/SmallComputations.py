@@ -1,18 +1,18 @@
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010,2011,2013-2015,2017, 2019
@@ -20,7 +20,7 @@
 
 """
 This submodule contains some auxiliary computations that have to be performed 
-by phystricks but that are not geometry.
+by yanntricks but that are not geometry.
 """
 
 from sage.all import find_root, floor, ceil, solve, numerical_approx, pi
@@ -168,7 +168,7 @@ def RemoveLastZeros(x, n):
 
     EXAMPLES::
 
-        sage: from phystricks.SmallComputations import *
+        sage: from yanntricks.SmallComputations import *
         sage: RemoveLastZeros(1.000,4)
         '1'
         sage: RemoveLastZeros(3/4,1)
@@ -216,7 +216,7 @@ def number_at_position(s, n):
 
     EXAMPLES:
 
-        sage: from phystricks.SmallComputations import *
+        sage: from yanntricks.SmallComputations import *
         sage: s="Point(-1.3427,0.1223)"
         sage: number_at_position(s,9)
         ('-1.3427', 6, 13)
@@ -288,7 +288,7 @@ def get_line(s, pos):
 
     EXAMPLES::
 
-        sage: from phystricks.SmallComputations import *
+        sage: from yanntricks.SmallComputations import *
         sage: s="Hello\n how do you do ? \n See you"
         sage: print get_line(s,10)
         how do you do ?
@@ -325,7 +325,7 @@ def string_number_comparison(s1, s2, epsilon=0.01, last_justification=""):
     In the following, the comparison fails due to
     the first number::
 
-        sage: from phystricks.SmallComputations import *
+        sage: from yanntricks.SmallComputations import *
         sage: s1="Point(-0.2,0.111)"
         sage: s2="Point(-0.3,0.111)"
         sage: string_number_comparison(s1,s2)
@@ -388,7 +388,7 @@ def around(x, decimals):
 
         EXAMPLES::
 
-            sage: from phystricks.SmallComputations import *
+            sage: from yanntricks.SmallComputations import *
             sage: around(100.6867867,3)
             100.687
 
@@ -409,7 +409,7 @@ def MultipleBigger(x, m):
 
     EXAMPLES ::
 
-        sage: from phystricks.SmallComputations import *
+        sage: from yanntricks.SmallComputations import *
         sage: MultipleBigger(11.0,2)
         12
     """
@@ -442,7 +442,7 @@ def visualPolarCoordinates(r, theta, xunit=1, yunit=1):
 
     EXAMPLES::
 
-        sage: from phystricks.SmallComputations import *
+        sage: from yanntricks.SmallComputations import *
         sage: polar_with_dilatation(2,pi,2,1)
         (1, pi)
         sage: polar_with_dilatation(1,pi/4,2,2)

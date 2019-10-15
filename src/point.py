@@ -1,18 +1,18 @@
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
@@ -21,7 +21,7 @@
 
 from sage.all import lazy_attribute, numerical_approx, cos, sin, SR
 
-from phystricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.ObjectGraph import ObjectGraph
 
 
 class Point(ObjectGraph):
@@ -66,7 +66,7 @@ class Point(ObjectGraph):
 
         a point.
         """
-        from phystricks.src.SingleAxeGraph import SingleAxeGraph
+        from yanntricks.src.SingleAxeGraph import SingleAxeGraph
         if isinstance(seg, AffineVectorGraph):
             seg = seg.segment
         if isinstance(seg, SingleAxeGraph):
@@ -107,7 +107,7 @@ class Point(ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: P=Point(1,2)
             sage: print P.get_polar_point(sqrt(2),45)
             <Point(2,3)>
@@ -164,7 +164,7 @@ class Point(ObjectGraph):
 
         EXAMPLE::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: s=Segment(Point(0,1),Point(1,0))
             sage: s.equation()
             x + y - 1 == 0
@@ -194,7 +194,7 @@ class Point(ObjectGraph):
     #        - either one vector
     #        - either two numbers
     def translate(self, a, b=None):
-        from phystricks.src.affine_vector import AffineVector
+        from yanntricks.src.affine_vector import AffineVector
         if b == None:
             v = a
         else:
@@ -211,11 +211,11 @@ class Point(ObjectGraph):
         In other words, it return the affine vector O->self but
         attached on point P instead of O.
         """
-        from phystricks.src.affine_vector import AffineVector
+        from yanntricks.src.affine_vector import AffineVector
         return AffineVector(P, P+self)
 
     def Vector(self):
-        from phystricks.src.affine_vector import AffineVector
+        from yanntricks.src.affine_vector import AffineVector
         return AffineVector(Point(0, 0), self)
 
     @lazy_attribute
@@ -227,7 +227,7 @@ class Point(ObjectGraph):
 
         EXAMPLES::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: Point(1,1).norm()
         sqrt(2)
         sage: Point(-pi,sqrt(2)).norm()
@@ -242,7 +242,7 @@ class Point(ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: P=Point(1,1)
             sage: P.length()
             sqrt(2)
@@ -281,7 +281,7 @@ class Point(ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: Point(1,1).polar_coordinates()
             (sqrt(2), AngleMeasure, degree=45.0000000000000,radian=1/4*pi)
             sage: Point(-1,1).polar_coordinates()
@@ -358,7 +358,7 @@ class Point(ObjectGraph):
         [1] If you dont't know what is the "bounding box", or if you don't wan
         t to fine tune it, you don't care.
         """
-        from phystricks.src.BoundingBox import BoundingBox
+        from yanntricks.src.BoundingBox import BoundingBox
         if pspict == None:
             print("You should consider to give a Picture as argument. \
                     Otherwise the boundig box of %s could be bad" % str(self))
@@ -381,7 +381,7 @@ class Point(ObjectGraph):
 
         # Here one cannot use BoundingBox(self.point,self.point) because
         # it creates infinite loop.
-        from phystricks.src.BoundingBox import BoundingBox
+        from yanntricks.src.BoundingBox import BoundingBox
         bb = BoundingBox(xmin=self.point.x, xmax=self.point.x,
                          ymin=self.point.y, ymax=self.point.y)
         return bb

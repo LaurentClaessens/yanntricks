@@ -1,18 +1,18 @@
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
@@ -20,9 +20,9 @@
 
 from sage.all import lazy_attribute
 
-from phystricks.src.ObjectGraph import ObjectGraph
-from phystricks.src.parameters.Parameters import Parameters
-from phystricks.src.point import Point
+from yanntricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.parameters.Parameters import Parameters
+from yanntricks.src.point import Point
 
 
 def genericBracketAttributeToLanguage(attr, language):
@@ -94,7 +94,7 @@ class GeometricVectorField(object):
     EXAMPLES::
 
 
-        sage: from phystricks.BasicGeometricObjects import *
+        sage: from yanntricks.BasicGeometricObjects import *
         sage: x,y=var('x,y')
         sage: f1=phyFunction(x**2)
         sage: F = GeometricVectorField( f1,cos(x*y) )
@@ -127,7 +127,7 @@ class GeometricVectorField(object):
 
         EXAMPLES::
 
-            sage: from phystricks.BasicGeometricObjects import *
+            sage: from yanntricks.BasicGeometricObjects import *
             sage: x,y=var('x,y')
             sage: F = GeometricVectorField( x , y )
             sage: F.divergence()
@@ -172,7 +172,7 @@ class GeometricVectorField(object):
 
         EXAMPLES::
 
-            sage: from phystricks.BasicGeometricObjects import *
+            sage: from yanntricks.BasicGeometricObjects import *
             sage: x,y=var('x,y')
             sage: F=VectorField(x,y).graph(xvalues=(x,-2,2,3),yvalues=(y,-10,10,3),draw_points=[Point(100,100)])
             sage: print F.draw_points[0]
@@ -210,7 +210,7 @@ class GeometricVectorField(object):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: x,y=var('x,y')
             sage: F=VectorField(x**2,y**3)
             sage: print F(1,2)
@@ -278,7 +278,7 @@ class VectorFieldGraph(ObjectGraph, GeometricVectorField):
 
         The two lists created in the following example are the same::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: x,y=var('x,y')
             sage: F=VectorField(x,y).graph(xvalues=(x,1,2,3),yvalues=(y,-2,2,3))
             sage: [ P.coordinates() for P in F.draw_points ]

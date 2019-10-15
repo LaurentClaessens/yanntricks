@@ -1,7 +1,7 @@
 
 from sage.all import numerical_approx, sqrt, arctan, pi
-from phystricks.src.Numerical import numerical_is_negative
-from phystricks.src.AngleMeasure import AngleMeasure
+from yanntricks.src.Numerical import numerical_is_negative
+from yanntricks.src.AngleMeasure import AngleMeasure
 
 class PolarCoordinates(object):
     def __init__(self, r, value_degree=None, value_radian=None):

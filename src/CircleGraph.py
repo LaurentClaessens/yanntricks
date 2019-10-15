@@ -1,18 +1,18 @@
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
@@ -21,11 +21,11 @@
 from numpy import arange
 from sage.all import sin, cos, RR
 
-from phystricks.src.GenericCurve import GenericCurve
-from phystricks.src.Decorators import copy_parameters
-from phystricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.GenericCurve import GenericCurve
+from yanntricks.src.Decorators import copy_parameters
+from yanntricks.src.ObjectGraph import ObjectGraph
 
-import phystricks.src.Defaults
+import yanntricks.src.Defaults
 
 
 class CircleGraph(GenericCurve, ObjectGraph):
@@ -50,7 +50,7 @@ class CircleGraph(GenericCurve, ObjectGraph):
 
     EXAMPLES::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: circle=Circle(Point(-1,1),3)
 
     If you want the same circle but between the angles 45 and 78::
@@ -85,7 +85,7 @@ class CircleGraph(GenericCurve, ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: circle=Circle(Point(0,0),1)
             sage: circle.equation()
             x^2 + y^2 - 1 == 0
@@ -205,7 +205,7 @@ class CircleGraph(GenericCurve, ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: C=Circle(Point(0,0),2)
             sage: pts=C.get_regular_points(0,90,1)
             sage: len(pts)
@@ -256,7 +256,7 @@ class CircleGraph(GenericCurve, ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: C=Circle(Point(0,0),2)
             sage: print C.get_normal_vector(45)
             <vector I=<Point(sqrt(2),sqrt(2))> F=<Point(3/2*sqrt(2),3/2*sqrt(2))>>
@@ -305,7 +305,7 @@ class CircleGraph(GenericCurve, ObjectGraph):
 
         Python copies by assignation::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: c1=Circle( Point(1,1),2 )
             sage: c2=c1
             sage: c2.center=Point(3,3)

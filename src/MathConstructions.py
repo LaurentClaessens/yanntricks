@@ -1,32 +1,32 @@
 # -*- coding: utf8 -*-
 
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010,2012
 # email: laurent@claessens-donadello.eu
 
 """
-This module uses phystricks in order to produces some mathematical situations/
+This module uses yanntricks in order to produces some mathematical situations/
 
 """
 
 from __future__ import division
-from phystricks import *
+from yanntricks import *
 
 
 # La classe Description_Dynkin décrit la mathématique de Dynkin : elle n'a pas les informations sur les sigles qu'on veut mettre sur les racines.

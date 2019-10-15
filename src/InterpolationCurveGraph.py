@@ -1,25 +1,25 @@
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
 from sage.all import lazy_attribute
-from phystricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.ObjectGraph import ObjectGraph
 
 
 class InterpolationCurveGraph(ObjectGraph):
@@ -46,7 +46,7 @@ class InterpolationCurveGraph(ObjectGraph):
 
         EXAMPLES::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: C=Circle(Point(0,0),1)
         sage: n=400
         sage: InterpolationCurve([C.get_point(i*SR(360)/n,advised=False) for i in range(n)]).get_minmax_data()
@@ -74,7 +74,7 @@ class InterpolationCurveGraph(ObjectGraph):
 
         EXAMPLES::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: print InterpolationCurve([Point(0,0),Point(1,1)]).bounding_box()
         <BoundingBox xmin=0.0,xmax=1.0; ymin=0.0,ymax=1.0>
 
@@ -186,7 +186,7 @@ class InterpolationCurveGraph(ObjectGraph):
 
         EXAMPLES::
 
-        sage: from phystricks.BasicGeometricObjects import *
+        sage: from yanntricks.BasicGeometricObjects import *
         sage: print InterpolationCurve([Point(0,0),Point(1,1)])
         <InterpolationCurve with points ['<Point(0,0)>', '<Point(1,1)>']>
         """

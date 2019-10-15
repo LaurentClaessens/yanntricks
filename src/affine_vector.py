@@ -1,18 +1,18 @@
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2017, 2019
@@ -20,10 +20,10 @@
 
 from sage.all import lazy_attribute, numerical_approx
 
-from phystricks.src.ObjectGraph import ObjectGraph
-from phystricks.src.segment import Segment
-from phystricks.src.point import Point
-from phystricks.src.Decorators import copy_parameters
+from yanntricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.segment import Segment
+from yanntricks.src.point import Point
+from yanntricks.src.Decorators import copy_parameters
 
 
 class AffineVector(ObjectGraph):

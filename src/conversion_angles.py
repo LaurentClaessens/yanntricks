@@ -1,8 +1,8 @@
 
 from sage.all import numerical_approx, SR, pi
-from phystricks.src.AngleMeasure import AngleMeasure
-from phystricks.src.AngleMeasure import DegreeAngleMeasure
-from phystricks.src.AngleMeasure import RadianAngleMeasure
+from yanntricks.src.AngleMeasure import AngleMeasure
+from yanntricks.src.AngleMeasure import DegreeAngleMeasure
+from yanntricks.src.AngleMeasure import RadianAngleMeasure
 
 class ConversionAngles(object):
     """
@@ -47,7 +47,7 @@ class ConversionAngles(object):
 
         EXAMPLES::
 
-            sage: from phystricks.SmallComputations import *
+            sage: from yanntricks.SmallComputations import *
             sage: simplify_degree=ConversionAngles(180/pi,360).simplify
             sage: simplify_degree(400)
             40
@@ -119,7 +119,7 @@ class ConversionAngles(object):
 
         For converting 7 radian into degree, make the following::
 
-            sage: from phystricks.SmallComputations import *
+            sage: from yanntricks.SmallComputations import *
             sage: degree=ConversionAngles(180/pi,360).conversion
             sage: degree(7)     
             1260/pi - 360

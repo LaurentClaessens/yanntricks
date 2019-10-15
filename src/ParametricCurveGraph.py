@@ -1,18 +1,18 @@
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
@@ -24,9 +24,9 @@
 
 from sage.all import lazy_attribute
 
-from phystricks.src.ObjectGraph import ObjectGraph
-from phystricks.src.Exceptions import ShouldNotHappenException
-from phystricks.src.GenericCurve import GenericCurve
+from yanntricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.Exceptions import ShouldNotHappenException
+from yanntricks.src.GenericCurve import GenericCurve
 
 
 class ParametricCurveGraph(GenericCurve, ObjectGraph):
@@ -80,7 +80,7 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: curve=ParametricCurve(cos(x),sin(2*x))
             sage: print curve.speed
             x |--> sqrt(4*cos(2*x)^2 + sin(x)^2)
@@ -138,7 +138,7 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: x=var('x')
             sage: f1=phyFunction(cos(2*x))
             sage: f2=phyFunction(x*exp(2*x))
@@ -180,7 +180,7 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
         In the following example, notice the way one of the arrow is
         red and backward.
 
-        .. literalinclude:: phystricksContourGreen.py
+        .. literalinclude:: yanntricksContourGreen.py
         .. image:: Picture_FIGLabelFigContourGreenPICTContourGreen-for_eps.png
         """
         # TODO: in the previous example, if I first change the color
@@ -241,7 +241,7 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: F=ParametricCurve(x,x**2)
             sage: print F.get_tangent_vector(0)
             <vector I=<Point(0,0)> F=<Point(1,0)>>
@@ -277,14 +277,14 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: F=ParametricCurve(sin(x),x**2)
             sage: print F.get_normal_vector(0)
             <vector I=<Point(0,0)> F=<Point(0,-1)>>
 
         Tangent and outward normal vector fields to a closed path ::
 
-        .. literalinclude:: phystricksContourTgNDivergence.py
+        .. literalinclude:: yanntricksContourTgNDivergence.py
         .. image:: Picture_FIGLabelFigContourTgNDivergencePICTContourTgNDivergence-for_eps.png
         """
 
@@ -389,7 +389,7 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
         The length of the circle of radius `sqrt(2)` in the first quadrant.
         We check that we get the correct result up to 0.01::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: curve=ParametricCurve(x,sqrt(2-x**2))
             sage: bool( abs(pi*sqrt(2)/2) - curve.length(0,sqrt(2)) <0.01) 
             True
@@ -472,7 +472,7 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
 
         EXAMPLE::
 
-        sage: from phystricks import *
+        sage: from yanntricks import *
         sage: x=var('x')
         sage: curve=ParametricCurve(cos(x),sin(x)).graph(0,2*pi).reverse()
         sage: print curve

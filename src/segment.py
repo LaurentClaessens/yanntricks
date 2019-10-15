@@ -1,18 +1,18 @@
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
@@ -21,10 +21,10 @@
 import numpy
 from sage.all import lazy_attribute, numerical_approx
 
-from phystricks.src.point import Point
-from phystricks.src.ObjectGraph import ObjectGraph, AddedObjects
-from phystricks.src.Utilities import distance
-from phystricks.src.polar_coordinates import PointToPolaire
+from yanntricks.src.point import Point
+from yanntricks.src.ObjectGraph import ObjectGraph, AddedObjects
+from yanntricks.src.Utilities import distance
+from yanntricks.src.polar_coordinates import PointToPolaire
 
 
 def Segment(A, B=None, vector=None):
@@ -74,7 +74,7 @@ class Segment(ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: Segment(Point(0,0),Point(1,1)).slope
             1
             sage: Segment(Point(1,1),Point(0,0)).slope
@@ -98,7 +98,7 @@ class Segment(ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: s = Segment(Point(0,3),Point(6,-1))
             sage: s.independent
             3
@@ -116,12 +116,12 @@ class Segment(ObjectGraph):
 
     @lazy_attribute
     def is_vertical(self):
-        from phystricks.src.Numerical import are_almost_equal
+        from yanntricks.src.Numerical import are_almost_equal
         return are_almost_equal(self.I.x, self.F.x, epsilon=0.0001)
 
     @lazy_attribute
     def is_horizontal(self):
-        from phystricks.src.Numerical import are_almost_equal
+        from yanntricks.src.Numerical import are_almost_equal
         return are_almost_equal(self.I.y, self.F.y, epsilon=0.0001)
 
     @lazy_attribute
@@ -135,7 +135,7 @@ class Segment(ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: Segment(Point(0,0),Point(1,1)).equation
             x - y == 0
             sage: Segment(Point(1,0),Point(0,1)).equation
@@ -284,7 +284,7 @@ class Segment(ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: segment=Segment(Point(0,0),Point(1,1))
             sage: curve=segment.parametric_curve()
             sage: print curve(0)
@@ -495,10 +495,10 @@ class Segment(ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: S=Segment(Point(1,1),Point(2,2))
             sage: type(S.angle())
-            <class 'phystricks.SmallComputations.AngleMeasure'>
+            <class 'yanntricks.SmallComputations.AngleMeasure'>
             sage: S.angle().degree
             45
             sage: S.angle().radian
@@ -524,7 +524,7 @@ class Segment(ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: l = Segment(Point(0,0),Point(0,1))
             sage: v = AffineVector(Point(-1,1),Point(-2,3))
             sage: print v.equation
@@ -699,7 +699,7 @@ class Segment(ObjectGraph):
 
         We can fix the origin by giving the coordinates of the new origin::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: v=AffineVector( Point(1,1),Point(2,2) )
             sage: w=v.fix_origin(3,5)
             sage: w.I.coordinates(),w.F.coordinates()
@@ -837,7 +837,7 @@ class Segment(ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: S=Segment(Point(-2,-2),Point(2,2))
             sage: print S.dilatation(0.5)           
             <segment I=<Point(-1.00000000000000,-1.00000000000000)> F=<Point(1.00000000000000,1.00000000000000)>>
@@ -886,7 +886,7 @@ class Segment(ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: s=Segment(Point(0,0),Point(1,0))
             sage: print s.normalize(2)
             <segment I=<Point(-0.5,0)> F=<Point(1.5,0)>>
@@ -951,7 +951,7 @@ class Segment(ObjectGraph):
 
         EXAMPLES::
 
-            sage: from phystricks import *
+            sage: from yanntricks import *
             sage: a=Vector(1,1)
             sage: b=Vector(2,3)
             sage: print a+b
@@ -998,14 +998,14 @@ class Segment(ObjectGraph):
         return self.midpoint().copy()
 
     def _bounding_box(self, pspict):
-        from phystricks.src.BoundingBox import BoundingBox
+        from yanntricks.src.BoundingBox import BoundingBox
         if self.in_bounding_box:
             return BoundingBox(self.I, self.F)
         else:
             return BoundingBox()
 
     def _math_bounding_box(self, pspict=None):
-        from phystricks.src.BoundingBox import BoundingBox
+        from yanntricks.src.BoundingBox import BoundingBox
         if self.in_math_bounding_box:
             return self.bounding_box(pspict)
         else:

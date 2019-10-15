@@ -27,7 +27,7 @@ for s in forbidden_symb :
         raise ValueError("You should not use '{0}' in the name.".format(s))
 
 code_base="""# -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 def XXXX():
     pspict,fig = SinglePicture("XXXX")
     #pspict.dilatation_X(1)
@@ -89,7 +89,7 @@ def create_file(sfile,text):
 
 code=code_base.replace("XXXX",figure_name)
 
-filename=SubdirectoryFilenames("phystricks%s.py"%figure_name,"pictures_src")
+filename=SubdirectoryFilenames("yanntricks%s.py"%figure_name,"pictures_src")
 pstricksfilename=SubdirectoryFilenames("Fig_{}.pstricks".format(figure_name),"pictures_tex")
 pdffilename=SubdirectoryFilenames("tikzFIGLabelFig"+figure_name+"PICT"+figure_name+".pdf","pictures_tikz")
 md5filename=SubdirectoryFilenames("tikzFIGLabelFig"+figure_name+"PICT"+figure_name+".md5","pictures_tikz")
@@ -99,6 +99,6 @@ for f in [filename,pstricksfilename,pdffilename]:
     create_file(f,code)
 create_file(md5filename,"")
 
-print("from phystricks{} import {}".format(figure_name,figure_name))
+print("from yanntricks{} import {}".format(figure_name,figure_name))
 print("git add {} {} {} {}".format(filename.from_here(),pstricksfilename.from_here(),pdffilename.from_here(),md5filename.from_here()))
 print("attach('{}');{}();exit()".format(filename.filename,figure_name)   )

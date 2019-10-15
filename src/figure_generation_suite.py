@@ -1,7 +1,7 @@
 
-from phystricks.src.Figure import Figure
-from phystricks.src.Exceptions import PhystricksTestError
-from phystricks.src.Exceptions import PhystricksNoError
+from yanntricks.src.Figure import Figure
+from yanntricks.src.Exceptions import PhystricksTestError
+from yanntricks.src.Exceptions import PhystricksNoError
 
 class FigureGenerationSuite:
     """
@@ -23,7 +23,7 @@ class FigureGenerationSuite:
     """
 
     def __init__(self, test_list, first=0, title="My beautiful document"):
-        from phystricks.src.Defaults import LOGGING_FILENAME
+        from yanntricks.src.Defaults import LOGGING_FILENAME
         self.test_list = test_list
         self.first = first
         self.title = title
@@ -77,7 +77,7 @@ class FigureGenerationSuite:
             all_tests_passed = False
         if all_tests_passed:
             print("All tests passes !")
-            from phystricks.src.Defaults import LOGGING_FILENAME
+            from yanntricks.src.Defaults import LOGGING_FILENAME
             with open(LOGGING_FILENAME, "r") as f:
                 for l in f:
                     print(l)
