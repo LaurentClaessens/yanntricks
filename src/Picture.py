@@ -37,7 +37,7 @@ from phystricks.src.BoundingBox import BoundingBox
 from phystricks.src.phyFunctionGraph import phyFunctionGraph
 from phystricks.src.Exceptions import NotObjectGraphException
 from phystricks.src.Utilities import sublist
-from phystricks.src.Utilities import init_separator_list
+from phystricks.src.Utilities import init_picture_separator_list
 from phystricks.src.Exceptions import ShouldNotHappenException
 from phystricks.src.Utilities import add_latex_line_entete
 from phystricks.src.NoMathUtilities import SubdirectoryFilenames
@@ -125,8 +125,7 @@ class Picture:
 
         # The order of declaration is important, because
         # it is recorded in the Separator.number attribute.
-        self.separator_list = init_separator_list()
-
+        self.separator_list = init_picture_separator_list()
         self.entete_position = "ENTETE PSPICTURE"
 
         self.auxiliary_file = AuxFile(self.name, picture=self)

@@ -37,8 +37,23 @@ from phystricks.src.Numerical import numerical_is_negative
 from phystricks.src.Exceptions import ShouldNotHappenException
 
 
+def init_figure_separator_list():
+    """Initialize the separator list for a figure."""
+    separator_list = SeparatorList()
+    separator_list.new_separator("ENTETE FIGURE")
+    separator_list.new_separator("SPECIFIC_NEEDS")
+    separator_list.new_separator("HATCHING_COMMANDS")
+    separator_list.new_separator("BEFORE SUBFIGURES")
+    separator_list.new_separator("SUBFIGURES")
+    separator_list.new_separator("AFTER SUBFIGURES")
+    separator_list.new_separator("DEFAULT")
+    separator_list.new_separator("BEFORE PSPICTURE")
+    separator_list.new_separator("PSPICTURE")
+    separator_listnew_separator("AFTER PSPICTURE")
+    return separator_list
 
-def init_separator_list():
+def init_picture_separator_list():
+    """Initialize the separator list for a picture."""
     separator_list = SeparatorList()
     separator_list.new_separator("ENTETE PSPICTURE")
     separator_list.new_separator("OPEN_WRITE_AND_LABEL")

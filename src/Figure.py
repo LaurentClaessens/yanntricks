@@ -1,4 +1,4 @@
-###########################################################################
+#########################################################################
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
@@ -11,10 +11,20 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-###########################################################################
+#########################################################################
 
 # copyright (c) Laurent Claessens, 2009-2017, 2019
 # email: laurent@claessens-donadello.eu
+
+
+# pylint: disable=invalid-name
+# pylint: disable=missing-function-docstring
+# pylint: disable=missing-module-docstring
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-public-methods
+# pylint: disable=fixme
+
 
 import os
 import codecs
@@ -27,7 +37,7 @@ from phystricks.src.Utilities import latinize
 from phystricks.src.Utilities import newlengthName
 from phystricks.src.latex_to_be import pseudo_caption
 from phystricks.src.Utilities import add_latex_line_entete
-from phystricks.src.Separator import Separator, SeparatorList
+from phystricks.src.Utilities import init_figure_separator_list
 from phystricks.src.NoMathUtilities import SubdirectoryFilenames
 
 
@@ -77,20 +87,10 @@ class Figure(object):
         self.comment_filename = self.filename.from_here().replace(".pstricks", ".comment")
 
         # The order of declaration is important, because it is recorded in the Separator.number attribute.
-        self.separator_list = SeparatorList()
-        self.separator_list.new_separator("ENTETE FIGURE")
-        self.separator_list.new_separator("SPECIFIC_NEEDS")
-        self.separator_list.new_separator("HATCHING_COMMANDS")
-        self.separator_list.new_separator("BEFORE SUBFIGURES")
-        self.separator_list.new_separator("SUBFIGURES")
-        self.separator_list.new_separator("AFTER SUBFIGURES")
-        self.separator_list.new_separator("DEFAULT")
-        self.separator_list.new_separator("BEFORE PSPICTURE")
-        self.separator_list.new_separator("PSPICTURE")
-        self.separator_list.new_separator("AFTER PSPICTURE")
         # the separators 'BEFORE SUBFIGURE' and 'AFTER ALL' will not
         # be written in the case when self.figure_environment=False.
 
+        self.separator_list  = init_figure_separator_list()
         self.entete_position = "ENTETE FIGURE"
 
         # "AFTER ALL" is for caption and \end{figure}
