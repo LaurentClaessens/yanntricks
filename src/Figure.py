@@ -29,27 +29,36 @@
 import os
 import codecs
 
-from sage.all import numerical_approx
+from sage.all import numerical_approx  # pylint:disable=import-error
 
-import yanntricks.src.SmallComputations
 from yanntricks.src.Picture import Picture
+from yanntricks.src.subfigure import SubFigure
 from yanntricks.src.Utilities import latinize
-from yanntricks.src.Utilities import newlengthName
 from yanntricks.src.latex_to_be import pseudo_caption
 from yanntricks.src.Utilities import add_latex_line_entete
 from yanntricks.src.Utilities import init_figure_separator_list
 from yanntricks.src.NoMathUtilities import SubdirectoryFilenames
+from yanntricks.src.Exceptions import PhystricksNoError
 
 
-class Figure(object):
+class Figure:
     r"""
-    This is not exactly the 'figure' in the LaTeX sense of the term since it also contains informations about bounding boxes.
+    Describe a figure: the LaTeX figure with some more informations.
 
-    The method `figure.no_figure()` makes disappear the \begin{figure} ... \end{figure}. In this case the LaTeX code of the class figure contains the informations about the bounding boxes and a if/then for inclusion of pspicture or \includegraphics
+    This is not exactly the 'figure' in the LaTeX sense of the
+    term since it also contains informations about bounding boxes.
 
-    - `self.newwriteName` is the name that will be given to LaTeX in ``\newwrite{...}``. This is not the
-                name of the file in which the data is written.
-    - `self.interWriteFile` is the name of the file in which the data will be written.
+    The method `figure.no_figure()` makes disappear the
+    \begin{figure} ... \end{figure}. In this case the LaTeX code of
+    the class figure contains the informations about the bounding boxes
+    and a if/then for inclusion of pspicture or \includegraphics
+
+    - `self.newwriteName`
+            The name that will be given to LaTeX in
+            ``\newwrite{...}``. This is not the name of the file
+            in which the data is written.
+    - `self.interWriteFile`
+            The name of the file in which the data will be written.
     """
 
     def __init__(self, caption, name, filename, script_filename):
@@ -63,6 +72,8 @@ class Figure(object):
         self.record_subfigure = []
         self.record_pspicture = []
         self.child_pspictures = []
+        self.contenu = None
+        self.rotation_angle = None
 
         self.send_noerror = False
         self.language = "tikz"
@@ -86,18 +97,19 @@ class Figure(object):
         # This intermediate file will contain the comment of the pspict(s) for the sake of tests.
         self.comment_filename = self.filename.from_here().replace(".pstricks", ".comment")
 
-        # The order of declaration is important, because it is recorded in the Separator.number attribute.
+        # The order of declaration is important, because it
+        # is recorded in the Separator.number attribute.
         # the separators 'BEFORE SUBFIGURE' and 'AFTER ALL' will not
         # be written in the case when self.figure_environment=False.
 
-        self.separator_list  = init_figure_separator_list()
+        self.separator_list = init_figure_separator_list()
         self.entete_position = "ENTETE FIGURE"
 
         # "AFTER ALL" is for caption and \end{figure}
         self.separator_list.new_separator("AFTER ALL")
         add_latex_line_entete(self)
         self.add_latex_line("\\begin{figure}[ht]", "BEFORE SUBFIGURES")
-        self.add_latex_line("\centering", "BEFORE SUBFIGURES")
+        self.add_latex_line(r"\centering", "BEFORE SUBFIGURES")
 
     def no_figure(self):
         self.figure_environment = False
@@ -111,7 +123,7 @@ class Figure(object):
 
         The end-user should use this instead of append_subfigure
         """
-        if name == None:
+        if name is None:
             number = len(self.record_subfigure)
             name = "sub"+latinize(str(number))
         ssfig = SubFigure(caption, self.name+"ss"+name)
@@ -128,10 +140,10 @@ class Figure(object):
         print(r"See also the subfigure \ref{%s}" % ssFig.name)
 
     def new_pspicture(self, name=None, pspict=None):
-        if name == None:
+        if name is None:
             number = len(self.record_pspicture)
             name = "sub"+latinize(str(number))
-        if pspict == None:
+        if pspict is None:
             pspict = Picture(name)
 
         pspict.figure_mother = self
@@ -167,7 +179,7 @@ class Figure(object):
             a.append("\\newcommand{"+self.caption+"}{"+pseudo_caption+"}")
             a.append("\\input{%s}" % (self.filename.from_main()))
         else:
-            text = """\\begin{center}
+            text = r"""\\begin{center}
    INCLUSION
 \end{center}""".replace("INCLUSION", "\\input{%s}" % (self.filename.from_main()))
             if len(self.record_pspicture) == 1:
@@ -226,9 +238,9 @@ class Figure(object):
         self.add_latex_line(self.specific_needs, "SPECIFIC_NEEDS")
 
         for f in self.record_subfigure:
-            self.add_latex_line("\subfigure["+f.caption+"]{%", "SUBFIGURES")
+            self.add_latex_line(r"\subfigure["+f.caption+"]{%", "SUBFIGURES")
             self.add_latex_line(f.subfigure_code(), "SUBFIGURES")
-            self.add_latex_line("\label{%s}" % f.name, "SUBFIGURES")
+            self.add_latex_line(r"\label{%s}" % f.name, "SUBFIGURES")
             self.add_latex_line("}                  % Closing subfigure " +
                                 str(self.record_subfigure.index(f)+1), "SUBFIGURES")
             self.add_latex_line("%", "SUBFIGURES")
