@@ -52,8 +52,6 @@ def PolarPoint(r, theta):
         sage: from yanntricks import *
         sage: print PolarPoint(2,45)
         <Point(sqrt(2),sqrt(2))>
-
-
     """
     return Point(r*cos(radian(theta)), r*sin(radian(theta)))
 
@@ -328,43 +326,6 @@ def NonAnalyticPointParametricCurve(f, mx, Mx):
     return NonAnalyticPointParametricCurveGraph(f, mx, Mx)
 
 
-def InterpolationCurve(points_list, context_object=None, mode=None):
-    r"""
-    determine an interpolation curve from a list of points.
-
-    INPUT:
-    - ``points_list`` - a list of points that have to be joined.
-
-    OPTIONAL INPUT:
-
-    - ``context_object`` -  the object that is going to use the InterpolationCurve's latex code.
-                            ImplicitCurve and wavy curves are using InterpolationCurve as "backend" for the latex code.  Here we use the context_object in order to take this one into account when determining the parameters (color, ...).
-
-    EXAMPLES:
-
-    This example is valid, but will not plot the expected line (this is a feature of `\pscurve`)::
-
-        sage: from yanntricks import *
-        sage: F=InterpolationCurve([Point(0,0),Point(1,1)])
-
-    If you want to plot the small segment, you have to add a point in the center::
-
-        sage: F=InterpolationCurve([Point(0,0),Point(0.5,0.5),Point(1,1)])
-
-    The following draws a circle::
-
-        sage: C=Circle(Point(0,0),1)
-        sage: G=InterpolationCurve([C.get_point(2*pi/i,advised=False) for i in range(1,100)])
-
-    Notice in the lase example the use of advised=False in order to speed up the computation.
-
-    NOTE:
-
-    InterpolationCurve is used in order to produce implicit plot and wavy functions.
-    """
-    return InterpolationCurveGraph(points_list, context_object, mode=mode)
-
-
 def MeasureLength(seg, dist=0.1):
     """
     When a segment exists, one wants sometimes to denote its length drawing a double-arrow parallel to the segment. This is what this class is intended to.
@@ -508,7 +469,7 @@ def PolarCurve(fr, ftheta=None):
 
     """
     x = var('x')
-    if ftheta == None:
+    if ftheta is None:
         f1 = fr*cos(x)
         f2 = fr*sin(x)
     else:
@@ -900,10 +861,10 @@ def SurfaceBetweenFunctions(f1, f2, mx=None, Mx=None):
     mx2 = mx
     Mx1 = Mx
     Mx2 = Mx
-    if "mx" in dir(f1) and mx == None:
+    if "mx" in dir(f1) and mx is None:
         mx1 = f1.mx
         Mx1 = f1.Mx
-    if "mx" in dir(f2) and mx == None:
+    if "mx" in dir(f2) and mx is None:
         mx2 = f2.mx
         Mx2 = f2.Mx
     # The following is a precaution because it can happen that

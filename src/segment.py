@@ -18,25 +18,22 @@
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
+
+# pylint:disable=invalid-name
+# pylint:disable=missing-function-docstring
+# pylint:disable=too-many-arguments
+# pylint:disable=too-many-instance-attributes
+# pylint:disable=too-many-public-methods
+
+
 import numpy
-from sage.all import lazy_attribute, numerical_approx
+from sage.all import lazy_attribute, numerical_approx, sqrt
 
 from yanntricks.src.point import Point
 from yanntricks.src.ObjectGraph import ObjectGraph, AddedObjects
 from yanntricks.src.Utilities import distance
 from yanntricks.src.polar_coordinates import PointToPolaire
-
-
-def Segment(A, B=None, vector=None):
-    """
-    Creates a segment.
-
-    The typical use is to give two points.
-    An alternative is to provide a point and a vector.
-    """
-    if vector:
-        B = A.translate(vector)
-    return SegmentGraph(A, B)
+from yanntricks.src.Exception import ImaginaryPartException
 
 
 class Segment(ObjectGraph):
@@ -45,8 +42,12 @@ class Segment(ObjectGraph):
             B = A.translate(vector)
         self.I = A
         self.F = B
+        self._advised_mark_angle = None
         ObjectGraph.__init__(self, self)
         self.measure = None
+        self.is_horizontal = None
+        self.is_vertical = None
+        self.coefs = None
 
     @lazy_attribute
     def Dx(self):
@@ -166,6 +167,7 @@ class Segment(ObjectGraph):
         return distance(self.I, self.F)
 
     def advised_mark_angle(self, pspict=None):
+        from yanntricks.src.AngleMeasure import AngleMeasure
         return self.angle()+AngleMeasure(value_degree=90)
 
     def phyFunction(self):
@@ -353,6 +355,7 @@ class Segment(ObjectGraph):
 
         The arrow is a vector of size (by default) 0.01. 
         """
+        from yanntricks.src.affine_vector import AffineVector
         P = self.get_point_proportion(position, advised=False)
         v = AffineVector(P, self.F).normalize(size)
         self.added_objects.append(pspict, v)
@@ -381,7 +384,7 @@ class Segment(ObjectGraph):
         """
         pspicts = make_psp_list(pspict, pspicts)
 
-        if mark_angle == None and position not in ["N", "S", "E", "W"]:
+        if mark_angle is None and position not in ["N", "S", "E", "W"]:
             mark_angle = self.angle()+90*degree
         measure = MeasureLength(self, measure_distance)
 
@@ -407,6 +410,7 @@ class Segment(ObjectGraph):
 
     def get_code(self, n=1, d=0.1, l=0.1, angle=45, pspict=None, pspicts=None):
         # TODO : the angle given here should be visual
+        from yanntricks.src.affine_vector import AffineVector
         ao = []
         vect = self.affine_vector().normalize(d)
         center = self.midpoint(advised=False)
@@ -588,7 +592,8 @@ class Segment(ObjectGraph):
         intersection with 'self'
 
         If these two points are the same --when d^2(P,Q)<0.001 
-        (happens when 'P' belongs to 'self'), the end point is not guaranteed.
+        (happens when 'P' belongs to 'self'), the end point
+        is not guaranteed.
 
         By the way, when you want
         Segment(A,B).orthogonal_trough(B)
@@ -600,40 +605,44 @@ class Segment(ObjectGraph):
         Q = Intersection(s, self)[0]
         if (P.x-Q.x)**2+(P.y-Q.y)**2 < 0.001:
             return s
-        else:
-            return Segment(P, Q)
+        return Segment(P, Q)
 
     def parallel_trough(self, P):
         """ 
-        return a segment parallel to self passing trough P
+        Return a segment parallel to self passing trough P
         """
+        from yanntricks.src.affine_vector import AffineVector
         v = AffineVector(self.I, self.F)
         Q = P.translate(v)
         return Segment(P, Q)
 
-    # \brief Return true is `self` and `other` are orthogonal segments
-    #
-    # The answer is exact, so you can be surprised if some numerical
-    # approximations were made before.
-    #
-    # \see `is_almost_orthogonal`
     def is_orthogonal(self, other):
+        """
+        Return true is `self` and `other` are orthogonal segments
+
+        The answer is exact, so you can be surprised if some numerical
+        approximations were made before.
+
+        See `is_almost_orthogonal`
+        """
         if self.is_vertical:
             return other.is_horizontal
         if self.is_horizontal:
             return other.is_vertical
-        if self.slope == -1/other.slope:
+        if self.slope() == -1/other.slope():
             return True
         return False
-    # \brief Return true is `self` and `other` are orthogonal segments
-    #
-    # The answer is based on numerical approximations of the slopes.
-    # If \f$ k \f$ is the slope of `self`, check if the slope of the other
-    # is \f$ -1/k \f$ up to `epsilon`.
-    #
-    # \see `is_orthogonal`
 
     def is_almost_orthogonal(self, other, epsilon=0.001):
+        """
+        Return true is `self` and `other` are orthogonal segments
+
+        The answer is based on numerical approximations of the slopes.
+        If \f$ k \f$ is the slope of `self`, check if the
+        slope of the other is \f$ -1/k \f$ up to `epsilon`.
+
+        See `is_orthogonal`
+        """
         if self.is_vertical:
             return other.is_horizontal
         if self.is_horizontal:
@@ -667,6 +676,7 @@ class Segment(ObjectGraph):
     #  segment.translate(v)
     #  ```
     def translate(self, a, b=None):
+        from yanntricks.src.affine_vector import AffineVector
         if b is not None:
             vector = AffineVector(Point(0, 0), Point(a, b))
         elif isinstance(a, tuple):
@@ -739,13 +749,18 @@ class Segment(ObjectGraph):
 
         INPUT:
 
-        - ``angle`` - the value of the rotation angle (degree or AngleMeasure)
-
+        - ``angle``
+        The value of the rotation angle (degree or AngleMeasure)
         """
+        from yanntricks.src.Constructors import PolarSegment
+        from yanntricks.src.AngleMeasure import AngleMeasure
         a = angle
         if isinstance(angle, AngleMeasure):
             a = angle.degree
-        v = PolarSegment(self.I, self.polaires().r, self.polaires().degree+a)
+        polaires = self.polaires()
+        length = polaires.r
+        new_angle = polaires.degree() + a
+        v = PolarSegment(self.I, length, new_angle)
         return v
 
     def get_visual_length(self, xunit=None, yunit=None, pspict=None):
@@ -760,24 +775,25 @@ class Segment(ObjectGraph):
         Dy = (self.F.y-self.I.y)*yunit
         if self.is_vertical:
             return Dy
-        else:
-            return sqrt(Dx**2+Dy**2)
+        return sqrt(Dx**2+Dy**2)
 
     def fix_visual_size(self, l, xunit=None, yunit=None, pspict=None):
         """
         return a segment with the same initial point, but with visual length  `l`
         """
-        from Visual import visual_length
+        from yanntricks.src.Visual import visual_length
         if pspict:
             xunit = pspict.xunit
             yunit = pspict.yunit
-        if xunit == None or yunit == None:
+        if xunit is None or yunit is None:
             return self.fix_size(l)
         return visual_length(self, l, xunit, yunit, pspict)
 
     def add_size_extremity(self, l):
         """
-        Add a length <l> at the extremity of the segment. Return a new object.
+        Add a length <l> at the extremity of the segment.
+
+        Return a new object.
         """
         L = self.length
         coef = (l+L)/L
@@ -791,20 +807,20 @@ class Segment(ObjectGraph):
         This function has not to be used by the end user. 
         Use self.normalize() instead.
         """
-        L = self.length
+        L = self.length()
         if only_F and only_I:
             print("You cannot ask both only F and only I")
             raise ValueError
         if L < 0.001:     # epsilon
             print("fix_size problem: this vector has a norm equal to zero")
             return self.copy()
-        if only_F == False and only_I == False:
-            v = self.dilatation(l/self.length)
+        if not only_F and not only_I:
+            return self.dilatation(l/self.length)
         if only_F:
-            v = self.add_size(lF=l-L)
+            return self.add_size(lF=l-L)
         if only_I:
-            v = self.add_size(lI=l-L)
-        return v
+            return self.add_size(lI=l-L)
+        return None
 
     def add_size(self, lI=0, lF=0):
         """
@@ -853,16 +869,20 @@ class Segment(ObjectGraph):
 
     def dilatationI(self, coef):
         """
-        return a dilated segment, but only enlarges at the initial extremity.
+        Return a dilated segment.
+
+        Only enlarges at the initial extremity.
         """
-        v = AffineVector(self)
+        v = self.affine_vector()
         w = -v
         wp = w*coef
         return Segment(wp.F, v.F)
 
     def dilatationF(self, coef):
         """
-        return a dilated segment, but only enlarges at the final extremity.
+        Return a dilated segment
+
+        Only enlarges at the final extremity.
         """
         v = self.AffineVector()
         v = v*coef
@@ -901,15 +921,11 @@ class Segment(ObjectGraph):
 
     def graph(self, mx=None, Mx=None):
         if not mx:
-            C = SegmentGraph(self.I, self.F)
+            C = Segment(self.I, self.F)
         else:
-            C = SegmentGraph(self.get_point(mx), self.get_point(Mx))
+            C = Segment(self.get_point(mx), self.get_point(Mx))
         C.parameters = self.parameters.copy()
         return C
-
-    def default_associated_graph_class(self):
-        """Return the class which is the Graph associated type"""
-        return SegmentGraph
 
     def __mul__(self, coef):
         """
@@ -927,7 +943,8 @@ class Segment(ObjectGraph):
             sage: print 3*s
             <segment I=<Point(1,1)> F=<Point(4,4)>>
 
-        The initial point stays the same (this is not the same behaviour as in self.normalize !)
+        The initial point stays the same (this is not the same
+        behaviour as in self.normalize !)
         """
         if coef <= 0:
             coef = -coef
@@ -937,6 +954,7 @@ class Segment(ObjectGraph):
 
     def translation(self, v):
         raise DeprecationWarning
+        # pylint:disable=unreachable
         return Segment(self.I.translate(v), self.F.translate(v))
 
     def __add__(self, other):
@@ -970,10 +988,6 @@ class Segment(ObjectGraph):
             return False
         return True
 
-    def __sub__(self, other):
-        raise
-        return self+(-other)
-
     def __rmul__(self, coef):
         return self*coef
 
@@ -983,13 +997,10 @@ class Segment(ObjectGraph):
     def __div__(self, coef):
         return self * (1/coef)
 
-    def __div__(self, coef):
-        return self * (1/coef)
-
     def __str__(self):
         return "<segment I=%s F=%s>" % (str(self.I), str(self.F))
 
-    def mark_point(self, pspict=None):
+    def mark_point(self, pspict=None):  # pylint:disable=unused-argument
         """
         return the point on which a mark has to be placed
         if we use the method put_mark.  
@@ -1001,20 +1012,19 @@ class Segment(ObjectGraph):
         from yanntricks.src.BoundingBox import BoundingBox
         if self.in_bounding_box:
             return BoundingBox(self.I, self.F)
-        else:
-            return BoundingBox()
+        return BoundingBox()
 
     def _math_bounding_box(self, pspict=None):
         from yanntricks.src.BoundingBox import BoundingBox
         if self.in_math_bounding_box:
             return self.bounding_box(pspict)
-        else:
-            return BoundingBox()
+        return BoundingBox()
 
     def representative_points(self):
         return [self.I, self.F]
 
-    def latex_code(self, language=None, pspict=None):
+    def latex_code(self, pspict=None, language=None):
+        from yanntricks.src.interpolation_curve import InterpolationCurve
         if self.parameters.style == "none":
             return ""
         if self.wavy:
@@ -1023,19 +1033,18 @@ class Segment(ObjectGraph):
                 waviness.dx, waviness.dy), context_object=self)
             curve.parameters = self.parameters.copy()
             return curve.latex_code(language=language, pspict=pspict)
-        else:
-            if language == "tikz":
-                a = []
-                c1 = self.I.coordinates(digits=5, pspict=pspict)
-                c2 = self.F.coordinates(digits=5, pspict=pspict)
-                if 'I' in c1 or "I" in c2:
-                    from Exception import ImaginaryPartException
-                    raise ImaginaryPartException(
-                        "Probably an imaginary part in "+str(c1)+" or "+str(c2))
-                a.append("\draw [{2}] {0} -- {1};".format(
-                    c1, c2, self.params(language="tikz")))
+
+        if language == "tikz":
+            a = []
+            c1 = self.I.coordinates(digits=5, pspict=pspict)
+            c2 = self.F.coordinates(digits=5, pspict=pspict)
+            if 'I' in c1 or "I" in c2:
+                raise ImaginaryPartException(
+                    "Probably an imaginary part in "+str(c1)+" or "+str(c2))
+            a.append("\draw [{2}] {0} -- {1};".format(
+                c1, c2, self.params(language="tikz")))
 
         return "\n".join(a)
 
     def tikz_code(self, pspict=None):
-        return self.latex_code(language="tikz", pspict=pspict)
+        return self.latex_code(pspict=pspict, language="tikz")

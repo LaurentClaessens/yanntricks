@@ -266,14 +266,10 @@ class Point(ObjectGraph):
         <opt> is a tuple. The first is the symbol to the point (like "*" or "none").
         The second is a string to be passed to pstricks, like "linecolor=blue,linestyle=dashed".
         """
-        P = self.default_associated_graph_class()(self)
+        P = Point(self)
         P.parameters.symbol = opt[0]
         P.add_option(opt[1])
         return P
-
-    def default_associated_graph_class(self):
-        """Return the class which is the Graph associated type"""
-        return PointGraph
 
     def polar_coordinates(self, origin=None):
         """
