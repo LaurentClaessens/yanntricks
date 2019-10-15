@@ -1,10 +1,40 @@
+#########################################################################
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#########################################################################
+
+# copyright (c) Laurent Claessens, 2009-2017, 2019
+# email: laurent@claessens-donadello.eu
 
 
-class SubFigure(object):
+# pylint: disable=invalid-name
+# pylint: disable=missing-function-docstring
+# pylint: disable=missing-module-docstring
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-public-methods
+# pylint: disable=fixme
+
+from yanntricks.src.Picture import Picture
+from yanntricks.src.Utilities import latinize
+
+
+class SubFigure:
     """
     This is a subfigure.
 
-    If no label are given, a default one will be set when included in the figure.
+    If no label are given, a default one will be set when
+    included in the figure.
 
     EXAMPLES
 
@@ -24,7 +54,7 @@ class SubFigure(object):
         self.mother.add_latex_line(ligne, separator_name)
 
     def new_pspicture(self, name=None, pspict=None):
-        if name == None:
+        if name is None:
             number = len(self.record_pspicture)
             name = "sub"+latinize(str(number))
         if pspict is None:
