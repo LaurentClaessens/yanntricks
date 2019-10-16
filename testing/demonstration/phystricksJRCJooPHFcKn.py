@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 def JRCJooPHFcKn():
     pspict,fig = SinglePicture("JRCJooPHFcKn")
     pspict.dilatation(1)

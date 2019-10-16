@@ -2,26 +2,26 @@
 
 
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2016-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from phystricks import *
+from yanntricks import *
 
 from Testing import assert_true
 from Testing import assert_equal
@@ -40,8 +40,8 @@ def testFGetMinMaxData():
 
 def testEnsureUnicode():
     echo_function("testEnsureUnicode")
-    from phystricks.src.NoMathUtilities import ensure_unicode
-    from phystricks.src.NoMathUtilities import ensure_str
+    from yanntricks.src.NoMathUtilities import ensure_unicode
+    from yanntricks.src.NoMathUtilities import ensure_str
 
     u1=u"éà"
     s1="éà"

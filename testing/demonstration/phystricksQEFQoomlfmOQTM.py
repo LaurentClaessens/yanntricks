@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 def QEFQoomlfmOQTM():
     pspicts,figs = IndependentPictures("QEFQoomlfmOQTM",3)
 

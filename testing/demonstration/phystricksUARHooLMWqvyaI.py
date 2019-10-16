@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 from sage.all import floor
-from phystricks import *
+from yanntricks import *
 def UARHooLMWqvyaI():
     pspict,fig = SinglePicture("UARHooLMWqvyaI")
     pspict.dilatation(1)

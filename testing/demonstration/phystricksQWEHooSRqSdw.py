@@ -1,4 +1,4 @@
-from phystricks import *
+from yanntricks import *
 def QWEHooSRqSdw():
     pspict,fig = SinglePicture("QWEHooSRqSdw")
     pspict.dilatation(3)

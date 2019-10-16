@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 
 def situation(P,text,pspict):
     A=P+(3,-2)

@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 def VRQCooOchjJA():
     pspict,fig = SinglePicture("VRQCooOchjJA")
     pspict.dilatation(1)

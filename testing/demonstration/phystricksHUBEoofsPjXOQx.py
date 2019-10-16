@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 from sage.all import RealDistribution
-from phystricks import *
+from yanntricks import *
 def HUBEoofsPjXOQx():
     pspict,fig = SinglePicture("HUBEoofsPjXOQx")
     pspict.dilatation_X(0.5)

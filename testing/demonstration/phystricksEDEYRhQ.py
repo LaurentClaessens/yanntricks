@@ -2,7 +2,7 @@
 
 from __future__ import division
 from __future__ import unicode_literals
-from phystricks import *
+from yanntricks import *
 
 def mark_point(s,pspict=None):
     return s.midpoint()
@@ -12,7 +12,7 @@ def EDEYRhQ():
     pspict.dilatation_X(1/6)
     pspict.dilatation_Y(1)
 
-    from phystricks.src.SegmentGraph import SegmentGraph
+    from yanntricks.src.SegmentGraph import SegmentGraph
     SegmentGraph.mark_point=mark_point
 
     l1=10

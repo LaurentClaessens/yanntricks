@@ -68,7 +68,7 @@ def assert_almost_equal(e1,e2,epsilon=0.0001,failure_message=""):
     ```
     e1.is_almost_equal(e2,epsilon)
     ```
-    because some objects in 'phystricks' have that method.
+    because some objects in 'yanntricks' have that method.
 
     If `e1` has not that method :
     - assume that `e1` and `e2` are numerical

@@ -1,5 +1,5 @@
 from sage.all import sinh
-from phystricks import *
+from yanntricks import *
 def AxesSecond():
     pspict,fig = SinglePicture("AxesSecond")
 

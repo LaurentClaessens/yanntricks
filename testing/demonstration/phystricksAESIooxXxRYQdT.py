@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 
 def DS_statistics(moustaches,pspict):
     pspict.dilatation_X(0.8)

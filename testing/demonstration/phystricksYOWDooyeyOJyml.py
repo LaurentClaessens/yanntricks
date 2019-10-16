@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 def YOWDooyeyOJyml():
     pspict,fig = SinglePicture("YOWDooyeyOJyml")
     pspict.dilatation(0.7)

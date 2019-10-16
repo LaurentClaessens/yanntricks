@@ -2,7 +2,7 @@
 
 from __future__ import division
 
-from phystricks import *
+from yanntricks import *
 def EXIIooJzzoJeai():
     pspicts,fig = MultiplePictures("EXIIooJzzoJeai",4)
     pspicts[1].mother.caption="adding smart plotpoints"

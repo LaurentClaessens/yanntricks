@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 def RVKFooDxrqYXAX():
     pspict,fig = SinglePicture("RVKFooDxrqYXAX")
     pspict.dilatation(1)

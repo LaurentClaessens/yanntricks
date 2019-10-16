@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 def HYVFooTHaDDQ():
     pspicts,figs = IndependentPictures("HYVFooTHaDDQ",4)
     for psp in pspicts:

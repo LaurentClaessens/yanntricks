@@ -1,4 +1,4 @@
-from phystricks import *
+from yanntricks import *
 def GridTwo():
     pspict,fig = SinglePicture("GridTwo")
     # The following vertically contracts the figure with a factor 2.

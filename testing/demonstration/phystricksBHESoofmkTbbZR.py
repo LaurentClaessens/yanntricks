@@ -2,7 +2,7 @@
 
 from __future__ import division
 from sage.all import ceil
-from phystricks import *
+from yanntricks import *
 
 def BHESoofmkTbbZR():
     pspict,fig = SinglePicture("BHESoofmkTbbZR")

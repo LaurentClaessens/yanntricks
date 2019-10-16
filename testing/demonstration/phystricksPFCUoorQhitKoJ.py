@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 def PFCUoorQhitKoJ():
     """
     copy from mazhe : TracerUn

@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 def LVPSoozFTyaeCG():
     pspict,fig = SinglePicture("LVPSoozFTyaeCG")
     pspict.dilatation(1)

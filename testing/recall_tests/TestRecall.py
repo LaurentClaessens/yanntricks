@@ -10,7 +10,7 @@
 #
 # So, relative to the passed argument 
 # - '.pstricks' files to be checked are in `auto/pictures_tex`
-# - '.recall' files to be checked against are in `src_phystricks`
+# - '.recall' files to be checked against are in `src_yanntricks`
 
 import sys
 import os

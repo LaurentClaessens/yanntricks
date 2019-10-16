@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 def YJEDoojDtSeKHQ():
     """
     Copied from examssepti from mazhe

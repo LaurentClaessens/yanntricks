@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 
-from phystricks import *
+from yanntricks import *
 def MarkOnPoint():
     pspict,fig = SinglePicture("MarkOnPoint")
 

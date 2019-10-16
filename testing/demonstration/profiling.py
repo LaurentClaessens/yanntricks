@@ -2,18 +2,18 @@
 # -*- coding: utf8 -*-
 
 import cProfile
-from phystricks import *
+from yanntricks import *
 
-from phystricksLWVXooPyIlOKNd import LWVXooPyIlOKNd
-from phystricksCUZFooGqZLaAEp import CUZFooGqZLaAEp
-from phystricksPJKBooOhGVPkeR import PJKBooOhGVPkeR
-from phystricksLVPSoozFTyaeCG import LVPSoozFTyaeCG
+from yanntricksLWVXooPyIlOKNd import LWVXooPyIlOKNd
+from yanntricksCUZFooGqZLaAEp import CUZFooGqZLaAEp
+from yanntricksPJKBooOhGVPkeR import PJKBooOhGVPkeR
+from yanntricksLVPSoozFTyaeCG import LVPSoozFTyaeCG
 from AxesSecond import AxesSecond
-from phystricksYOWDooyeyOJyml import YOWDooyeyOJyml
+from yanntricksYOWDooyeyOJyml import YOWDooyeyOJyml
 from exCircle import exCircle
 from exCircleThree import exCircleThree
 from exCircleTwo import exCircleTwo
-from phystricksOnePoint import OnePoint
+from yanntricksOnePoint import OnePoint
 from FunctionFirst import FunctionFirst
 from FunctionFive import FunctionFive
 from FunctionFour import FunctionFour
@@ -27,20 +27,20 @@ from MarkOnPoint import MarkOnPoint
 from ParametricOne import ParametricOne
 from ParametricTwo import ParametricTwo
 from VectorOne import VectorOne
-from phystricksTRJEooPRoLnEiG import TRJEooPRoLnEiG
-from phystricksQRXCooUmnlhkvh import QRXCooUmnlhkvh
-from phystricksUREIooqNGBXtHg import UREIooqNGBXtHg
-from phystricksQIXEooejrojKjo import QIXEooejrojKjo
-from phystricksDEIToomZFknFmn import DEIToomZFknFmn
-from phystricksQNHAooSYgkWVhJ import QNHAooSYgkWVhJ
-from phystricksUARHooLMWqvyaI import UARHooLMWqvyaI
-from phystricksHELQooLGapRQrr import HELQooLGapRQrr
-from phystricksYJEDoojDtSeKHQ import YJEDoojDtSeKHQ
-from phystricksQRJOooKZPUoLlF import QRJOooKZPUoLlF
-from phystricksRVKFooDxrqYXAX import RVKFooDxrqYXAX
-from phystricksPFCUoorQhitKoJ import PFCUoorQhitKoJ
-from phystricksEXIIooJzzoJeai import EXIIooJzzoJeai
-from phystricksJSYWooQYduLVLS import JSYWooQYduLVLS
+from yanntricksTRJEooPRoLnEiG import TRJEooPRoLnEiG
+from yanntricksQRXCooUmnlhkvh import QRXCooUmnlhkvh
+from yanntricksUREIooqNGBXtHg import UREIooqNGBXtHg
+from yanntricksQIXEooejrojKjo import QIXEooejrojKjo
+from yanntricksDEIToomZFknFmn import DEIToomZFknFmn
+from yanntricksQNHAooSYgkWVhJ import QNHAooSYgkWVhJ
+from yanntricksUARHooLMWqvyaI import UARHooLMWqvyaI
+from yanntricksHELQooLGapRQrr import HELQooLGapRQrr
+from yanntricksYJEDoojDtSeKHQ import YJEDoojDtSeKHQ
+from yanntricksQRJOooKZPUoLlF import QRJOooKZPUoLlF
+from yanntricksRVKFooDxrqYXAX import RVKFooDxrqYXAX
+from yanntricksPFCUoorQhitKoJ import PFCUoorQhitKoJ
+from yanntricksEXIIooJzzoJeai import EXIIooJzzoJeai
+from yanntricksJSYWooQYduLVLS import JSYWooQYduLVLS
 
 def profile_me():
     cProfile.run("exCircle()")

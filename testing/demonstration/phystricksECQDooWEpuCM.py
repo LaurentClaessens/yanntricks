@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 def ECQDooWEpuCM():
     pspict,fig = SinglePicture("ECQDooWEpuCM")
     pspict.dilatation_X(1)

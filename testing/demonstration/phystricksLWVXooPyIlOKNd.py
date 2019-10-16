@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 def LWVXooPyIlOKNd():
     pspict,fig = SinglePicture("LWVXooPyIlOKNd")
     pspict.dilatation(1)

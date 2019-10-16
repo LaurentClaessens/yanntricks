@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 from sage.all import numerical_integral
-from phystricks import *
+from yanntricks import *
 
 def fun(b):
     x=var('x')

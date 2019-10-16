@@ -1,4 +1,4 @@
-from phystricks import *
+from yanntricks import *
 def FunctionFive():
     pspict,fig = SinglePicture("FunctionFive")
 

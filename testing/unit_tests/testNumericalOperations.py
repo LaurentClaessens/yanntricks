@@ -1,18 +1,18 @@
 ###########################################################################
-#   This is part of the module phystricks
+#   This is part of the module yanntricks
 #
-#   phystricks is free software: you can redistribute it and/or modify
+#   yanntricks is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   phystricks is distributed in the hope that it will be useful,
+#   yanntricks is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
 #   You should have received a copy of the GNU General Public License
-#   along with phystricks.py.  If not, see <http://www.gnu.org/licenses/>.
+#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 # copyright (c) Laurent Claessens, 2017, 2019
@@ -20,17 +20,17 @@
 
 from sage.all import sin, cos
 
-import phystricks
+import yanntricks
 
-print(dir(phystricks))
-print(phystricks.__path__)
-print(phystricks.__file__)
+print(dir(yanntricks))
+print(yanntricks.__path__)
+print(yanntricks.__file__)
 
-from phystricks.src.constructors import Point
-from phystricks.src.constructors import AffineVector
-from phystricks.src.Visual import visual_length
-from phystricks.src.Numerical import numerical_is_negative
-from phystricks.src.Utilities import number_to_string
+from yanntricks.src.constructors import Point
+from yanntricks.src.constructors import AffineVector
+from yanntricks.src.Visual import visual_length
+from yanntricks.src.Numerical import numerical_is_negative
+from yanntricks.src.Utilities import number_to_string
 
 from Testing import assert_true
 from Testing import assert_false

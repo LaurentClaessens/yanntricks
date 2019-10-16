@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 
 def create_example(angleI,angleF,text,name,dist=None):
     pspict,fig = SinglePicture("AngleTest"+name)

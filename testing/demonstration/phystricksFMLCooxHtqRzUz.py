@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 
 def rotation(angle,pts):
     ptsp=[  x.rotation(angle) for x in pts  ]
