@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module yanntricks
 #
@@ -17,7 +15,7 @@
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2016-2017
+# copyright (c) Laurent Claessens, 2016-2017, 2019
 # email: laurent@claessens-donadello.eu
 
 ##
@@ -29,7 +27,6 @@
 
 class PhystricksGenericException(Exception):
     def __str__(self):
-        print("Well. Really you should subclass and overrive this")
         raise
 
 class MissingPictureException(PhystricksGenericException):

@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module yanntricks
 #
@@ -17,18 +15,15 @@
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2017
+# copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-
-from __future__ import division
-from __future__ import unicode_literals
 
 from sage.all import operator,implicit_plot
 
 from yanntricks.src.ObjectGraph import ObjectGraph
-from Constructors import *
-from parameters.Parameters import Parameters
+from yanntricks.src.Constructors import *
+from yanntricks.src.parameters.Parameters import Parameters
 
 def get_paths_from_plot(p):
     """
@@ -144,7 +139,7 @@ class GeometricImplicitCurve(object):
         from sage.symbolic.expression import is_SymbolicEquation
         if is_SymbolicEquation(f):
             if f.operator() != operator.eq:
-                raise ValueError, "input to implicit plot must be function or equation"
+                raise ValueError("input to implicit plot must be function or equation")
             # At this point self.f is the expression to be equated to zero.
             self.f = f.lhs() - f.rhs()         
     def graph(self,xrange,yrange,plot_points=100):

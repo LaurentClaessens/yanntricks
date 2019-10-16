@@ -18,15 +18,15 @@
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-"""
-    ParametricCurveGraph describe a parametric curve of which we know an analytic expression of the components.
-"""
+"""Describe a parametric curve of which we know an analytic expression."""
 
-from sage.all import lazy_attribute
+from sage.all import lazy_attribute, var
 
 from yanntricks.src.ObjectGraph import ObjectGraph
 from yanntricks.src.Exceptions import ShouldNotHappenException
 from yanntricks.src.GenericCurve import GenericCurve
+from yanntricks.src.point import Point
+from yanntricks.src.Utilities import Intersection
 
 
 class ParametricCurveGraph(GenericCurve, ObjectGraph):
@@ -118,6 +118,7 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
         return c.full_simplify()
 
     def visualParametricCurve(self, xunit, yunit):
+        from yanntricks.src.Constructors import ParametricCurve
         Vf1 = phyFunction(self.f1(xunit*x))
         Vf2 = phyFunction(self.f2(yunit*x))
         return ParametricCurve(Vf1, Vf2)
@@ -154,6 +155,7 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
             y(t)=8*t*e^(2*t) + 12*e^(2*t)
             between None and None>
         """
+        from yanntricks.src.Constructors import ParametricCurve
         try:
             return self._derivative_dict[n]
         except KeyError:
@@ -219,6 +221,7 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
         The optional boolean argument <advised> serves to avoid infinite
         loops because we use get_point in get_normal_vector.
         """
+        from yanntricks.src.AngleMeasure import AngleMeasure
         if isinstance(llam, AngleMeasure):
             llam = llam.radian
         P = Point(self.f1(llam), self.f2(llam))
@@ -444,12 +447,14 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
 
         theta is given in degree.
         """
+        from yanntricks.src.Constructors import ParametricCurve
         alpha = radian(theta)
         g1 = cos(alpha)*self.f1+sin(alpha)*self.f2
         g2 = -sin(alpha)*self.f1+cos(alpha)*self.f2
         return ParametricCurve(g1, g2)
 
     def graph(self, mx, Mx):
+        from yanntricks.src.Constructors import ParametricCurve
         gr = ParametricCurve(self.f1, self.f2, (mx, Mx))
         gr.parameters = self.parameters.copy()
         return gr
@@ -481,6 +486,7 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
         y(t)=sin(2*pi - t)
         between 0 and 2*pi>
         """
+        from yanntricks.src.Constructors import ParametricCurve
         x = var('x')
         a = self.llamI
         b = self.llamF

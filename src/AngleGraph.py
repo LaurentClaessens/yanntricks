@@ -28,6 +28,7 @@ from yanntricks.src.NoMathUtilities import logging
 from yanntricks.src.Decorators import copy_parameters
 from yanntricks.src.Exceptions import MissingPictureException
 from yanntricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.Utilities import Intersection
 
 
 class AngleGraph(ObjectGraph):
@@ -42,6 +43,7 @@ class AngleGraph(ObjectGraph):
     """
 
     def __init__(self, A, O, B, r=None):
+        from yanntricks.src.affine_vector import AffineVector
         self.A = A
         self.O = O
         self.B = B
@@ -112,6 +114,7 @@ class AngleGraph(ObjectGraph):
         return self._mark_angle
 
     def bisector(self, pspict):
+        from yanntricks.src.affine_vector import AffineVector
         aa = self.advised_mark_angle(pspict)
         F = self.O+(cos(aa.radian), sin(aa.radian))
         return AffineVector(self.O, F)
@@ -145,6 +148,7 @@ class AngleGraph(ObjectGraph):
           - not intersect the lines
           - be further than the code.
         """
+        from yanntricks.src.affine_vector import AffineVector
         if 0 < self.angleA.degree < 90 and 0 < self.angleB.degree < 90:
             # In this case, the mark will be attached
             # - by the upper left to the line OB (let X be that point)
@@ -369,7 +373,7 @@ class AngleGraph(ObjectGraph):
                 "This is very strange to require a mark with an empty text. Maybe you'll get a crash on the second pass.")
 
         if visual_work:
-            from Visual import visual_point
+            from yanntricks.src.Visual import visual_point
             v_angle = inverse_visual_angle(self, pspict)
 
             old_xunit = pspict.xunit
@@ -485,6 +489,7 @@ class RightAngleGraph(ObjectGraph):
             self.d2 = d2.dilatation(1.5)
 
     def inter_point(self, I, F, n, pspict):
+        from yanntricks.src.affine_vector import AffineVector
         v1 = AffineVector(I, F)
         v = visual_length(v1, l=1, pspict=pspict)
 
@@ -498,6 +503,7 @@ class RightAngleGraph(ObjectGraph):
         return P1
 
     def action_on_pspict(self, pspict):
+        from yanntricks.src.segment import Segment
 
         # self.intersection is the point where the angle is located.
 
@@ -516,6 +522,7 @@ class RightAngleGraph(ObjectGraph):
         return BoundingBox()
 
     def _math_bounding_box(self, pspict):
+        from yanntricks.src.BoundingBox import BoundingBox
         return BoundingBox()
 
     def latex_code(self, language=None, pspict=None):

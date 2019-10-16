@@ -303,6 +303,8 @@ def ParametricCurve(f1, f2, interval=(None, None)):
     .. image:: Picture_FIGLabelFigCycloidePICTCycloide-for_eps.png
 
     """
+    from yanntricks.src.Utilities import EnsurephyFunction
+    from yanntricks.src.AngleMeasure import AngleMeasure
     llamI = interval[0]
     llamF = interval[1]
     if "mx" in dir(f1):

@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,15 +13,14 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2016-2017
+# copyright (c) Laurent Claessens, 2016-2017, 2019
 # email: laurent@claessens-donadello.eu
 
 # This file contains some functions used for testing purpose.
 
-from __future__ import division
-
-from sage.all import numerical_approx
 import sys
+from sage.all import numerical_approx
+
 
 def roundingMinMax( d ):
     """
@@ -41,13 +38,11 @@ def assert_true(b,failure_message=""):
     Raise a FailedAssertException if the boolean is False.
     """
     if b is False :
-        from Exceptions import FailedAssertException
+        from yanntricks.testing.unit_tests.Exceptions import FailedAssertException
         raise FailedAssertException(failure_message)
 
 def assert_false(b,failure_message=""):
-    """
-    Raise a FailedAssertException if the boolean is True
-    """
+    """Raise a FailedAssertException if the boolean is True"""
     assert_true(not b,failure_message=failure_message)
 
 def assert_equal(e1,e2,failure_message=""):
@@ -56,7 +51,7 @@ def assert_equal(e1,e2,failure_message=""):
     are not equal.
     """
     if not e1==e2 :
-        from Exceptions import FailedAssertException
+        from yanntricks.testing.unit_tests.Exceptions import FailedAssertException
         raise FailedAssertException(str(e1)+" is not equal to "+str(e2))
 
 def assert_almost_equal(e1,e2,epsilon=0.0001,failure_message=""):
@@ -78,7 +73,7 @@ def assert_almost_equal(e1,e2,epsilon=0.0001,failure_message=""):
     """
     if hasattr(e1,'is_almost_equal'):
         if not e1.is_almost_equal(e2,epsilon):
-            from Exceptions import FailedAssertException
+            from yanntricks.testing.unit_tests.Exceptions import FailedAssertException
             raise FailedAssertException(str(e1)+" is not equal to "+str(e2)+" up to "+str(epsilon))
         return True
         
@@ -86,7 +81,7 @@ def assert_almost_equal(e1,e2,epsilon=0.0001,failure_message=""):
     v2=numerical_approx(e2)
     d=abs(v1-v2)
     if not d<epsilon :
-        from Exceptions import FailedAssertException
+        from yanntricks.testing.unit_tests.Exceptions import FailedAssertException
         raise FailedAssertException(str(e1)+" is not equal to "+str(e2)+" up to "+str(epsilon))
 
 def echo_function(text):
@@ -96,7 +91,6 @@ def echo_single_test(text):
 
 class SilentOutput(object):
     def __init__(self):
-        import sys
         self.old_out=sys.stdout
     def __enter__(self):
         sys.stdout=self

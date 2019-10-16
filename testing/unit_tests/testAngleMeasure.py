@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module yanntricks
 #
@@ -17,11 +15,10 @@
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2016-2017
+# copyright (c) Laurent Claessens, 2016-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from __future__ import division
-from sage.all import cos
+from sage.all import cos, sqrt
 
 from yanntricks import *
 
@@ -31,6 +28,8 @@ from Testing import assert_equal
 from Testing import assert_almost_equal
 from Testing import echo_function
 from Testing import echo_single_test
+
+from yanntricks.src.AngleMeasure import AngleMeasure
 
 def comparison():
     echo_function("comparison")

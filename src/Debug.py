@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module yanntricks
 #
@@ -17,15 +15,12 @@
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2016
+# copyright (c) Laurent Claessens, 2010-2016, 2019
 # email: laurent@claessens-donadello.eu
 
-"""
-A set af small debug utilities.
-"""
+"""A set of small debug utilities."""
 
-from NoMathUtilities import ensure_str
-from Exceptions import PhystricksGenericException
+from yanntricks.src.Exceptions import PhystricksGenericException
 
 class DebugException(PhystricksGenericException):
     """
