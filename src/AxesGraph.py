@@ -23,7 +23,6 @@ from yanntricks.src.ObjectGraph import Options
 from yanntricks.src.ObjectGraph import ObjectGraph
 from yanntricks.src.MathStructures import AxesUnit
 from yanntricks.src.SmallComputations import RemoveLastZeros
-from yanntricks.src.affine_vector import Vector
 
 
 class Axes(ObjectGraph):
@@ -31,6 +30,7 @@ class Axes(ObjectGraph):
         # if a pspicture is passed, these axes will be considered as the
         # default axes system of `pspict`. This has an influence in the
         # computation of the bounding box.
+        from yanntricks.src.Constructors import Vector
         ObjectGraph.__init__(self, self)
         self.take_math_BB = False
         self.C = C

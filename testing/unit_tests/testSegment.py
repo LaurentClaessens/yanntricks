@@ -18,7 +18,7 @@
 # copyright (c) Laurent Claessens, 2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from __future__ import division
+from sage.all import sqrt
 
 from yanntricks import *
 

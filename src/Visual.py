@@ -24,7 +24,6 @@
 
 from sage.all import sqrt, sin, cos, pi     #pylint:disable=import-error
 from yanntricks.src.point import Point
-from yanntricks.src.affine_vector import Vector
 from yanntricks.src.Numerical import numerical_is_negative
 
 
@@ -62,6 +61,7 @@ def visual_polar(P, r, theta, pspict=None):
 
     theta is given in degree.
     """
+    from yanntricks.src.Constructors import Vector
     xunit = pspict.xunit
     yunit = pspict.yunit
     alpha = pi*theta/180

@@ -21,7 +21,7 @@
 import numpy
 from sage.all import RR, numerical_integral
 
-import yanntricks.src.Defaults
+import yanntricks.src.Defaults as Defaults
 
 
 class GenericCurve(object):

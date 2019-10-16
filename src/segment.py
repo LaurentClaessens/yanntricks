@@ -27,7 +27,7 @@
 
 
 import numpy
-from sage.all import lazy_attribute, numerical_approx, sqrt, SR
+from sage.all import lazy_attribute, numerical_approx, sqrt, SR, var
 
 from yanntricks.src.point import Point
 from yanntricks.src.ObjectGraph import ObjectGraph, AddedObjects

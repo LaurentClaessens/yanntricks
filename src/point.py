@@ -66,10 +66,13 @@ class Point(ObjectGraph):
 
         a point.
         """
-        from yanntricks.src.SingleAxeGraph import SingleAxeGraph
-        if isinstance(seg, AffineVectorGraph):
+        from yanntricks.src.SingleAxeGraph import SingleAxe
+        from yanntricks.src.affine_vector import AffineVector
+        from yanntricks.src.segment import Segment
+        from yanntricks.src.Utilities import Intersection
+        if isinstance(seg, AffineVector):
             seg = seg.segment
-        if isinstance(seg, SingleAxeGraph):
+        if isinstance(seg, SingleAxe):
             seg = seg.segment()
         if direction is None:
             if seg.is_vertical:
@@ -113,6 +116,9 @@ class Point(ObjectGraph):
             <Point(2,3)>
 
         """
+        from yanntricks.src.AngleMeasure import AngleMeasure
+        from yanntricks.src.Constructors import Vector
+        from yanntricks.src.radian_unit import radian
         if isinstance(r, AngleMeasure):
             raise ShouldNotHappenException(
                 "You are passing AngleMeasure instead of a number (the radius).")
@@ -138,8 +144,10 @@ class Point(ObjectGraph):
         if pspict:
             xunit = pspict.xunit
             yunit = pspict.yunit
-        rp, alpha = visualPolarCoordinates(r, theta, xunit=xunit, yunit=yunit)
-        rp, alpha = visualPolarCoordinates(r, theta, xunit=xunit, yunit=yunit)
+        rp, alpha = visualPolarCoordinates(r, theta,
+                                           xunit=xunit, yunit=yunit)
+        rp, alpha = visualPolarCoordinates(r, theta, 
+                                           xunit=xunit, yunit=yunit)
         P = self.getPolarPoint(rp, alpha)
         return self.getPolarPoint(rp, alpha)
 

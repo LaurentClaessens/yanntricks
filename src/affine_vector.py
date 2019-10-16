@@ -24,6 +24,7 @@ from yanntricks.src.ObjectGraph import ObjectGraph
 from yanntricks.src.segment import Segment
 from yanntricks.src.point import Point
 from yanntricks.src.Decorators import copy_parameters
+from yanntricks.src.Exceptions import OperationNotPermitedException
 
 
 class AffineVector(ObjectGraph):
@@ -117,8 +118,9 @@ class AffineVector(ObjectGraph):
     def decomposition(self, seg):
         # we make the computations with vectors based at (0,0)
         # and then translate the answer.
+        from yanntricks.src.Constructors import Vector
         s0 = self.fix_origin(Point(0, 0))
-        if isinstance(seg, AffineVectorGraph):
+        if isinstance(seg, AffineVector):
             v = seg.segment()
         seg0 = seg.fix_origin(Point(0, 0))
 
@@ -133,7 +135,7 @@ class AffineVector(ObjectGraph):
         return ans_perp, ans_paral
 
     def inner_product(self, other):
-        from Utilities import inner_product
+        from yanntricks.src.Utilities import inner_product
         return inner_product(self, other)
 
     def copy(self):
@@ -200,6 +202,7 @@ class AffineVector(ObjectGraph):
     # If you know that `v1` and `v2` have the same origin and want to sum them
     # you can also do `v1.extend(v2)`
     def __add__(self, other):
+        from yanntricks.src.Constructors import Vector
         if isinstance(other, tuple):
             if len(other) == 2:
                 I = self.I
@@ -207,7 +210,6 @@ class AffineVector(ObjectGraph):
                 Dy = self.Dy+other[1]
                 return AffineVector(self.I, self.I.translate(Vector(Dx, Dy)))
         if other.I != self.I:
-            from Exceptions import OperationNotPermitedException
             raise OperationNotPermitedException("You can only add vectors\
                             with same base point.")
         I = self.I
@@ -276,23 +278,3 @@ class AffineVector(ObjectGraph):
             return ""
         if language == "tikz":
             return self.tikz_code(pspict=pspict)
-
-
-def Vector(A, B=None):
-    """
-    Return an affine vector from (0,0) to the given point.
-
-    Vector(3,4)
-    Vector(P)  # If 'P' is a point
-    Vector(t)  # if 't' is a tuple of two numbers
-    """
-    O = Point(0, 0)
-    if isinstance(A, Point):
-        return AffineVector(O, A)
-    if isinstance(A, tuple):
-        if len(A) != 2:
-            raise TypeError(f"You can define a vector from a tuple "
-                            f"of length 2, not {len(other)}")
-        return AffineVector(O, Point(A[0], A[1]))
-    return AffineVector(Point(0, 0), Point(A, B))
-

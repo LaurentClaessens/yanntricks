@@ -18,7 +18,7 @@
 # copyright(c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from sage.all import sin, cos, prod
+from sage.all import sin, cos, prod, var
 from sage.all import pi, PolynomialRing, QQ, symbolic_expression
 
 from yanntricks.src.point import Point
@@ -1152,4 +1152,22 @@ def VectorField(fx, fy, xvalues=None, yvalues=None, draw_points=None):
     return GeometricVectorField(fx, fy).graph(xvalues, yvalues, draw_points)
 
 
-from yanntricks.src.Utilities import *
+def Vector(A, B=None):
+    """
+    Return an affine vector from (0,0) to the given point.
+
+    Vector(3,4)
+    Vector(P)  # If 'P' is a point
+    Vector(t)  # if 't' is a tuple of two numbers
+    """
+    from yanntricks.src.affine_vector import AffineVector
+    from yanntricks.src.point import Point
+    O = Point(0, 0)
+    if isinstance(A, Point):
+        return AffineVector(O, A)
+    if isinstance(A, tuple):
+        if len(A) != 2:
+            raise TypeError(f"You can define a vector from a tuple "
+                            f"of length 2, not {len(other)}")
+        return AffineVector(O, Point(A[0], A[1]))
+    return AffineVector(Point(0, 0), Point(A, B))

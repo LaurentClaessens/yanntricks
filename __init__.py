@@ -33,5 +33,6 @@ from yanntricks.src.main import IndependentPictures
 from yanntricks.src.Utilities import no_symbol
 from yanntricks.src.Utilities import put_equal_lengths_code
 from yanntricks.src.Utilities import distance
+from yanntricks.src.Utilities import Intersection
 
 from yanntricks.src.Constructors import *

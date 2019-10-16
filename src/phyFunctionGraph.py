@@ -15,11 +15,11 @@
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2017
+# copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
 
-from sage.all import lazy_attribute
+from sage.all import lazy_attribute, var
 
 from yanntricks.src.ObjectGraph import ObjectGraph
 from yanntricks.src.Exceptions import ShouldNotHappenException
@@ -50,7 +50,8 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
         try:
             self.sageFast = self.sage._fast_float_(x)
         except (NotImplementedError, TypeError, ValueError, AttributeError):
-            # Happens when the derivative of the function is not implemented in Sage
+            # Happens when the derivative of the function is
+            # not implemented in Sage
             # Also happens when there is a free variable,
             # as an example
             # F=VectorFieldGraph(x,y)
@@ -58,8 +59,9 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
             self.sageFast = self.sage
         self.string = repr(self.sage)
         self.fx = self.string.replace("x |--> ", "")
-        #self.pstricks = SubstitutionMathPsTricks(self.fx)
-        self.tikz = SubstitutionMathTikz(self.fx)
+        # self.pstricks = SubstitutionMathPsTricks(self.fx)
+        # self.tikz is suppressed on October 16, 2019
+        # self.tikz = SubstitutionMathTikz(self.fx)
         self.ListeSurface = []
         self.listeTests = []
         self.TesteDX = 0
@@ -103,6 +105,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
         """
         return a parametric curve with the same graph as `self`.
         """
+        from yanntricks.src.Constructors import phyFunction
         if self._parametric_curve:
             return self._parametric_curve
         x = var('x')
@@ -123,10 +126,10 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
 
     def inverse(self, y):
         """ returns a list of values x such that f(x)=y """
+        from SmallComputations import CalculSage
         listeInverse = []
         x = var('x')
         eq = self.sage(x) == y
-        from SmallComputations import CalculSage
         return CalculSage().solve_one_var([eq], x)
 
     def PointsNiveau(self, y):
@@ -156,6 +159,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
             sage: print [g.derivative(i) for i in range(0,5)]
             [x |--> cos(x), x |--> -sin(x), x |--> -cos(x), x |--> sin(x), x |--> cos(x)]
         """
+        from yanntricks.src.Constructors import phyFunction
         x = var('x')
         if n == 0:
             try:
@@ -236,6 +240,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
             sage: g.tangent_phyFunction(pi/2)(1)
             1/2*pi - 1
         """
+        from yanntricks.src.Constructors import phyFunction
         x = var('x')
         ca = self.derivative()(x0)
         h0 = self.get_point(x0).y
@@ -360,6 +365,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
         return self.get_minmax_data(deb, fin)['ymin']
 
     def graph(self, mx, Mx):
+        from yanntricks.src.Constructors import phyFunction
         gr = phyFunctionGraph(self.sage, mx, Mx)
         gr.parameters = self.parameters.copy()
         return gr
@@ -490,9 +496,11 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
                     raise
 
     def __pow__(self, n):
+        from yanntricks.src.Constructors import phyFunction
         return phyFunction(self.sage**n)
 
     def __mul__(self, other):
+        from yanntricks.src.Constructors import phyFunction
         try:
             f = phyFunction(self.sage*other)
         except TypeError:
@@ -503,6 +511,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
         return self*other
 
     def __add__(self, other):
+        from yanntricks.src.Constructors import phyFunction
         try:
             g = other.sage
         except AttributeError:
@@ -513,6 +522,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
         return self+(-other)
 
     def __neg__(self):
+        from yanntricks.src.Constructors import phyFunction
         return phyFunction(-self.sage).graph(self.mx, self.Mx)
 
     def __str__(self):
