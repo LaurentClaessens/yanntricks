@@ -320,7 +320,7 @@ def NonAnalyticPointParametricCurve(f, mx, Mx):
     """
     Describe a parametric curve when we have a function 'f' that associates a Point from a value of the parameter.
 
-    - f : a function (in the Python sense) that takes a number as argument and which returns a PointGraph.
+    - f : a function (in the Python sense) that takes a number as argument and which returns a Point.
     - mx,Mx  : the minimal and maximal values of the parameters.
     """
     return NonAnalyticPointParametricCurveGraph(f, mx, Mx)

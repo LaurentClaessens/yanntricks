@@ -20,14 +20,10 @@
 
 from sage.all import sin, cos
 
-import yanntricks
+from yanntricks import *
 
-print(dir(yanntricks))
-print(yanntricks.__path__)
-print(yanntricks.__file__)
-
-from yanntricks.src.constructors import Point
-from yanntricks.src.constructors import AffineVector
+from yanntricks.src.point import Point
+from yanntricks.src.affine_vector import AffineVector
 from yanntricks.src.Visual import visual_length
 from yanntricks.src.Numerical import numerical_is_negative
 from yanntricks.src.Utilities import number_to_string

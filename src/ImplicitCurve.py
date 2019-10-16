@@ -101,7 +101,7 @@ def get_paths_from_implicit_plot(p):
         sage: len(paths)
         4
         sage: type(paths[0][1])
-        <class 'yanntricks.BasicGeometricObjects.PointGraph'>
+        <class 'yanntricks.BasicGeometricObjects.Point'>
         sage: print paths[0][3]
         <Point(4.87405534614323,-4.6644295302013425)>
         sage: print paths[1][3]

@@ -291,8 +291,8 @@ def Vector(A, B=None):
         return AffineVector(O, A)
     if isinstance(A, tuple):
         if len(A) != 2:
-            raise TypeError(
-                "You can define a vector from a tuple of length 2, not "+str(len(other)))
+            raise TypeError(f"You can define a vector from a tuple "
+                            f"of length 2, not {len(other)}")
         return AffineVector(O, Point(A[0], A[1]))
     return AffineVector(Point(0, 0), Point(A, B))
 

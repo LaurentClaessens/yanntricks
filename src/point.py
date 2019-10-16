@@ -339,9 +339,6 @@ class Point(ObjectGraph):
 
         return str("("+sx+","+sy+")")
 
-    def graph_object(self):
-        return PointGraph(self)
-
     def copy(self):
         return Point(self.x, self.y)
 
@@ -393,7 +390,7 @@ class Point(ObjectGraph):
         #   lower than `epsilon`
         #
 
-        if not isinstance(other, PointGraph):
+        if not isinstance(other, Point):
             from NoMathUtilities import logging
             logging("We are comparing "+type(self)+" with " +
                     type(other)+". We continue, but this is strange.")
@@ -463,7 +460,7 @@ class Point(ObjectGraph):
         # when comparing with an object that is completely different.
         # This happens when checking if the BB is already computed :
         # see also 13756-24006
-        if not isinstance(other, PointGraph):
+        if not isinstance(other, Point):
             return NotImplemented
 
         if self.x != other.x:
