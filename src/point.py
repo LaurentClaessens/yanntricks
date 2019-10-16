@@ -304,18 +304,23 @@ class Point(ObjectGraph):
         """
         return self.polar_coordinates(origin=origin).measure            # No more degree. February 11, 2015
 
-    # \brief Return the coordinates of the point as a string.
-    #
-    #
-    # \param digits the number of digits that will be written in the return string
-    #
-    # \param pspict If given,
-    # - we multiply by xunit and yunit
-    # - we apply the rotation
-    #
-    # Some conversions and approximations are done. See `number_to_string`.
-
     def coordinates(self, digits=5, pspict=None):
+        """
+        Return the coordinates of the point as a string.
+        
+        
+        @param {int} `digits` 
+            The number of digits that will be written in the return string
+        
+        @param {Picture} `pspict` 
+            If given,
+            - we multiply by xunit and yunit
+            - we apply the rotation
+        
+        Some conversions and approximations are done.
+        See `number_to_string`.  
+        """
+        from yanntricks.src.Utilities import number_to_string
         x = self.x
         y = self.y
 

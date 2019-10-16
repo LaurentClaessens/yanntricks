@@ -27,13 +27,13 @@
 
 
 import numpy
-from sage.all import lazy_attribute, numerical_approx, sqrt
+from sage.all import lazy_attribute, numerical_approx, sqrt, SR
 
 from yanntricks.src.point import Point
 from yanntricks.src.ObjectGraph import ObjectGraph, AddedObjects
 from yanntricks.src.Utilities import distance
 from yanntricks.src.polar_coordinates import PointToPolaire
-from yanntricks.src.Exception import ImaginaryPartException
+from yanntricks.src.Exceptions import ImaginaryPartException
 
 
 class Segment(ObjectGraph):
@@ -45,8 +45,6 @@ class Segment(ObjectGraph):
         self._advised_mark_angle = None
         ObjectGraph.__init__(self, self)
         self.measure = None
-        self.is_horizontal = None
-        self.is_vertical = None
         self.coefs = None
 
     @lazy_attribute
@@ -406,6 +404,7 @@ class Segment(ObjectGraph):
 
     def affine_vector(self):
         """Return the affine vector corresponding to self."""
+        from yanntricks.src.affine_vector import AffineVector
         return AffineVector(self.I, self.F)
 
     def get_code(self, n=1, d=0.1, l=0.1, angle=45, pspict=None, pspicts=None):
@@ -586,7 +585,7 @@ class Segment(ObjectGraph):
 
     def orthogonal_trough(self, P):
         """
-        return a segment orthogonal to self passing trough P.
+        Return a segment orthogonal to self passing trough P.
 
         The starting point is 'P' and the final point is the 
         intersection with 'self'
@@ -608,9 +607,7 @@ class Segment(ObjectGraph):
         return Segment(P, Q)
 
     def parallel_trough(self, P):
-        """ 
-        Return a segment parallel to self passing trough P
-        """
+        """Return a segment parallel to self passing trough P"""
         from yanntricks.src.affine_vector import AffineVector
         v = AffineVector(self.I, self.F)
         Q = P.translate(v)

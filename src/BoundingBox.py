@@ -25,6 +25,8 @@ from yanntricks.src.Exceptions import MissingPictureException
 import yanntricks.src.main
 
 
+dprint = print
+
 class BoundingBox(ObjectGraph):
     r"""
     Represent the bounding box of something.

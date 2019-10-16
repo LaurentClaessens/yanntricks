@@ -36,6 +36,9 @@ from yanntricks.src.SmallComputations import RemoveLastZeros
 from yanntricks.src.segment import Segment
 
 
+dprint = print
+
+
 class SingleAxe(ObjectGraph):
     """
     Describe an axe.
@@ -170,8 +173,6 @@ class SingleAxe(ObjectGraph):
         for x, symbol in self.axes_unit.place_list(self.mx, self.Mx, self.Dx, self.mark_origin):
             P = (x*self.base).F
             if self.numbering:
-                # The 0.2 here is hard coded in Histogram, see 71011299
-
                 mark_angle = self.mark_angle
                 if self.segment().is_horizontal:
                     position = "N"
@@ -179,6 +180,8 @@ class SingleAxe(ObjectGraph):
                 if self.segment().is_vertical:
                     position = "E"
                     mark_angle = None
+                # The 0.2 here is hard coded in Histogram, see 71011299
+
                 m = P.get_mark(0.2, mark_angle, symbol, pspict=pspict,
                                position=position)
                 bars_list.append(m)

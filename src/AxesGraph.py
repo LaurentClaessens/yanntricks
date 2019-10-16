@@ -117,9 +117,26 @@ class Axes(ObjectGraph):
         """
         return the bounding box of the axes.
 
-        If `self` is a default axe, it take into account the content of the pspicture
-        and update the mx,my of the single axes X and Y.
+        If `self` is a default axe, it take into account the
+        content of the pspicture and update the mx,my of the
+        single axes X and Y.
         """
+        from yanntricks.src.BoundingBox import BoundingBox
+        BB=BoundingBox()
+        BB.append(self.single_axeX.bounding_box(pspict),pspict)
+        BB.append(self.single_axeY.bounding_box(pspict),pspict)
+
+        if self.pspict :
+            BB.append(self.pspict.math_bounding_box(),pspict)
+        # Update the single axes taking the content of pspict into account.
+        self.add_bounding_box(BB,pspict)   
+        BB.check_too_large()
+        return BB
+    def _math_bounding_box(self,pspict=None):
+        BB=BoundingBox()
+        BB.append(self.single_axeX.math_bounding_box(pspict),pspict=pspict)
+        BB.append(self.single_axeY.math_bounding_box(pspict),pspict=pspict)
+        return BB
     def _math_bounding_box(self, pspict=None):
         from yanntricks.src.BoundingBox import BoundingBox
         BB = BoundingBox()

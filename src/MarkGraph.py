@@ -234,8 +234,6 @@ argument is not good :"+position)
         return BoundingBox()
 
     def _bounding_box(self, pspict=None):  # pylint:disable=arguments-differ
-        raise DeprecationWarning
-        # pylint:disable=unreachable
         from yanntricks.src.point import Point
         from yanntricks.src.BoundingBox import BoundingBox
         central_point = self.central_point(pspict)

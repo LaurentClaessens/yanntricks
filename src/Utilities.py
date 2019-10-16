@@ -33,7 +33,7 @@ from sage.all import var, solve, atan, pi  # pylint:disable = import-error
 from sage.rings.real_mpfr import RealNumber  # pylint:disable = import-error
 
 from yanntricks.src.degree_unit import degree
-from yanntricks.src.Separator import SeparatorList
+from yanntricks.src.separator_list import SeparatorList
 from yanntricks.src.Decorators import sort_and_assert_real
 from yanntricks.src.Exceptions import ShouldNotHappenException
 from yanntricks.src.Exceptions import OperationNotPermitedException
@@ -363,7 +363,7 @@ def check_too_large(obj, pspict=None):
         Mx = obj.Mx
         My = obj.My
     if pspict:
-        from Exceptions import TooLargeBBException
+        from yanntricks.src.Exceptions import TooLargeBBException
         # In some circumstances, the comparison
         # mx<pspict.mx_acceptable_BB
         # provokes a MemoryError.

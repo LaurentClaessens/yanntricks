@@ -34,7 +34,7 @@ from yanntricks.src.Utilities import EnsureParametricCurve
 from yanntricks.src.MiscGraph import FractionPieDiagramGraph
 from yanntricks.src.phyFunctionGraph import phyFunctionGraph
 from yanntricks.src.ParametricCurveGraph import ParametricCurveGraph
-from yanntricks.src.InterpolationCurveGraph import InterpolationCurveGraph
+from yanntricks.src.interpolation_curve import InterpolationCurve
 from yanntricks.src.NonAnalytic import NonAnalyticPointParametricCurveGraph
 
 
