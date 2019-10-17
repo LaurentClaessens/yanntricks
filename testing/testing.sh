@@ -17,6 +17,22 @@ LOGFILE=$BASE_DIR/testing.log
 rm $LOGFILE
 touch $LOGFILE
 
+unit_testing ()
+{
+    cd $UNIT_TESTS_DIR
+    SAGE_PATH=$SAGE_PATH ./testing.sh
+}
+
+manual_testing ()
+{
+    echo "MANUAL_DIR: $MANUAL_DIR"
+    echo "RECALLTEST_DIR: $RECALLTEST_DIR"
+    cd $MANUAL_DIR
+    SAGE_PATH=$SAGE_PATH ./testing.sh&&
+    cd $RECALLTEST_DIR
+    ./test_recall.py $MANUAL_DIR >> $LOGFILE
+}
+
 demonstration_testing ()
 {
     cd $DEMO_DIR
@@ -25,19 +41,6 @@ demonstration_testing ()
     ./test_recall.py $DEMO_DIR  >> $LOGFILE
 }
 
-manual_testing ()
-{
-    cd $MANUAL_DIR
-    SAGE_PATH=$SAGE_PATH ./testing.sh&&
-    cd $RECALLTEST_DIR
-    ./test_recall.py $MANUAL_DIR >> $LOGFILE
-}
-
-unit_testing ()
-{
-    cd $UNIT_TESTS_DIR
-    SAGE_PATH=$SAGE_PATH ./testing.sh
-}
 
 unit_testing &&
 manual_testing&&

@@ -1,4 +1,4 @@
-from phystricks import *
+from yanntricks import *
 def FunctionThird():
     pspict,fig = SinglePicture("FunctionThird")
     pspict.dilatation(0.7)

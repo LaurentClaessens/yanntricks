@@ -1,5 +1,5 @@
 
-sage: attach("phystricksOnePoint.py");OnePoint()
+sage: attach("yanntricksOnePoint.py");OnePoint()
 
 The result is on figure \ref{LabelFigOnePoint}. % From file OnePoint
 \newcommand{\CaptionFigOnePoint}{<+Type your caption here+>}

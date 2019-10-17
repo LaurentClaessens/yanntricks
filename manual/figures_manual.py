@@ -1,18 +1,17 @@
 #! /usr/bin/sage -python
-# -*- coding: utf8 -*-
 
 import sys
-from phystricks import *
+from yanntricks import *
 
-from phystricksOnePoint import OnePoint
-from phystricksRJDEoobOibtkfv import RJDEoobOibtkfv
-from phystricksLARGooSLxQTdPC import LARGooSLxQTdPC
-from phystricksPBFCooVlPiRBpt import PBFCooVlPiRBpt
-from phystricksGKMEooBcNxcWBt import GKMEooBcNxcWBt
+from yanntricksOnePoint import OnePoint
+from yanntricksRJDEoobOibtkfv import RJDEoobOibtkfv
+from yanntricksLARGooSLxQTdPC import LARGooSLxQTdPC
+from yanntricksPBFCooVlPiRBpt import PBFCooVlPiRBpt
+from yanntricksGKMEooBcNxcWBt import GKMEooBcNxcWBt
 from FunctionThird import FunctionThird
-from phystricksVSJOooJXAwbVEt import VSJOooJXAwbVEt
-from phystricksIllusionNHwEtp import IllusionNHwEtp
-from phystricksFBTCooBKTryQ import FBTCooBKTryQ
+from yanntricksVSJOooJXAwbVEt import VSJOooJXAwbVEt
+from yanntricksIllusionNHwEtp import IllusionNHwEtp
+from yanntricksFBTCooBKTryQ import FBTCooBKTryQ
 
 figures_list_1=[]
 figures_list_2=[]
@@ -50,7 +49,7 @@ def AllFigures():
     if "--pass-number=3" in sys.argv :
         figures_list=figures_list_3
 
-    tests=FigureGenerationSuite(figures_list,first=0,title=u"phystricks's manual")
+    tests=FigureGenerationSuite(figures_list,first=0,title=u"yanntricks's manual")
     tests.generate()
     tests.summary()
 

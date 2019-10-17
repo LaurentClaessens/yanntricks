@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 def FBTCooBKTryQ():
     pspict,fig = SinglePicture("FBTCooBKTryQ")
     pspict.dilatation_X(1)

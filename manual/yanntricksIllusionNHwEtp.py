@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from phystricks import *
+from yanntricks import *
 def IllusionNHwEtp():
     pspict,fig = SinglePicture("IllusionNHwEtp")
     pspict.dilatation(0.7)

@@ -2,7 +2,7 @@
 
 # This is the example you also have in the README.md
 
-from phystricks import *
+from yanntricks import *
 def VSJOooJXAwbVEt():
     pspict,fig = SinglePicture("VSJOooJXAwbVEt")
     pspict.dilatation(1)
