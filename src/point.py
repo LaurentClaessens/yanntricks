@@ -120,6 +120,7 @@ class Point(ObjectGraph):
         from yanntricks.src.AngleMeasure import AngleMeasure
         from yanntricks.src.Constructors import Vector
         from yanntricks.src.radian_unit import radian
+        from yanntricks.src.Exceptions import ShouldNotHappenException
         if isinstance(r, AngleMeasure):
             raise ShouldNotHappenException(
                 "You are passing AngleMeasure instead of a number (the radius).")

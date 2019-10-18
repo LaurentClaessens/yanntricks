@@ -36,3 +36,4 @@ from yanntricks.src.Utilities import distance
 from yanntricks.src.Utilities import Intersection
 
 from yanntricks.src.Constructors import *
+x = var('x')

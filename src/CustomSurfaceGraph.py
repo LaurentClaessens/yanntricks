@@ -21,6 +21,7 @@
 from yanntricks.src.ObjectGraph import ObjectGraph
 from yanntricks.src.parameters.Parameters import Parameters
 from yanntricks.src.BoundingBox import BoundingBox
+from yanntricks.src.BasicGeometricObjects import draw_to_fill
 
 
 class CustomSurface(ObjectGraph):

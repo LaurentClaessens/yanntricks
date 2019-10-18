@@ -69,6 +69,7 @@ class Options(object):
         return O
 
     def style_ligne(self):
+        from yanntricks.src.BasicGeometricObjects import OptionsStyleLigne
         return self.sousOptions(OptionsStyleLigne())
 
     def code(self, language=None):

@@ -18,6 +18,7 @@
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
+import string
 
 from yanntricks.src.ObjectGraph import ObjectGraph
 from yanntricks.src.Utilities import make_psp_list
@@ -86,13 +87,13 @@ class PolygonGraph(ObjectGraph):
 
     def put_mark(self, dist, text_list=None, points_names=None,
                  mark_point=None, pspict=None, pspicts=None):
-        from Visual import visual_vector, polar_to_visual_polar
+        from yanntricks.src.Visual import visual_vector
+        from yanntricks.src.Visual import polar_to_visual_polar
 
         pspicts = make_psp_list(pspict, pspicts)
 
         n = len(self.points_list)
         if not text_list and not points_names:
-            import string
             text_list = ["\({}\)".format(x)
                          for x in string.ascii_uppercase[0:n]]
         # One can do :

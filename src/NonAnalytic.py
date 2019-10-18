@@ -19,6 +19,9 @@
 # email: laurent@claessens-donadello.eu
 
 
+from numpy import linspace
+from sage.all import numerical_approx, var
+
 """
 NonAnalyticParametricCurveGraph  describe a parametric curve for which we don't know an analytic form of the components. The given components functions 'f1' and 'f2' are functions in the Python sense.
 
@@ -46,6 +49,7 @@ class NonAnalyticParametricCurveGraph(ObjectGraph):
                 self.mx, self.Mx, self.parameters.plotpoints, endpoint=True)
 
     def curve(self):
+        from yanntricks.Constructors import InterpolationCurve
         interpolation = InterpolationCurve(
             [self.get_point(x) for x in self.drawpoints])
         # This curve is essentially dedicated to the colors
@@ -61,7 +65,7 @@ class NonAnalyticParametricCurveGraph(ObjectGraph):
         Return the curve [mx,Mx] -> R^2 that makes
         the inverse path.
         """
-
+        from yanntricks.src.Construct import NonAnalyticParametricCurve
         def f1(x): return self.f1(self.mx+self.Mx-x)
 
         def f2(x): return self.f2(self.mx+self.Mx-x)
@@ -99,6 +103,7 @@ class NonAnalyticPointParametricCurveGraph(ObjectGraph):
         self.mode = None
 
     def curve(self):
+        from yanntricks.Constructors import InterpolationCurve
         if not self._curve:
             interpolation = InterpolationCurve(
                 [self.get_point(x) for x in self.drawpoints])
@@ -149,13 +154,13 @@ class NonAnalyticFunctionGraph(ObjectGraph):
         self.old_mx = None
         self.old_Mx = None
         self.minmax_result = None
-        from numpy import linspace
         if self.mx is not None and self.Mx is not None:
             self.drawpoints = linspace(
                 self.mx, self.Mx, self.parameters.plotpoints, endpoint=True)
         self.parameters.color = "blue"
 
     def parametric_curve(self, mx=None, Mx=None):
+        from yanntricks.src.Construct import NonAnalyticParametricCurve
         if mx == None:
             mx = self.mx
         if Mx == None:
@@ -164,6 +169,7 @@ class NonAnalyticFunctionGraph(ObjectGraph):
         return NonAnalyticParametricCurve(x, self, mx, Mx)
 
     def reverse(self):
+        from yanntricks.src.Construct import NonAnalyticFunction
         def new(x): return self.fun(self.Mx+self.mx-x)
         return NonAnalyticFunction(new, self.mx, self.Mx)
 
@@ -171,15 +177,21 @@ class NonAnalyticFunctionGraph(ObjectGraph):
         """
         Return the interpolation curve corresponding to self.
 
-        Since it could be cpu-consuming, this is a lazy_attribute. For that reason it should not be called by the end-user but only during the computation of the bounding box and the tikz code.
+        Since it could be cpu-consuming, this is a lazy_attribute.
+        For that reason it should not be called by the end-user
+        but only during the computation of the bounding box
+        and the tikz code.
         """
+        from yanntricks.Constructors import InterpolationCurve
         points_list = [self.get_point(x) for x in self.drawpoints]
         return InterpolationCurve(points_list, context_object=self)
 
     def get_point(self, x):
+        from yanntricks.src.Utilities import general_function_get_point
         return general_function_get_point(self, x, advised=False)
 
     def graph(self, mx, Mx):
+        from yanntricks.src.Constructors import NonAnalyticFunction
         return NonAnalyticFunction(self.fun, mx, Mx)
 
     def _math_bounding_box(self, pspict=None):

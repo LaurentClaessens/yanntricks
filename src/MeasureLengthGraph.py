@@ -21,9 +21,10 @@
 from ObjectGraph import ObjectGraph
 from yanntricks.src.Constructors import *
 from yanntricks.src.Utilities import *
+from yanntricks.src.segment import Segment
 
 
-class MeasureLengthGraph(SegmentGraph):
+class MeasureLengthGraph(Segment):
     def __init__(self, seg, dist=0.1):
         try:
             self.segment = seg.segment
@@ -32,7 +33,7 @@ class MeasureLengthGraph(SegmentGraph):
         self.dist = dist
         self.delta = seg.rotation(-90).fix_size(self.dist)
         self.mseg = seg.translate(self.delta)
-        SegmentGraph.__init__(self, self.mseg.I, self.mseg.F)
+        Segment.__init__(self, self.mseg.I, self.mseg.F)
         self.mI = self.mseg.I
         self.mF = self.mseg.F
 

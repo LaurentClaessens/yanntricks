@@ -67,7 +67,6 @@ def PolarSegment(P, r, theta):
     length r and angle theta (degree)
     """
     from yanntricks.src.point import Point
-    from yanntricks.src.segment import Segment
     from yanntricks.src.radian_unit import radian
     alpha = radian(theta)
     return Segment(P, Point(P.x+r*cos(alpha), P.y+r*sin(alpha)))
@@ -107,7 +106,7 @@ def Circle(center, radius, angleI=0, angleF=360, visual=False, pspict=None):
     if visual and not pspict:
         print("You cannot try to use 'visual' not giving a pspicture")
         raise ValueError
-    return CircleGraph.CircleGraph(center, radius, angleI=angleI, angleF=angleF, visual=visual, pspict=pspict)
+    return CircleGraph(center, radius, angleI=angleI, angleF=angleF, visual=visual, pspict=pspict)
 
 
 def CircleOA(O, A):
@@ -1059,7 +1058,7 @@ class ObliqueProjection(object):
 
         `alpha` is given in degree. It is immediately converted in order to have positive number. If you give -45, it will be converted to 315
         """
-        from yanntricks.src.MathStructures import AngleMeasure
+        from yanntricks.src.AngleMeasure import AngleMeasure
         from yanntricks.src.radian_unit import radian
         self.k = k
         if self.k >= 1:

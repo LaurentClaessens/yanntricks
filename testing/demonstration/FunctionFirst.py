@@ -2,7 +2,7 @@ from yanntricks import *
 def FunctionFirst():
     pspict,fig = SinglePicture("FunctionFirst")
 
-    var('x')
+    x=var('x')
     f = phyFunction( sin(x) )
     mx = -2*pi
     Mx = 2*pi

@@ -18,6 +18,7 @@
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
+import numpy
 from sage.all import lazy_attribute
 from yanntricks.src.ObjectGraph import ObjectGraph
 
@@ -153,6 +154,7 @@ class InterpolationCurve(ObjectGraph):
         return self.bounding_box(pspict)
 
     def tikz_code(self, pspict=None):
+        from yanntricks.src.Constructors import LagrangePolynomial
         # LaTeX cannot parse too long lines (few thousand of letters). But
         # if we draw 1000 points of a curve with 15 digits for each coordinate
         # we easily break that limit of line length.
@@ -162,7 +164,6 @@ class InterpolationCurve(ObjectGraph):
             # One cannot draw each segment separately :
             # this causes the parameters.style='dashed'
             # to not work for example.
-            import numpy
             a = []
             sublen = max(len(pl)/500, 1)   # We draw packs of 100 points
             list_of_list = numpy.array_split(pl, sublen)

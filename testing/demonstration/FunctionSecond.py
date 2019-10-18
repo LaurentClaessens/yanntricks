@@ -2,7 +2,7 @@ from yanntricks import *
 def FunctionSecond():
     pspict,fig = SinglePicture("FunctionSecond")
 
-    var('x')
+    x=var('x')
     f = phyFunction( log(x) )
     mx = 0.1
     Mx = 10

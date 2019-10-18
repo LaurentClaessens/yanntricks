@@ -83,7 +83,9 @@ class AffineVector(ObjectGraph):
 
     def orthogonal(self):
         ortho_seg = self.segment.orthogonal()
-        return AffineVector(ortho_seg)
+        I = ortho_seg.I
+        F = ortho_seg.F
+        return AffineVector(I, F)
 
     def rotation(self, angle):
         s = self.segment.rotation(angle)

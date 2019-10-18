@@ -20,13 +20,14 @@
 
 """Describe a parametric curve of which we know an analytic expression."""
 
-from sage.all import lazy_attribute, var, sqrt, sin, cos
+from sage.all import lazy_attribute, var, sqrt, sin, cos, atan
+from sage.all import numerical_integral
 
 from yanntricks.src.ObjectGraph import ObjectGraph
 from yanntricks.src.Exceptions import ShouldNotHappenException
 from yanntricks.src.GenericCurve import GenericCurve
 from yanntricks.src.point import Point
-from yanntricks.src.Utilities import Intersection
+from yanntricks.src.Utilities import Intersection, inner_product
 
 
 class ParametricCurveGraph(GenericCurve, ObjectGraph):
@@ -253,6 +254,7 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
             sage: print F.get_tangent_vector(1)
             <vector I=<Point(1,1)> F=<Point(1/5*sqrt(5) + 1,2/5*sqrt(5) + 1)>>
         """
+        from yanntricks.src.Constructors import AffineVector
         initial = self.get_point(llam, advised)
         return AffineVector(initial, Point(initial.x+self.derivative().f1(llam), initial.y+self.derivative().f2(llam))).normalize()
 
@@ -359,9 +361,8 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
         return Segment(mv.F, v.F)
 
     def get_osculating_circle(self, llam):
-        """
-        Return the osculating circle to the parametric curve.
-        """
+        """Return the osculating circle to the parametric curve."""
+        from yanntricks.src.Constructors import CircleOA
         P = self.get_point(llam)
         first = self.get_derivative(llam, 1)
         second = self.get_derivative(llam, 2)
@@ -431,6 +432,7 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
         """
         Return a list of points which do a wave around the parametric curve.
         """
+        from yanntricks.src.Constructors import Vector
         PAs = self.getRegularLengthParameters(
             mll, Mll, dl, xunit=xunit, yunit=yunit)
         PTs = [self.get_point(mll)]

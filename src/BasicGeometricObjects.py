@@ -18,11 +18,14 @@
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from sage.all import lazy_attribute
+from sage.all import symbolic_expression
+from sage.all import lazy_attribute, numerical_approx, var
 
 from yanntricks.src.ObjectGraph import ObjectGraph
 from yanntricks.src.parameters.Parameters import Parameters
 from yanntricks.src.point import Point
+from yanntricks.src.Utilities import EnsurephyFunction
+from yanntricks.src.NoMathUtilities import first_bracket
 
 
 def genericBracketAttributeToLanguage(attr, language):
@@ -50,6 +53,8 @@ class TextGraph(ObjectGraph):
     """
 
     def __init__(self, P, text, hide=True):
+        from yanntricks.src.Constructors import Mark
+        from yanntricks.src.Constructors import Rectangle
         ObjectGraph.__init__(self, self)
         self.P = P
         self.text = text
@@ -75,6 +80,7 @@ class TextGraph(ObjectGraph):
         return self.mark.bounding_box(pspict)
 
     def latex_code(self, language=None, pspict=None):
+        from yanntricks.src.Constructors import Rectangle
         a = []
         rect = Rectangle(self.mark.bounding_box(pspict))
         rect.parameters = self.rectangle.parameters
@@ -222,6 +228,7 @@ class GeometricVectorField(object):
             <vector I=<Point(3,4)> F=<Point(12,68)>>
 
         """
+        from yanntricks.src.affine_vector import AffineVector
         if b is not None:
             P = Point(a, b)
         else:

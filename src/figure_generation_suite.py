@@ -2,6 +2,7 @@
 from yanntricks.src.Figure import Figure
 from yanntricks.src.Exceptions import PhystricksTestError
 from yanntricks.src.Exceptions import PhystricksNoError
+from yanntricks.src.main import function_list_to_figures_list
 
 class FigureGenerationSuite:
     """

@@ -2,7 +2,7 @@ from yanntricks import *
 def FunctionFive():
     pspict,fig = SinglePicture("FunctionFive")
 
-    var('x')
+    x=var('x')
     mx = -5
     Mx = 5
     f = phyFunction( x*sin(x) ).graph(mx,Mx)

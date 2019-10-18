@@ -18,7 +18,8 @@
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from sage.all import lazy_attribute, cos, sin
+from sage.all import cos, sin, pi, sqrt
+from sage.all import lazy_attribute, numerical_approx
 
 from yanntricks.src.ObjectGraph import ObjectGraph
 from yanntricks.src.Defaults import CIRCLE3D_LINEAR_PLOTPOINTS
@@ -31,6 +32,7 @@ class Circle3DGraph(ObjectGraph):
 
         `A`, `B` and `O` are tuples of numbers
         """
+        from yanntricks.src.Constructors import Vector3D
         ObjectGraph.__init__(self, self)
         self.op = op
         self.O = O
@@ -60,6 +62,7 @@ class Circle3DGraph(ObjectGraph):
 
     @lazy_attribute
     def curve2d(self):
+        from yanntricks.src.Constructors import InterpolationCurve
         proj_points_list = []
         for P in self.points_list:
             t = self.op.point(P.x, P.y, P.z)
@@ -185,6 +188,7 @@ class CuboidGraph(ObjectGraph):
         return self.bounding_box(pspict)
 
     def action_on_pspict(self, pspict):
+        from yanntricks.src.Constructors import Polygon
         for P in self.c1:
             pspict.DrawGraphs(P)
         for P in self.c2:
@@ -221,9 +225,11 @@ class Vector3DGraph(object):
         self.c_list = [x, y, z]
 
     def __add__(self, other):
+        from yanntricks.src.Constructors import Vector3D
         return Vector3D(self.x+other.x, self.y+other.y, self.z+other.z)
 
     def __rmul__(self, r):
+        from yanntricks.src.Constructors import Vector3D
         return Vector3D(r*self.x, r*self.y, r*self.z)
 
     def __getitem__(self, i):

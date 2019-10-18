@@ -54,8 +54,9 @@ class GridGraph(ObjectGraph):
     """
 
     def __init__(self, bb=None):
+        from yanntricks.src.BoundingBox import BoundingBox
         if bb is None:
-            bb = BasicGeometricObjects.BoundingBox()
+            bb = BoundingBox()
         ObjectGraph.__init__(self, self)
         self.BB = bb
         self.separator_name = "GRID"
@@ -95,6 +96,7 @@ class GridGraph(ObjectGraph):
         self.options.add_option(opt)
 
     def optionsTrace(self):
+        from yanntricks.src.BasicGeometricObjects import OptionsStyleLigne
         return self.options.sousOptions(OptionsStyleLigne())
 
     def optionsParams(self):

@@ -41,6 +41,8 @@ class FractionPieDiagramGraph(ObjectGraph):
         self._circular_sector = None
 
     def circular_sector(self):
+        from yanntricks.src.AngleMeasure import AngleMeasure
+        from yanntricks.src.Constructors import CircularSector
         if not self._circular_sector:
             FullAngle = AngleMeasure(value_degree=360)
             cs = CircularSector(self.center, self.radius, 0,

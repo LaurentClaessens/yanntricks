@@ -3,6 +3,7 @@ from sage.all import numerical_approx, SR, pi
 from yanntricks.src.AngleMeasure import AngleMeasure
 from yanntricks.src.AngleMeasure import DegreeAngleMeasure
 from yanntricks.src.AngleMeasure import RadianAngleMeasure
+from yanntricks.src.Exceptions import ShouldNotHappenException
 
 class ConversionAngles(object):
     """

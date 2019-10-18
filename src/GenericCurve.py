@@ -22,6 +22,7 @@ import numpy
 from sage.all import RR, numerical_integral, numerical_approx, var
 
 import yanntricks.src.Defaults as Defaults
+from yanntricks.src.Exceptions import ShouldNotHappenException
 
 
 class GenericCurve(object):
@@ -73,8 +74,7 @@ class GenericCurve(object):
 
         prop_precision = float(df)/100      # precision of the interval
         if prop_precision == 0:
-            raise ValueError("prop_precision is zero. Something sucks. You probably want to launch me in an infinite loop. dl=%s" % str(
-                dl))
+            raise ValueError("prop_precision is zero.")
 
         # We'll perform a dichotomy method.
         # 'too_large' is a value of the parameter we know to be too large
@@ -115,8 +115,7 @@ class GenericCurve(object):
         """
         prop_precision = float(df)/100      # precision of the interval
         if prop_precision == 0:
-            raise ValueError("prop_precision is zero. Something sucks. You probably want to launch me in an infinite loop. dl=%s" % str(
-                dl))
+            raise ValueError("prop_precision is zero.")
 
         # Vcurve is the curve as visually seen taking the dilatation into account.
         Vcurve = self.visualParametricCurve(xunit, yunit)

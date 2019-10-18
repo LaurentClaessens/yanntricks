@@ -19,13 +19,11 @@
 # email: laurent@claessens-donadello.eu
 
 from numpy import arange
-from sage.all import sin, cos, RR
+from sage.all import sin, cos, RR, pi, numerical_approx, var
 
 from yanntricks.src.GenericCurve import GenericCurve
 from yanntricks.src.Decorators import copy_parameters
 from yanntricks.src.ObjectGraph import ObjectGraph
-
-import yanntricks.src.Defaults
 
 
 class CircleGraph(GenericCurve, ObjectGraph):
@@ -59,8 +57,10 @@ class CircleGraph(GenericCurve, ObjectGraph):
     """
 
     def __init__(self, center, radius, angleI=0, angleF=360, visual=False, pspict=None):
+        from yanntricks.src.AngleMeasure import AngleMeasure
+        from yanntricks.src.Defaults import CIRCLE_LINEAR_PLOTPOINTS
         GenericCurve.__init__(self, pI=angleI, pF=angleF)
-        self.linear_plotpoints = Defaults.CIRCLE_LINEAR_PLOTPOINTS
+        self.linear_plotpoints = CIRCLE_LINEAR_PLOTPOINTS
         self.center = center
         self.radius = radius
         ObjectGraph.__init__(self, self)
@@ -126,10 +126,10 @@ class CircleGraph(GenericCurve, ObjectGraph):
                 (y-self.center.y)**2/Ry**2-1 == 0
             return self._equation
         if numerical == True:
-            Rx = numerical_approximation(Rx)
-            Ry = numerical_approximation(Ry)
-            cx = numerical_approximation(self.center.x)
-            cy = numerical_approximation(self.center.y)
+            Rx = numerical_approx(Rx)
+            Ry = numerical_approx(Ry)
+            cx = numerical_approx(self.center.x)
+            cy = numerical_approx(self.center.y)
             self._numerical_equation = (x-cx)**2/Rx**2+(y-cy)**2/Ry**2-1 == 0
             return self._numerical_equation
 
@@ -143,6 +143,7 @@ class CircleGraph(GenericCurve, ObjectGraph):
         The parameter of the curve is the angle in radian.
         """
         from yanntricks.src.Constructors import ParametricCurve
+        from yanntricks.src.Constructors import phyFunction
         if self._parametric_curve is None:
             x = var('x')
             if self.visual is True:
@@ -371,14 +372,16 @@ class CircleGraph(GenericCurve, ObjectGraph):
 
     def action_on_pspict(self, pspict):
         from yanntricks.src.radian_unit import radian
+        from yanntricks.src.AngleMeasure import AngleMeasure
+        from yanntricks.src.Constructors import CustomSurface
         alphaI = radian(self.angleI, number=True,
                         keep_max=True, keep_large=True)
         alphaF = radian(self.angleF, number=True,
                         keep_max=True, keep_large=True)
 
-        # self.angleI and self.angleF should be AngleMeasure, but sometimes the user
-        #    writes something like
-        #   C.angleI=20
+        # self.angleI and self.angleF should be AngleMeasure,
+        # but sometimes the user writes something like
+        # C.angleI=20
 
         if isinstance(self.angleF, AngleMeasure):
             f = self.angleF.degree

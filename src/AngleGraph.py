@@ -376,13 +376,13 @@ class AngleGraph(ObjectGraph):
     #        If false, we make as there are no dilatations issues.
     #        The point
     def get_mark(self, dist=None, angle=None, text=None, mark_point=None, added_angle=None, position=None, pspict=None, visual_work=True):
+        from yanntricks.src.Visual import visual_point
+        from yanntricks.src.Constructors import Mark
         if text == "" or text is None:
             logging(
                 "This is very strange to require a mark with an empty text. Maybe you'll get a crash on the second pass.")
 
         if visual_work:
-            from yanntricks.src.Visual import visual_point
-            from yanntricks.src.Constructors import Mark
             v_angle = inverse_visual_angle(self, pspict)
 
             old_xunit = pspict.xunit

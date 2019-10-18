@@ -42,6 +42,8 @@ class Waviness(object):
 # These are the points to be joined by a bezier or something in order to get the wavy graph of the function.
 
     def get_wavy_points(self):
+        from yanntricks.src.Constructors import phyFunction
+        from yanntricks.src.Constructors import Segment
         if type(self.obj) == phyFunction:
             return self.obj.get_wavy_points(self.mx, self.Mx, self.dx, self.dy)
         if type(self.obj) == Segment:

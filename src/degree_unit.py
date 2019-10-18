@@ -16,6 +16,7 @@ class degreeUnit(object):
         return DegreeConversions.conversion(x, number=number, keep_max=keep_max, keep_large=keep_large, converting=converting, numerical=numerical)
 
     def __rmul__(self, x):
+        from yanntricks.src.AngleMeasure import AngleMeasure
         return AngleMeasure(value_degree=x)
 
 degree = degreeUnit()
