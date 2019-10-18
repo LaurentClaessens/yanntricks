@@ -1,5 +1,6 @@
-# -*- coding: utf8 -*-
 from yanntricks import *
+from sage.all import sqrt
+
 def YJEDoojDtSeKHQ():
     """
     Copied from examssepti from mazhe

@@ -68,6 +68,7 @@ class PolygonGraph(ObjectGraph):
         self._filled = True
 
     def rotation(self, angle):
+        from yanntricks.src.Constructors import Polygon
         pts = [P.rotation(angle) for P in self.points_list]
         return Polygon(pts)
 
@@ -87,6 +88,7 @@ class PolygonGraph(ObjectGraph):
 
     def put_mark(self, dist, text_list=None, points_names=None,
                  mark_point=None, pspict=None, pspicts=None):
+        from yanntricks.src.affine_vector import AffineVector
         from yanntricks.src.Visual import visual_vector
         from yanntricks.src.Visual import polar_to_visual_polar
 

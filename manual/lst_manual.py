@@ -1,12 +1,6 @@
-#! /usr/bin/python
-# -*- coding: utf8 -*-
+from pytex.src import PytexTools
 
-from __future__ import unicode_literals
-
-import latexparser
-import latexparser.PytexTools
-
-myRequest = latexparser.PytexTools.Request("mesure")
+myRequest = PytexTools.Request()
 
 myRequest.original_filename="yanntricks-manual.tex"
 

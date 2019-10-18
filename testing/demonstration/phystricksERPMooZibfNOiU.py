@@ -1,7 +1,5 @@
-# -*- coding: utf8 -*-
-from __future__ import division
 from yanntricks import *
-
+from sage.all import numerical_approx
 
 def ERPMooZibfNOiU():
     pspict,fig = SinglePicture("ERPMooZibfNOiU")

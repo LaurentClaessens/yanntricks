@@ -28,7 +28,9 @@ from yanntricks.src.AxesGraph import Axes
 from yanntricks.src.Utilities import Intersection
 from yanntricks.src.segment import Segment
 from yanntricks.src.GridGraph import GridGraph
+from yanntricks.src.MathStructures import AxesUnit
 from yanntricks.src.MarkGraph import MarkGraph
+from yanntricks.src.BoundingBox import BoundingBox
 from yanntricks.src.AngleGraph import AngleGraph
 from yanntricks.src.CircleGraph import CircleGraph
 from yanntricks.src.affine_vector import AffineVector

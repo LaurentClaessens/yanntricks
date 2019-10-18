@@ -21,7 +21,11 @@
 
 """A collection of tools for building LaTeX pictures with python."""
 
-from sage.all import cos, sin, tan, exp, ln, log    #pylint:disable=import-error
+from sage.all import cos, sin, tan     #pylint:disable=import-error
+from sage.all import exp, ln, log    #pylint:disable=import-error
+from sage.all import sqrt   #pylint:disable=import-error
+from sage.all import var   #pylint:disable=import-error
+x = var('x')
 
 from yanntricks.src.figure_generation_suite import FigureGenerationSuite
 
@@ -36,4 +40,3 @@ from yanntricks.src.Utilities import distance
 from yanntricks.src.Utilities import Intersection
 
 from yanntricks.src.Constructors import *
-x = var('x')

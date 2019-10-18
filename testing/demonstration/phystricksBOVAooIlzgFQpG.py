@@ -1,6 +1,5 @@
-# -*- coding: utf8 -*-
-
 from yanntricks import *
+from yanntricks.src.Utilities import point_to_box_intersection
 
 def BOVAooIlzgFQpG():
     pspict,fig = SinglePicture("BOVAooIlzgFQpG")
