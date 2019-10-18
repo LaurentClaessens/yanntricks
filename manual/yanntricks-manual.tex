@@ -1,0 +1,18 @@
+\documentclass[a4paper]{article}
+\input{e_phystricks-manual}
+
+\newcounter{useexternal} \setcounter{useexternal}{1} 
+\ifthenelse{\value{useexternal}=1}{ \usetikzlibrary{external} \tikzexternalize }{ \newcommand{\tikzsetnextfilename}[1]{} } 
+
+\begin{document}
+
+\title{\texttt{phystricks} Manual\\If Sage can compute it, \LaTeX\ can draw it}
+\author{Laurent Claessens}
+\maketitle
+
+\tableofcontents
+
+\input{0_tests}
+\input{1_preparation}
+
+\end{document}
