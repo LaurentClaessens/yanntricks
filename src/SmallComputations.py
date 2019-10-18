@@ -23,7 +23,10 @@ This submodule contains some auxiliary computations that have to be performed
 by yanntricks but that are not geometry.
 """
 
+import os
+
 from sage.all import find_root, floor, ceil, solve, numerical_approx, pi
+from sage.all import SR, cos, atan, tan
 import codecs
 
 

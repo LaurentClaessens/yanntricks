@@ -97,7 +97,7 @@ class MarkGraph(ObjectGraph):
         Thus an object that wants to accept a mark needs a method
         mark_point that returns the point on which the mark will be put.
         """
-        from yanntricks.src.affine_vector import Vector
+        from yanntricks.src.Constructors import Vector
         if self._central_point:
             return self._central_point
         if self.mark_point:

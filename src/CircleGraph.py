@@ -142,6 +142,7 @@ class CircleGraph(GenericCurve, ObjectGraph):
 
         The parameter of the curve is the angle in radian.
         """
+        from yanntricks.src.Constructors import ParametricCurve
         if self._parametric_curve is None:
             x = var('x')
             if self.visual is True:
@@ -182,9 +183,11 @@ class CircleGraph(GenericCurve, ObjectGraph):
         INPUT:
         - ``theta`` - the angle given in degree.
         """
+        from yanntricks.src.radian_unit import radian
         return self.parametric_curve().get_point(radian(theta, numerical=numerical), advised=advised)
 
     def get_point(self, theta, advised=True, numerical=False):
+        from yanntricks.src.point import Point
         return self.getPoint(theta, advised, numerical)
 
     def get_regular_points(self, mx, Mx, l=None, n=None, advised=True):
@@ -229,6 +232,7 @@ class CircleGraph(GenericCurve, ObjectGraph):
         return [self.get_point(t, advised) for t in theta]
 
     def get_tangent_vector(self, theta):
+        from yanntricks.src.Constructors import PolarPoint
         return PolarPoint(1, theta+90).origin(self.get_point(theta, advised=False))
 
     def get_tangent_segment(self, theta):
@@ -238,6 +242,7 @@ class CircleGraph(GenericCurve, ObjectGraph):
         The difference with self.get_tangent_vector is that self.get_tangent_segment returns a segment that will
         be symmetric. The point (x,f(x)) is the center of self.get_tangent_segment.
         """
+        from yanntricks.src.segment import Segment
         v = self.get_tangent_vector(theta)
         mv = -v
         return Segment(mv.F, v.F)
@@ -262,6 +267,7 @@ class CircleGraph(GenericCurve, ObjectGraph):
             <vector I=<Point(sqrt(2),sqrt(2))> F=<Point(3/2*sqrt(2),3/2*sqrt(2))>>
 
         """
+        from yanntricks.src.Constructors import PolarPoint
         v = PolarPoint(1, theta).origin(self.get_point(theta, advised=False))
         v.arrow_type = "vector"
         return v
@@ -326,12 +332,15 @@ class CircleGraph(GenericCurve, ObjectGraph):
         a circle after having defined it.
 
         """
+        from yanntricks.src.Constructors import Circle
         return Circle(self.center, self.radius)
 
     def _math_bounding_box(self, pspict=None):
         return self.bounding_box(pspict)
 
     def _bounding_box(self, pspict):
+        from yanntricks.src.BoundingBox import BoundingBox
+        from yanntricks.src.conversion_angles import simplify_degree
         a = simplify_degree(self.angleI, keep_max=True, number=True)
         b = simplify_degree(self.angleF, keep_max=True, number=True)
         if self.angleI < self.angleF:
@@ -356,10 +365,12 @@ class CircleGraph(GenericCurve, ObjectGraph):
         return bb
 
     def representative_points(self):
+        from yanntricks.src.degree_unit import degree
         pp = self.linear_plotpoints
         return self.get_regular_points(mx=degree(self.angleI), Mx=degree(self.angleF), n=pp, advised=False)
 
     def action_on_pspict(self, pspict):
+        from yanntricks.src.radian_unit import radian
         alphaI = radian(self.angleI, number=True,
                         keep_max=True, keep_large=True)
         alphaF = radian(self.angleF, number=True,

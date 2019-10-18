@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module yanntricks
 #
@@ -17,18 +15,18 @@
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2017
+# copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
 
-## \brief informations about the waviness of a curve.
+# \brief informations about the waviness of a curve.
 #
 # \param graph An object like `phyFunctionGraph` or parametric curve
 # \param dx the wavelength
 # \param dy the wave size
-#    
+#
 class Waviness(object):
-    def __init__(self,graph,dx,dy):
+    def __init__(self, graph, dx, dy):
         self.graph = graph
         self.dx = dx
         self.dy = dy
@@ -36,15 +34,15 @@ class Waviness(object):
         try:
             self.Mx = self.graph.Mx
             self.mx = self.graph.mx
-        except AttributeError :
+        except AttributeError:
             pass
-## \brief  return a list of points which are disposed around
-#            the graph of the curve. 
+# \brief  return a list of points which are disposed around
+#            the graph of the curve.
 #
 # These are the points to be joined by a bezier or something in order to get the wavy graph of the function.
-    def get_wavy_points(self):
-        if type(self.obj) == phyFunction :
-            return self.obj.get_wavy_points(self.mx,self.Mx,self.dx,self.dy)
-        if type(self.obj) == Segment :
-            return self.obj.get_wavy_points(self.dx,self.dy)
 
+    def get_wavy_points(self):
+        if type(self.obj) == phyFunction:
+            return self.obj.get_wavy_points(self.mx, self.Mx, self.dx, self.dy)
+        if type(self.obj) == Segment:
+            return self.obj.get_wavy_points(self.dx, self.dy)

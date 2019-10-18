@@ -285,6 +285,7 @@ class ImplicitCurveGraph(ObjectGraph,GeometricImplicitCurve):
             sage: print G.bounding_box()
             <BoundingBox xmin=-1.188,xmax=1.188; ymin=-0.841,ymax=0.841>
         """
+        from yanntricks.src.BoundingBox import BoundingBox
         bb = BoundingBox( Point(self.xmin(),self.ymin()),Point(self.xmax(),self.ymax())  )
         return bb
     def _math_bounding_box(self,pspict=None):

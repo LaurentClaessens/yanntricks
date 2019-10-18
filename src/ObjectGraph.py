@@ -173,7 +173,6 @@ class ObjectGraph:
     def put_mark(self, dist=None, angle=None, text="",
                  mark_point=None, added_angle=None, position=None,
                  pspict=None, pspicts=None):
-
         """
         Put a mark on an object
 

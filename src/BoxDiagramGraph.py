@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module yanntricks
 #
@@ -17,11 +15,11 @@
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2017
+# copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from ObjectGraph import ObjectGraph
-from Constructors import *
+from yanntricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.Constructors import *
 
 class BoxDiagramGraph(ObjectGraph):
     def __init__(self,values,h,delta_y=0):
@@ -60,6 +58,7 @@ class BoxDiagramGraph(ObjectGraph):
     def _math_bounding_box(self,pspict):
         return self.bounding_box(pspict)
     def _bounding_box(self,pspict):
+        from yanntricks.src.BoundingBox import BoundingBox
         bb=BoundingBox()
         bb.addX(self.minimum)
         bb.addX(self.maximum)

@@ -101,8 +101,8 @@ class GridGraph(ObjectGraph):
         return self.options.sousOptions(["Dx", "Dy"])
 
     def action_on_pspict(self, pspict):
-        from SmallComputations import MainGridArray
-        from SmallComputations import SubGridArray
+        from yanntricks.src.SmallComputations import MainGridArray
+        from yanntricks.src.SmallComputations import SubGridArray
         a = []
         # ++++++++++++ Border ++++++++
         if self.draw_border:

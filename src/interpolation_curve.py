@@ -138,6 +138,8 @@ class InterpolationCurve(ObjectGraph):
         <BoundingBox xmin=-1.0,xmax=1.0; ymin=-1.0,ymax=1.0>
 
         """
+        from yanntricks.src.point import Point
+        from yanntricks.src.BoundingBox import BoundingBox
         bb = BoundingBox(Point(self.xmin(), self.ymin()),
                          Point(self.xmax(), self.ymax()))
         return bb

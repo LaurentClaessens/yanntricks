@@ -27,13 +27,14 @@
 
 
 import numpy
-from sage.all import lazy_attribute, numerical_approx, sqrt, SR, var
+from sage.all import lazy_attribute, numerical_approx
+from sage.all import sqrt, SR, var, QQ, solve
 
-from yanntricks.src.point import Point
+from yanntricks.src.Constructors import *
+
 from yanntricks.src.ObjectGraph import ObjectGraph, AddedObjects
-from yanntricks.src.Utilities import distance
-from yanntricks.src.polar_coordinates import PointToPolaire
 from yanntricks.src.Exceptions import ImaginaryPartException
+from yanntricks.src.polar_coordinates import PointToPolaire
 
 
 class Segment(ObjectGraph):
@@ -173,7 +174,7 @@ class Segment(ObjectGraph):
             # The trick to define a constant function is explained here:
             # http://groups.google.fr/group/sage-support/browse_thread/thread/e5e8775dd79459e8?hl=fr?hl=fr
             x = var('x')
-            fi = SR(A.y).function(x)
+            fi = SR(self.I.y).function(x)
             return phyFunction(fi)
         if not (self.is_vertical or self.is_horizontal):
             x = var('x')
@@ -181,7 +182,8 @@ class Segment(ObjectGraph):
 
     def symmetric_by(self, O):
         """
-        return a segment which is symmetric to 'self' with respect to the point 'O'
+        Return a segment which is symmetric to 'self'
+        with respect to the point 'O'
         """
         A = self.I.symmetric_by(O)
         B = self.F.symmetric_by(O)
@@ -360,6 +362,7 @@ class Segment(ObjectGraph):
 
     def put_measure(self, measure_distance, mark_distance, mark_angle=None,
                     text="", position=None, pspict=None, pspicts=None):
+        from yanntricks.src.Utilities import make_psp_list
         pspicts = make_psp_list(pspict, pspicts)
         for psp in pspicts:
             measure = self.get_measure(measure_distance, mark_distance, mark_angle,
@@ -380,6 +383,7 @@ class Segment(ObjectGraph):
         If 'mark_angle' is 'None', then the angle
         will be perpendicular to 'self'
         """
+        from yanntricks.src.Utilities import make_psp_list
         pspicts = make_psp_list(pspict, pspicts)
 
         if mark_angle is None and position not in ["N", "S", "E", "W"]:
@@ -427,6 +431,7 @@ class Segment(ObjectGraph):
         return ao
 
     def get_divide_in_two(self, n=1, d=0.1, l=0.1, angle=45, pspict=None, pspicts=None):
+        from yanntricks.src.Utilities import make_psp_list
         pspicts = make_psp_list(pspict, pspicts)
         M = self.midpoint()
         s1 = Segment(self.I, M)
@@ -440,6 +445,7 @@ class Segment(ObjectGraph):
         return a
 
     def divide_in_two(self, n=1, d=0.1, l=0.1, angle=45, pspict=None, pspicts=None):
+        from yanntricks.src.Utilities import make_psp_list
         pspicts = make_psp_list(pspict, pspicts)
         for psp in pspicts:
             a = self.get_divide_in_two(
@@ -460,6 +466,7 @@ class Segment(ObjectGraph):
         return P
 
     def AffineVector(self):
+        from yanntricks.src.affine_vector import AffineVector
         return AffineVector(self.I, self.F)
 
     def get_normal_vector(self, origin=None):
@@ -469,6 +476,7 @@ class Segment(ObjectGraph):
         - `origin` (optional). If given, the vector will 
             be attached to that point.
         """
+        from yanntricks.src.affine_vector import AffineVector
         if self.is_vertical:
             v = Point(-1, 0).Vector().fix_origin(self.midpoint())
         else:
@@ -600,6 +608,7 @@ class Segment(ObjectGraph):
         seg=Segment(B,A).orthogonal()
         instead.
         """
+        from yanntricks.src.Utilities import Intersection
         s = self.orthogonal().fix_origin(P)
         Q = Intersection(s, self)[0]
         if (P.x-Q.x)**2+(P.y-Q.y)**2 < 0.001:

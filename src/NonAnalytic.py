@@ -53,6 +53,7 @@ class NonAnalyticParametricCurveGraph(ObjectGraph):
         return interpolation
 
     def get_point(self, x, advised=False):
+        from yanntricks.src.point import Point
         return Point(self.f1(x), self.f2(x))
 
     def reverse(self):
@@ -114,7 +115,7 @@ class NonAnalyticPointParametricCurveGraph(ObjectGraph):
         Return the curve [mx,Mx] -> R^2 that makes
         the inverse path.
         """
-
+        from yanntricks.src.point import NonAnalyticPointParametricCurve
         def f1(x): return self.f(self.mx+self.Mx-x)
         return NonAnalyticPointParametricCurve(f1, self.mx, self.Mx)
 
@@ -182,6 +183,7 @@ class NonAnalyticFunctionGraph(ObjectGraph):
         return NonAnalyticFunction(self.fun, mx, Mx)
 
     def _math_bounding_box(self, pspict=None):
+        from yanntricks.src.BoundingBox import BoundingBox
         xmin = self.get_minmax_data(self.mx, self.Mx)["xmin"]
         xmax = self.get_minmax_data(self.mx, self.Mx)["xmax"]
         ymin = self.get_minmax_data(self.mx, self.Mx)["ymin"]

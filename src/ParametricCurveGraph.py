@@ -20,7 +20,7 @@
 
 """Describe a parametric curve of which we know an analytic expression."""
 
-from sage.all import lazy_attribute, var
+from sage.all import lazy_attribute, var, sqrt, sin, cos
 
 from yanntricks.src.ObjectGraph import ObjectGraph
 from yanntricks.src.Exceptions import ShouldNotHappenException
@@ -119,6 +119,8 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
 
     def visualParametricCurve(self, xunit, yunit):
         from yanntricks.src.Constructors import ParametricCurve
+        from yanntricks.src.Constructors import phyFunction
+        x = var('x')
         Vf1 = phyFunction(self.f1(xunit*x))
         Vf2 = phyFunction(self.f2(yunit*x))
         return ParametricCurve(Vf1, Vf2)
@@ -351,6 +353,7 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
         Return a tangent segment of length 2 centred at the given point.
         It is essentially two times get_tangent_vector.
         """
+        from yanntricks.src.segment import Segment
         v = self.get_tangent_vector(llam)
         mv = -v
         return Segment(mv.F, v.F)
@@ -448,6 +451,7 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
         theta is given in degree.
         """
         from yanntricks.src.Constructors import ParametricCurve
+        from yanntricks.src.radian_unit import radian
         alpha = radian(theta)
         g1 = cos(alpha)*self.f1+sin(alpha)*self.f2
         g2 = -sin(alpha)*self.f1+cos(alpha)*self.f2
@@ -499,6 +503,7 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
         return curve
 
     def _bounding_box(self, pspict=None):
+        from yanntricks.src.BoundingBox import BoundingBox
         xmin = self.xmin(self.llamI, self.llamF)
         xmax = self.xmax(self.llamI, self.llamF)
         ymin = self.ymin(self.llamI, self.llamF)
@@ -507,6 +512,7 @@ class ParametricCurveGraph(GenericCurve, ObjectGraph):
         return bb
 
     def action_on_pspict(self, pspict):
+        from yanntricks.src.Constructors import InterpolationCurve
         if self.wavy:
             waviness = self.waviness
             interpolation = InterpolationCurve(self.curve.get_wavy_points(

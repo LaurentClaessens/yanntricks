@@ -68,6 +68,7 @@ class TextGraph(ObjectGraph):
     def _math_bounding_box(self, pspict=None):
         # a text has no math_bounding_box because the axes do not want to fit them.
         # return self.mark.math_bounding_box(pspict)         # June 1, 2015
+        from yanntricks.src.BoundingBox import BoundingBox
         return BoundingBox()
 
     def _bounding_box(self, pspict=None):
@@ -324,6 +325,7 @@ class VectorFieldGraph(ObjectGraph, GeometricVectorField):
         return self.bounding_box(pspict)
 
     def _bounding_box(self, pspict=None):
+        from yanntricks.src.BoundingBox import BoundingBox
         bb = BoundingBox()
         for v in self.draw_vectors:
             bb.append(v, pspict)

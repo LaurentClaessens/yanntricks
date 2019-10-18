@@ -109,6 +109,8 @@ class Circle3DGraph(ObjectGraph):
 
 class CuboidGraph(ObjectGraph):
     def __init__(self, op, P, a, b, c):
+        from yanntricks.src.segment import Segment
+        from yanntricks.src.point import Point
         ObjectGraph.__init__(self, self)
         self.op = op
         self.P = P
@@ -171,6 +173,7 @@ class CuboidGraph(ObjectGraph):
         self.transparent = False
 
     def _bounding_box(self, pspict=None):
+        from yanntricks.src.BoundingBox import BoundingBox
         bb = BoundingBox()
         for s in self.c1:
             bb.append(s, pspict)

@@ -21,8 +21,11 @@
 from sage.all import sin, cos, prod, var
 from sage.all import pi, PolynomialRing, QQ, symbolic_expression
 
+from yanntricks.src.Utilities import distance
+from yanntricks.src.degree_unit import degree
 from yanntricks.src.point import Point
 from yanntricks.src.AxesGraph import Axes
+from yanntricks.src.Utilities import Intersection
 from yanntricks.src.segment import Segment
 from yanntricks.src.GridGraph import GridGraph
 from yanntricks.src.MarkGraph import MarkGraph
@@ -53,6 +56,8 @@ def PolarPoint(r, theta):
         sage: print PolarPoint(2,45)
         <Point(sqrt(2),sqrt(2))>
     """
+    from yanntricks.src.point import Point
+    from yanntricks.src.radian_unit import radian
     return Point(r*cos(radian(theta)), r*sin(radian(theta)))
 
 
@@ -61,6 +66,9 @@ def PolarSegment(P, r, theta):
     return a segment on the base point P (class Point) of 
     length r and angle theta (degree)
     """
+    from yanntricks.src.point import Point
+    from yanntricks.src.segment import Segment
+    from yanntricks.src.radian_unit import radian
     alpha = radian(theta)
     return Segment(P, Point(P.x+r*cos(alpha), P.y+r*sin(alpha)))
 
@@ -126,6 +134,7 @@ def CircleOA(O, A):
         sqrt(5)
 
     """
+    from yanntricks.src.Utilities import distance
     radius = distance(O, A)
     return Circle(O, radius)
 
@@ -134,11 +143,13 @@ def CircleAB(A, B):
     """
     return a circle with diameter [AB]
     """
+    from yanntricks.src.segment import Segment
     center = Segment(A, B).midpoint()
     return CircleOA(center, A)
 
 
 def CircularSector(center, radius, a, b):
+    from yanntricks.src.segment import Segment
     circle = Circle(center, radius)
     P = circle.get_point(a)
     Q = circle.get_point(b)
@@ -448,6 +459,7 @@ def RightAngleAOB(A, O, B, n1=0, n2=1, r=0.3):
     """
     return the right angle between Segment(A,O) and Segment(O,B)
     """
+    from yanntricks.src.segment import Segment
     return RightAngle(Segment(A, O), Segment(O, B), n1, n2, r)
 
 
@@ -561,6 +573,7 @@ def Rectangle(*args, **arg):
 
     Still alternatively, you can pass xmin,ymin,xmax,ymax
     """
+    from yanntricks.src.BoundingBox import BoundingBox
     if len(args) == 2:
         NW = args[0]
         SE = args[1]
@@ -736,7 +749,8 @@ def SurfaceBetweenParametricCurves(curve1, curve2, interval=None, interval1=None
     .. image:: Picture_FIGLabelFigBetweenParametricPICTBetweenParametric-for_eps.png
 
     """
-    exceptions = [CircleGraph, SegmentGraph]
+    from yanntricks.src.segment import Segment
+    exceptions = [CircleGraph, Segment]
 
     on = True
     for ex in exceptions:
@@ -814,6 +828,9 @@ def SurfaceUnderFunction(f, mx, Mx):
 
     """
     from yanntricks.src.NonAnalytic import NonAnalyticFunctionGraph
+    from yanntricks.src.point import Point
+    from yanntricks.src.segment import Segment
+    from yanntricks.src.SurfacesGraph import SurfaceBetweenLines
     if isinstance(f, NonAnalyticFunctionGraph):
         line1 = Segment(Point(mx, 0), Point(Mx, 0))
         line2 = f.parametric_curve(mx, Mx)
@@ -1043,6 +1060,7 @@ class ObliqueProjection(object):
         `alpha` is given in degree. It is immediately converted in order to have positive number. If you give -45, it will be converted to 315
         """
         from yanntricks.src.MathStructures import AngleMeasure
+        from yanntricks.src.radian_unit import radian
         self.k = k
         if self.k >= 1:
             print("Are you sure that you want such a scale factor : ",
@@ -1055,6 +1073,7 @@ class ObliqueProjection(object):
         self.ks = self.k*sin(self.theta)
 
     def point(self, x, y, z):
+        from yanntricks.src.point import Point
         return Point(x+z*self.kc, y+z*self.ks)
 
     def cuboid(self, P, a, b, c):
@@ -1081,7 +1100,8 @@ def Text(P, text, hide=True):
                     see :class:`BasicGeometricObjects.TextGraph`
 
     """
-    return BasicGeometricObjects.TextGraph(P, text, hide=hide)
+    from yanntricks.src.BasicGeometricObjects import TextGraph
+    return TextGraph(P, text, hide=hide)
 
 
 def VectorField(fx, fy, xvalues=None, yvalues=None, draw_points=None):
@@ -1170,6 +1190,6 @@ def Vector(A, B=None):
     if isinstance(A, tuple):
         if len(A) != 2:
             raise TypeError(f"You can define a vector from a tuple "
-                            f"of length 2, not {len(other)}")
+                            f"of length 2, not {len(A)}")
         return AffineVector(O, Point(A[0], A[1]))
     return AffineVector(Point(0, 0), Point(A, B))

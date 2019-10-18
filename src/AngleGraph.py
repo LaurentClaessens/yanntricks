@@ -18,7 +18,8 @@
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from sage.all import lazy_attribute, tan, sin, cos
+from sage.all import numerical_approx, sqrt, pi
+from sage.all import lazy_attribute, tan, sin, cos, arctan, atan
 
 from yanntricks.src.Visual import visual_polar_coordinates
 from yanntricks.src.Visual import visual_length
@@ -64,6 +65,8 @@ class AngleGraph(ObjectGraph):
         self._mark_angle = None
 
     def visual_angleIF(self, pspict):
+        from yanntricks.src.point import Point
+        from yanntricks.src.AngleMeasure import AngleMeasure
         aI1 = visual_polar_coordinates(
             Point(cos(self.angleI.radian), sin(self.angleI.radian)), pspict).measure
         aF1 = visual_polar_coordinates(
@@ -81,11 +84,13 @@ class AngleGraph(ObjectGraph):
 
     @copy_parameters
     def circle(self, visual=False, pspict=None):
+        from yanntricks.src.Constructors import Circle
         visualI, visualF = self.visual_angleIF(pspict)
         return Circle(self.O, self.r, visual=visual, pspict=pspict).graph(visualI, visualF)
 
     @lazy_attribute
     def measure(self):
+        from yanntricks.src.AngleMeasure import AngleMeasure
         return AngleMeasure(value_degree=self.angleF.degree-self.angleI.degree)
 
     def graph(self):
@@ -95,6 +100,7 @@ class AngleGraph(ObjectGraph):
         """
         theta is degree or AngleMeasure
         """
+        from yanntricks.src.AngleMeasure import AngleMeasure
         self._mark_angle = AngleMeasure(value_degree=theta)
 
     def _math_bounding_box(self, pspict=None):
@@ -106,6 +112,7 @@ class AngleGraph(ObjectGraph):
         return self.circle(visual=True, pspict=pspict).bounding_box(pspict)
 
     def advised_mark_angle(self, pspict):
+        from yanntricks.src.AngleMeasure import AngleMeasure
         if self._mark_angle is None:
             visualI, visualF = self.visual_angleIF(pspict=pspict)
             degree = (visualI.degree+visualF.degree)/2
@@ -149,6 +156,7 @@ class AngleGraph(ObjectGraph):
           - be further than the code.
         """
         from yanntricks.src.affine_vector import AffineVector
+        from yanntricks.src.point import Point
         if 0 < self.angleA.degree < 90 and 0 < self.angleB.degree < 90:
             # In this case, the mark will be attached
             # - by the upper left to the line OB (let X be that point)
@@ -374,6 +382,7 @@ class AngleGraph(ObjectGraph):
 
         if visual_work:
             from yanntricks.src.Visual import visual_point
+            from yanntricks.src.Constructors import Mark
             v_angle = inverse_visual_angle(self, pspict)
 
             old_xunit = pspict.xunit
@@ -519,6 +528,7 @@ class RightAngleGraph(ObjectGraph):
         pspict.DrawGraphs(l1, l2)
 
     def _bounding_box(self, pspict):
+        from yanntricks.src.BoundingBox import BoundingBox
         return BoundingBox()
 
     def _math_bounding_box(self, pspict):

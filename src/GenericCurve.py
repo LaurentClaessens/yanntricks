@@ -19,7 +19,7 @@
 # email: laurent@claessens-donadello.eu
 
 import numpy
-from sage.all import RR, numerical_integral
+from sage.all import RR, numerical_integral, numerical_approx, var
 
 import yanntricks.src.Defaults as Defaults
 
@@ -62,7 +62,10 @@ class GenericCurve(object):
         `lmax` - is the maximal value of the parameter. If the interval [lmin,lmax]  reveals to be too small, return 'None'
 
         """
-        # Vcurve is the curve as visually seen taking the dilatation into account.
+        # Vcurve is the curve as visually seen taking the dilatation
+        # into account.
+        from yanntricks.src.Constructors import phyFunction
+        from yanntricks.src.Constructors import ParametricCurve
         x = var('x')
         Vf1 = phyFunction(self.f1(xunit*x))
         Vf2 = phyFunction(self.f2(yunit*x))
@@ -191,6 +194,7 @@ class GenericCurve(object):
         return Llam
 
     def representative_points(self):
+        from  yanntricks.src.Utilities import test_imaginary_part_point
         if self._representative_points is not None:
             return self._representative_points
 

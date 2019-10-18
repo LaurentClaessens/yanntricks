@@ -18,11 +18,11 @@
 # copyright(c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from yanntricks.src.point import Point
 from yanntricks.src.ObjectGraph import ObjectGraph
 from yanntricks.src.Utilities import check_too_large
 from yanntricks.src.Exceptions import MissingPictureException
-import yanntricks.src.main
+from yanntricks.src.Exceptions import NoMathBoundingBox
+from yanntricks.src.Constructors import *
 
 
 dprint = print
@@ -78,7 +78,7 @@ class BoundingBox(ObjectGraph):
                     obj, fun))
                 print("The message was :")
                 print(message)
-                raise main.NoMathBoundingBox(obj, fun)
+                raise NoMathBoundingBox(obj, fun)
         else:
             if check_too_large:
                 bb.check_too_large(pspict)
@@ -100,6 +100,7 @@ class BoundingBox(ObjectGraph):
         check_too_large(self, pspict=pspict)
 
     def getEdge(self, pos):
+        from yanntricks.src.segment import Segment
         if pos == "NORTH":
             return Segment(self.getVertex("NW"), self.getVertex("NE"))
         if pos == "SOUTH":
@@ -110,6 +111,7 @@ class BoundingBox(ObjectGraph):
             return Segment(self.getVertex("NW"), self.getVertex("SW"))
 
     def getVertex(self, pos):
+        from yanntricks.src.point import Point
         if pos == "NE":
             return Point(self.xmax, self.ymax)
         if pos == "NW":
@@ -120,9 +122,11 @@ class BoundingBox(ObjectGraph):
             return Point(self.xmin, self.ymin)
 
     def N(self):
+        from yanntricks.src.segment import Segment
         return Segment(self.getVertex("NW"), self.getVertex("NE")).midpoint()
 
     def S(self):
+        from yanntricks.src.segment import Segment
         return Segment(self.getVertex("SW"), self.getVertex("SE")).midpoint()
 
     def coordinates(self, pspict=None):

@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module yanntricks
 #
@@ -17,11 +15,11 @@
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2016
+# copyright (c) Laurent Claessens, 2016, 2019
 # email: laurent@claessens-donadello.eu
 
-from ObjectGraph import ObjectGraph
-from Constructors import *
+from yanntricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.Constructors import *
 
 class EllipseGraph(ObjectGraph):
     def __init__(self,O,A,B):
@@ -37,6 +35,7 @@ class EllipseGraph(ObjectGraph):
         curve.angleF=b
         return curve
     def _bounding_box(self,pspict):
+        from yanntricks.src.BoundingBox import BoundingBox
         return BoundingBox()
 
     def action_on_pspict(self,pspict):

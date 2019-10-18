@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module yanntricks
 #
@@ -17,11 +15,11 @@
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2017
+# copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from ObjectGraph import ObjectGraph
-from Constructors import *
+from yanntricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.Constructors import *
 
 def sudoku_substitution(tableau,symbol_list=[  str(k) for k in range(-4,5) ]):
     """
@@ -92,8 +90,10 @@ class SudokuGridGraph(ObjectGraph):
                 content.append(A)
         pspict.DrawGraphs(vlines,hlines,content,numbering)
     def _math_bounding_box(self,pspict):
+        from yanntricks.src.BoundingBox import BoundingBox
         return BoundingBox()
     def _bounding_box(self,pspict):
+        from yanntricks.src.BoundingBox import BoundingBox
         return BoundingBox()
     def latex_code(self,language=None,pspict=None):
         return ""

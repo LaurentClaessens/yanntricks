@@ -29,6 +29,7 @@ class FractionPieDiagramGraph(ObjectGraph):
 
         2/4 and 1/2 are not treated in the same way because 2/4 divides the pie into 4 parts (and fills 2) while 1/2 divides into 2 parts (and fills 1).
         """
+        from yanntricks.src.Constructors import Circle
         ObjectGraph.__init__(self, self)
         self.center = center
         self.radius = radius
@@ -53,6 +54,8 @@ class FractionPieDiagramGraph(ObjectGraph):
         return self.circle.bounding_box(pspict)
 
     def action_on_pspict(self, pspict):
+        from yanntricks.src.Constructors import Circle
+        from yanntricks.src.segment import Segment
         if self.denominator == self.numerator:
             cs = Circle(self.center, self.radius)
             cs.parameters.filled()

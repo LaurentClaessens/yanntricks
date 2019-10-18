@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module yanntricks
 #
@@ -17,11 +15,11 @@
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2017
+# copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from ObjectGraph import ObjectGraph
-from Constructors import *
+from yanntricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.Constructors import *
 
 class BarDiagramGraph(ObjectGraph):
     def __init__(self,X,Y):
@@ -58,6 +56,7 @@ class BarDiagramGraph(ObjectGraph):
         for P in self.numbering_marks(pspict):
             pspict.DrawGraphs(P)
     def _math_bounding_box(self,pspict):
+        from yanntricks.src.BoundingBox import BoundingBox
         bb=BoundingBox()
         for l in self.lines_list:
             bb.append(l,pspict)

@@ -220,7 +220,6 @@ class AngleMeasure(object):
         return self.__str__()
 
 
-
 def DegreeAngleMeasure(x):
     return AngleMeasure(value_degree=x)
 

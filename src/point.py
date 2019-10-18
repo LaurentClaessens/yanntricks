@@ -19,7 +19,8 @@
 # email: laurent@claessens-donadello.eu
 
 
-from sage.all import lazy_attribute, numerical_approx, cos, sin, SR
+from sage.all import lazy_attribute, numerical_approx
+from sage.all import cos, sin, SR, pi, var
 
 from yanntricks.src.ObjectGraph import ObjectGraph
 
@@ -157,6 +158,7 @@ class Point(ObjectGraph):
 
         - alpha : the rotation angle (degree)
         """
+        from yanntricks.Constructors import PolarPoint
         pc = self.polar_coordinates()
         return PolarPoint(pc.r, pc.degree+alpha)
 
@@ -241,6 +243,7 @@ class Point(ObjectGraph):
         sage: Point(-pi,sqrt(2)).norm()
         sqrt(pi^2 + 2)
         """
+        from yanntricks.src.segment import Segment
         return Segment(Point(0, 0), self).length
 
     @lazy_attribute
@@ -302,6 +305,7 @@ class Point(ObjectGraph):
 
         Only return positive angles (between 0 and 2*pi)
         """
+        from yanntricks.src.polar_coordinates import PointToPolaire
         return PointToPolaire(self, origin=origin)
 
     def angle(self, origin=None):
@@ -510,16 +514,16 @@ class Point(ObjectGraph):
 #
 # One can pass either a point or two numbers which will be
 # interpreted as the coordinates to be subtracted.
-    def __sub__(self, a):
-        if isinstance(a, tuple):
-            if len(a) == 2:
-                Dx = a[0]
-                Dy = a[1]
+    def __sub__(self, other):
+        if isinstance(other, tuple):
+            if len(other) == 2:
+                Dx = other[0]
+                Dy = other[1]
             else:
-                raise TypeError("Cannot sum %s with %s." % (self, v))
+                raise TypeError(f"Cannot sum {self} with {other}")
         else:
-            Dx = a.x
-            Dy = a.y
+            Dx = other.x
+            Dy = other.y
         return Point(self.x-Dx, self.y-Dy)
 
     def __neg__(self):

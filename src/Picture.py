@@ -28,9 +28,9 @@
 import os
 import collections
 from sage.all import numerical_approx   # pylint:disable=import-error
+from yanntricks.src.Constructors import *
 
 from yanntricks.src.draw_element import DrawElement
-from yanntricks.src.Constructors import Axes, Grid
 from yanntricks.src.point import Point
 from yanntricks.src.AuxFile import AuxFile
 from yanntricks.src.BoundingBox import BoundingBox
@@ -386,7 +386,8 @@ class Picture:
         Dx = self.grid.Dx
         Dy = self.grid.Dy
         # Make the grid end on its "big" subdivisions.
-        from SmallComputations import MultipleLower, MultipleBigger
+        from yanntricks.src.SmallComputations import MultipleLower
+        from yanntricks.src.SmallComputations import MultipleBigger
         self.grid.BB.xmin = MultipleLower(self.grid.BB.xmin, Dx)
         self.grid.BB.xmax = MultipleBigger(self.grid.BB.xmax, Dx)
         self.grid.BB.ymin = MultipleLower(self.grid.BB.ymin, Dy)

@@ -19,7 +19,7 @@
 # email: laurent@claessens-donadello.eu
 
 
-from sage.all import lazy_attribute, var
+from sage.all import lazy_attribute, var, numerical_approx, sqrt
 
 from yanntricks.src.ObjectGraph import ObjectGraph
 from yanntricks.src.Exceptions import ShouldNotHappenException
@@ -85,6 +85,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
 
     @lazy_attribute
     def I(self):
+        from yanntricks.src.point import Point
         if not self.do_cut_y:
             mx = self.mx
         else:
@@ -94,6 +95,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
 
     @lazy_attribute
     def F(self):
+        from yanntricks.src.point import Point
         if not self.do_cut_y:
             Mx = self.Mx
         else:
@@ -106,6 +108,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
         return a parametric curve with the same graph as `self`.
         """
         from yanntricks.src.Constructors import phyFunction
+        from yanntricks.src.Constructors import ParametricCurve
         if self._parametric_curve:
             return self._parametric_curve
         x = var('x')
@@ -122,6 +125,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
         return curve
 
     def visualParametricCurve(self, xunit, yunit):
+        from yanntricks.src.Constructors import ParametricCurve
         return self.parametric_curve().visualParametricCurve(xunit, yunit)
 
     def inverse(self, y):
@@ -133,6 +137,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
         return CalculSage().solve_one_var([eq], x)
 
     def PointsNiveau(self, y):
+        from yanntricks.src.point import Point
         return [Point(x, y) for x in self.inverse(y)]
 
     def roots(self):
@@ -174,6 +179,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
             return self.derivative(n-1).derivative()
 
     def get_point(self, x, advised=True):
+        from yanntricks.src.Utilities import general_function_get_point
         return general_function_get_point(self, x, advised)
 
     def get_normal_vector(self, xx):
@@ -195,14 +201,14 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
         sage: print f.get_normal_vector(0)
         <vector I=<Point(0,0)> F=<Point(0,-1)>>
         """
+        from yanntricks.src.Constructors import ParametricCurve
         x = var('x')
         F = ParametricCurve(x, self)
         return F.get_normal_vector(xx)
 
     def get_tangent_vector(self, x, advised=False, numerical=False):
-        """
-        return a tangent vector at the point (x,f(x))
-        """
+        """Return a tangent vector at the point (x,f(x))."""
+        from yanntricks.src.point import Point
         ca = self.derivative()(x, numerical=numerical)
         v = Point(1, ca).normalize().origin(self.get_point(x, advised))
         v.in_math_bounding_box = False
@@ -215,6 +221,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
         The difference with self.get_tangent_vector is that self.get_tangent_segment returns a segment that will
         be symmetric. The point (x,f(x)) is the center of self.get_tangent_segment.
         """
+        from yanntricks.src.segment import Segment
         v = self.get_tangent_vector(x)
         mv = -v
         return Segment(mv.F, v.F)
@@ -382,6 +389,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
         If mx and Mx are not given, try to use self.mx and self.Mx, assuming that the method is used on
         an instance of phyFunctionGraph that inherits from here.
         """
+        from yanntricks.src.SurfacesGraph import SurfaceUnderFunction
         if not mx:
             mx = self.mx
         if not Mx:
@@ -417,6 +425,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
             self.pieces.append(f)
 
     def _bounding_box(self, pspict=None):
+        from yanntricks.src.BoundingBox import BoundingBox
         if self.do_cut_y and len(self.pieces) > 0:
             # In this case, we will in any case look for the bounding boxes
             # of the pieces.
@@ -432,11 +441,14 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
 
     def angle(self):
         """ For put_mark.  """
+        from yanntricks.src.AngleMeasure import AngleMeasure
         return AngleMeasure(value_degree=0)
 
     def representative_graph_object(self):
         """
-        Return is the object that will be drawn. It serves to control the chain 
+        Return is the object that will be drawn.
+        
+        It serves to control the chain 
         function --> parametric_curve --> interpolation curve
         """
         return self.parametric_curve()

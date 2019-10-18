@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module yanntricks
 #
@@ -20,12 +18,8 @@
 # copyright (c) Laurent Claessens, 2010-2017
 # email: laurent@claessens-donadello.eu
 
-from __future__ import division
-from __future__ import unicode_literals
-
-from ObjectGraph import ObjectGraph
-from Constructors import *
-from Utilities import *
+from yanntricks.src.ObjectGraph import ObjectGraph
+from yanntricks.src.Utilities import *
 
 
 class SurfaceBetweenLines(ObjectGraph):

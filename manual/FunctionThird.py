@@ -3,7 +3,7 @@ def FunctionThird():
     pspict,fig = SinglePicture("FunctionThird")
     pspict.dilatation(0.7)
 
-    var('x')
+    x=var('x')
     f = phyFunction( x*cos(x) )
     mx = -5
     Mx = 5
