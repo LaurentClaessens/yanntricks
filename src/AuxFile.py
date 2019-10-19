@@ -191,7 +191,7 @@ class AuxFile:
         # 2576-2197
         self.interId_to_tex_expression[interId] = tex_expression
         if interId not in self.already_used_interId:
-            s = r"\setlength{{\AAA}}{{\BBB{{CCC}}}}%"
+            s = r"\setlength{\AAA}{\BBB{CCC}}%"
             s = s.replace("AAA", newlengthName())
             s = s.replace("BBB", dimension_name)
             s = s.replace("CCC", tex_expression)

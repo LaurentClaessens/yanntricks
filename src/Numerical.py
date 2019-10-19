@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module yanntricks
 #
@@ -17,27 +15,28 @@
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010,2011,2013-2015,2017
+# copyright (c) Laurent Claessens, 2010,2011,2013-2015,2017, 2019
 # email: laurent@claessens-donadello.eu
 
 ##
 # We put here some small numerical comparison functions "up to epsilon"
 
-from __future__ import division
 from sage.all import numerical_approx
 
-def are_almost_equal(a,b,epsilon=0.0001):
-    ## \brief Says if `a` and `b` are equal up to epsilon
-    aN=numerical_approx(a)
-    bN=numerical_approx(b)
-    if abs(aN-bN)<0.0001:    # epsilon
+
+def are_almost_equal(a, b, epsilon=0.0001):
+    # \brief Says if `a` and `b` are equal up to epsilon
+    aN = numerical_approx(a)
+    bN = numerical_approx(b)
+    if abs(aN-bN) < 0.0001:    # epsilon
         return True
     return False
 
-def numerical_min(x,y,epsilon=None):
+
+def numerical_min(x, y, epsilon=None):
     ##
     # \brief return the minimum of `x` and `y`
-    # 
+    #
     # Compute numerical approximations of `x` and `y` and return the min
     #
     # If `epsilon` is given, raise an exception if the difference is
@@ -45,27 +44,29 @@ def numerical_min(x,y,epsilon=None):
     #
     #    The reason is that Sage cannot always determine the min or the max of
     #    expressions like ```1000``` of type `int` and ```cos(0.0823552493237255*pi)```  of type `sage.symbolic.expression.Expression`
-    nx=numerical_approx(x)
-    ny=numerical_approx(y)
+    nx = numerical_approx(x)
+    ny = numerical_approx(y)
 
-    if epsilon is not None :
-        if abs(nx,ny)>epsilon:
+    if epsilon is not None:
+        if abs(nx, ny) > epsilon:
             raise ValueError
 
-    return min(nx,ny)
+    return min(nx, ny)
 
-def numerical_max(x,y,epsilon=None):
-## Same as `numerical_min` with ad-hoc changes
-    nx=numerical_approx(x)
-    ny=numerical_approx(y)
 
-    if epsilon is not None :
-        if abs(nx,ny)>epsilon:
+def numerical_max(x, y, epsilon=None):
+    # Same as `numerical_min` with ad-hoc changes
+    nx = numerical_approx(x)
+    ny = numerical_approx(y)
+
+    if epsilon is not None:
+        if abs(nx, ny) > epsilon:
             raise ValueError
 
-    return max(nx,ny)
+    return max(nx, ny)
 
-def is_almost_zero(x,epsilon=0.0001):
+
+def is_almost_zero(x, epsilon=0.0001):
     """
     Try to say if Abs(x)<epsilon.
 
@@ -77,10 +78,11 @@ def is_almost_zero(x,epsilon=0.0001):
         sage: numerical_isZero(-pi)
         False
     """
-    try :
+    try:
         return abs(x) < epsilon
     except:
         raise
+
 
 def numerical_is_negative(x):
     """
@@ -96,8 +98,8 @@ def numerical_is_negative(x):
     """
 
     # `x.is_negative()` does not work :
-    #sage: a=-sin(0.5*pi)
-    #sage: a.is_negative()
-    #False
-    #sage: a.is_positive()
-    return numerical_approx(x)<0
+    # sage: a=-sin(0.5*pi)
+    # sage: a.is_negative()
+    # False
+    # sage: a.is_positive()
+    return numerical_approx(x) < 0

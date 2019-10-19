@@ -25,6 +25,8 @@ from sage.all import cos, sin, tan     #pylint:disable=import-error
 from sage.all import exp, ln, log    #pylint:disable=import-error
 from sage.all import sqrt   #pylint:disable=import-error
 from sage.all import var   #pylint:disable=import-error
+from sage.all import SR   #pylint:disable=import-error
+from sage.all import integrate   #pylint:disable=import-error
 x = var('x')
 
 from yanntricks.src.figure_generation_suite import FigureGenerationSuite

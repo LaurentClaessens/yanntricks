@@ -18,7 +18,7 @@
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
-from ObjectGraph import ObjectGraph
+from yanntricks.src.ObjectGraph import ObjectGraph
 from yanntricks.src.Constructors import *
 from yanntricks.src.Utilities import *
 from yanntricks.src.segment import Segment

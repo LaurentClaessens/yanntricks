@@ -10,7 +10,7 @@
     \item
         You need a working \href{ http://sagemath.org }{ sage } installation.
     \item
-        Download \phystricks\ from \href{ https://github.com/LaurentClaessens/phystricks }{ github } and make it available from Sage (\info{from phystricks import *} has to work).
+        Download \yanntricks\ from \href{ https://github.com/LaurentClaessens/yanntricks }{ github } and make it available from Sage (\info{from yanntricks import *} has to work).
     \item
         I don't even speak about having a working \LaTeX\ installation with Tikz installed.
 \end{enumerate}
@@ -41,25 +41,25 @@ and you (don't really) have to compile with \info{pdflatex -shell-escape}.
 You will found (figuratively) tons of examples in the following documents :
 \begin{enumerate}
     \item
-        In the demo document. The sources are included in the \phystricks's repository; in the subdirectory \info{phystricks/testing/demonstration}. Browse the pdf at \url{http://laurent.claessens-donadello.eu/pdf/phystricks-demo.pdf}.
+        In the demo document. The sources are included in the \yanntricks's repository; in the subdirectory \info{yanntricks/testing/demonstration}. Browse the pdf at \url{http://laurent.claessens-donadello.eu/pdf/yanntricks-demo.pdf}.
     \item
         In mazhe. Download the source at \url{ https://github.com/LaurentClaessens/mazhe/ } and browse the pdf at \url{http://laurent.claessens-donadello.eu/pdf/mazhe.pdf}.
     \item
         In smath.Download the source at \url{ https://github.com/LaurentClaessens/smath/ } and browse the pdf at \url{http://laurent.claessens-donadello.eu/pdf/smath.pdf}.
 \end{enumerate}
-Since every single functionality of \phystricks\ is used in at least one picture of \info{mazhe} or \info{smath}, we are not going to give so much examples in this document.
+Since every single functionality of \yanntricks\ is used in at least one picture of \info{mazhe} or \info{smath}, we are not going to give so much examples in this document.
 
 You are also invited to read the file \info{Constructors.py}; the docstring are explaining the creation of most of the graph types.
 
 If you need something special or if you encounter any difficulty, send me an email.
 
 %--------------------------------------------------------------------------------------------------------------------------- 
-\subsection{Structure of your \phystricks\ file}
+\subsection{Structure of your \yanntricks\ file}
 %---------------------------------------------------------------------------------------------------------------------------
 
-Most of your \phystricks files will have the following structure :
+Most of your \yanntricks files will have the following structure :
 
-\lstinputlisting{phystricksQLXFooBDalHMaT.py}
+\lstinputlisting{yanntricksQLXFooBDalHMaT.py}
 
 We will see later the significance of these lines.
 
@@ -69,7 +69,7 @@ We will see later the significance of these lines.
 
 Here is the code corresponding to one red point with two marks.
 
-\lstinputlisting{phystricksOnePoint.py}
+\lstinputlisting{yanntricksOnePoint.py}
 
 \begin{enumerate}
     \item
@@ -93,7 +93,7 @@ Compile it once in the Sage terminal :
 \end{enumerate}
 If you don't compile twice, some elements can be badly placed, especially the marks that you put on points like the \( P\) and \( Q\) in this example.
 
-If you want to know why, this is related to the mechanism of catching the \LaTeX's internal counters(here the size of the box) by \phystricks, see section \ref{SECooKVXMooMKJAXV}.
+If you want to know why, this is related to the mechanism of catching the \LaTeX's internal counters(here the size of the box) by \yanntricks, see section \ref{SECooKVXMooMKJAXV}.
 
 The result should be
 
@@ -163,10 +163,10 @@ For the curve
 the syntax is :
 \lstinputlisting{sageSnip_5.py}
 
-You can omit the \info{interval} argument; in this case the interval of \info{f1} will be used, but such implicit transfer of property is a bad practice\footnote{\phystricks\ contains lots of such ``if an argument is missing I will search it somewhere'' mechanisms.}.
+You can omit the \info{interval} argument; in this case the interval of \info{f1} will be used, but such implicit transfer of property is a bad practice\footnote{\yanntricks\ contains lots of such ``if an argument is missing I will search it somewhere'' mechanisms.}.
 
 Here is an example code :
-\lstinputlisting{phystricksLARGooSLxQTdPC.py}
+\lstinputlisting{yanntricksLARGooSLxQTdPC.py}
 
 The result is on figure \ref{LabelFigLARGooSLxQTdPC}. You see that too few points are plotted, so that the picture is not quite well curved. This problem can be fixed using the \info{plotpoints} attribute of the curve; we will see that later.
 
@@ -216,7 +216,7 @@ This is not always adapted, and we have two ways to adapt this mechanism to part
 
 An example :
 
-\lstinputlisting{phystricksPBFCooVlPiRBpt.py}.
+\lstinputlisting{yanntricksPBFCooVlPiRBpt.py}.
 
 \begin{center}
    \input{Fig_PBFCooVlPiRBpt.pstricks}
@@ -243,7 +243,7 @@ You also have methods to get the tangent and normal vector.
 % Do not change here without changing there.
 
 
-\lstinputlisting{phystricksVSJOooJXAwbVEt.py}
+\lstinputlisting{yanntricksVSJOooJXAwbVEt.py}
 \begin{center}
    \input{Fig_VSJOooJXAwbVEt.pstricks}
 \end{center}
@@ -251,7 +251,7 @@ You also have methods to get the tangent and normal vector.
 
 You can grab a list of points regularly spaced on a curve with respect to the arc length.
 
-\lstinputlisting{phystricksGKMEooBcNxcWBt.py}
+\lstinputlisting{yanntricksGKMEooBcNxcWBt.py}
 
 \begin{center}
    \input{Fig_GKMEooBcNxcWBt.pstricks}
@@ -273,7 +273,7 @@ You can make your cube opaque (non-transparent) with the method \info{make\_opaq
 
 \begin{example}
     
-\lstinputlisting{phystricksIllusionNHwEtp.py}
+\lstinputlisting{yanntricksIllusionNHwEtp.py}
 
     \begin{center}
         \input{Fig_IllusionNHwEtp.pstricks}
@@ -286,9 +286,9 @@ You can make your cube opaque (non-transparent) with the method \info{make\_opaq
 
 \begin{enumerate}
     \item
-        The caption of the figure is not given in the \phystricks\ code, but has to be inserted in the LaTeX document.
+        The caption of the figure is not given in the \yanntricks\ code, but has to be inserted in the LaTeX document.
     \item 
-        On the contrary, the subfigures caption are from the \phystricks\ code
+        On the contrary, the subfigures caption are from the \yanntricks\ code
 \end{enumerate}
 You should use the utility \info{new\_picture.py} to generate the skeleton of your figure.
 
@@ -308,7 +308,7 @@ You can add a mark inside an angle. The positioning is automatic, and needs two 
 
 \begin{example}
 
-    \lstinputlisting{phystricksFBTCooBKTryQ.py}
+    \lstinputlisting{yanntricksFBTCooBKTryQ.py}
 
 Picture : \info{FBTCooBKTryQ}
 \begin{center}
@@ -323,9 +323,9 @@ Picture : \info{FBTCooBKTryQ}
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 \label{SECooKVXMooMKJAXV}
 
-We are going to explain one important mechanism in \phystricks\ about its interaction with \LaTeX. For we consider the code
+We are going to explain one important mechanism in \yanntricks\ about its interaction with \LaTeX. For we consider the code
 
-\lstinputlisting{phystricksOnePoint.py}
+\lstinputlisting{yanntricksOnePoint.py}
 
 We compile it in a Sage terminal :
 
@@ -342,16 +342,16 @@ However, the marks are badly placed, this is the sense of the warning about the 
 Just in order to make is cryptic, these are lines like :
 \begin{verbatim}
 
-\makeatletter\@ifundefined{writeOfphystricks}{\newwrite{\writeOfphystricks}}{}\makeatother%
+\makeatletter\@ifundefined{writeOfyanntricks}{\newwrite{\writeOfyanntricks}}{}\makeatother%
 \setlength{\lengthOfhomemokyDOTSagesrcbinsageipython}{\totalheightof{\(P\)}}%
-\immediate\write\writeOfphystricks{totalheightof1903839d9021e180dd790c4cc63081c63b2fe6f1:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
+\immediate\write\writeOfyanntricks{totalheightof1903839d9021e180dd790c4cc63081c63b2fe6f1:\the\lengthOfhomemokyDOTSagesrcbinsageipython-}
 \end{verbatim}
 
 Now you can reenter Sage and recompile the picture :
 
 \lstinputlisting{sageSnip_2.py}
 
-The warning disappeared and now \phystricks\ has read the auxiliary file containing the dimensions of the boxes. The \( P\) and \( Q\) are then now placed taking their \emph{real} dimension into account.
+The warning disappeared and now \yanntricks\ has read the auxiliary file containing the dimensions of the boxes. The \( P\) and \( Q\) are then now placed taking their \emph{real} dimension into account.
 
 The auxiliary file contains the lines
 \begin{verbatim}
@@ -365,7 +365,7 @@ The box is identified by a hash of its \LaTeX\ code. The reason is that almost(?
 
 Relaunch \pdfLaTeX\ and you'll see the points correctly placed.
 
-Conclusion : when you add some \LaTeX\ code in your picture, you need one more pass of \pdfLaTeX and \phystricks\ in order to get the marks right.
+Conclusion : when you add some \LaTeX\ code in your picture, you need one more pass of \pdfLaTeX and \yanntricks\ in order to get the marks right.
 
 This mechanism of making \LaTeX\ write values in an auxiliary file is general and any latex internal counters can be accessed in your python code (as Python's \info{float}).
 
@@ -393,7 +393,7 @@ Obviously this kind of picture has to be recompiled each time we change the cont
    \input{Fig_RJDEoobOibtkfv.pstricks}
 \end{center}
 
-\lstinputlisting{phystricksRJDEoobOibtkfv.py}
+\lstinputlisting{yanntricksRJDEoobOibtkfv.py}
 \end{example}
 
 

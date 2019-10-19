@@ -130,7 +130,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
 
     def inverse(self, y):
         """ returns a list of values x such that f(x)=y """
-        from SmallComputations import CalculSage
+        from yanntricks.src.SmallComputations import CalculSage
         listeInverse = []
         x = var('x')
         eq = self.sage(x) == y
@@ -335,7 +335,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
 
         # If this test never crashes, we could memoize a lot.
         if mx != self.mx or Mx != self.Mx:
-            from Exceptions import ShouldNotHappenException
+            from yanntricks.src.Exceptions import ShouldNotHappenException
             raise ShouldNotHappenException(
                 "I really need to know the minmax on that interval ?")
 
@@ -406,7 +406,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
 
         If an other cut_y is already imposed, the most restrictive is used.
         """
-        from SmallComputations import split_list
+        from yanntricks.src.SmallComputations import split_list
         if self.do_cut_y:
             self.pieces = []
             ymin = max(ymin, self.cut_ymin)

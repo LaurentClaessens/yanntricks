@@ -813,7 +813,7 @@ class Segment(ObjectGraph):
         This function has not to be used by the end user. 
         Use self.normalize() instead.
         """
-        L = self.length()
+        L = self.length
         if only_F and only_I:
             print("You cannot ask both only F and only I")
             raise ValueError

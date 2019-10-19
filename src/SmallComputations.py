@@ -461,7 +461,7 @@ def visualPolarCoordinates(r, theta, xunit=1, yunit=1):
         sage: polar_with_dilatation(1,pi/2,2,0.5)
         (2.00000000000000, 1/2*pi)
     """
-    from MathStructures import AngleMeasure
+    from yanntricks.src.MathStructures import AngleMeasure
 
     arg_is_angle_measure = False
     orig_theta = theta

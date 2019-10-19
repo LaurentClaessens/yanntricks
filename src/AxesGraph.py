@@ -70,7 +70,7 @@ class Axes(ObjectGraph):
 
     def enlarge_a_little(self, l, pspict):
         if self.already_enlarged:
-            from Exceptions import AlreadyEnlargedException
+            from yanntricks.src.Exceptions import AlreadyEnlargedException
             raise AlreadyEnlargedException("I'm already enlarged")
         self.already_enlarged = True
         mx, Mx = self.single_axeX.enlarge_a_little(l, pspict=pspict)

@@ -442,8 +442,8 @@ def CustomSurface(*args):
         a = args[0]
     else:
         a = args
-    from yanntricks.src.CustomSurfaceGraph import CustomSurfaceGraph
-    return CustomSurfaceGraph(list(a))
+    from yanntricks.src.CustomSurfaceGraph import CustomSurface
+    return CustomSurface(list(a))
 
 
 def RightAngle(d1, d2, n1=0, n2=1, r=0.3):

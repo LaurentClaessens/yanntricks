@@ -198,6 +198,7 @@ class BoundingBox(ObjectGraph):
         pass
 
     def action_on_pspict(self, pspict=None):
+        from yanntricks.src.Constructors import Rectangle
         rect = Rectangle(self.getVertex("SW"), self.getVertex("NE"))
         rect.edges_parameters.color = "cyan"
         pspict.DrawGraphs(rect)

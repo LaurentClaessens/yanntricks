@@ -140,7 +140,7 @@ class Point(ObjectGraph):
         return self.getPolarPoint(r, theta, pspict)
 
     def getVisualPolarPoint(self, r, theta, pspict=None):
-        from SmallComputations import visualPolarCoordinates
+        from yanntricks.src.SmallComputations import visualPolarCoordinates
         xunit = 1
         yunit = 1
         if pspict:
@@ -402,9 +402,9 @@ class Point(ObjectGraph):
         #   return true if `self` and `other` have coordinates difference
         #   lower than `epsilon`
         #
+        from yanntricks.src.NoMathUtilities import logging
 
         if not isinstance(other, Point):
-            from NoMathUtilities import logging
             logging("We are comparing "+type(self)+" with " +
                     type(other)+". We continue, but this is strange.")
 
@@ -420,6 +420,7 @@ class Point(ObjectGraph):
         return True
 
     def tikz_code(self, pspict=None):
+        from yanntricks.src.NoMathUtilities import logging
         symbol_dict = {}
         symbol_dict[None] = "$\\bullet$"
         symbol_dict["*"] = "$\\bullet$"
@@ -432,7 +433,6 @@ class Point(ObjectGraph):
         except KeyError:
             effective_symbol = self.parameters.symbol
         if self.parameters.symbol == 'none':
-            from NoMathUtilities import logging
             logging("You should use '' instead of 'none'", pspict=pspict)
         if self.parameters.symbol not in ["none", ""]:
             s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(

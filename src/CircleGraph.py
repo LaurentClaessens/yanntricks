@@ -144,11 +144,11 @@ class CircleGraph(GenericCurve, ObjectGraph):
         """
         from yanntricks.src.Constructors import ParametricCurve
         from yanntricks.src.Constructors import phyFunction
+        from yanntricks.src.Exceptions import MissingPictureException
         if self._parametric_curve is None:
             x = var('x')
             if self.visual is True:
                 if self.pspict is None:
-                    from Exceptions import MissingPictureException
                     raise MissingPictureException(
                         "You are trying to draw something with 'visual==True' when not giving a pspict.")
                 f1 = phyFunction(self.center.x+self.radius *

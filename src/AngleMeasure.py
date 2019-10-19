@@ -157,7 +157,7 @@ class AngleMeasure(object):
         try:
             s = AngleMeasure(value_radian=self.radian-other.radian)
         except AttributeError:
-            from NoMathUtilities import logging
+            from yanntricks.src.NoMathUtilities import logging
             logging("Are you trying to add an 'AngleMesasure' with something else ?")
             logging("'other's type is "+str(type(other)))
             raise
@@ -171,7 +171,7 @@ class AngleMeasure(object):
         try:
             return AngleMeasure(value_radian=self.radian+other.radian)
         except AttributeError:
-            from NoMathUtilities import logging
+            from yanntricks.src.NoMathUtilities import logging
             logging("Are you trying to add an 'AngleMeasure' with something else ?")
             logging("The other's type is "+str(type(other)))
             raise

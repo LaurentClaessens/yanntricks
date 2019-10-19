@@ -419,7 +419,7 @@ class Picture:
         self.record_force_math_bounding_box.append(g)
 
     def test_if_test_file_is_present(self):
-        from SmallComputations import Fichier
+        from yanntricks.src.SmallComputations import Fichier
         test_file = Fichier(
             "test_pspict_LaTeX_%s.tmp" % (self.name))
         return os.path.isfile(test_file.filename)

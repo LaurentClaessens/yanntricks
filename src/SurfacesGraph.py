@@ -19,7 +19,6 @@
 # email: laurent@claessens-donadello.eu
 
 from yanntricks.src.ObjectGraph import ObjectGraph
-from yanntricks.src.Utilities import *
 
 
 class SurfaceBetweenLines(ObjectGraph):
@@ -30,6 +29,7 @@ class SurfaceBetweenLines(ObjectGraph):
         The lines are needed to have a starting and ending point
         that will be joined by straight lines.
         """
+        from yanntricks.src.segment import Segment
         # By convention, the first line goes from left to right and the second one to right to left.
 
         ObjectGraph.__init__(self,self)
@@ -58,6 +58,7 @@ class SurfaceBetweenLines(ObjectGraph):
     def _math_bounding_box(self,pspict):
         return self.bounding_box(pspict)
     def latex_code(self,language=None,pspict=None):
+        from yanntricks.src.segment import Segment
         a=[]
        
         c1=self.curve1
@@ -89,6 +90,7 @@ class SurfaceBetweenLines(ObjectGraph):
 
 class SurfaceBetweenParametricCurvesGraph(ObjectGraph):
     def __init__(self,curve1,curve2,interval1=None,interval2=None,reverse1=False,reverse2=True):
+        from yanntricks.src.segment import Segment
         # TODO: I think that the parameters reverse1 and reverse2 are no more useful
         #   since I enforce the condition curve1 : left -> right by hand.
         ObjectGraph.__init__(self,self)
@@ -106,7 +108,7 @@ class SurfaceBetweenParametricCurvesGraph(ObjectGraph):
 
         for attr in [self.mx1,self.mx2,self.Mx1,self.Mx2]:
             if attr == None:
-                raise TypeError,"At this point, initial and final values have to be already chosen"
+                raise TypeError("At this point, initial and final values have to be already chosen")
         self.curve1.llamI=self.mx1
         self.curve1.llamF=self.Mx1
         self.curve2.llamI=self.mx2
@@ -121,8 +123,10 @@ class SurfaceBetweenParametricCurvesGraph(ObjectGraph):
         self.parameters.color=None       
 
     def _bounding_box(self,pspict=None):
+        from yanntricks.src.BoundingBox import BoundingBox
+        from yanntricks.src.segment import Segment
         if pspict==None:
-            raise ValueError, "You have to provide a pspict"
+            raise ValueError("You have to provide a pspict")
         bb=BoundingBox()
         bb.append(self.curve1,pspict)
         bb.append(self.curve2,pspict)
@@ -130,6 +134,9 @@ class SurfaceBetweenParametricCurvesGraph(ObjectGraph):
     def _math_bounding_box(self,pspict=None):
         return self.bounding_box(pspict)
     def action_on_pspict(self,pspict=None):
+        from yanntricks.src.segment import Segment
+        from yanntricks.src.Constructors import CustomSurface
+        from yanntricks.src.Exceptions import ShouldNotHappenException
         c1=self.curve1.graph(self.mx1,self.Mx1)
         c2=self.curve2.graph(self.mx2,self.Mx2)
 
@@ -152,7 +159,6 @@ class SurfaceBetweenParametricCurvesGraph(ObjectGraph):
             custom.parameters=self.parameters.copy()
             pspict.DrawGraphs(custom)
         else :
-            from Exceptions import ShouldNotHappenException
             raise ShouldNotHappenException("You are speaking of a surface but you don't want neither to fill it neither to hatch it ?")
 
         if self.parameters.color!=None :
