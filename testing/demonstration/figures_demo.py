@@ -205,6 +205,11 @@ append_picture(<++>,1)
 append_picture(<++>,1)
 """
 
+
+figures_list_1 = figures_list_1[36:]
+figures_list_1 = figures_list_1[7:]
+figures_list_1 = figures_list_1[12:]
+
 def AllFigures():
     figures_list=figures_list_1
     if "--pass-number=2" in sys.argv :

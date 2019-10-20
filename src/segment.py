@@ -386,6 +386,7 @@ class Segment(ObjectGraph):
         will be perpendicular to 'self'
         """
         from yanntricks.src.Utilities import make_psp_list
+        from yanntricks.src.MeasureLengthGraph import MeasureLength
         pspicts = make_psp_list(pspict, pspicts)
 
         if mark_angle is None and position not in ["N", "S", "E", "W"]:

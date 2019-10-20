@@ -1,4 +1,4 @@
-###########################################################################
+#########################################################################
 #   This is part of the module yanntricks
 #
 #   yanntricks is free software: you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
-###########################################################################
+#########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
@@ -24,7 +24,7 @@ from yanntricks.src.Utilities import *
 from yanntricks.src.segment import Segment
 
 
-class MeasureLengthGraph(Segment):
+class MeasureLength(Segment):
     def __init__(self, seg, dist=0.1):
         try:
             self.segment = seg.segment

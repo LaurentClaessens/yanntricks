@@ -1,4 +1,3 @@
-# -*- coding: utf8 -*-
 from yanntricks import *
 def SMXRooCnrlNw():
     pspict,fig = SinglePicture("SMXRooCnrlNw")

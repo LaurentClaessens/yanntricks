@@ -412,8 +412,8 @@ def MeasureLength(seg, dist=0.1):
     You are invited to use advised_mark_angle. If not the position of the mark
     could be unpredictable.
     """
-    from yanntricks.src.MeasureLengthGraph import MeasureLengthGraph
-    return MeasureLengthGraph(seg, dist)
+    from yanntricks.src.MeasureLengthGraph import MeasureLength
+    return MeasureLength(seg, dist)
 
 
 def CustomSurface(*args):

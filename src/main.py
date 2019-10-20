@@ -1,4 +1,4 @@
-###########################################################################
+#########################################################################
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
@@ -11,7 +11,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-###########################################################################
+#########################################################################
 
 # copyright (c) Laurent Claessens, 2009-2017, 2019
 # email: laurent@claessens-donadello.eu
@@ -73,33 +73,7 @@ def no_symbol(*arg):
             l.parameters.symbol = ""
 
 
-def get_equal_lengths_code(s1, s2, n=1, d=0.1, l=0.1,
-                           pspict=None, pspicts=None):
-    from yanntricks.src.ObjectGraph import AddedObjects
-    from yanntricks.src.Utilities import make_psp_list
-    added1 = AddedObjects()
-    added2 = AddedObjects()
-    pspicts = make_psp_list(pspict, pspicts)
-    for psp in pspicts:
-        c1 = s1.get_code(n=n, d=d, l=l, pspict=psp)
-        c2 = s2.get_code(n=n, d=d, l=l, pspict=psp)
-        added1.append(psp, c1)
-        added2.append(psp, c2)
-    return added1, added2
 
-
-def put_equal_lengths_code(s1, s2, n=1, d=0.1, l=0.1, pspict=None, pspicts=None):
-    """
-    Add the code for equal length between segments s1 and s2
-    """
-    from yanntricks.src.Utilities import make_psp_list
-    pspicts = make_psp_list(pspict, pspicts)
-    for psp in pspicts:
-        added = get_equal_lengths_code(s1, s2, n, d, l, pspict=psp)
-        c1 = added[0]
-        c2 = added[1]
-        s1.added_objects.fusion(c1)
-        s2.added_objects.fusion(c2)
 
 def function_list_to_figures_list(function_list):
     first = ",".join([a[0].__name__ for a in function_list])

@@ -18,6 +18,7 @@
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
+import numpy
 from sage.all import lazy_attribute
 from yanntricks.src.ObjectGraph import ObjectGraph
 from yanntricks.src.Constructors import *
@@ -79,13 +80,15 @@ class HistogramGraph(ObjectGraph):
         # max of the data ordinate.
         self.d_ymax = max([b.n for b in self.box_list])
         self.xsize = self.d_xmax-self.d_xmin
-        self.ysize = self.d_ymax              # d_ymin is zero (implicitly)
+        self.ysize = self.d_ymax    # d_ymin is zero (implicitly)
 
         self.legende = legende
 
         # TODO : For sure one can sort it easier.
-        # The problem is that if several differences x.th_height-y.th_height are small,
-        # int(...) always returns 1 (or -1), so that the sorting gets wrong.
+        # The problem is that if several differences
+        # x.th_height-y.th_height are small,
+        # int(...) always returns 1 (or -1), so that the sorting
+        # gets wrong.
         self.xscale = self.length/self.xsize
         classement = self.box_list[:]
         facteur = 10
@@ -95,7 +98,7 @@ class HistogramGraph(ObjectGraph):
                     facteur = max(facteur, 10/(x.th_height-y.th_height))
                 except ZeroDivisionError:
                     pass
-        classement.sort(lambda x, y: int((x.th_height-y.th_height)*facteur))
+        classement.sort(key=lambda x: int(x.th_height*facteur))
         self.yscale = self.height/classement[-1].th_height
         self.height/self.ysize
 
@@ -122,10 +125,9 @@ class HistogramGraph(ObjectGraph):
             pspict.axes.single_axeX.put_mark(
                 dist=0.5, text=self.legende, pspict=pspict, position="N")
         else:
-            print "Are you sure that you don't want a legend on your histogram ?"
+            print("Are you sure that you don't want a legend on your histogram ?")
         # The construction of the list 'values' is created in such a way not to have '1.0' instead of '1'.
         # By the way, you have to know that the values in numpy.arange are type numpy.float64
-        import numpy
         un = numpy.arange(self.d_xmin, self.d_xmax +
                           0.1, step=int(self.xsize/10))
         values = []

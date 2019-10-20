@@ -139,8 +139,8 @@ class AngleMeasure(object):
             return AngleMeasure(value_degree=360+self.degree)
 
     def __mul__(self, coef):
-        from yanntricks.src.src.degree_unit import degreeUnit
-        from yanntricks.src.src.radian_unit import radianUnit
+        from yanntricks.src.degree_unit import degreeUnit
+        from yanntricks.src.radian_unit import radianUnit
         if isinstance(coef, degreeUnit) or isinstance(coef, radianUnit):
             return self
         return AngleMeasure(value_radian=coef*self.radian)
