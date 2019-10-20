@@ -415,8 +415,7 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
             self.pieces = []
             ymin = max(ymin, self.cut_ymin)
             ymax = min(ymax, self.cut_ymax)
-        # Avoid being a multiple of Mx-mx, while being more or less twice the old plotpoints
-        self.linear_plotpoints = 2.347*self.linear_plotpoints
+        self.linear_plotpoints = 2*self.linear_plotpoints
         self.do_cut_y = True
         self.cut_ymin = ymin
         self.cut_ymax = ymax
@@ -431,7 +430,8 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
     def _bounding_box(self, pspict=None):
         from yanntricks.src.BoundingBox import BoundingBox
         if self.do_cut_y and len(self.pieces) > 0:
-            # In this case, we will in any case look for the bounding boxes
+            # In this case, we will in any case look for the
+            # bounding boxes
             # of the pieces.
             # Notice that it can happen that self.do_cut_y=True but
             # that only one piece is found.
