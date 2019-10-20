@@ -1,4 +1,4 @@
-###########################################################################
+#########################################################################
 #   This is part of the module yanntricks
 #
 #   yanntricks is free software: you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
-###########################################################################
+#########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
@@ -24,6 +24,9 @@ from sage.all import lazy_attribute, var, numerical_approx, sqrt
 from yanntricks.src.ObjectGraph import ObjectGraph
 from yanntricks.src.Exceptions import ShouldNotHappenException
 from yanntricks.src.GenericCurve import GenericCurve
+
+
+dprint = print
 
 
 class phyFunctionGraph(GenericCurve, ObjectGraph):
@@ -55,7 +58,8 @@ class phyFunctionGraph(GenericCurve, ObjectGraph):
             # Also happens when there is a free variable,
             # as an example
             # F=VectorFieldGraph(x,y)
-            # Also when something non analytic is given like a distribution.
+            # Also when something non analytic is given
+            # like a distribution.
             self.sageFast = self.sage
         self.string = repr(self.sage)
         self.fx = self.string.replace("x |--> ", "")

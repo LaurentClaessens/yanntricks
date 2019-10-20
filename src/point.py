@@ -159,7 +159,7 @@ class Point(ObjectGraph):
 
         - alpha : the rotation angle (degree)
         """
-        from yanntricks.Constructors import PolarPoint
+        from yanntricks.src.Constructors import PolarPoint
         pc = self.polar_coordinates()
         return PolarPoint(pc.r, pc.degree+alpha)
 
@@ -181,7 +181,7 @@ class Point(ObjectGraph):
             x + y - 1 == 0
             sage: P=Point(-1,3)
             sage: P.value_on_line(s)
-            1   
+            1 
 
         It allows to know if a point is inside or outside a circle::
 

@@ -1,4 +1,4 @@
-###########################################################################
+#########################################################################
 #   This is part of the module yanntricks
 #
 #   yanntricks is free software: you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
-###########################################################################
+#########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
@@ -24,6 +24,9 @@ from sage.all import sin, cos, RR, pi, numerical_approx, var
 from yanntricks.src.GenericCurve import GenericCurve
 from yanntricks.src.Decorators import copy_parameters
 from yanntricks.src.ObjectGraph import ObjectGraph
+
+
+dprint = print
 
 
 class CircleGraph(GenericCurve, ObjectGraph):
@@ -185,7 +188,10 @@ class CircleGraph(GenericCurve, ObjectGraph):
         - ``theta`` - the angle given in degree.
         """
         from yanntricks.src.radian_unit import radian
-        return self.parametric_curve().get_point(radian(theta, numerical=numerical), advised=advised)
+        curve = self.parametric_curve()
+        # Le s est à supprimer
+        s = curve.get_point(radian(theta, numerical=numerical), advised=advised)
+        return curve.get_point(radian(theta, numerical=numerical), advised=advised)
 
     def get_point(self, theta, advised=True, numerical=False):
         from yanntricks.src.point import Point

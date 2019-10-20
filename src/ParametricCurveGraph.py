@@ -1,4 +1,4 @@
-###########################################################################
+#########################################################################
 #   This is part of the module yanntricks
 #
 #   yanntricks is free software: you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
-###########################################################################
+#########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
@@ -28,6 +28,8 @@ from yanntricks.src.Exceptions import ShouldNotHappenException
 from yanntricks.src.GenericCurve import GenericCurve
 from yanntricks.src.point import Point
 from yanntricks.src.Utilities import Intersection, inner_product
+
+dprint = print
 
 
 class ParametricCurveGraph(GenericCurve, ObjectGraph):

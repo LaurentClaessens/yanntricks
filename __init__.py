@@ -1,4 +1,4 @@
-###########################################################################
+#########################################################################
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
@@ -11,7 +11,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-###########################################################################
+#########################################################################
 
 # copyright (c) Laurent Claessens, 2009-2017, 2019
 # email: laurent@claessens-donadello.eu
@@ -21,13 +21,6 @@
 
 """A collection of tools for building LaTeX pictures with python."""
 
-from sage.all import cos, sin, tan     #pylint:disable=import-error
-from sage.all import exp, ln, log    #pylint:disable=import-error
-from sage.all import sqrt   #pylint:disable=import-error
-from sage.all import var   #pylint:disable=import-error
-from sage.all import SR   #pylint:disable=import-error
-from sage.all import integrate   #pylint:disable=import-error
-x = var('x')
 
 from yanntricks.src.figure_generation_suite import FigureGenerationSuite
 
@@ -42,3 +35,13 @@ from yanntricks.src.Utilities import distance
 from yanntricks.src.Utilities import Intersection
 
 from yanntricks.src.Constructors import *
+
+#pylint:disable=import-error
+from sage.all import cos, sin, tan, arctan
+from sage.all import exp, ln, log
+from sage.all import sqrt
+from sage.all import var
+from sage.all import SR
+from sage.all import integrate
+from sage.all import I
+x = var('x')

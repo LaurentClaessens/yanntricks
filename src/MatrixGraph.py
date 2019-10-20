@@ -1,4 +1,4 @@
-###########################################################################
+##########################################################################
 #   This is part of the module yanntricks
 #
 #   yanntricks is free software: you can redistribute it and/or modify
@@ -13,13 +13,22 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
-###########################################################################
+##########################################################################
 
 # copyright (c) Laurent Claessens, 2016-2017, 2019
 # email: laurent@claessens-donadello.eu
 
 from yanntricks.src.ObjectGraph import ObjectGraph
 from yanntricks.src.Constructors import *
+
+from yanntricks.src.Defaults import MATRIX_ELEMENT_SECOND_BOX_X_BORDER
+from yanntricks.src.Defaults import MATRIX_ELEMENT_SECOND_BOX_X_BORDER
+from yanntricks.src.Defaults import MATRIX_ELEMENT_SECOND_BOX_Y_BORDER
+from yanntricks.src.Defaults import MATRIX_ELEMENT_SECOND_BOX_Y_BORDER
+from yanntricks.src.Defaults import MATRIX_ELEMENT_FIRST_BOX_X_BORDER
+from yanntricks.src.Defaults import MATRIX_ELEMENT_FIRST_BOX_X_BORDER
+from yanntricks.src.Defaults import MATRIX_ELEMENT_FIRST_BOX_Y_BORDER
+from yanntricks.src.Defaults import MATRIX_ELEMENT_FIRST_BOX_Y_BORDER
 
 
 class MatrixElement(object):
@@ -64,23 +73,21 @@ class MatrixElement(object):
         return BoundingBox(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax)
 
     def getFirstBox(self, pspict):
-        import Defaults
         from yanntricks.src.BoundingBox import BoundingBox
         text_box = self.getTextBox(pspict)
-        xmin = text_box.xmin-Defaults.MATRIX_ELEMENT_FIRST_BOX_X_BORDER
-        xmax = text_box.xmax+Defaults.MATRIX_ELEMENT_FIRST_BOX_X_BORDER
-        ymin = text_box.ymin-Defaults.MATRIX_ELEMENT_FIRST_BOX_Y_BORDER
-        ymax = text_box.ymax+Defaults.MATRIX_ELEMENT_FIRST_BOX_Y_BORDER
+        xmin = text_box.xmin-MATRIX_ELEMENT_FIRST_BOX_X_BORDER
+        xmax = text_box.xmax+MATRIX_ELEMENT_FIRST_BOX_X_BORDER
+        ymin = text_box.ymin-MATRIX_ELEMENT_FIRST_BOX_Y_BORDER
+        ymax = text_box.ymax+MATRIX_ELEMENT_FIRST_BOX_Y_BORDER
         return BoundingBox(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax)
 
     def getSecondBox(self, pspict):
-        import Defaults
         from yanntricks.src.BoundingBox import BoundingBox
         first_box = self.getFirstBox(pspict)
-        xmin = first_box.xmin-Defaults.MATRIX_ELEMENT_SECOND_BOX_X_BORDER
-        xmax = first_box.xmax+Defaults.MATRIX_ELEMENT_SECOND_BOX_X_BORDER
-        ymin = first_box.ymin-Defaults.MATRIX_ELEMENT_SECOND_BOX_Y_BORDER
-        ymax = first_box.ymax+Defaults.MATRIX_ELEMENT_SECOND_BOX_Y_BORDER
+        xmin = first_box.xmin-MATRIX_ELEMENT_SECOND_BOX_X_BORDER
+        xmax = first_box.xmax+MATRIX_ELEMENT_SECOND_BOX_X_BORDER
+        ymin = first_box.ymin-MATRIX_ELEMENT_SECOND_BOX_Y_BORDER
+        ymax = first_box.ymax+MATRIX_ELEMENT_SECOND_BOX_Y_BORDER
         return BoundingBox(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax)
 
 
@@ -93,19 +100,17 @@ class MatrixLineColumn(object):
         self.elements = {}
 
     def getHeight(self, pspict):
-        import Defaults
         if self._height == None:
             h = max([el.getTextHeight(pspict) for el in self])
-            self._height = h+2*(Defaults.MATRIX_ELEMENT_FIRST_BOX_Y_BORDER +
-                                Defaults.MATRIX_ELEMENT_SECOND_BOX_Y_BORDER)
+            self._height = h+2*(MATRIX_ELEMENT_FIRST_BOX_Y_BORDER +
+                                MATRIX_ELEMENT_SECOND_BOX_Y_BORDER)
         return self._height
 
     def getWidth(self, pspict):
-        import Defaults
         if self._width == None:
             h = max([el.getTextWidth(pspict) for el in self])
-            self._width = h+2*(Defaults.MATRIX_ELEMENT_FIRST_BOX_X_BORDER +
-                               Defaults.MATRIX_ELEMENT_SECOND_BOX_X_BORDER)
+            self._width = h+2*(MATRIX_ELEMENT_FIRST_BOX_X_BORDER +
+                               MATRIX_ELEMENT_SECOND_BOX_X_BORDER)
         return self._width
 
     def getFirstBox(self, pspict):

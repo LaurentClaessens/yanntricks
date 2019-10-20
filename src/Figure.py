@@ -41,6 +41,9 @@ from yanntricks.src.NoMathUtilities import SubdirectoryFilenames
 from yanntricks.src.Exceptions import PhystricksNoError
 
 
+dprint = print
+
+
 class Figure:
     r"""
     Describe a figure: the LaTeX figure with some more informations.
@@ -121,11 +124,16 @@ class Figure:
         """
         Create a subfigure in the figure and return it.
 
-        The end-user should use this instead of append_subfigure
+        The end-user should use this instead of `_append_subfigure`.
         """
         if name is None:
+
+            dprint("Je fais une sous-figure")
             number = len(self.record_subfigure)
+            dprint(f"numéro {number}")
             name = "sub"+latinize(str(number))
+            dprint(f"nom {name}")
+
         ssfig = SubFigure(caption, self.name+"ss"+name)
         ssfig.mother = self
         ssfig.figure_mother = self

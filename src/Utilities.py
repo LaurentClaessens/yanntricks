@@ -1,4 +1,4 @@
-###########################################################################
+#########################################################################
 #   This is part of the module yanntricks
 #
 #   yanntricks is free software: you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
-###########################################################################
+##########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
@@ -452,16 +452,16 @@ def latinize(word):
     """
     latin = ""
     correspondances = {
-        0: "ZERO",
-        1: "ONE",
-        2: "TWO",
-        3: "THREE",
-        4: "FOUR",
-        5: "FIVE",
-        6: "SIX",
-        7: "SEVEN",
-        8: "HEITH",
-        9: "NINE",
+        '0': "ZERO",
+        '1': "ONE",
+        '2': "TWO",
+        '3': "THREE",
+        '4': "FOUR",
+        '5': "FIVE",
+        '6': "SIX",
+        '7': "SEVEN",
+        '8': "HEITH",
+        '9': "NINE",
         '.': "DOT"}
     for s in word:
         if s.lower() in "abcdefghijklmnopqrstuvwxyz":

@@ -27,7 +27,7 @@
 
 
 import numpy
-from sage.all import lazy_attribute, numerical_approx
+from sage.all import lazy_attribute, numerical_approx, floor
 from sage.all import sqrt, SR, var, QQ, solve
 
 from yanntricks.src.Constructors import *
@@ -280,9 +280,10 @@ class Segment(ObjectGraph):
         """
         Return the parametric curve corresponding to `self`.
 
-        The starting point is `self.I` and the parameters is the arc length.
-        The parameter is positive on the side of `self.B` and negative on the
-        opposite side.
+        The starting point is `self.I` and the parameters
+        is the arc length.
+        The parameter is positive on the side of `self.B`
+        and negative on the opposite side.
 
         EXAMPLES::
 
@@ -296,6 +297,8 @@ class Segment(ObjectGraph):
             sage: print curve(segment.length)
             <Point(1,1)>
         """
+        from yanntricks.src.Constructors import phyFunction
+        from yanntricks.src.Constructors import ParametricCurve
         x = var('x')
         l = self.length
         f1 = phyFunction(self.I.x+x*(self.F.x-self.I.x)/l)
@@ -310,7 +313,6 @@ class Segment(ObjectGraph):
         Notice that it does not return the last point of the segment, unless the length is a multiple of dx.
            this is why we add by hand the last point in GetWavyPoint
         """
-        from sage.all import floor
         n = floor(self.length/dx)
         return [self.get_point_proportion(float(i)/n) for i in range(0, n)]
 

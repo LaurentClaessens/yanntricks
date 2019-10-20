@@ -172,11 +172,21 @@ class GenericCurve(object):
         if self.curvature_plotpoints:
             print("Taking "+str(self.curvature_plotpoints) +
                   " curvature points (can take a long time) ...")
-            curvature_Llam = self.getRegularCurvatureParameter(initial, final, self.total_curvature(
-            )/self.curvature_plotpoints, initial_point=True, final_point=True)
+            quantity = self.total_curvature()/self.curvature_plotpoints
+            curvature_Llam = self.getRegularCurvatureParameter(
+                            initial, 
+                            final, 
+                            quantity,
+                            initial_point=True, 
+                            final_point=True)
             print("... done")
         if self.linear_plotpoints:
-            # If not RR, the elements of Llam are type numpy.float64. In this case, computing the sqrt of negative return NaN instead of complex. Then we cannot remove the probably fake imaginary part. It happens for the function sqrt(cos(x)) with x=3*pi/2.
+            # If not RR, the elements of Llam are type numpy.float64.
+            # In this case, computing the sqrt of negative returns NaN
+            # instead of complex. Then we cannot remove the probably
+            # fake imaginary part. It happens for the function
+            # sqrt(cos(x)) with x=3*pi/2.
+
             linear_Llam = [RR(s) for s in numpy.linspace(
                 initial, final, self.linear_plotpoints)]
         Llam = []

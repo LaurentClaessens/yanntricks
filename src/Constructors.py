@@ -22,6 +22,7 @@ from sage.all import sin, cos, prod, var
 from sage.all import pi, PolynomialRing, QQ, symbolic_expression
 
 from yanntricks.src.Utilities import distance
+from yanntricks.src.radian_unit import radian
 from yanntricks.src.degree_unit import degree
 from yanntricks.src.point import Point
 from yanntricks.src.AxesGraph import Axes

@@ -1,4 +1,4 @@
-###########################################################################
+#########################################################################
 #   This is part of the module yanntricks
 #
 #   yanntricks is free software: you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
-###########################################################################
+#########################################################################
 
 # copyright (c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
@@ -49,7 +49,7 @@ class NonAnalyticParametricCurveGraph(ObjectGraph):
                 self.mx, self.Mx, self.parameters.plotpoints, endpoint=True)
 
     def curve(self):
-        from yanntricks.Constructors import InterpolationCurve
+        from yanntricks.src.Constructors import InterpolationCurve
         interpolation = InterpolationCurve(
             [self.get_point(x) for x in self.drawpoints])
         # This curve is essentially dedicated to the colors
@@ -103,7 +103,7 @@ class NonAnalyticPointParametricCurveGraph(ObjectGraph):
         self.mode = None
 
     def curve(self):
-        from yanntricks.Constructors import InterpolationCurve
+        from yanntricks.src.Constructors import InterpolationCurve
         if not self._curve:
             interpolation = InterpolationCurve(
                 [self.get_point(x) for x in self.drawpoints])
@@ -182,7 +182,7 @@ class NonAnalyticFunctionGraph(ObjectGraph):
         but only during the computation of the bounding box
         and the tikz code.
         """
-        from yanntricks.Constructors import InterpolationCurve
+        from yanntricks.src.Constructors import InterpolationCurve
         points_list = [self.get_point(x) for x in self.drawpoints]
         return InterpolationCurve(points_list, context_object=self)
 

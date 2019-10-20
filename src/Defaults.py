@@ -1,5 +1,3 @@
-# -*- coding: utf8 -*-
-
 ###########################################################################
 #   This is part of the module yanntricks
 #
@@ -17,23 +15,22 @@
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2016
+# copyright (c) Laurent Claessens, 2016, 2019
 # email: laurent@claessens-donadello.eu
 
 
-# plotpoints 
-LINEAR_PLOTPOINTS=100
-CURVATURE_PLOTPOINTS=0
+# plotpoints
+LINEAR_PLOTPOINTS = 100
+CURVATURE_PLOTPOINTS = 0
 
-CIRCLE_LINEAR_PLOTPOINTS=50
-CIRCLE3D_LINEAR_PLOTPOINTS=50
+CIRCLE_LINEAR_PLOTPOINTS = 50
+CIRCLE3D_LINEAR_PLOTPOINTS = 50
 
 # Matrix
-MATRIX_ELEMENT_FIRST_BOX_X_BORDER=0.1
-MATRIX_ELEMENT_SECOND_BOX_X_BORDER=0.1
-MATRIX_ELEMENT_FIRST_BOX_Y_BORDER=0.05
-MATRIX_ELEMENT_SECOND_BOX_Y_BORDER=0.05
+MATRIX_ELEMENT_FIRST_BOX_X_BORDER = 0.1
+MATRIX_ELEMENT_SECOND_BOX_X_BORDER = 0.1
+MATRIX_ELEMENT_FIRST_BOX_Y_BORDER = 0.05
+MATRIX_ELEMENT_SECOND_BOX_Y_BORDER = 0.05
 
 # Files
-LOGGING_FILENAME="yanntricks.log"
-
+LOGGING_FILENAME = "yanntricks.log"

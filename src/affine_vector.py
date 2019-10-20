@@ -26,6 +26,8 @@ from yanntricks.src.point import Point
 from yanntricks.src.Decorators import copy_parameters
 from yanntricks.src.Exceptions import OperationNotPermitedException
 
+dprint = print
+
 
 class AffineVector(ObjectGraph):
     """
@@ -77,25 +79,29 @@ class AffineVector(ObjectGraph):
         return self.segment.angle()
 
     def numerical_approx(self):
+        from yanntricks.src.Constructors import AffineVector
         I = Point(numerical_approx(self.I.x), numerical_approx(self.I.y))
         F = Point(numerical_approx(self.F.x), numerical_approx(self.F.y))
         return AffineVector(I, F)
 
     def orthogonal(self):
+        from yanntricks.src.Constructors import AffineVector
         ortho_seg = self.segment.orthogonal()
         I = ortho_seg.I
         F = ortho_seg.F
         return AffineVector(I, F)
 
     def rotation(self, angle):
+        from yanntricks.src.Constructors import AffineVector
         s = self.segment.rotation(angle)
-        return AffineVector(s)
+        return AffineVector(s.I, s.F)
 
     def projection(self, seg):
         """
         Return the projection of 'self' on the segment 'seg' (you can also
         pass a vector).
         """
+        from yanntricks.src.Constructors import AffineVector
         I = self.I.projection(seg)
         F = self.F.projection(seg)
         return AffineVector(I, F)
@@ -232,7 +238,13 @@ class AffineVector(ObjectGraph):
     def __rmul__(self, coef):
         return self*coef
 
+    def __truediv__(self, coef):
+        return self*(1/coef)
     def __div__(self, coef):
+        # The real division is __truedev__. This one is
+        # for legacy.
+        return self / coef
+    def __rdiv__(self, coef):
         return self*(1/coef)
 
     def __neg__(self):
