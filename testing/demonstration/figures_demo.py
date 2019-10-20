@@ -1,5 +1,4 @@
 #! /usr/bin/sage -python
-# -*- coding: utf8 -*-
 
 import sys
 from yanntricks import *
