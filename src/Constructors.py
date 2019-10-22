@@ -18,6 +18,9 @@
 # copyright(c) Laurent Claessens, 2010-2017, 2019
 # email: laurent@claessens-donadello.eu
 
+# pylint: disable=unused-import
+# pylint: disable=invalid-name
+
 from sage.all import sin, cos, prod, var
 from sage.all import pi, PolynomialRing, QQ, symbolic_expression
 
@@ -28,7 +31,7 @@ from yanntricks.src.point import Point
 from yanntricks.src.AxesGraph import Axes
 from yanntricks.src.Utilities import Intersection
 from yanntricks.src.segment import Segment
-from yanntricks.src.GridGraph import GridGraph
+from yanntricks.src.GridGraph import Grid
 from yanntricks.src.MathStructures import AxesUnit
 from yanntricks.src.MarkGraph import MarkGraph
 from yanntricks.src.BoundingBox import BoundingBox
@@ -59,8 +62,6 @@ def PolarPoint(r, theta):
         sage: print PolarPoint(2,45)
         <Point(sqrt(2),sqrt(2))>
     """
-    from yanntricks.src.point import Point
-    from yanntricks.src.radian_unit import radian
     return Point(r*cos(radian(theta)), r*sin(radian(theta)))
 
 
@@ -69,8 +70,6 @@ def PolarSegment(P, r, theta):
     return a segment on the base point P (class Point) of 
     length r and angle theta (degree)
     """
-    from yanntricks.src.point import Point
-    from yanntricks.src.radian_unit import radian
     alpha = radian(theta)
     return Segment(P, Point(P.x+r*cos(alpha), P.y+r*sin(alpha)))
 
@@ -629,10 +628,6 @@ def Cuboid(op, P, a, b, c):
     return CuboidGraph(op, P, a, b, c)
 
 
-def Grid(bb):
-    return GridGraph(bb)
-
-
 def intervals(curve1, curve2, interval, interval1, interval2):
     if interval:
         mx1 = interval[0]
@@ -830,7 +825,6 @@ def SurfaceUnderFunction(f, mx, Mx):
 
     """
     from yanntricks.src.NonAnalytic import NonAnalyticFunctionGraph
-    from yanntricks.src.point import Point
     from yanntricks.src.segment import Segment
     from yanntricks.src.SurfacesGraph import SurfaceBetweenLines
     if isinstance(f, NonAnalyticFunctionGraph):
@@ -985,7 +979,10 @@ def BarDiagram(X, Y):
 
 def Histogram(tuple_box_list, legende=None):
     """
-    An histogram is given by a list of tuple '(a,b,n)' where 'a' and 'b' are the extremal values of the box and 'n' is the number of elements in the box.
+    An histogram is given by a list of tuple '(a,b,n)'.
+    
+    In the tuple (a,b,c), the values 'a' and 'b' are the extremal
+    values of the box and 'n' is the number of elements in the box.
     """
     from yanntricks.src.HistogramGraph import HistogramGraph
     return HistogramGraph(tuple_box_list, legende)
@@ -1007,14 +1004,19 @@ def Moustache(minimum, Q1, M, Q3, maximum, h, delta_y=0):
 
 def ImplicitCurve(f, xrange, yrange, plot_points=100):
     """
-    return the implicit curve given by equation f on the range xrange x yrange
+    Return the implicit curve given by equation f.
+    
+    Return the implicit curve given by equation f on the
+    range xrange x yrange
 
     This is a constructor for the class ImplicitCurveGraph
     INPUT:
 
-    - ``f`` -- a function of two variables or equation in two variables
+    - ``f`` -- 
+            a function of two variables or equation in two variables
 
-    - ``xrange,yrange`` - the range on which we want to compute the implicit curve.
+    - ``xrange,yrange``
+            the range on which we want to compute the implicit curve.
 
     OPTIONAL INPUT:
 
@@ -1051,10 +1053,13 @@ def ImplicitCurve(f, xrange, yrange, plot_points=100):
     Using Sage's implicit_curve and matplotlib, a list of points "contained" in the curve is created. The bounding_box is calculated from that list. The pstricsk code generated will be an interpolation curve passing trough all these points.
     """
     from yanntricks.src.ImplicitCurve import GeometricImplicitCurve
-    return GeometricImplicitCurve(f).graph(xrange, yrange, plot_points=100)
+    return GeometricImplicitCurve(f).graph(xrange, 
+                                           yrange,
+                                           plot_points=100)
 
 
-class ObliqueProjection(object):
+class ObliqueProjection:
+    """Allow the creation of 3D objects with an oblique projection."""
     def __init__(self, alpha, k):
         """
         This is the oblique projection of angle `alpha` and scale factor `k`.
@@ -1062,7 +1067,6 @@ class ObliqueProjection(object):
         `alpha` is given in degree. It is immediately converted in order to have positive number. If you give -45, it will be converted to 315
         """
         from yanntricks.src.AngleMeasure import AngleMeasure
-        from yanntricks.src.radian_unit import radian
         self.k = k
         if self.k >= 1:
             print("Are you sure that you want such a scale factor : ",
@@ -1075,7 +1079,7 @@ class ObliqueProjection(object):
         self.ks = self.k*sin(self.theta)
 
     def point(self, x, y, z):
-        from yanntricks.src.point import Point
+        """Return the 2D projection of the point (x,y,z)."""
         return Point(x+z*self.kc, y+z*self.ks)
 
     def cuboid(self, P, a, b, c):
@@ -1184,8 +1188,6 @@ def Vector(A, B=None):
     Vector(P)  # If 'P' is a point
     Vector(t)  # if 't' is a tuple of two numbers
     """
-    from yanntricks.src.affine_vector import AffineVector
-    from yanntricks.src.point import Point
     O = Point(0, 0)
     if isinstance(A, Point):
         return AffineVector(O, A)
