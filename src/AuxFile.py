@@ -44,8 +44,9 @@ class AuxFile:
         self.name = name
         self.picture = picture
         self.newwriteName = "writeOfyanntricks"
-        self.interWriteFile = self.paths["main_tex"] / \
-            f"{self.name}.yanntricks.aux"
+        self.interWriteFile = self.paths.create(
+            "main_tex",
+            f"{self.name}.yanntricks.aux")
 
         self._latex_line_list = []
         self.already_used_interId = []
@@ -108,7 +109,7 @@ class AuxFile:
         """
         d = {}
         try:
-            f = open(self.interWriteFile.from_here(), "r")
+            f = open(self.interWriteFile.for_sage(), "r")
         except IOError:
             if not self.already_warned_CompileYourLaTeXFile:
                 logging(f"Warning: the auxiliary file "
@@ -126,7 +127,7 @@ class AuxFile:
             value = els.split(':')[1]
             d[key] = value
 
-        with open(self.interWriteFile.from_here(), "w") as f:
+        with open(self.interWriteFile.for_sage(), "w") as f:
             for k in d:
                 f.write("%s:%s-\n" % (k, d[k]))
 

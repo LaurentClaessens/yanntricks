@@ -1,4 +1,4 @@
-###########################################################################
+#########################################################################
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
@@ -11,7 +11,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-###########################################################################
+#########################################################################
 
 # copyright (c) Laurent Claessens, 2009-2017, 2019
 # email: laurent@claessens-donadello.eu
@@ -28,7 +28,6 @@
 import os
 import collections
 from sage.all import numerical_approx   # pylint:disable=import-error
-from yanntricks.src.Constructors import *
 
 from yanntricks.src.draw_element import DrawElement
 from yanntricks.src.point import Point
@@ -40,7 +39,7 @@ from yanntricks.src.Utilities import sublist
 from yanntricks.src.Utilities import init_picture_separator_list
 from yanntricks.src.Exceptions import ShouldNotHappenException
 from yanntricks.src.Utilities import add_latex_line_entete
-from yanntricks.src.NoMathUtilities import SubdirectoryFilenames
+from yanntricks.src.paths_keeper import PathsKeeper
 
 
 class Picture:
@@ -70,6 +69,9 @@ class Picture:
         When a graph object has a method math_bounding_box,
         this is the one taken into account in the math_BB here.
         """
+        from yanntricks.src.GridGraph import Grid
+        from yanntricks.src.AxesGraph import Axes
+        self.paths = PathsKeeper()
         self.name = name
         # for the intermediate files.
 
@@ -78,7 +80,7 @@ class Picture:
         # tested when recompiling.
         self.comment = ""
 
-        self.tikzfilename = SubdirectoryFilenames("tikz"+self.name).from_here()
+        self.tikzfile = self.paths.create("sage_dir", f"tikz{self.name}")
 
         self.mother = None
         self.figure_mother = None
@@ -139,7 +141,7 @@ class Picture:
         self.create_latex_code(language="tikz", pspict=self)
         add_latex_line_entete(self)
         self.add_latex_line("\\tikzsetnextfilename{{{0}}}".format(
-            self.tikzfilename), "BEGIN PSPICTURE")
+            self.tikzfile.for_sage()), "BEGIN PSPICTURE")
         self.add_latex_line("\\begin{{tikzpicture}}[xscale={0},"
                             "yscale={1},inner sep=2.25pt,outer sep=0pt]"
                             .format(1, 1), "BEGIN PSPICTURE")

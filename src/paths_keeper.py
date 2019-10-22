@@ -5,6 +5,8 @@ PathsKeeper is a class which keeps the filesnames conventions.
 import importlib.util
 from pathlib import Path
 
+from yanntricks.src.relative_file import RelativeFile
+
 
 class PathsKeeper:
     """
@@ -30,7 +32,7 @@ class PathsKeeper:
         self["main_tex"] = Path('.')
         self["pictures_tizk"] = Path('.')
         self["pictures_tex"] = Path('.')
-        self["pictures_src"] = Path('.')
+        self["sage_dir"] = Path('.')
         try:
             spec = importlib.util.spec_from_file_location(
                 "Directories", "Directories.py")
@@ -44,6 +46,13 @@ class PathsKeeper:
         self["pictures_src"] = module.PICTURES_SRC
         self["pictures_tikz"] = module.PICTURES_TIKZ
         self["main_tex"] = module.MAIN_TEX
+        self["sage_dir"] = module.SAGE_DIR
+
+    def create(self, key, path):
+        """Return the `RelativeFile` corresponding to the given path."""
+        abs_file = self[key] / path
+        abs_file = abs_file.resolve()
+        return RelativeFile(abs_file, self)
 
     def __setitem__(self, key, path):
         """

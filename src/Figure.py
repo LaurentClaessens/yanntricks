@@ -37,7 +37,6 @@ from yanntricks.src.Utilities import latinize
 from yanntricks.src.latex_to_be import pseudo_caption
 from yanntricks.src.Utilities import add_latex_line_entete
 from yanntricks.src.Utilities import init_figure_separator_list
-from yanntricks.src.NoMathUtilities import SubdirectoryFilenames
 from yanntricks.src.Exceptions import PhystricksNoError
 
 
@@ -87,7 +86,7 @@ class Figure:
         # which creates the png and in the "final" file independently.
 
         # Filenames
-        # filename.from_here() is the filename of the produced file
+        # filename.for_sage() is the filename of the produced file
         # given relatively to the current directory, that is
         # relatively to the directory where the picture source is.
 
@@ -98,7 +97,7 @@ class Figure:
         self.filename = SubdirectoryFilenames(filename, "pictures_tex")
 
         # This intermediate file will contain the comment of the pspict(s) for the sake of tests.
-        self.comment_filename = self.filename.from_here().replace(".pstricks", ".comment")
+        self.comment_filename = self.filename.for_sage().replace(".pstricks", ".comment")
 
         # The order of declaration is important, because it
         # is recorded in the Separator.number attribute.
@@ -203,7 +202,7 @@ class Figure:
 
     def conclude(self):
         for pspict in self.record_pspicture:
-            inter_file = pspict.auxiliary_file.interWriteFile.from_here()
+            inter_file = pspict.auxiliary_file.interWriteFile.for_sage()
             if not os.path.isfile(inter_file):
                 with open(inter_file, "w") as f:
                     f.write("default:content-")
@@ -279,7 +278,7 @@ class Figure:
         It also remove the tikz externalize file.
         """
         to_be_written = self.contenu              # self.contenu is created in self.conclude
-        with codecs.open(self.filename.from_here(), "w", encoding="utf8") as f:
+        with codecs.open(self.filename.for_sage(), "w", encoding="utf8") as f:
             f.write(to_be_written)
         print("--------------- For your LaTeX file ---------------")
         print(self.LaTeX_lines())

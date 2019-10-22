@@ -100,5 +100,5 @@ for f in [filename,pstricksfilename,pdffilename]:
 create_file(md5filename,"")
 
 print("from yanntricks{} import {}".format(figure_name,figure_name))
-print("git add {} {} {} {}".format(filename.from_here(),pstricksfilename.from_here(),pdffilename.from_here(),md5filename.from_here()))
+print("git add {} {} {} {}".format(filename.for_sage(),pstricksfilename.for_sage(),pdffilename.for_sage(),md5filename.for_sage()))
 print("attach('{}');{}();exit()".format(filename.filename,figure_name)   )
