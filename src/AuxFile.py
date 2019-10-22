@@ -26,7 +26,7 @@ Describe an auxiliary file in which we make LaTeX write some informations.
 
 from yanntricks.src.Utilities import newlengthName
 from yanntricks.src.NoMathUtilities import logging
-from yanntricks.src.NoMathUtilities import SubdirectoryFilenames
+from yanntricks.src.paths_keeper import PathsKeeper
 from yanntricks.src.NoMathUtilities import text_to_hexdigest
 
 
@@ -40,11 +40,12 @@ class AuxFile:
     """
 
     def __init__(self, name, picture):
+        self.paths = PathsKeeper()
         self.name = name
         self.picture = picture
         self.newwriteName = "writeOfyanntricks"
-        self.interWriteFile = SubdirectoryFilenames(
-            self.name+".yanntricks.aux", position="main")
+        self.interWriteFile = self.paths["main_tex"] / \
+            f"{self.name}.yanntricks.aux"
 
         self._latex_line_list = []
         self.already_used_interId = []

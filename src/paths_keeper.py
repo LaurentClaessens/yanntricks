@@ -5,12 +5,13 @@ PathsKeeper is a class which keeps the filesnames conventions.
 import importlib.util
 from pathlib import Path
 
-class PathsKeeper(object):
+
+class PathsKeeper:
     """
     An object of this class keeps the paths.
 
-    If the file "Directories.py" exists, read the directories inwhich the 
-    tex files have to be put.
+    If the file "Directories.py" exists, read the directories in
+    which the tex files have to be put.
     In all cases if the file "Directories.py" is not found,
     everything will return the unmodified filename.
     """
@@ -21,7 +22,11 @@ class PathsKeeper(object):
         """
         self.paths = {}
         self.initialize()
+
     def initialize(self):
+        """
+        Provide some defaults paths, or read in `Directory.py`.
+        """
         self["main_tex"] = Path('.')
         self["pictures_tizk"] = Path('.')
         self["pictures_tex"] = Path('.')
@@ -36,16 +41,18 @@ class PathsKeeper(object):
             return
 
         self["pictures_tex"] = module.PICTURES_TEX
-        self.["pictures_src"] = module.PICTURES_SRC
-        self.["pictures_tikz"] = module.PICTURES_TIKZ
-        self.["main_tex"] = module.MAIN_TEX
+        self["pictures_src"] = module.PICTURES_SRC
+        self["pictures_tikz"] = module.PICTURES_TIKZ
+        self["main_tex"] = module.MAIN_TEX
 
-    def __setitem__(self, path):
+    def __setitem__(self, key, path):
         """
         Add a path to self's path dictionary.
 
         The path is resolved.
         """
-        self.paths.append(Path(path).resolve())
+        self.paths[key] = Path(path).resolve()
+
     def __getitem__(self, key):
+        """Return the saved path under the given key."""
         return self.paths[key]

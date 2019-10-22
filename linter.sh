@@ -22,20 +22,19 @@ lint_one_file()
     fi
 }
 
-do_one_work()
+do_full_work()
 {
     for f in $(git ls-tree -r HEAD --name-only); do lint_one_file $f;done
 }
 
+do_modified_work()
+{
+    for f in $(git diff --name-only); do lint_one_file $f;done
+}
+
 if [ $# -eq 0 ]; then
-    do_one_work
-    do_one_work
-    do_one_work
-    do_one_work
-    do_one_work
-    do_one_work
-    do_one_work
-    do_one_work
+    #do_full_work
+    do_modified_work
 else
     lint_one_file $1
 fi
