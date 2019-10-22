@@ -1,4 +1,4 @@
-###########################################################################
+#########################################################################
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
@@ -11,7 +11,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-###########################################################################
+#########################################################################
 
 # copyright (c) Laurent Claessens, 2016-2017, 2019
 # email: laurent@claessens-donadello.eu
@@ -32,7 +32,8 @@ from yanntricks.src.NoMathUtilities import text_to_hexdigest
 
 class AuxFile:
     """
-    The auxiliary file serves to make a 'dialog' between LaTeX and yanntricks.
+    The auxiliary file serves to make a 'dialog' between LaTeX
+    and yanntricks.
     We ask LaTeX to write the box sizes therein.
 
     Each `Picture` has an auxiliary file.
