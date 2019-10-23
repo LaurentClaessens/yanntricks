@@ -1,11 +1,12 @@
-"""
-PathsKeeper is a class which keeps the filesnames conventions.
-"""
+"""PathsKeeper is a class which keeps the filesnames conventions."""
 
 import importlib.util
 from pathlib import Path
 
 from yanntricks.src.relative_file import RelativeFile
+
+
+dprint = print  #pylint: disable=invalid-name
 
 
 class PathsKeeper:
@@ -51,7 +52,6 @@ class PathsKeeper:
     def create(self, key, path):
         """Return the `RelativeFile` corresponding to the given path."""
         abs_file = self[key] / path
-        abs_file = abs_file.resolve()
         return RelativeFile(abs_file, self)
 
     def __setitem__(self, key, path):
@@ -60,6 +60,10 @@ class PathsKeeper:
 
         The path is resolved.
         """
+        abs_path = Path('.') / path
+        if not abs_path.exists():
+            raise ValueError(f"The directory {abs_path} does not exist.")
+        dprint(f"J'ajoute le chemin {path}")
         self.paths[key] = Path(path).resolve()
 
     def __getitem__(self, key):

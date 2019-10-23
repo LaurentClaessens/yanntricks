@@ -27,7 +27,6 @@
 
 
 import os
-import codecs
 
 from sage.all import numerical_approx  # pylint:disable=import-error
 
@@ -41,7 +40,7 @@ from yanntricks.src.Exceptions import PhystricksNoError
 from yanntricks.src.paths_keeper import PathsKeeper
 
 
-dprint = print
+dprint = print  #pylint: disable=invalid-name
 
 
 class Figure:
@@ -102,8 +101,8 @@ class Figure:
 
         # This intermediate file will contain the
         # comment of the pspict(s) for the sake of tests.
-        self.comment_filename = self.filename.for_sage()\
-                                    .replace(".pstricks", ".comment")
+        self.comment_filename = self.filename.abs_path\
+                                .with_suffix(".comment")
 
         # The order of declaration is important, because it
         # is recorded in the Separator.number attribute.
@@ -132,13 +131,8 @@ class Figure:
         The end-user should use this instead of `_append_subfigure`.
         """
         if name is None:
-
-            dprint("Je fais une sous-figure")
             number = len(self.record_subfigure)
-            dprint(f"numéro {number}")
             name = "sub"+latinize(str(number))
-            dprint(f"nom {name}")
-
         ssfig = SubFigure(caption, self.name+"ss"+name)
         ssfig.mother = self
         ssfig.figure_mother = self
@@ -285,7 +279,7 @@ class Figure:
         """
         # self.contenu is created in self.conclude
         to_be_written = self.contenu
-        with open(self.filename.from_sage(), "w", encoding="utf8") as f:
+        with open(self.filename.abs_path, "w", encoding="utf8") as f:
             f.write(to_be_written)
         print("--------------- For your LaTeX file ---------------")
         print(self.LaTeX_lines())
@@ -293,7 +287,7 @@ class Figure:
         # One only sends the "no error" signal
         # if we are performing a list of tests.
 
-        with codecs.open(self.comment_filename, "w", encoding='utf8') as f:
+        with open(self.comment_filename, "w", encoding='utf8') as f:
             f.write(self.comments())
 
         if self.send_noerror:

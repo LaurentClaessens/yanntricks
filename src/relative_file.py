@@ -30,8 +30,9 @@ be git-tracked (this is the case for mazhe) and interpreted by
 other people.
 """
 
-
 # pylint: disable = too-few-public-methods
+
+dprint = print  #pylint: disable=invalid-name
 
 
 class RelativeFile:
@@ -46,7 +47,10 @@ class RelativeFile:
         @param {PathsKeeper} `paths`
         """
         self.paths_keeper = paths_keeper
-        self.path = path.relative_to(self.paths_keeper["main_tex"])
+        self.path = path
+
+        self.abs_path = self.paths_keeper["main_tex"] / path
+        self.abs_path = self.abs_path.resolve()
 
     def from_sage(self):
         """
@@ -55,7 +59,8 @@ class RelativeFile:
         The Sage's directory is the directory in which Sage is
         launched.
         """
-        return self.path.relative_to(self.paths_keeper["sage_dir"])
+        sage_dir = self.paths_keeper["sage_dir"]
+        return self.abs_path.relative_to(sage_dir)
 
     def from_main(self):
         """
@@ -63,4 +68,7 @@ class RelativeFile:
 
         The main directory is the one from which LaTeX is launched.
         """
-        return self.path.relative_to(self.paths_keeper["main_tex"])
+
+
+        main_tex = self.paths_keeper["main_tex"]
+        return self.abs_path.relative_to(main_tex)
