@@ -1,4 +1,4 @@
-#########################################################################
+#######################################################################
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
@@ -11,7 +11,7 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#########################################################################
+#######################################################################
 
 # copyright (c) Laurent Claessens, 2009-2017, 2019
 # email: laurent@claessens-donadello.eu
@@ -38,6 +38,7 @@ from yanntricks.src.latex_to_be import pseudo_caption
 from yanntricks.src.Utilities import add_latex_line_entete
 from yanntricks.src.Utilities import init_figure_separator_list
 from yanntricks.src.Exceptions import PhystricksNoError
+from yanntricks.src.paths_keeper import PathsKeeper
 
 
 dprint = print
@@ -66,6 +67,7 @@ class Figure:
     def __init__(self, caption, name, filename, script_filename):
         self.script_filename = script_filename
         self.caption = caption
+        self.paths = PathsKeeper()
         self.name = name
         self.xunit = 1
         self.yunit = 1
@@ -81,8 +83,10 @@ class Figure:
         self.language = "tikz"
 
         self.specific_needs = ""
-        # TODO : specific_needs should be a list of specific_need that is a class.
-        # The idea is to leave to the user the control if the command has to be included in the file
+        # TODO : specific_needs should be a list of specific_need
+        # that is a class.
+        # The idea is to leave to the user the control if
+        # the command has to be included in the file
         # which creates the png and in the "final" file independently.
 
         # Filenames
@@ -94,10 +98,12 @@ class Figure:
         # given relatively to the main latex directory, that is
         # relatively to where LaTeX will see it.
 
-        self.filename = SubdirectoryFilenames(filename, "pictures_tex")
+        self.filename = self.paths.create("pictures_tex", filename)
 
-        # This intermediate file will contain the comment of the pspict(s) for the sake of tests.
-        self.comment_filename = self.filename.for_sage().replace(".pstricks", ".comment")
+        # This intermediate file will contain the
+        # comment of the pspict(s) for the sake of tests.
+        self.comment_filename = self.filename.for_sage()\
+                                    .replace(".pstricks", ".comment")
 
         # The order of declaration is important, because it
         # is recorded in the Separator.number attribute.
@@ -202,7 +208,7 @@ class Figure:
 
     def conclude(self):
         for pspict in self.record_pspicture:
-            inter_file = pspict.auxiliary_file.interWriteFile.for_sage()
+            inter_file = pspict.auxiliary_file.interWriteFile.from_sage()
             if not os.path.isfile(inter_file):
                 with open(inter_file, "w") as f:
                     f.write("default:content-")
@@ -277,8 +283,9 @@ class Figure:
         Do not write if we are testing.
         It also remove the tikz externalize file.
         """
-        to_be_written = self.contenu              # self.contenu is created in self.conclude
-        with codecs.open(self.filename.for_sage(), "w", encoding="utf8") as f:
+        # self.contenu is created in self.conclude
+        to_be_written = self.contenu
+        with open(self.filename.from_sage(), "w", encoding="utf8") as f:
             f.write(to_be_written)
         print("--------------- For your LaTeX file ---------------")
         print(self.LaTeX_lines())
