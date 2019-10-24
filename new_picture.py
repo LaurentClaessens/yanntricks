@@ -13,7 +13,7 @@ import os
 import random
 import string
 
-from yanntricks.src.NoMathUtilities import SubdirectoryFilenames
+from yanntricks.src.paths_keeper import PathsKeeper
 
 
 def via_random(alphabet, length):
@@ -56,14 +56,21 @@ def do_work():
 
         code_skel = get_code_skel().replace("XXXX", figure_name)
 
-    filename = SubdirectoryFilenames(
-        "yanntricks%s.py" % figure_name, "pictures_src")
-    pstricksfilename = SubdirectoryFilenames(
-        "Fig_{}.pstricks".format(figure_name), "pictures_tex")
-    pdffilename = SubdirectoryFilenames(
-        "tikzFIGLabelFig"+figure_name+"PICT"+figure_name+".pdf", "pictures_tikz")
-    md5filename = SubdirectoryFilenames(
-        "tikzFIGLabelFig"+figure_name+"PICT"+figure_name+".md5", "pictures_tikz")
+    paths_keeper = PathsKeeper()
+
+    filename = paths_keeper.create("pictures_src",
+                                   f"yanntricks{figure_name}.py")
+
+    pstricksfilename = paths_keeper.create("pictures_tex",
+                                           f"Fig_{figure_name}.pstricks")
+
+    pdffilename = paths_keeper.create(
+        "pictures_tikz",
+        f"tikzFIGLabelFig{figure_name}PICT{figure_name}.pdf")
+
+    md5filename = paths_keeper.create(
+        "pictures_tikz",
+        f"tikzFIGLabelFig{figure_name}PICT{figure_name}")
 
     for prod_file in [filename, pstricksfilename, pdffilename]:
         create_file(prod_file, code_skel)
@@ -75,7 +82,7 @@ def do_work():
           f"{pstricksfilename.from_sage} "
           f"{pdffilename.from_sage()} "
           f"{md5filename.from_sage()}")
-    print(f"attach('{filename.filename}'); "
+    print(f"attach('{filename.from_sage()}'); "
           f"{figure_name}();exit()")
 
 
