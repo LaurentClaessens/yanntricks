@@ -32,6 +32,9 @@ other people.
 
 # pylint: disable = too-few-public-methods
 
+import os
+from pathlib import Path
+
 dprint = print  #pylint: disable=invalid-name
 
 
@@ -60,7 +63,7 @@ class RelativeFile:
         launched.
         """
         sage_dir = self.paths_keeper["sage_dir"]
-        return self.abs_path.relative_to(sage_dir)
+        return Path(os.path.relpath(self.abs_path, sage_dir))
 
     def from_main(self):
         """
@@ -68,7 +71,5 @@ class RelativeFile:
 
         The main directory is the one from which LaTeX is launched.
         """
-
-
         main_tex = self.paths_keeper["main_tex"]
-        return self.abs_path.relative_to(main_tex)
+        return Path(os.path.relpath(self.abs_path, main_tex))

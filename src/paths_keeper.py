@@ -63,7 +63,6 @@ class PathsKeeper:
         abs_path = Path('.') / path
         if not abs_path.exists():
             raise ValueError(f"The directory {abs_path} does not exist.")
-        dprint(f"J'ajoute le chemin {path}")
         self.paths[key] = Path(path).resolve()
 
     def __getitem__(self, key):

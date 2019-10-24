@@ -89,7 +89,7 @@ class Figure:
         # which creates the png and in the "final" file independently.
 
         # Filenames
-        # filename.for_sage() is the filename of the produced file
+        # filename.from_sage() is the filename of the produced file
         # given relatively to the current directory, that is
         # relatively to the directory where the picture source is.
 

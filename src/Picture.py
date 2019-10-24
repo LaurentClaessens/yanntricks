@@ -139,7 +139,7 @@ class Picture:
         self.create_latex_code(language="tikz", pspict=self)
         add_latex_line_entete(self)
         self.add_latex_line("\\tikzsetnextfilename{{{0}}}".format(
-            self.tikzfile.for_sage()), "BEGIN PSPICTURE")
+            self.tikzfile.from_sage()), "BEGIN PSPICTURE")
         self.add_latex_line("\\begin{{tikzpicture}}[xscale={0},"
                             "yscale={1},inner sep=2.25pt,outer sep=0pt]"
                             .format(1, 1), "BEGIN PSPICTURE")

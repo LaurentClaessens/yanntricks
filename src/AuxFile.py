@@ -109,7 +109,7 @@ class AuxFile:
         """
         d = {}
         try:
-            f = open(self.interWriteFile.for_sage(), "r")
+            f = open(self.interWriteFile.from_sage(), "r")
         except IOError:
             if not self.already_warned_CompileYourLaTeXFile:
                 logging(f"Warning: the auxiliary file "
@@ -127,7 +127,7 @@ class AuxFile:
             value = els.split(':')[1]
             d[key] = value
 
-        with open(self.interWriteFile.for_sage(), "w") as f:
+        with open(self.interWriteFile.from_sage(), "w") as f:
             for k in d:
                 f.write("%s:%s-\n" % (k, d[k]))
 
