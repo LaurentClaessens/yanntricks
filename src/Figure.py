@@ -279,7 +279,7 @@ class Figure:
         """
         # self.contenu is created in self.conclude
         to_be_written = self.contenu
-        with open(self.filename.abs_path, "w", encoding="utf8") as f:
+        with open(self.filename.abs_path, "w") as f:
             f.write(to_be_written)
         print("--------------- For your LaTeX file ---------------")
         print(self.LaTeX_lines())
@@ -287,7 +287,7 @@ class Figure:
         # One only sends the "no error" signal
         # if we are performing a list of tests.
 
-        with open(self.comment_filename, "w", encoding='utf8') as f:
+        with open(self.comment_filename, "w") as f:
             f.write(self.comments())
 
         if self.send_noerror:

@@ -70,7 +70,7 @@ class AuxFile:
         a.append(code)
         code = r"\immediate\openout\AAA=BBB%"
         code = code.replace("AAA", self.newwriteName)
-        code = code.replace("BBB", self.interWriteFile.from_main())
+        code = code.replace("BBB", str(self.interWriteFile.from_main()))
         a.append(code)
         return "\n".join(a)
 
@@ -158,7 +158,8 @@ class AuxFile:
         Return the value of the (LaTeX) counter <name>.
 
         Makes LaTeX write the value of the counter in an auxiliary file,
-        then reads the value in that file.  (needs several compilations to work)
+        then reads the value in that file.
+        (needs several compilations to work)
 
         So we get the value at this point of the LaTeX file.
 
