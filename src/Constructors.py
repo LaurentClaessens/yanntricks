@@ -1,21 +1,4 @@
-###########################################################################
-#   This is part of the module yanntricks
-#
-#   yanntricks is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published by
-#   the Free Software Foundation, either version 3 of the License, or
-#   (at your option) any later version.
-#
-#   yanntricks is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU General Public License for more details.
-#
-#   You should have received a copy of the GNU General Public License
-#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
-###########################################################################
-
-# copyright(c) Laurent Claessens, 2010-2017, 2019
+# copyright(c) Laurent Claessens, 2010-2017, 2019, 2021
 # email: laurent@claessens-donadello.eu
 
 # pylint: disable=unused-import
@@ -24,13 +7,11 @@
 from sage.all import sin, cos, prod, var
 from sage.all import pi, PolynomialRing, QQ, symbolic_expression
 
-from yanntricks.src.Utilities import distance
 from yanntricks.src.radian_unit import radian
 from yanntricks.src.degree_unit import degree
 from yanntricks.src.point import Point
 from yanntricks.src.AxesGraph import Axes
 from yanntricks.src.Utilities import Intersection
-from yanntricks.src.segment import Segment
 from yanntricks.src.GridGraph import Grid
 from yanntricks.src.MathStructures import AxesUnit
 from yanntricks.src.MarkGraph import MarkGraph
@@ -45,6 +26,9 @@ from yanntricks.src.phyFunctionGraph import phyFunctionGraph
 from yanntricks.src.ParametricCurveGraph import ParametricCurveGraph
 from yanntricks.src.interpolation_curve import InterpolationCurve
 from yanntricks.src.NonAnalytic import NonAnalyticPointParametricCurveGraph
+
+
+dprint = print
 
 
 def PolarPoint(r, theta):
@@ -67,9 +51,10 @@ def PolarPoint(r, theta):
 
 def PolarSegment(P, r, theta):
     """
-    return a segment on the base point P (class Point) of 
+    return a segment on the base point P (class Point) of
     length r and angle theta (degree)
     """
+    from yanntricks.src.segment import Segment
     alpha = radian(theta)
     return Segment(P, Point(P.x+r*cos(alpha), P.y+r*sin(alpha)))
 
@@ -356,7 +341,7 @@ def MeasureLength(seg, dist=0.1):
     The sign of <dist> is an issue. If you give 0.3 you get one result, if you give
     -0.3, you get the segment on the other side.
     The algorithm is the following. If v is the vector seg.I --> seg.F and w is the vector from
-    <seg> to the arrow line to be drawn, then (v,w) has the same orientation as (Y,X) where X=(1,0) 
+    <seg> to the arrow line to be drawn, then (v,w) has the same orientation as (Y,X) where X=(1,0)
     and Y=(0,1).
     The rational is that if the segment is vertical, we want the measure to appear
     on the right.
@@ -424,7 +409,7 @@ def CustomSurface(*args):
 
     EXAMPLE:
 
-    The following describes the surface between the circle of radius 1 and 
+    The following describes the surface between the circle of radius 1 and
     the square of length 1::
 
         sage: from yanntricks import *
@@ -466,7 +451,7 @@ def RightAngleAOB(A, O, B, n1=0, n2=1, r=0.3):
 
 def PolarCurve(fr, ftheta=None):
     """
-    return the parametric curve (:class:`ParametricCurve`) corresponding to the 
+    return the parametric curve (:class:`ParametricCurve`) corresponding to the
     curve of equation r=f(theta) in polar coordinates.
 
     If ftheta is not given, return the curve
@@ -575,6 +560,7 @@ def Rectangle(*args, **arg):
     Still alternatively, you can pass xmin,ymin,xmax,ymax
     """
     from yanntricks.src.BoundingBox import BoundingBox
+    from yanntricks.src.RectangleGraph import RectangleGraph
     if len(args) == 2:
         NW = args[0]
         SE = args[1]
@@ -584,16 +570,15 @@ def Rectangle(*args, **arg):
     if "xmin" in arg:
         bb = BoundingBox(xmin=arg["xmin"], ymin=arg["ymin"],
                          xmax=arg["xmax"], ymax=arg["ymax"])
-        # TODO : I should be able to pass directly the dictionary to BoundingBox
+        # TODO : I should be able to pass directly the dictionary
+        # to BoundingBox
         NW = bb.getVertex("NW")
         SE = bb.getVertex("SE")
     if "mx" in arg:
         bb = BoundingBox(xmin=arg["mx"], ymin=arg["my"],
                          xmax=arg["Mx"], ymax=arg["My"])
-        # TODO : I should be able to pass directly the dictionary to BoundingBox
         NW = bb.getVertex("NW")
         SE = bb.getVertex("SE")
-    from yanntricks.src.RectangleGraph import RectangleGraph
     return RectangleGraph(NW, SE)
 
 
@@ -618,7 +603,7 @@ def Cuboid(op, P, a, b, c):
         /  |         0             / |
         0-------------------------1  |
         |  |                      |  |
-        |  |                     1|  | 
+        |  |                     1|  |
        3|  |______________________|__|
         |3/                       |2/
         |/           2            |/
@@ -812,7 +797,7 @@ def SurfaceUnderFunction(f, mx, Mx):
     INPUT:
 
     - ``f`` - a function
-    - ``mx,Mx`` - initial and final values 
+    - ``mx,Mx`` - initial and final values
 
     EXAMPLES:
 
@@ -963,7 +948,7 @@ def phyMatrix(nlines, ncolumns):
 
 def EllipseOAB(O, A, B):
     """
-    An ellipse of center O and such that OA and OB are the axis 
+    An ellipse of center O and such that OA and OB are the axis
     (OA and OB are supposed to be orthogonal)
     """
     from yanntricks.src.EllipseGraph import EllipseGraph
@@ -980,7 +965,7 @@ def BarDiagram(X, Y):
 def Histogram(tuple_box_list, legende=None):
     """
     An histogram is given by a list of tuple '(a,b,n)'.
-    
+
     In the tuple (a,b,c), the values 'a' and 'b' are the extremal
     values of the box and 'n' is the number of elements in the box.
     """
@@ -1005,14 +990,14 @@ def Moustache(minimum, Q1, M, Q3, maximum, h, delta_y=0):
 def ImplicitCurve(f, xrange, yrange, plot_points=100):
     """
     Return the implicit curve given by equation f.
-    
+
     Return the implicit curve given by equation f on the
     range xrange x yrange
 
     This is a constructor for the class ImplicitCurveGraph
     INPUT:
 
-    - ``f`` -- 
+    - ``f`` --
             a function of two variables or equation in two variables
 
     - ``xrange,yrange``
@@ -1020,9 +1005,9 @@ def ImplicitCurve(f, xrange, yrange, plot_points=100):
 
     OPTIONAL INPUT:
 
-    - ``plot_points`` - (defautl : 100) the number of points that will be calculated in each direction. 
+    - ``plot_points`` - (defautl : 100) the number of points that will be calculated in each direction.
 
-    The resulting bounding box will not be in general xrange x yrange. 
+    The resulting bounding box will not be in general xrange x yrange.
 
     EXAMPLES:
 
@@ -1053,7 +1038,7 @@ def ImplicitCurve(f, xrange, yrange, plot_points=100):
     Using Sage's implicit_curve and matplotlib, a list of points "contained" in the curve is created. The bounding_box is calculated from that list. The pstricsk code generated will be an interpolation curve passing trough all these points.
     """
     from yanntricks.src.ImplicitCurve import GeometricImplicitCurve
-    return GeometricImplicitCurve(f).graph(xrange, 
+    return GeometricImplicitCurve(f).graph(xrange,
                                            yrange,
                                            plot_points=100)
 
@@ -1167,7 +1152,7 @@ def VectorField(fx, fy, xvalues=None, yvalues=None, draw_points=None):
     .. literalinclude:: yanntricksChampVecteursDeux.py
     .. image:: Picture_FIGLabelFigChampVecteursDeuxPICTChampVecteursDeux-for_eps.png
 
-    A vector field with given points to be drawn: 
+    A vector field with given points to be drawn:
 
     .. literalinclude:: yanntricksChampVecteur.py
     .. image:: Picture_FIGLabelFigChampVecteursPICTChampVecteurs-for_eps.png
@@ -1188,12 +1173,17 @@ def Vector(A, B=None):
     Vector(P)  # If 'P' is a point
     Vector(t)  # if 't' is a tuple of two numbers
     """
-    O = Point(0, 0)
+    from yanntricks.src.segment import Segment
+    origin = Point(0, 0)
     if isinstance(A, Point):
-        return AffineVector(O, A)
+        return AffineVector(origin, A)
     if isinstance(A, tuple):
         if len(A) != 2:
             raise TypeError(f"You can define a vector from a tuple "
                             f"of length 2, not {len(A)}")
-        return AffineVector(O, Point(A[0], A[1]))
+        return AffineVector(origin, Point(A[0], A[1]))
+    if isinstance(A, Segment):
+        print("To turn a segment into a vector, "
+              "Use the method 'AffineVector' instead.")
+        raise NameError
     return AffineVector(Point(0, 0), Point(A, B))

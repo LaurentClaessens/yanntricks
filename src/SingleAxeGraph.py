@@ -15,7 +15,7 @@
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2017, 2019
+# copyright (c) Laurent Claessens, 2010-2017, 2019, 2021
 # email: laurent@claessens-donadello.eu
 
 # pylint:disable=invalid-name
@@ -25,7 +25,7 @@
 
 """Describe an axe with its small graduation marks."""
 
-from sage.all import pi, sqrt, SR   #pylint:disable=import-error
+from sage.all import pi, sqrt, SR   # pylint:disable=import-error
 
 from yanntricks.src.Visual import visual_polar
 from yanntricks.src.degree_unit import degree
@@ -45,9 +45,11 @@ class SingleAxe(ObjectGraph):
 
     INPUT:
 
-    - ``C`` - the center of the axe. This is the point corresponding to the "zero" coordinate
-    - ``base`` - the unit of the axe. This indicates
-
+    - ``C`` -
+        the center of the axe. This is the point corresponding
+        to the "zero" coordinate
+    - ``base`` -
+        the unit of the axe. This indicates
                 1. the direction
                 2. the size of "1"
 
@@ -136,9 +138,11 @@ class SingleAxe(ObjectGraph):
     def no_graduation(self):
         self.graduation = False
 
-    def enlarge_a_little(self, l, xunit=None, yunit=None, pspict=None):
+    def enlarge_a_little(self, add_l, xunit=None, yunit=None, pspict=None):
         """
-        return the tuple (mx,Mx) that correspond to axes of length
+        Return the tuple (mx,Mx) that correspond to an enlarged axe.
+
+        Return the tuple (mx,Mx) that correspond to axes of length
         `l` more than self (in both directions)
         """
         if pspict:
@@ -149,7 +153,7 @@ class SingleAxe(ObjectGraph):
         vx = self.base.F.x
         vy = self.base.F.y
 
-        k = l/sqrt((vx*xunit)**2+(vy*yunit)**2)
+        k = add_l/sqrt((vx*xunit)**2+(vy*yunit)**2)
         mx = self.mx-k
         Mx = self.Mx+k
         return mx, Mx
@@ -170,7 +174,9 @@ class SingleAxe(ObjectGraph):
         bars_list = []
         bar_angle = SR(self.mark_angle).n(digits=7)  # Latex does not accept
         # too much digits.
-        for x, symbol in self.axes_unit.place_list(self.mx, self.Mx, self.Dx, self.mark_origin):
+        for x, symbol in self.axes_unit.place_list(self.mx, self.Mx,
+                                                   self.Dx,
+                                                   self.mark_origin):
             P = (x*self.base).F
             if self.numbering:
                 mark_angle = self.mark_angle

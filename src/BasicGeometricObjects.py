@@ -248,7 +248,7 @@ class VectorFieldGraph(ObjectGraph, GeometricVectorField):
 
     Typically, in order to construct such an object we use the function
     VectorField
-    and then the method 
+    and then the method
     GeometricVectorField.graph
 
     See the function VectorField and GeometricVectorField.graph for documentation.
@@ -358,9 +358,9 @@ def draw_to_fill(text):
      plot [domain=2:3] ( {\x},{\x} )
 
      There are also interpolations curves whose come like that :
-       \draw [...] plot [smooth,tension=1] coordinates {(x1,y2)(x2,y2)} 
+       \draw [...] plot [smooth,tension=1] coordinates {(x1,y2)(x2,y2)}
     """
-    t1 = text.replace("\draw", "").replace(";", "")
+    t1 = text.replace("\\draw", "").replace(";", "")
     bracket = first_bracket(t1)
     t2 = t1.replace(bracket, "")
     t3 = t2.strip()

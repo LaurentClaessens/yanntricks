@@ -15,7 +15,7 @@
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>
 #########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2017, 2019
+# copyright (c) Laurent Claessens, 2010-2017, 2019, 2021
 # email: laurent@claessens-donadello.eu
 
 
@@ -30,11 +30,15 @@ import numpy
 from sage.all import lazy_attribute, numerical_approx, floor
 from sage.all import sqrt, SR, var, QQ, solve
 
-from yanntricks.src.Constructors import *
-
 from yanntricks.src.ObjectGraph import ObjectGraph, AddedObjects
 from yanntricks.src.Exceptions import ImaginaryPartException
 from yanntricks.src.polar_coordinates import PointToPolaire
+from yanntricks.src.Utilities import distance
+from yanntricks.src.Constructors import Point
+from yanntricks.src.Constructors import degree
+
+
+dprint = print
 
 
 class Segment(ObjectGraph):
@@ -130,7 +134,7 @@ class Segment(ObjectGraph):
         return the equation of the line under the form
         x + by + c = 0
 
-        Coefficients 'b' and 'c' are numerical approximations. 
+        Coefficients 'b' and 'c' are numerical approximations.
         See Utilities.Intersection
 
         EXAMPLES::
@@ -148,10 +152,6 @@ class Segment(ObjectGraph):
         if not (self.is_vertical or self.is_horizontal):
             self.coefs = [1, -1/self.slope, self.independent/self.slope]
         x, y = var('x,y')
-        Ix = numerical_approx(self.I.x)
-        Iy = numerical_approx(self.I.y)
-        Fx = numerical_approx(self.F.x)
-        Fy = numerical_approx(self.F.y)
         coefs = [numerical_approx(s) for s in self.coefs]
         return coefs[0]*x+coefs[1]*y+coefs[2] == 0
 
@@ -180,19 +180,20 @@ class Segment(ObjectGraph):
             x = var('x')
             return phyFunction(self.slope*x+self.independent)
 
-    def symmetric_by(self, O):
+    def symmetric_by(self, origin):
         """
         Return a segment which is symmetric to 'self'
         with respect to the point 'O'
         """
-        A = self.I.symmetric_by(O)
-        B = self.F.symmetric_by(O)
+        A = self.I.symmetric_by(origin)
+        B = self.F.symmetric_by(origin)
         return Segment(A, B)
 
     def inside_bounding_box(self, bb=None, xmin=None, xmax=None, ymin=None, ymax=None):
         """
         Return a segment that is the part of self contained inside the given bounding box.
         """
+        from yanntricks.src.Constructors import Intersection
         if bb:
             xmin = bb.xmin
             xmax = bb.xmax
@@ -248,21 +249,21 @@ class Segment(ObjectGraph):
         return Segment(l[0], l[1])
 
     def segment(self, projection=False):
-        """
-        serves to transform a vector into a segment
-        """
+        """Serves to transform a vector into a segment."""
         return Segment(self.I, self.F)
 
     def fit_inside(self, xmin, xmax, ymin, ymax):
         """
-        return the largest segment that fits into the given bounds
+        Fit the segment in the given bounds.
+
+        Return the largest segment that fits into the given bounds.
         """
         if self.is_horizontal:
             k = self.I.y
             return Segment(Point(xmin, k), Point(xmax, k))
         if self.is_vertical:
             k = self.I.x
-            return Segment(Point(x, ymin), Point(x, ymax))
+            return Segment(Point(k, ymin), Point(k, ymax))
 
         x = var("x")
         f = self.phyFunction()
@@ -272,8 +273,6 @@ class Segment(ObjectGraph):
         x2 = QQ(x2)
         X = [xmin, x1, x2, xmax]
         X.sort()
-        A = Point(X[1], f(X[1]))
-        B = Point(X[2], f(X[2]))
         return Segment(Point(X[1], f(X[1])), Point(X[2], f(X[2])))
 
     def parametric_curve(self):
@@ -349,13 +348,13 @@ class Segment(ObjectGraph):
 
     def put_arrow(self, position=0.5, size=0.01, pspict=None):
         """
-        Add a small arrow at the given position. 
+        Add a small arrow at the given position.
         `position` is a number between 0 and 1.
 
         The arrow is pointed from self.I to self.F and is by
         default put at the middle of the segment.
 
-        The arrow is a vector of size (by default) 0.01. 
+        The arrow is a vector of size (by default) 0.01.
         """
         from yanntricks.src.affine_vector import AffineVector
         P = self.get_point_proportion(position, advised=False)
@@ -455,18 +454,13 @@ class Segment(ObjectGraph):
                 n=n, d=d, l=l, angle=angle, pspicts=pspicts)
             self.added_objects.fusion(a)
 
-    def Point(self):
-        """
-        Return the point X such that as free vector, 0->X == self
-
-        More precisely, if self is the segment A->B, return the point B-A
-        """
-        raise DeprecationWarning
-        return self.F-self.I
-
     def midpoint(self, advised=True):
         P = self.get_point_proportion(0.5, advised)
         return P
+
+    def vector(self):
+        """Return the vector corresponding to self."""
+        return self.F - self.I
 
     def AffineVector(self):
         from yanntricks.src.affine_vector import AffineVector
@@ -476,7 +470,7 @@ class Segment(ObjectGraph):
         """
         returns a normalized normal vector at the center of the segment
 
-        - `origin` (optional). If given, the vector will 
+        - `origin` (optional). If given, the vector will
             be attached to that point.
         """
         from yanntricks.src.affine_vector import AffineVector
@@ -504,7 +498,7 @@ class Segment(ObjectGraph):
         """
         return the angle of the segment.
 
-        This is the angle between the segment and the horizontal axe. 
+        This is the angle between the segment and the horizontal axe.
         The returned angle is positive.
 
         EXAMPLES::
@@ -598,10 +592,10 @@ class Segment(ObjectGraph):
         """
         Return a segment orthogonal to self passing trough P.
 
-        The starting point is 'P' and the final point is the 
+        The starting point is 'P' and the final point is the
         intersection with 'self'
 
-        If these two points are the same --when d^2(P,Q)<0.001 
+        If these two points are the same --when d^2(P,Q)<0.001
         (happens when 'P' belongs to 'self'), the end point
         is not guaranteed.
 
@@ -706,7 +700,7 @@ class Segment(ObjectGraph):
 
         - ``P`` - The point on which we want to "attach" the new segment.
 
-        or 
+        or
 
         - two numbers that are the coordinates of the "attach" point.
 
@@ -724,7 +718,7 @@ class Segment(ObjectGraph):
             sage: w.I.coordinates(),w.F.coordinates()
             ('(3,5)', '(4,6)')
 
-        We can also give a point::    
+        We can also give a point::
 
             sage: P=Point(-1,-pi)
             sage: u=w.fix_origin(P)
@@ -813,7 +807,7 @@ class Segment(ObjectGraph):
         """
         return a new segment with size l.
 
-        This function has not to be used by the end user. 
+        This function has not to be used by the end user.
         Use self.normalize() instead.
         """
         L = self.length
@@ -833,7 +827,7 @@ class Segment(ObjectGraph):
 
     def add_size(self, lI=0, lF=0):
         """
-        Return a new Segment with extra length lI at the initial side and lF at the final side. 
+        Return a new Segment with extra length lI at the initial side and lF at the final side.
         """
         F = self.add_size_extremity(lF).F
         I = self.inverse().add_size_extremity(lI).F
@@ -842,7 +836,7 @@ class Segment(ObjectGraph):
 
     def dilatation(self, coef):
         """
-        Return a Segment which is dilated by the coefficient coef 
+        Return a Segment which is dilated by the coefficient coef
 
             This adds the same length at both extremities.
             The segment A --> B dilated by 0.5 returns
@@ -864,13 +858,13 @@ class Segment(ObjectGraph):
 
             sage: from yanntricks import *
             sage: S=Segment(Point(-2,-2),Point(2,2))
-            sage: print S.dilatation(0.5)           
+            sage: print S.dilatation(0.5)
             <segment I=<Point(-1.00000000000000,-1.00000000000000)> F=<Point(1.00000000000000,1.00000000000000)>>
 
         But ::
 
             sage: v=AffineVector(Point(-2,-2),Point(2,2))
-            sage: print v.dilatation(0.5)                
+            sage: print v.dilatation(0.5)
             <vector I=<Point(-2,-2)> F=<Point(0.000000000000000,0.000000000000000)>>
         """
         d = 0.5*self.length*(coef-1)
@@ -904,7 +898,7 @@ class Segment(ObjectGraph):
         NOTES:
         * If self is of length zero, return a copy of self.
         * If not length is given, normalize to 1.
-        * If the given new length is negative, 
+        * If the given new length is negative,
             if self is a segment, consider the absolute value
 
         INPUT:
@@ -1012,8 +1006,8 @@ class Segment(ObjectGraph):
     def mark_point(self, pspict=None):  # pylint:disable=unused-argument
         """
         return the point on which a mark has to be placed
-        if we use the method put_mark.  
-        If we have a segment, the mark is at center 
+        if we use the method put_mark.
+        If we have a segment, the mark is at center
         """
         return self.midpoint().copy()
 
@@ -1028,6 +1022,33 @@ class Segment(ObjectGraph):
         if self.in_math_bounding_box:
             return self.bounding_box(pspict)
         return BoundingBox()
+
+    def thicker_rectangle(self, thickness, pspict=None):
+        """
+        Return a bounding box for a thicker segment.
+
+        The axes have an arrow whose thickness have to be in the
+        bounding box.
+
+        Here we compute a rectangle ABCD such that
+        AB = DC = thikness
+        I = middle of AB
+        F = middle of DC
+
+        (AD) and (BC) are parallel to (IF) with the same length.
+
+        The axe use this rectangle to compute its bounding box.
+        """
+        from yanntricks.src.BoundingBox import BoundingBox
+        from yanntricks.src.Constructors import Vector
+        from yanntricks.src.Constructors import Polygon
+        ortho = self.orthogonal().normalize(thickness)
+        normal = ortho.vector()
+        A = self.I + normal
+        B = self.I - normal
+        D = self.F + normal
+        C = self.F - normal
+        return Polygon(A, B, C, D)
 
     def representative_points(self):
         return [self.I, self.F]

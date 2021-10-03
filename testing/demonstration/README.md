@@ -2,6 +2,34 @@
 
 This document is only for testing and demonstration purpose. 
 
+
+## Add a new picture
+
+Create a new file like this one:
+```
+from yanntricks import *
+def FIPLooZoxgfT():
+    pspict,fig = SinglePicture("FIPLooZoxgfT")
+
+    A = Point(3, 4)
+
+    pspict.DrawGraphs(A)
+    fig.no_figure()
+    fig.conclude()
+    fig.write_the_file()
+```
+
+Add it to `figures_demo.py`.
+
+In a sage terminal:
+```
+attach("yanntricksFIPLooZoxgfT.py");FIPLooZoxgfT()
+```
+
+Add the given LaTeX code in `demo.tex`.
+
+
+
 ## Compiling using [*pytex*](https://github.com/LaurentClaessens/pytex)
 
 

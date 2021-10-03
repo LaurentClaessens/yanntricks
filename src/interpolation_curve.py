@@ -15,7 +15,7 @@
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2017, 2019
+# copyright (c) Laurent Claessens, 2010-2017, 2019, 2021
 # email: laurent@claessens-donadello.eu
 
 import numpy
@@ -32,33 +32,40 @@ class InterpolationCurve(ObjectGraph):
 
     OPTIONAL INPUT:
 
-    - ``context_object`` -  the object that is going to use the InterpolationCurve's latex code.
-                            ImplicitCurve and wavy curves are using InterpolationCurve as "backend" for the latex code.  Here we use the context_object in order to take this one into account when determining the parameters (color, ...).
+    - ``context_object`` -
+        the object that is going to use the InterpolationCurve's
+        latex code. ImplicitCurve and wavy curves are
+        using InterpolationCurve as "backend" for the latex code.
+        Here we use the context_object in order to take this one
+        into account when determining the parameters (color, ...).
 
     EXAMPLES:
 
-    This example is valid, but will not plot the expected line (this is a feature of `\pscurve`)::
+    This example is valid, but will not plot the expected line
+    (this is a feature of `\pscurve`)::
 
         sage: from yanntricks import *
         sage: F=InterpolationCurve([Point(0,0),Point(1,1)])
 
-    If you want to plot the small segment, you have to add a point in the center::
+    If you want to plot the small segment, you have to add a
+    point in the center::
 
         sage: F=InterpolationCurve([Point(0,0),Point(0.5,0.5),Point(1,1)])
 
     The following draws a circle::
 
         sage: C=Circle(Point(0,0),1)
-        sage: G=InterpolationCurve([C.get_point(2*pi/i,advised=False) for i in range(1,100)])
+        sage: G=InterpolationCurve(
+                    [C.get_point(2*pi/i,advised=False)
+                      for i in range(1,100)])
 
-    Notice in the lase example the use of advised=False in order to speed up the computation.
+    Notice in the lase example the use of advised=False in order
+    to speed up the computation.
 
     NOTE:
-
-    InterpolationCurve is used in order to produce implicit plot and wavy functions.
+    InterpolationCurve is used in order to produce implicit plot
+    and wavy functions.
     """
-
-
     def __init__(self, points_list, context_object=None, mode=None):
         ObjectGraph.__init__(self, self)
         self.parameters.color = "brown"
@@ -87,7 +94,9 @@ class InterpolationCurve(ObjectGraph):
         sage: from yanntricks import *
         sage: C=Circle(Point(0,0),1)
         sage: n=400
-        sage: InterpolationCurve([C.get_point(i*SR(360)/n,advised=False) for i in range(n)]).get_minmax_data()
+        sage: InterpolationCurve(
+                    [C.get_point(i*SR(360)/n,advised=False)
+                     for i in range(n)]).get_minmax_data()
         {'xmax': 1.0, 'xmin': -1.0, 'ymax': 1.0, 'ymin': -1.0}
         """
         xmin = min([P.x for P in self.points_list])
@@ -130,7 +139,8 @@ class InterpolationCurve(ObjectGraph):
         NOTE::
 
         Since the bounding box is computed from the give points while the curve is an interpolation,
-        this bounding box is incorrect to the extend that \pscurve does not remains in the convex hull
+        this bounding box is incorrect to the extend that
+        \pscurve does not remains in the convex hull
         of the given points.
 
         EXAMPLE:
@@ -175,11 +185,11 @@ class InterpolationCurve(ObjectGraph):
                 # The absolute value is for the case where the whole
                 # curve is in the ball of radius 0.001 for example.
 
-                #digits=3+abs(ceil(  log(namax,10) ))
+                # digits=3+abs(ceil(  log(namax,10) ))
                 digits = 5
                 params = self.params(language="tikz")
-                a.append("\draw [{0}] {1};".format(
-                    params, "--".join([x.coordinates(digits=digits, pspict=pspict) for x in spl])))
+                str_path = "--".join([x.coordinates(digits=digits, pspict=pspict) for x in spl])
+                a.append(f"\\draw [{params}] {str_path};")
             return "\n".join(a)
         elif self.mode == "quadratic":
             pieces = []
@@ -219,14 +229,14 @@ class InterpolationCurve(ObjectGraph):
                 a.append(K.latex_code(language="tikz", pspict=pspict))
             return "\n".join(a)
         else:
-            l = []
+            texts = []
             params = self.params(language="tikz")
-            l.append(
-                "\draw [{0}] plot [smooth,tension=1] coordinates {{".format(params))
+            texts.append(f"\\draw [{params}] plot "  \
+                         "[smooth,tension=1] coordinates {{")
             for p in pl:
-                l.append(p.coordinates(digits=5, pspict=pspict))
-            l.append("};")
-            return "".join(l)
+                texts.append(p.coordinates(digits=5, pspict=pspict))
+            texts.append("};")
+            return "".join(texts)
         raise
 
     def latex_code(self, language, pspict=None):

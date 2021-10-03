@@ -1,21 +1,4 @@
-###########################################################################
-#   This is part of the module yanntricks
-#
-#   yanntricks is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published by
-#   the Free Software Foundation, either version 3 of the License, or
-#   (at your option) any later version.
-#
-#   yanntricks is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU General Public License for more details.
-#
-#   You should have received a copy of the GNU General Public License
-#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
-###########################################################################
-
-# copyright (c) Laurent Claessens, 2010-2017, 2019
+# copyright (c) Laurent Claessens, 2010-2017, 2019, 2021
 # email: laurent@claessens-donadello.eu
 
 
@@ -23,6 +6,9 @@ from sage.all import lazy_attribute, numerical_approx
 from sage.all import cos, sin, SR, pi, var
 
 from yanntricks.src.ObjectGraph import ObjectGraph
+
+
+dprint = print
 
 
 class Point(ObjectGraph):
@@ -60,7 +46,7 @@ class Point(ObjectGraph):
 
         - ``seg`` - a segment
         - ``direction`` - (default=None) a vector.
-        If given, we use a projection parallel to 
+        If given, we use a projection parallel to
         `vector` instead of the orthogonal projection.
 
         OUTPUT:
@@ -89,9 +75,7 @@ class Point(ObjectGraph):
         return P
 
     def symmetric_by(self, Q):
-        """
-        return the central symmetry  with respect to 'Q'
-        """
+        """Return the central symmetry  with respect to 'Q'."""
         v = Q-self
         return Q+v
 
@@ -105,7 +89,12 @@ class Point(ObjectGraph):
 
         - ``theta`` - the angle (degree or :class:`AngleMeasure`).
 
-        - ``pspict`` - the pspicture in which the point is supposed to live. If `pspict` is given, we compute the deformation due to the dilatation.  Be careful: in that case `r` is given as absolute value and the visual effect will not be affected by dilatations.
+        - ``pspict`` -
+            the pspicture in which the point is supposed to live.
+            If `pspict` is given, we compute the deformation due
+            to the dilatation.  Be careful: in that case `r`
+            is given as absolute value and the visual effect
+            will not be affected by dilatations.
 
         OUTPUT: A point.
 
@@ -123,7 +112,8 @@ class Point(ObjectGraph):
         from yanntricks.src.Exceptions import ShouldNotHappenException
         if isinstance(r, AngleMeasure):
             raise ShouldNotHappenException(
-                "You are passing AngleMeasure instead of a number (the radius).")
+                "You are passing AngleMeasure instead of a "
+                "number (the radius).")
         if isinstance(theta, AngleMeasure):
             alpha = theta.radian
         else:
@@ -148,9 +138,8 @@ class Point(ObjectGraph):
             yunit = pspict.yunit
         rp, alpha = visualPolarCoordinates(r, theta,
                                            xunit=xunit, yunit=yunit)
-        rp, alpha = visualPolarCoordinates(r, theta, 
+        rp, alpha = visualPolarCoordinates(r, theta,
                                            xunit=xunit, yunit=yunit)
-        P = self.getPolarPoint(rp, alpha)
         return self.getPolarPoint(rp, alpha)
 
     def rotation(self, alpha):
@@ -167,7 +156,8 @@ class Point(ObjectGraph):
         """
         Return the value of the equation of a line on `self`.
 
-        If $f(x,y)=0$ is the equation of `line`, return the number f(self.x,self.y).
+        If $f(x,y)=0$ is the equation of `line`, return
+        the number f(self.x,self.y).
 
         NOTE:
 
@@ -181,7 +171,7 @@ class Point(ObjectGraph):
             x + y - 1 == 0
             sage: P=Point(-1,3)
             sage: P.value_on_line(s)
-            1 
+            1
 
         It allows to know if a point is inside or outside a circle::
 
@@ -206,7 +196,7 @@ class Point(ObjectGraph):
     #        - either two numbers
     def translate(self, a, b=None):
         from yanntricks.src.affine_vector import AffineVector
-        if b == None:
+        if b is None:
             v = a
         else:
             v = AffineVector(Point(0, 0), Point(a, b))
@@ -260,23 +250,26 @@ class Point(ObjectGraph):
             sqrt(2)
         """
         return self.norm
-    # La méthode normalize voit le point comme un vecteur partant de zéro, et en donne le vecteur de taille 1
+    # La méthode normalize voit le point comme un vecteur
+    # partant de zéro, et en donne le vecteur de taille 1
 
-    def normalize(self, l=None):
+    def normalize(self, length=None):
         """
         Return a vector of norm <l>. If <l> is not given, take 1.
         """
         unit = self*(1/self.norm)
-        if l:
-            return unit*l
+        if length:
+            return unit*length
         return unit
 
     def default_graph(self, opt):
         """
         Return a default Graph
 
-        <opt> is a tuple. The first is the symbol to the point (like "*" or "none").
-        The second is a string to be passed to pstricks, like "linecolor=blue,linestyle=dashed".
+        <opt> is a tuple. The first is the symbol to the
+        point (like "*" or "none").
+        The second is a string to be passed to pstricks,
+        like "linecolor=blue,linestyle=dashed".
         """
         P = Point(self)
         P.parameters.symbol = opt[0]
@@ -285,7 +278,8 @@ class Point(ObjectGraph):
 
     def polar_coordinates(self, origin=None):
         """
-        Return the polar coordinates of the point as a tuple (r,angle) where angle is AngleMeasure
+        Return the polar coordinates of the point as a tuple
+        (r,angle) where angle is AngleMeasure
 
         EXAMPLES::
 
@@ -315,23 +309,25 @@ class Point(ObjectGraph):
 
         Return type : MathStructure.AngleMeasure
         """
-        return self.polar_coordinates(origin=origin).measure            # No more degree. February 11, 2015
+        # No more degree. February 11, 2015
+        return self.polar_coordinates(origin=origin).measure
 
     def coordinates(self, digits=5, pspict=None):
         """
         Return the coordinates of the point as a string.
-        
-        
-        @param {int} `digits` 
-            The number of digits that will be written in the return string
-        
-        @param {Picture} `pspict` 
+
+
+        @param {int} `digits`
+            The number of digits that will be written in the
+            return string
+
+        @param {Picture} `pspict`
             If given,
             - we multiply by xunit and yunit
             - we apply the rotation
-        
+
         Some conversions and approximations are done.
-        See `number_to_string`.  
+        See `number_to_string`.
         """
         from yanntricks.src.Utilities import number_to_string
         x = self.x
@@ -370,7 +366,7 @@ class Point(ObjectGraph):
         t to fine tune it, you don't care.
         """
         from yanntricks.src.BoundingBox import BoundingBox
-        if pspict == None:
+        if pspict is None:
             print("You should consider to give a Picture as argument. \
                     Otherwise the boundig box of %s could be bad" % str(self))
             xunit = 1
@@ -427,7 +423,7 @@ class Point(ObjectGraph):
         symbol_dict["|"] = "$|$"
         symbol_dict["x"] = "$\\times$"
         symbol_dict["o"] = "$o$"
-        symbol_dict["diamond"] = "$\diamondsuit$"
+        symbol_dict["diamond"] = "$\\diamondsuit$"
         try:
             effective_symbol = symbol_dict[self.parameters.symbol]
         except KeyError:
@@ -435,9 +431,12 @@ class Point(ObjectGraph):
         if self.parameters.symbol == 'none':
             logging("You should use '' instead of 'none'", pspict=pspict)
         if self.parameters.symbol not in ["none", ""]:
-            s = "\draw [{2}]  {0} node [rotate={3}] {{{1}}};".format(self.coordinates(
-                digits=5, pspict=pspict), effective_symbol, self.params(language="tikz", refute=["symbol", "dotangle"]), "DOTANGLE")
-            if self.parameters.dotangle != None:
+            coords = self.coordinates(digits=5, pspict=pspict)
+            params = self.params(language="tikz",
+                                 refute=["symbol", "dotangle"])
+            s = f"\\draw [{params}]  {coords} " \
+                f"node [rotate=DOTANGLE] {{{effective_symbol}}};"
+            if self.parameters.dotangle is not None:
                 s = s.replace("DOTANGLE", str(self.parameters.dotangle))
             else:
                 s = s.replace("DOTANGLE", "0")
@@ -445,11 +444,11 @@ class Point(ObjectGraph):
         return ""
 
     def latex_code(self, language=None, pspict=None, with_mark=False):
-        l = []
+        text = []
 
         if language == "tikz":
-            l.append(self.tikz_code(pspict=pspict))
-        return "\n".join(l)
+            text.append(self.tikz_code(pspict=pspict))
+        return "\n".join(text)
 
     def __eq__(self, other):
         ##
@@ -497,12 +496,14 @@ class Point(ObjectGraph):
                 dx = v.x
                 dy = v.y
             except AttributeError:
-                raise TypeError("You seem to add myself with something which is not a Point neither a Vector. Sorry, but I'm going to crash : {},{}".format(
-                    v, type(v)))
+                raise TypeError("You seem to add myself with "
+                                "something which is not a Point "
+                                " neither a Vector. Sorry, "
+                                f" but I'm going to crash : {v},{type(v)}")
         return Point(self.x+dx, self.y+dy)
 
-    # \brief addition of coordinates
     def __add__(self, other):
+        """Addition of coordinates."""
         if isinstance(other, tuple):
             Dx = other[0]
             Dy = other[1]
@@ -536,7 +537,6 @@ class Point(ObjectGraph):
     def __div__(self, r):
         return Point(self.x/r, self.y/r)
 
-    # As far as I understood, this is needed for "from __future__ import division"
     def __truediv__(self, r):
         return self.__div__(r)
 
