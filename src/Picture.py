@@ -1,19 +1,4 @@
-#########################################################################
-#   This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published by
-#   the Free Software Foundation, either version 3 of the License, or
-#   (at your option) any later version.
-#
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU General Public License for more details.
-#
-#   You should have received a copy of the GNU General Public License
-#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#########################################################################
-
-# copyright (c) Laurent Claessens, 2009-2017, 2019
+# copyright (c) Laurent Claessens, 2009-2017, 2019, 2021
 # email: laurent@claessens-donadello.eu
 
 
@@ -26,6 +11,7 @@
 # pylint: disable=fixme
 
 import os
+import contextlib
 import collections
 from sage.all import numerical_approx   # pylint:disable=import-error
 
@@ -40,6 +26,9 @@ from yanntricks.src.Utilities import init_picture_separator_list
 from yanntricks.src.Exceptions import ShouldNotHappenException
 from yanntricks.src.Utilities import add_latex_line_entete
 from yanntricks.src.paths_keeper import PathsKeeper
+
+
+dprint = print
 
 
 class Picture:
@@ -202,12 +191,15 @@ class Picture:
             separator_name = x.separator_name
             try:
                 self.add_latex_line(ligne=graph.latex_code(
-                    language=self.language, pspict=self), separator_name=separator_name)
+                    language=self.language,
+                    pspict=self),
+                    separator_name=separator_name)
                 list_used_separators.append(separator_name)
-            except AttributeError as data:
-                if not "latex_code" in dir(graph):
+            except AttributeError:
+                if "latex_code" not in dir(graph):
                     print(
-                        "yanntricks error: object %s has no pstricks_code method" % (str(graph)))
+                        f"yanntricks error: object {graph} has "
+                        "no pstricks_code method")
                 raise
         self.separator_list.fusion(list_used_separators, "PSTRICKS CODE")
 
@@ -268,9 +260,17 @@ class Picture:
                 return True
             return False
 
-        for a in sublist(self.record_draw_graph, condition):
-            self.BB.AddBB(a.graph.bounding_box(pspict=pspict))
+        for element in sublist(self.record_draw_graph, condition):
+            self.add_in_bb(element, pspict)
         return self.BB
+
+    def add_in_bb(self, element, pspict):
+        """Append the given graph in self's bounding box."""
+        self.BB.AddBB(element.graph.bounding_box(pspict=pspict))
+        with contextlib.suppress(AttributeError):
+            thicker = element.graph.thicker_bounding_box(pspict=pspict)
+            dprint("ajout de thicker:", thicker)
+            self.BB.AddBB(thicker)
 
     def DrawBoundingBox(self, obj=None):
         """Draw the bounding box of the object.
@@ -299,16 +299,17 @@ class Picture:
 
     def DrawGraphs(self, *args, **arg):
         """
-        The function DrawGraphs basically takes a list of objects and performs
+        The function DrawGraphs basically takes a list of objects
+        and performs
         different kind of operation following the type of each "object" :
 
-        If the object it iterable, its elements are re-passed to DrawGraphs
-        If the object is an instance of "ObjectGraph", it is passed to
-        _DrawGraph
-        If the object is 'AddedObject', the list corresponding to 'self' is
-        re-passed to DrawGraphs.
-
-    """
+        - If the object it iterable, its elements are
+          re-passed to DrawGraphs
+        - If the object is an instance of "ObjectGraph",
+          it is passed to _DrawGraph
+        - If the object is 'AddedObject', the list corresponding
+          to 'self' is re-passed to DrawGraphs.
+        """
         if "separator_name" not in arg:
             separator_name = "DEFAULT"
         else:
@@ -397,7 +398,8 @@ class Picture:
     def get_box_size(self, tex_expression, default_value="0pt"):
         return self.auxiliary_file.get_box_size(tex_expression, default_value)
 
-    def add_latex_line(self, ligne, separator_name="DEFAULT", add_line_jump=True):
+    def add_latex_line(self, ligne, separator_name="DEFAULT",
+                       add_line_jump=True):
         """
         Add a line in the pstricks code.
 
