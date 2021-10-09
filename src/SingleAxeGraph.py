@@ -198,15 +198,32 @@ class SingleAxe(ObjectGraph):
             bars_list.append(seg)
         return bars_list
 
+    def thicker_bounding_box(self, pspict):
+        """
+        Return the bounding box of a rectangle around the axe.
+
+        The purpose is to compute a small enlargement of the
+        picture's bounding box, so that the arrow are not cropped.
+
+        The thicker bounding box is added to the picture bounding box,
+        but is not used to adapt the axes.
+        """
+        segment = self.segment()
+        thicker = segment.thicker_rectangle(thickness=0.5)
+        return thicker.bounding_box(pspict)
+
     def _bounding_box(self, pspict):
         # One cannot take into account the small enlarging here because
         # we do not know if this is the vertical or horizontal axe,
         # so we cannot make the fit of the drawn objects.
-        BB = self.math_bounding_box(pspict)
+
+        # One cannot make the axe thicker here because this will
+        # enlarge the axes.
+        bb = self.math_bounding_box(pspict)
 
         for graph in self.added_objects[pspict]:
-            BB.append(graph, pspict)
-        return BB
+            bb.append(graph, pspict)
+        return bb
 
     def _math_bounding_box(self, pspict):
         # pylint: disable=unused-argument
@@ -221,6 +238,7 @@ class SingleAxe(ObjectGraph):
             P = (x*self.base).F
             bb.addX(P.x)
             bb.addY(P.y)
+
         return bb
 
     def conclude(self, pspict):
