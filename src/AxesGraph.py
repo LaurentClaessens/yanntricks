@@ -1,21 +1,4 @@
-###########################################################################
-#   This is part of the module yanntricks
-#
-#   yanntricks is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published by
-#   the Free Software Foundation, either version 3 of the License, or
-#   (at your option) any later version.
-#
-#   yanntricks is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU General Public License for more details.
-#
-#   You should have received a copy of the GNU General Public License
-#   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
-###########################################################################
-
-# copyright (c) Laurent Claessens, 2010-2017, 2019
+# copyright (c) Laurent Claessens, 2010-2017, 2019, 2021
 # email: laurent@claessens-donadello.eu
 
 from yanntricks.src.SingleAxeGraph import SingleAxe
@@ -23,6 +6,9 @@ from yanntricks.src.ObjectGraph import Options
 from yanntricks.src.ObjectGraph import ObjectGraph
 from yanntricks.src.MathStructures import AxesUnit
 from yanntricks.src.SmallComputations import RemoveLastZeros
+
+
+dprint = print
 
 
 class Axes(ObjectGraph):
@@ -68,18 +54,18 @@ class Axes(ObjectGraph):
         self.do_Mx_enlarge = True
         self.do_My_enlarge = True
 
-    def enlarge_a_little(self, l, pspict):
+    def enlarge_a_little(self, length, pspict):
         if self.already_enlarged:
             from yanntricks.src.Exceptions import AlreadyEnlargedException
             raise AlreadyEnlargedException("I'm already enlarged")
         self.already_enlarged = True
-        mx, Mx = self.single_axeX.enlarge_a_little(l, pspict=pspict)
+        mx, Mx = self.single_axeX.enlarge_a_little(length, pspict=pspict)
         if self.do_mx_enlarge:
             self.single_axeX.mx = mx
         if self.do_Mx_enlarge:
             self.single_axeX.Mx = Mx
 
-        my, My = self.single_axeY.enlarge_a_little(l, pspict=pspict)
+        my, My = self.single_axeY.enlarge_a_little(length, pspict=pspict)
         if self.do_my_enlarge:
             self.single_axeY.mx = my
         if self.do_My_enlarge:
@@ -136,13 +122,6 @@ class Axes(ObjectGraph):
     def _math_bounding_box(self, pspict=None):
         from yanntricks.src.BoundingBox import BoundingBox
         BB = BoundingBox()
-        BB.append(self.single_axeX.math_bounding_box(pspict), pspict=pspict)
-        BB.append(self.single_axeY.math_bounding_box(pspict), pspict=pspict)
-        return BB
-
-    def _math_bounding_box(self, pspict=None):
-        from yanntricks.src.BoundingBox import BoundingBox
-        BB = BoundingBox()
         BB.append(self.single_axeX.bounding_box(pspict), pspict)
         BB.append(self.single_axeY.bounding_box(pspict), pspict)
 
@@ -151,13 +130,6 @@ class Axes(ObjectGraph):
         # Updates the single axes taking the content of pspict into account.
         self.add_bounding_box(BB, pspict)
         BB.check_too_large()
-        return BB
-
-    def _math_bounding_box(self, pspict=None):
-        from yanntricks.src.BoundingBox import BoundingBox
-        BB = BoundingBox()
-        BB.append(self.single_axeX.math_bounding_box(pspict), pspict=pspict)
-        BB.append(self.single_axeY.math_bounding_box(pspict), pspict=pspict)
         return BB
 
     def action_on_pspict(self, language=None, pspict=None):
