@@ -269,7 +269,6 @@ class Picture:
         self.BB.AddBB(element.graph.bounding_box(pspict=pspict))
         with contextlib.suppress(AttributeError):
             thicker = element.graph.thicker_bounding_box(pspict=pspict)
-            dprint("ajout de thicker:", thicker)
             self.BB.AddBB(thicker)
 
     def DrawBoundingBox(self, obj=None):
@@ -373,6 +372,8 @@ class Picture:
         This function computes the bounding box of the axes and add
         them to the list to be drawn.
 
+        Default axes always intersect at the origin, and slightly more.
+
         The length of the axes is computed here
         (via self.math_bounding_box).
 
@@ -380,6 +381,7 @@ class Picture:
         the length of the axes.
         """
         self.axes.BB = self.math_bounding_box(pspict=self)
+        self.axes.BB.append(Point(0, 0), pspict=self)
         self.DrawGraphs(self.axes)
 
     def DrawDefaultGrid(self):
