@@ -55,8 +55,8 @@ class Axes(ObjectGraph):
         self.do_My_enlarge = True
 
     def enlarge_a_little(self, length, pspict):
+        from yanntricks.src.Exceptions import AlreadyEnlargedException
         if self.already_enlarged:
-            from yanntricks.src.Exceptions import AlreadyEnlargedException
             raise AlreadyEnlargedException("I'm already enlarged")
         self.already_enlarged = True
         mx, Mx = self.single_axeX.enlarge_a_little(length, pspict=pspict)
@@ -79,14 +79,16 @@ class Axes(ObjectGraph):
         This is only supposed to work with automatic axes because
         if assumes that these are vertical and horizontal.
         """
-        if BB.take_math_BB:
-            axeX = self.single_axeX
-            axeY = self.single_axeY
+        if not BB.take_math_BB:
+            return
+        axeX = self.single_axeX
+        axeY = self.single_axeY
 
-            axeX.mx = min((BB.xmin-axeX.C.x)/axeX.base.F.x, axeX.mx)
-            axeX.Mx = max((BB.xmax-axeX.C.x)/axeX.base.F.x, axeX.Mx)
-            axeY.mx = min((BB.ymin-axeY.C.y)/axeY.base.F.y, axeY.mx)
-            axeY.Mx = max((BB.ymax-axeY.C.y)/axeY.base.F.y, axeY.Mx)
+        axeX.mx = min((BB.xmin-axeX.C.x)/axeX.base.F.x, axeX.mx)
+        axeX.Mx = max((BB.xmax-axeX.C.x)/axeX.base.F.x, axeX.Mx)
+        axeY.mx = min((BB.ymin-axeY.C.y)/axeY.base.F.y, axeY.mx)
+        axeY.Mx = max((BB.ymax-axeY.C.y)/axeY.base.F.y, axeY.Mx)
+
 
     def add_option(self, opt):
         self.options.add_option(opt)
