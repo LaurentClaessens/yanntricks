@@ -15,16 +15,18 @@
 #   along with yanntricks.py.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
-# copyright (c) Laurent Claessens, 2010-2017, 2019
+# copyright (c) Laurent Claessens, 2010-2017, 2019, 2022
 # email: laurent@claessens-donadello.eu
 
-from yanntricks.src.Constructors import *
 from yanntricks.src.PolygonGraph import PolygonGraph
+from yanntricks.src.segment import Segment
+from yanntricks.src.point import Point
 
 
 class RectangleGraph(PolygonGraph):
     """
-    The parameters of the four lines are by default the same, but they can be adapted separately.
+    The parameters of the four lines are by default the same,
+    but they can be adapted separately.
 
     graph_N returns the north side as a yanntricks.Segment object
     """
@@ -51,6 +53,7 @@ class RectangleGraph(PolygonGraph):
         # because the edges'LaTeX code is use to create the tikz path
         # defining the surface.
     def polygon(self):
+        from yanntricks.src.PolygonGraph import Polygon
         polygon = Polygon(self.NW, self.NE, self.SE, self.SW)
         polygon.parameters = self.parameters.copy()
         return polygon

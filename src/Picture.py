@@ -1,4 +1,4 @@
-# copyright (c) Laurent Claessens, 2009-2017, 2019, 2021
+# copyright (c) Laurent Claessens, 2009-2017, 2019, 2021-2022
 # email: laurent@claessens-donadello.eu
 
 
@@ -12,7 +12,6 @@
 
 import os
 import contextlib
-import collections
 from sage.all import numerical_approx   # pylint:disable=import-error
 
 from yanntricks.src.draw_element import DrawElement
@@ -289,7 +288,7 @@ class Picture:
         if isinstance(gr, AddedObjects):
             self.DrawGraphs(gr[self])
             return None
-        if isinstance(gr, collections.Iterable):
+        with contextlib.suppress(TypeError):
             for h in gr:
                 self.DrawGraphs(h, separator_name=separator_name)
             return None
